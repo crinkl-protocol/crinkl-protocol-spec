@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "crinkl://bindings/nats/crinkl-platform/v1/event.fraud_flagged",
+  "title": "event.fraud_flagged",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "eventId",
+    "eventName",
+    "spendId",
+    "wallet",
+    "payload",
+    "timestamp",
+    "protocolVersion",
+    "prevHash",
+    "eventHash",
+    "signature"
+  ],
+  "properties": {
+    "eventId": { "type": "string", "minLength": 1 },
+    "eventName": { "const": "FRAUD_FLAGGED" },
+    "spendId": { "type": "string", "minLength": 1 },
+    "wallet": { "type": "string", "minLength": 1 },
+    "payload": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["fraudType"],
+      "properties": {
+        "fraudType": {
+          "type": "string",
+          "enum": ["duplicate_submission", "synthetic_receipt", "collusion", "other"]
+        },
+        "evidenceRef": { "type": "string", "minLength": 1 },
+        "fraudScore": { "type": "number", "minimum": 0, "maximum": 1 },
+        "evidenceHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      }
+    },
+    "timestamp": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$"
+    },
+    "protocolVersion": { "const": "1.0.0-rc.1" },
+    "prevHash": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" },
+    "eventHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "signature": { "type": "string", "minLength": 1 },
+    "sessionId": { "type": "string", "minLength": 1 }
+  }
+}

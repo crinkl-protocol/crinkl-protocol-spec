@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "crinkl://bindings/nats/crinkl-platform/v1/pipeline.ocr.final.request",
+  "title": "pipeline.ocr.final.request",
+  "$ref": "#/$defs/OcrFinalRequestCommand",
+  "$defs": {
+    "NonEmptyString": { "type": "string", "minLength": 1 },
+    "IsoDateTimeLoose": { "type": "string", "format": "iso-date-time-loose" },
+    "OcrFinalRequestPayload": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["submissionId", "objectKey", "requestedAt", "sessionId"],
+      "properties": {
+        "submissionId": { "$ref": "#/$defs/NonEmptyString" },
+        "objectKey": { "$ref": "#/$defs/NonEmptyString" },
+        "objectKeys": { "type": "array", "items": { "$ref": "#/$defs/NonEmptyString" } },
+        "requestedAt": { "$ref": "#/$defs/IsoDateTimeLoose" },
+        "tenantId": { "$ref": "#/$defs/NonEmptyString" },
+        "sessionId": { "$ref": "#/$defs/NonEmptyString" }
+      }
+    },
+    "CommandContext": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "wallet": { "$ref": "#/$defs/NonEmptyString" },
+        "tenantId": { "$ref": "#/$defs/NonEmptyString" },
+        "sessionId": { "$ref": "#/$defs/NonEmptyString" },
+        "submissionId": { "$ref": "#/$defs/NonEmptyString" },
+        "issuedBy": { "$ref": "#/$defs/NonEmptyString" }
+      }
+    },
+    "OcrFinalRequestCommand": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["commandId", "commandName", "payload", "timestamp", "protocolVersion"],
+      "properties": {
+        "commandId": { "$ref": "#/$defs/NonEmptyString" },
+        "commandName": { "const": "OCR_FINAL_REQUEST" },
+        "payload": { "$ref": "#/$defs/OcrFinalRequestPayload" },
+        "timestamp": { "$ref": "#/$defs/IsoDateTimeLoose" },
+        "protocolVersion": { "const": "1.0.0-rc.1" },
+        "context": { "$ref": "#/$defs/CommandContext" }
+      }
+    }
+  }
+}

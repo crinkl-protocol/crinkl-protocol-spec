@@ -1,0 +1,417 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://crinkl.io/protocol/v1/event.schema.json",
+  "title": "Crinkl Protocol Event",
+  "description": "Base schema for all Crinkl Protocol events",
+  "type": "object",
+  "required": [
+    "eventId",
+    "eventName",
+    "spendId",
+    "wallet",
+    "payload",
+    "timestamp",
+    "protocolVersion",
+    "eventHash",
+    "prevHash",
+    "signature"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "description": "Unique identifier for this event"
+    },
+    "eventName": {
+      "type": "string",
+      "enum": [
+        "RECEIPT_UPLOADED",
+        "SPEND_SOFT_VERIFIED",
+        "SPEND_REVIEW_REQUESTED",
+        "SPEND_HARD_VERIFIED",
+        "SPEND_INVALIDATED",
+        "SPEND_CORRECTED",
+        "FRAUD_FLAGGED",
+        "REWARD_PROVISIONAL_ISSUED",
+        "REWARD_FINAL_ISSUED"
+      ],
+      "description": "Type of event"
+    },
+    "spendId": {
+      "type": "string",
+      "description": "Identifier for the spend stream"
+    },
+    "wallet": {
+      "type": "string",
+      "description": "Wallet address associated with this event"
+    },
+    "payload": {
+      "type": "object",
+      "description": "Event-specific payload"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp with milliseconds in UTC"
+    },
+    "protocolVersion": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+(-[0-9A-Za-z.-]+)?$",
+      "description": "Semantic version of the protocol"
+    },
+    "eventHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "SHA-256 hash of canonical JSON (excluding eventHash and signature)"
+    },
+    "prevHash": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "eventHash of prior event in stream, or null for bootstrap"
+    },
+    "signature": {
+      "type": "string",
+      "description": "Base64-encoded Ed25519 signature over raw eventHash bytes"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "eventName": {
+            "const": "RECEIPT_UPLOADED"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "$ref": "#/$defs/ReceiptUploadedPayload"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "eventName": {
+            "const": "SPEND_SOFT_VERIFIED"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "$ref": "#/$defs/SpendSoftVerifiedPayload"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "eventName": {
+            "const": "SPEND_REVIEW_REQUESTED"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "$ref": "#/$defs/SpendReviewRequestedPayload"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "eventName": {
+            "const": "SPEND_HARD_VERIFIED"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "$ref": "#/$defs/SpendHardVerifiedPayload"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "eventName": {
+            "const": "SPEND_INVALIDATED"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "$ref": "#/$defs/SpendInvalidatedPayload"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "eventName": {
+            "const": "SPEND_CORRECTED"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "$ref": "#/$defs/SpendCorrectedPayload"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "eventName": {
+            "const": "FRAUD_FLAGGED"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "$ref": "#/$defs/FraudFlaggedPayload"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "eventName": {
+            "const": "REWARD_PROVISIONAL_ISSUED"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "$ref": "#/$defs/RewardIssuedPayload"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "eventName": {
+            "const": "REWARD_FINAL_ISSUED"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "$ref": "#/$defs/RewardIssuedPayload"
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "ReceiptUploadedPayload": {
+      "type": "object",
+      "required": [
+        "uploadId",
+        "imageDataRef"
+      ],
+      "properties": {
+        "uploadId": {
+          "type": "string"
+        },
+        "imageDataRef": {
+          "type": "string"
+        },
+        "metadata": {
+          "type": "object"
+        }
+      }
+    },
+    "SpendSoftVerifiedPayload": {
+      "type": "object",
+      "required": [
+        "softVerificationStatus",
+        "softExtractedFields"
+      ],
+      "properties": {
+        "softVerificationStatus": {
+          "type": "string",
+          "enum": [
+            "PENDING",
+            "SOFT_VERIFIED",
+            "REJECTED"
+          ]
+        },
+        "softExtractedFields": {
+          "type": "object",
+          "properties": {
+            "storeHint": {
+              "type": "string"
+            },
+            "totalHint": {
+              "type": "number"
+            },
+            "timestampHint": {
+              "type": "string"
+            }
+          }
+        },
+        "riskFlags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "SpendReviewRequestedPayload": {
+      "type": "object",
+      "required": [
+        "reason",
+        "requestedAt",
+        "source"
+      ],
+      "properties": {
+        "reason": {
+          "type": "string"
+        },
+        "requestedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "source": {
+          "type": "string"
+        }
+      }
+    },
+    "SpendHardVerifiedPayload": {
+      "type": "object",
+      "required": [
+        "storeId",
+        "totalCents",
+        "currency",
+        "timestamp",
+        "verificationVersion"
+      ],
+      "properties": {
+        "storeId": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+          "description": "Normalized merchant identifier"
+        },
+        "totalCents": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "description": "Base-10 integer cents string"
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$",
+          "description": "ISO 4217 currency code"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "geoRegion": {
+          "type": "string",
+          "description": "ISO 3166-2 or ISO 3166-1 alpha-2 code"
+        },
+        "cbsaCode": {
+          "type": "string",
+          "description": "CBSA metro area code (e.g., '12420') or non-metro fallback (e.g., 'non-metro:US-MT')"
+        },
+        "verificationVersion": {
+          "type": "string"
+        }
+      }
+    },
+    "SpendInvalidatedPayload": {
+      "type": "object",
+      "required": [
+        "reason"
+      ],
+      "properties": {
+        "reason": {
+          "type": "string"
+        },
+        "riskFlags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "SpendCorrectedPayload": {
+      "type": "object",
+      "required": [
+        "correctedFields",
+        "verificationVersion"
+      ],
+      "properties": {
+        "correctedFields": {
+          "type": "object"
+        },
+        "verificationVersion": {
+          "type": "string"
+        }
+      }
+    },
+    "FraudFlaggedPayload": {
+      "type": "object",
+      "required": [
+        "fraudType"
+      ],
+      "properties": {
+        "fraudType": {
+          "type": "string",
+          "enum": [
+            "duplicate_submission",
+            "synthetic_receipt",
+            "collusion",
+            "other"
+          ]
+        },
+        "evidenceRef": {
+          "type": "string"
+        }
+      }
+    },
+    "RewardIssuedPayload": {
+      "type": "object",
+      "required": [
+        "policyVersion",
+        "deltaPoints",
+        "deltaBTCsats"
+      ],
+      "properties": {
+        "policyVersion": {
+          "type": "string"
+        },
+        "deltaPoints": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$"
+        },
+        "deltaBTCsats": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$"
+        }
+      }
+    }
+  }
+}

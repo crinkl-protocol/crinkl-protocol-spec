@@ -1,0 +1,106 @@
+{
+  "kind": "scenario.spend.lifecycle",
+  "cases": [
+    {
+      "id": "happy.full.lifecycle",
+      "description": "soft -> hard -> rewards",
+      "events": [
+        { "eventName": "RECEIPT_UPLOADED" },
+        { "eventName": "SPEND_SOFT_VERIFIED" },
+        { "eventName": "REWARD_PROVISIONAL_ISSUED" },
+        { "eventName": "SPEND_HARD_VERIFIED" },
+        { "eventName": "REWARD_FINAL_ISSUED" }
+      ],
+      "expected": {
+        "attestationState": "HARD_VERIFIED",
+        "rewardState": "FINAL_REWARD_ISSUED"
+      }
+    },
+    {
+      "id": "correction.no.reward",
+      "description": "correction without reward issuance",
+      "events": [
+        { "eventName": "RECEIPT_UPLOADED" },
+        { "eventName": "SPEND_SOFT_VERIFIED" },
+        { "eventName": "SPEND_HARD_VERIFIED" },
+        { "eventName": "SPEND_CORRECTED" }
+      ],
+      "expected": {
+        "attestationState": "CORRECTED",
+        "rewardState": "NO_REWARD"
+      }
+    },
+    {
+      "id": "correction.final.reward",
+      "description": "final reward after correction",
+      "events": [
+        { "eventName": "RECEIPT_UPLOADED" },
+        { "eventName": "SPEND_SOFT_VERIFIED" },
+        { "eventName": "SPEND_HARD_VERIFIED" },
+        { "eventName": "SPEND_CORRECTED" },
+        { "eventName": "REWARD_FINAL_ISSUED" }
+      ],
+      "expected": {
+        "attestationState": "CORRECTED",
+        "rewardState": "FINAL_REWARD_ISSUED"
+      }
+    },
+    {
+      "id": "correction.provisional.reward",
+      "description": "provisional reward after correction",
+      "events": [
+        { "eventName": "RECEIPT_UPLOADED" },
+        { "eventName": "SPEND_SOFT_VERIFIED" },
+        { "eventName": "SPEND_HARD_VERIFIED" },
+        { "eventName": "SPEND_CORRECTED" },
+        { "eventName": "REWARD_PROVISIONAL_ISSUED" }
+      ],
+      "expected": {
+        "attestationState": "CORRECTED",
+        "rewardState": "PROVISIONAL_REWARD_ISSUED"
+      }
+    },
+    {
+      "id": "invalidated.from.soft",
+      "description": "invalidation from soft verified",
+      "events": [
+        { "eventName": "RECEIPT_UPLOADED" },
+        { "eventName": "SPEND_SOFT_VERIFIED" },
+        { "eventName": "SPEND_INVALIDATED" }
+      ],
+      "expected": {
+        "attestationState": "INVALIDATED",
+        "rewardState": "NO_REWARD"
+      }
+    },
+    {
+      "id": "no.clawback.provisional",
+      "description": "provisional reward preserved after invalidation",
+      "events": [
+        { "eventName": "RECEIPT_UPLOADED" },
+        { "eventName": "SPEND_SOFT_VERIFIED" },
+        { "eventName": "REWARD_PROVISIONAL_ISSUED" },
+        { "eventName": "SPEND_INVALIDATED" }
+      ],
+      "expected": {
+        "attestationState": "INVALIDATED",
+        "rewardState": "PROVISIONAL_REWARD_ISSUED"
+      }
+    },
+    {
+      "id": "no.clawback.final.fraud",
+      "description": "final reward preserved after fraud flag",
+      "events": [
+        { "eventName": "RECEIPT_UPLOADED" },
+        { "eventName": "SPEND_SOFT_VERIFIED" },
+        { "eventName": "SPEND_HARD_VERIFIED" },
+        { "eventName": "REWARD_FINAL_ISSUED" },
+        { "eventName": "FRAUD_FLAGGED" }
+      ],
+      "expected": {
+        "attestationState": "INVALIDATED",
+        "rewardState": "FINAL_REWARD_ISSUED"
+      }
+    }
+  ]
+}

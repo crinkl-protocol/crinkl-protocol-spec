@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "crinkl://protocol/schemas/store_location_entry_v1",
+  "title": "StoreLocationEntryV1",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["storeLocationId", "storeId"],
+  "properties": {
+    "storeLocationId": { "type": "string", "minLength": 1 },
+    "storeId": { "type": "string", "minLength": 1 },
+    "geoRegion": { "type": "string", "minLength": 2 },
+    "label": { "type": "string", "minLength": 1 },
+    "externalIds": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["namespace", "type", "value"],
+        "properties": {
+          "namespace": { "type": "string", "minLength": 1 },
+          "type": { "type": "string", "minLength": 1 },
+          "value": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  }
+}
+

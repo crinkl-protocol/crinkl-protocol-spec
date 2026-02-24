@@ -1,0 +1,14 @@
+dist/
+*.pdf
+.DS_Store
+
+# Internal audit documents
+docs/MANDATORY_PROPERTIES_AUDIT.md
+docs/REFLEXIVE_IMPROVEMENT_FOUNDATIONS.md
+docs/ZK_AUDIT_PACK.md
+docs/ZK_PRIMER_SIMPLE_ENGLISH.md
+docs/whitepaper.md
+docs/whitepaper.md.working
+docs/CRINKL.md
+# Draft protocol enhancements (not committed)
+docs/PROTOCOL_ENHANCEMENT_CRKL_SETTLEMENT.md

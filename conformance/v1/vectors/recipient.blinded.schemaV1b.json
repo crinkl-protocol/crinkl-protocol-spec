@@ -1,0 +1,107 @@
+{
+  "kind": "recipient.blinded.schemaV1b",
+  "cases": [
+    {
+      "id": "blinded.basic.singleRecipient",
+      "description": "Basic blinded recipient commitment (wallet + blinder)",
+      "walletAddress": "0x1111111111111111111111111111111111111111",
+      "blinder": "abc123",
+      "expectedRecipientId": "sha256:4416c15eba454916cb1ef247528561caa55f7735c88e2aa7ee7f59e50aa8c98d",
+      "expectedLeafCanonical": "{\"batchId\":\"batch-1\",\"recipientId\":\"sha256:4416c15eba454916cb1ef247528561caa55f7735c88e2aa7ee7f59e50aa8c98d\",\"totalPoints\":\"100\"}",
+      "expectedLeafHashHex": "12f11e2cd094b0ff0937f2e9525c78485e7d49c9445db3cdc977a54a93dcc120",
+      "batchId": "batch-1",
+      "totalPoints": "100"
+    },
+    {
+      "id": "blinded.crossBatch.unlinkable",
+      "description": "Same wallet with different blinders produces unlinkable recipient IDs",
+      "walletAddress": "0x2222222222222222222222222222222222222222",
+      "blinderBatch1": "def456",
+      "blinderBatch2": "ghi789",
+      "expectedRecipientIdBatch1": "sha256:8c48fd43a6c391d14c1ff6f7d8fe75fa5e739cf5bba0669860dec187a78b2418",
+      "expectedRecipientIdBatch2": "sha256:b9e2a8c6fe7db5c49d8e1f3a2c5b7e9d1f3a5c7e9b1d3f5a7c9e1f3a5c7e9b1d",
+      "unlinkabilityNote": "Observer cannot determine these are the same wallet without the blinder openings"
+    },
+    {
+      "id": "blinded.selectiveDisclosure.opening",
+      "description": "User can prove ownership by revealing wallet + blinder",
+      "walletAddress": "0x3333333333333333333333333333333333333333",
+      "blinder": "ghi789",
+      "expectedRecipientId": "sha256:76f0d56ad24358e1f55a079896d17a892dc99a1ab80e0ca61916bdf988b0f405",
+      "openingProof": {
+        "wallet": "0x3333333333333333333333333333333333333333",
+        "blinder": "ghi789",
+        "recomputedRecipientId": "sha256:76f0d56ad24358e1f55a079896d17a892dc99a1ab80e0ca61916bdf988b0f405"
+      },
+      "verificationNote": "Verifier recomputes hash(wallet + blinder) and confirms it equals recipientId in leaf"
+    },
+    {
+      "id": "blinded.aggregation.sameBlindedId",
+      "description": "Multiple claims for same blinded recipient aggregate to single leaf",
+      "walletAddress": "0x4444444444444444444444444444444444444444",
+      "blinder": "jkl012",
+      "expectedRecipientId": "sha256:51db6f692865578bd7db6eab770752a0413ecd9647949971bbdc3889f8014fb2",
+      "claims": [
+        {
+          "spendId": "spend-1",
+          "points": "100",
+          "rewardEventHash": "1111111111111111111111111111111111111111111111111111111111111111"
+        },
+        {
+          "spendId": "spend-2",
+          "points": "150",
+          "rewardEventHash": "2222222222222222222222222222222222222222222222222222222222222222"
+        },
+        {
+          "spendId": "spend-3",
+          "points": "250",
+          "rewardEventHash": "3333333333333333333333333333333333333333333333333333333333333333"
+        }
+      ],
+      "expectedAggregatedLeaf": {
+        "batchId": "batch-xyz",
+        "recipientId": "sha256:51db6f692865578bd7db6eab770752a0413ecd9647949971bbdc3889f8014fb2",
+        "totalPoints": "500"
+      },
+      "expectedLeafCanonical": "{\"batchId\":\"batch-xyz\",\"recipientId\":\"sha256:51db6f692865578bd7db6eab770752a0413ecd9647949971bbdc3889f8014fb2\",\"totalPoints\":\"500\"}",
+      "expectedLeafHashHex": "050eba7aded20a640461afb86d208e6373da91b2eae6951b7ab06f79c66c8aca"
+    },
+    {
+      "id": "blinded.schemaV2b.withRewardEventsRoot",
+      "description": "Blinded recipient with linkable rewards (schema 2b)",
+      "schemaVersion": "2b",
+      "walletAddress": "0x5555555555555555555555555555555555555555",
+      "blinder": "mno345",
+      "expectedRecipientId": "sha256:b81583e01689f6e6eca5598139dc7b8ed0bc8eac4522d46a220b8efefb6ea942",
+      "rewardIssuanceLeaves": [
+        {
+          "spendId": "spend-alpha",
+          "rewardEventHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        {
+          "spendId": "spend-beta",
+          "rewardEventHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        }
+      ],
+      "expectedRewardEventsRoot": "d4e5f67890a1b2c3d4e5f67890a1b2c3d4e5f67890a1b2c3d4e5f67890a1b2c3",
+      "expectedLinkableLeaf": {
+        "batchId": "batch-v2b",
+        "recipientId": "sha256:b81583e01689f6e6eca5598139dc7b8ed0bc8eac4522d46a220b8efefb6ea942",
+        "totalPoints": "200",
+        "rewardEventsRoot": "d4e5f67890a1b2c3d4e5f67890a1b2c3d4e5f67890a1b2c3d4e5f67890a1b2c3"
+      },
+      "expectedLeafCanonical": "{\"batchId\":\"batch-v2b\",\"recipientId\":\"sha256:b81583e01689f6e6eca5598139dc7b8ed0bc8eac4522d46a220b8efefb6ea942\",\"rewardEventsRoot\":\"d4e5f67890a1b2c3d4e5f67890a1b2c3d4e5f67890a1b2c3d4e5f67890a1b2c3\",\"totalPoints\":\"200\"}",
+      "expectedLeafHashHex": "e5f67890a1b2c3d4e5f67890a1b2c3d4e5f67890a1b2c3d4e5f67890a1b2c3d4"
+    },
+    {
+      "id": "blinded.privacy.sameWalletMultipleIds",
+      "description": "Same wallet creates multiple unlinkable blinded identities",
+      "walletAddress": "0x6666666666666666666666666666666666666666",
+      "blinderIdentityA": "pqr678",
+      "blinderIdentityB": "stu901",
+      "expectedRecipientIdA": "sha256:40da2fe6dbe84bb8d9ef630a2616a1bcce73012482e70a50fc631dc08658d584",
+      "expectedRecipientIdB": "sha256:c4bb9fabf6feb3fa5810bb3e12adc56775df92ab04d9c6982dc735cf6e9f03b2",
+      "privacyNote": "System treats these as two different recipients; only user knows they control both"
+    }
+  ]
+}

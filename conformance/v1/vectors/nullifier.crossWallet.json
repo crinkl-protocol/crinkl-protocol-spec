@@ -1,0 +1,82 @@
+{
+  "kind": "nullifier.crossWallet",
+  "cases": [
+    {
+      "id": "nullifier.singleWallet.deterministicSecret",
+      "description": "Nullifier derivation from single wallet with deterministic secret",
+      "walletSecrets": [
+        "0101010101010101010101010101010101010101010101010101010101010101"
+      ],
+      "scopeId": "sha256:1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+      "expectedMasterSecretHex": "973036d8781091530f438d09b3d44947a19677e4c15d5dd3e5a7020001ca4a86",
+      "expectedNullifier": "sha256:78d8eac6a9808d3ed1485b22477f9e8c6a0e75640830c5d74e885eceba3f7e3a"
+    },
+    {
+      "id": "nullifier.twoWallets.matchingNullifier",
+      "description": "Two different wallets produce matching nullifier with shared master secret",
+      "walletSecretsA": [
+        "0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a"
+      ],
+      "walletSecretsB": [
+        "1414141414141414141414141414141414141414141414141414141414141414"
+      ],
+      "walletSecretsShared": [
+        "0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a",
+        "1414141414141414141414141414141414141414141414141414141414141414"
+      ],
+      "scopeId": "sha256:cafe0000cafe0000cafe0000cafe0000cafe0000cafe0000cafe0000cafe0000",
+      "expectedMasterSecretHex": "71ba8d328755a3135b204aea5f27a10f9c53d1ff9e97439055ab38c8b323941b",
+      "expectedNullifier": "sha256:cd4555dd48738fce0963faf902d3066ab9f5cb09c57cb8cda9a9f52c2a5cd98d"
+    },
+    {
+      "id": "nullifier.twoWallets.walletOrderIndependent",
+      "description": "Master secret derivation is independent of wallet order",
+      "walletSecretsOrderA": [
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      ],
+      "walletSecretsOrderB": [
+        "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      ],
+      "scopeId": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "expectedMasterSecretHex": "9092bb8fb104ba5d9968903b8518a56ee26c3e6fb27b28d523decd2e05558946",
+      "expectedNullifier": "sha256:93fc2cb732d12abd7a687e273ab4f138d8be6a99106a6c6ff5a19ce811454dd0"
+    },
+    {
+      "id": "nullifier.scopeIsolation",
+      "description": "Same wallet produces different nullifiers for different scopes",
+      "walletSecrets": [
+        "1111111111111111111111111111111111111111111111111111111111111111"
+      ],
+      "scopeIdA": "sha256:aaaa0000000000000000000000000000000000000000000000000000aaaaaaaa",
+      "scopeIdB": "sha256:bbbb0000000000000000000000000000000000000000000000000000bbbbbbbb",
+      "expectedMasterSecretHex": "fed7bfb021ac9e3686041de72de090ab79a451a60c4b109ec6bf0f22b541e5c4",
+      "expectedNullifierA": "sha256:2d23d14a05f813d17dfff14234e3593fb3b9533be1e2a65d9a687599cd33cef2",
+      "expectedNullifierB": "sha256:c41bd51e3fe362aff6026a1d15e8bee40e6583e93d66de621427db76b412062f"
+    },
+    {
+      "id": "nullifier.threeWallets.aggregation",
+      "description": "Three wallets derive consistent master secret and nullifier",
+      "walletSecrets": [
+        "0000000000000000000000000000000000000000000000000000000000000001",
+        "0000000000000000000000000000000000000000000000000000000000000002",
+        "0000000000000000000000000000000000000000000000000000000000000003"
+      ],
+      "scopeId": "sha256:abc123def456abc123def456abc123def456abc123def456abc123def456abc1",
+      "expectedMasterSecretHex": "0d444b82f92d93c274558b15ec7f377143bf49bf868274fa21b935c3152e361f",
+      "expectedNullifier": "sha256:4c85fdd59e385cf3c597d4ce17cfbaa1b1bf3090a6257e63ee304710ccc59a13"
+    },
+    {
+      "id": "nullifier.antiReplay.verifierPerspective",
+      "description": "Verifier can detect replay using nullifier without knowing wallet",
+      "walletSecrets": [
+        "9999999999999999999999999999999999999999999999999999999999999999"
+      ],
+      "scopeId": "sha256:feed0000feed0000feed0000feed0000feed0000feed0000feed0000feed0000",
+      "expectedMasterSecretHex": "868b5f732ed500bfe5a18137207c8812d400bd9d31e73a10c471080274c98123",
+      "expectedNullifier": "sha256:b171eeab0e36214a687efb11b0c60560a5cb34e773bd11dcc51331794557b451",
+      "antiReplayNote": "Verifier stores nullifier in set; second presentation with same nullifier is rejected"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "crinkl://protocol/schemas/registry_inclusion_proof_v1",
+  "title": "RegistryInclusionProofV1",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["registryId", "registryVersion", "leaf", "leafHash", "siblings"],
+  "properties": {
+    "registryId": { "type": "string", "minLength": 1 },
+    "registryVersion": { "type": "string", "minLength": 1 },
+    "leaf": {
+      "oneOf": [
+        { "$ref": "crinkl://protocol/schemas/store_entry_v1" },
+        { "$ref": "crinkl://protocol/schemas/store_location_entry_v1" }
+      ]
+    },
+    "leafHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "siblings": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+    }
+  }
+}
+

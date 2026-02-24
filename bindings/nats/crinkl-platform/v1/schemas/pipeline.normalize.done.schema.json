@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "crinkl://bindings/nats/crinkl-platform/v1/pipeline.normalize.done",
+  "title": "pipeline.normalize.done",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["submissionId", "normalized", "version", "receivedAt", "sessionId"],
+  "properties": {
+    "submissionId": { "type": "string", "minLength": 1 },
+    "normalized": { "type": "object", "additionalProperties": true },
+    "version": { "const": "1.0.0-rc.1" },
+    "receivedAt": { "type": "string", "format": "iso-date-time-loose" },
+    "tenantId": { "type": "string", "minLength": 1 },
+    "sessionId": { "type": "string", "minLength": 1 }
+  }
+}

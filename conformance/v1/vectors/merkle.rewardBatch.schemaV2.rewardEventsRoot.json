@@ -1,0 +1,24 @@
+{
+  "kind": "merkle.rewardBatch.schemaV2.rewardEventsRoot",
+  "cases": [
+    {
+      "id": "merkle.rewardEventsRoot.schemaV2.sorted-by-spendId",
+      "schemaVersion": 2,
+      "rewardIssuanceLeaves": [
+        {
+          "spendId": "spend-2",
+          "rewardEventHash": "2222222222222222222222222222222222222222222222222222222222222222"
+        },
+        {
+          "spendId": "spend-1",
+          "rewardEventHash": "1111111111111111111111111111111111111111111111111111111111111111"
+        },
+        {
+          "spendId": "spend-3",
+          "rewardEventHash": "3333333333333333333333333333333333333333333333333333333333333333"
+        }
+      ],
+      "expectedRootHex": "8c17fddb3e58137022e3b9e8ac9ba669846ce0bf1fc81cc174831f82eece60f7"
+    }
+  ]
+}

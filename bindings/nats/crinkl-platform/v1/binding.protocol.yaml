@@ -1,0 +1,79 @@
+bindingVersion: 1
+protocolVersion: "1.0.0-rc.1"
+
+# Canonical Crinkl Protocol binding (normative): protocol events + system events only.
+# Platform pipeline/ops subjects (pipeline.*, DLQ, etc.) are defined in binding.platform.yaml.
+subjects:
+  # Verification state machine events
+  receiptUploaded: "event.receipt_uploaded"
+  spendSoftVerified: "event.spend_soft_verified"
+  spendReviewRequested: "event.spend_review_requested"
+  spendHardVerified: "event.spend_hard_verified"
+  spendInvalidated: "event.spend_invalidated"
+  spendCorrected: "event.spend_corrected"
+  fraudFlagged: "event.fraud_flagged"
+
+  # Reward state machine events
+  rewardProvisionalIssued: "event.reward_provisional_issued"
+  rewardFinalIssued: "event.reward_final_issued"
+
+  # Commitment/system stream events (authority-signed, chained per chainId)
+  rewardBatchCommitted: "system.reward_batch_committed"
+  rewardBatchBackingAttested: "system.reward_batch_backing_attested"
+  rewardBatchCorrection: "system.reward_batch_correction"
+  cumulativeSnapshotCommitted: "system.cumulative_snapshot_committed"
+  authorityRegistered: "system.authority_registered"
+  authorityRevoked: "system.authority_revoked"
+
+streams:
+  verification:
+    name: "CRNKL_VERIFICATION_EVENTS"
+    subjects:
+      - receiptUploaded
+      - spendSoftVerified
+      - spendReviewRequested
+      - spendHardVerified
+      - spendInvalidated
+      - spendCorrected
+      - fraudFlagged
+    description: "Verification state machine events"
+    retention: "limits"
+
+  reward:
+    name: "CRNKL_REWARD_EVENTS"
+    subjects:
+      - rewardProvisionalIssued
+      - rewardFinalIssued
+    description: "Reward state machine events"
+    retention: "limits"
+
+  commitment:
+    name: "CRNKL_COMMITMENT_EVENTS"
+    subjects:
+      - rewardBatchCommitted
+      - rewardBatchBackingAttested
+      - rewardBatchCorrection
+      - cumulativeSnapshotCommitted
+      - authorityRegistered
+      - authorityRevoked
+    description: "Commitment layer system events (authority-signed, chained per chainId)"
+    retention: "limits"
+
+subjectSchemas:
+  receiptUploaded: "schemas/event.receipt_uploaded.schema.json"
+  spendSoftVerified: "schemas/event.spend_soft_verified.schema.json"
+  spendReviewRequested: "schemas/event.spend_review_requested.schema.json"
+  spendHardVerified: "schemas/event.spend_hard_verified.schema.json"
+  spendInvalidated: "schemas/event.spend_invalidated.schema.json"
+  spendCorrected: "schemas/event.spend_corrected.schema.json"
+  fraudFlagged: "schemas/event.fraud_flagged.schema.json"
+
+  rewardProvisionalIssued: "schemas/event.reward_provisional_issued.schema.json"
+  rewardFinalIssued: "schemas/event.reward_final_issued.schema.json"
+
+  rewardBatchCommitted: "schemas/system.reward_batch_committed.schema.json"
+  rewardBatchBackingAttested: "schemas/system.reward_batch_backing_attested.schema.json"
+  rewardBatchCorrection: "schemas/system.reward_batch_correction.schema.json"
+  cumulativeSnapshotCommitted: "schemas/system.cumulative_snapshot_committed.schema.json"
+  authorityRegistered: "schemas/system.authority_registered.schema.json"
+  authorityRevoked: "schemas/system.authority_revoked.schema.json"

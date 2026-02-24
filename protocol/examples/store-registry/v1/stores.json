@@ -1,0 +1,17 @@
+[
+  {
+    "storeId": "crinkl-store-pga-superstore",
+    "displayName": "PGA Superstore",
+    "logo": {
+      "uri": "https://cdn.crinkl.example/logos/pga-superstore.png",
+      "contentHash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "mimeType": "image/png"
+    },
+    "categories": ["golf-retail"],
+    "aliases": ["PGA SUPERSTORE", "PGA SUPRSTORE", "PGA SUPER STORE"],
+    "externalIds": [
+      { "namespace": "google", "type": "place_id", "value": "ChIJ__EXAMPLE__" }
+    ],
+    "status": "ACTIVE"
+  }
+]

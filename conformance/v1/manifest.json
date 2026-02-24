@@ -1,0 +1,47 @@
+{
+  "suite": "crinkl-protocol-conformance",
+  "suiteVersion": 1,
+  "protocolVersion": "1.0.0-rc.1",
+  "vectors": [
+    {
+      "kind": "canonicalization",
+      "file": "vectors/canonicalization.json"
+    },
+    {
+      "kind": "eventHash",
+      "file": "vectors/eventHash.json"
+    },
+    {
+      "kind": "ed25519",
+      "file": "vectors/ed25519.json"
+    },
+    {
+      "kind": "scenario.spend.lifecycle",
+      "file": "vectors/scenario.spend.lifecycle.json"
+    },
+    {
+      "kind": "merkle.rewardBatch.schemaV1",
+      "file": "vectors/merkle.rewardBatch.schemaV1.json"
+    },
+    {
+      "kind": "merkle.rewardBatch.schemaV2.rewardEventsRoot",
+      "file": "vectors/merkle.rewardBatch.schemaV2.rewardEventsRoot.json"
+    },
+    {
+      "kind": "tokenHash.spendAttestation.v1",
+      "file": "vectors/tokenHash.spendAttestation.v1.json"
+    },
+    {
+      "kind": "token.spendAttestation.portableV1.fromSpendStream",
+      "file": "vectors/token.spendAttestation.portableV1.fromSpendStream.json"
+    },
+    {
+      "kind": "nullifier.crossWallet",
+      "file": "vectors/nullifier.crossWallet.json"
+    },
+    {
+      "kind": "recipient.blinded.schemaV1b",
+      "file": "vectors/recipient.blinded.schemaV1b.json"
+    }
+  ]
+}

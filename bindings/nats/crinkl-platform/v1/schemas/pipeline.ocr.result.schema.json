@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "crinkl://bindings/nats/crinkl-platform/v1/pipeline.ocr.result",
+  "title": "pipeline.ocr.result",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["submissionId", "objectKey", "text", "source", "receivedAt", "sessionId"],
+  "properties": {
+    "submissionId": { "type": "string", "minLength": 1 },
+    "objectKey": { "type": "string", "minLength": 1 },
+    "objectKeys": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "text": { "type": "string" },
+    "confidence": { "type": "number" },
+    "source": { "type": "string", "enum": ["tesseract", "cloud"] },
+    "pages": { "type": "number" },
+    "receivedAt": { "type": "string", "format": "iso-date-time-loose" },
+    "tenantId": { "type": "string", "minLength": 1 },
+    "sessionId": { "type": "string", "minLength": 1 },
+    "sdt": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "store": { "type": "string" },
+        "date": { "type": "string" },
+        "total": { "type": "number" },
+        "fieldCount": { "type": "number" },
+        "canSubmit": { "type": "boolean" },
+        "confidence": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "store": { "type": "number" },
+            "date": { "type": "number" },
+            "total": { "type": "number" }
+          }
+        }
+      }
+    }
+  }
+}

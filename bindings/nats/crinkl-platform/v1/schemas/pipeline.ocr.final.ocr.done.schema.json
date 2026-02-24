@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "crinkl://bindings/nats/crinkl-platform/v1/pipeline.ocr.final.ocr.done",
+  "title": "pipeline.ocr.final.ocr.done",
+  "$ref": "#/$defs/OcrFinalOcrDonePayload",
+  "$defs": {
+    "NonEmptyString": { "type": "string", "minLength": 1 },
+    "IsoDateTimeLoose": { "type": "string", "format": "iso-date-time-loose" },
+    "OcrFinalRequestPayload": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["submissionId", "objectKey", "requestedAt", "sessionId"],
+      "properties": {
+        "submissionId": { "$ref": "#/$defs/NonEmptyString" },
+        "objectKey": { "$ref": "#/$defs/NonEmptyString" },
+        "objectKeys": { "type": "array", "items": { "$ref": "#/$defs/NonEmptyString" } },
+        "requestedAt": { "$ref": "#/$defs/IsoDateTimeLoose" },
+        "tenantId": { "$ref": "#/$defs/NonEmptyString" },
+        "sessionId": { "$ref": "#/$defs/NonEmptyString" }
+      }
+    },
+    "FinalOcrOutput": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["text"],
+      "properties": {
+        "text": { "type": "string" },
+        "stitchedPath": { "$ref": "#/$defs/NonEmptyString" },
+        "imageTexts": { "type": "array", "items": { "type": "string" } },
+        "imageOrder": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "OcrFinalOcrDonePayload": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["request", "finalOcr", "receivedAt"],
+      "properties": {
+        "request": { "$ref": "#/$defs/OcrFinalRequestPayload" },
+        "finalOcr": { "$ref": "#/$defs/FinalOcrOutput" },
+        "receivedAt": { "$ref": "#/$defs/IsoDateTimeLoose" }
+      }
+    }
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "crinkl://bindings/nats/crinkl-platform/v1/system.cumulative_snapshot_committed",
+  "title": "system.cumulative_snapshot_committed",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "eventId",
+    "eventName",
+    "chainId",
+    "signedBy",
+    "payload",
+    "timestamp",
+    "protocolVersion",
+    "prevHash",
+    "eventHash",
+    "signature"
+  ],
+  "properties": {
+    "eventId": { "type": "string", "minLength": 1 },
+    "eventName": { "const": "CUMULATIVE_SNAPSHOT_COMMITTED" },
+    "chainId": { "type": "string", "minLength": 1 },
+    "signedBy": { "type": "string", "minLength": 1 },
+    "payload": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "snapshotId",
+        "snapshotRoot",
+        "leafCount",
+        "throughBatchId",
+        "throughEventHash",
+        "txRef",
+        "committedAt"
+      ],
+      "properties": {
+        "snapshotId": { "type": "string", "minLength": 1 },
+        "snapshotRoot": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "leafCount": { "type": "integer", "minimum": 0 },
+        "throughBatchId": { "type": "string", "minLength": 1 },
+        "throughEventHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "txRef": { "type": "string", "minLength": 1 },
+        "committedAt": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$"
+        }
+      }
+    },
+    "timestamp": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$"
+    },
+    "protocolVersion": { "const": "1.0.0-rc.1" },
+    "prevHash": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" },
+    "eventHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "signature": { "type": "string", "minLength": 1 }
+  }
+}

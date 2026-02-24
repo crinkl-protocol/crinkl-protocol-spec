@@ -1,0 +1,17 @@
+{
+  "kind": "eventHash",
+  "cases": [
+    {
+      "id": "eventHash.spendReviewRequested.v1",
+      "eventJson": "{\"eventId\":\"evt-1\",\"eventName\":\"SPEND_REVIEW_REQUESTED\",\"spendId\":\"spend-1\",\"wallet\":\"wallet-1\",\"sessionId\":\"sess-1\",\"payload\":{\"reason\":\"DATE_TOO_OLD\",\"requestedAt\":\"2024-01-01T00:00:00.000Z\",\"source\":\"pwa\"},\"timestamp\":\"2024-01-01T00:00:00.000Z\",\"protocolVersion\":\"1.0.0-rc.1\",\"prevHash\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"eventHash\":\"IGNORED\",\"signature\":\"IGNORED\"}",
+      "expectedHashInputCanonical": "{\"eventId\":\"evt-1\",\"eventName\":\"SPEND_REVIEW_REQUESTED\",\"payload\":{\"reason\":\"DATE_TOO_OLD\",\"requestedAt\":\"2024-01-01T00:00:00.000Z\",\"source\":\"pwa\"},\"prevHash\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"protocolVersion\":\"1.0.0-rc.1\",\"sessionId\":\"sess-1\",\"spendId\":\"spend-1\",\"timestamp\":\"2024-01-01T00:00:00.000Z\",\"wallet\":\"wallet-1\"}",
+      "expectedEventHashHex": "df83f6e70c329c1730dcbd7cebdbc459961032210fd94fedc67bb620fe836924"
+    },
+    {
+      "id": "eventHash.rewardFinalIssued.v1",
+      "eventJson": "{\"eventId\":\"evt-2\",\"eventName\":\"REWARD_FINAL_ISSUED\",\"spendId\":\"spend-1\",\"wallet\":\"wallet-1\",\"sessionId\":null,\"payload\":{\"policyVersion\":\"1.2.3\",\"deltaPoints\":\"150\",\"deltaBTCsats\":\"2000\"},\"timestamp\":\"2024-01-01T00:00:01.000Z\",\"protocolVersion\":\"1.0.0-rc.1\",\"prevHash\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\"eventHash\":\"IGNORED\",\"signature\":\"IGNORED\"}",
+      "expectedHashInputCanonical": "{\"eventId\":\"evt-2\",\"eventName\":\"REWARD_FINAL_ISSUED\",\"payload\":{\"deltaBTCsats\":\"2000\",\"deltaPoints\":\"150\",\"policyVersion\":\"1.2.3\"},\"prevHash\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\"protocolVersion\":\"1.0.0-rc.1\",\"sessionId\":null,\"spendId\":\"spend-1\",\"timestamp\":\"2024-01-01T00:00:01.000Z\",\"wallet\":\"wallet-1\"}",
+      "expectedEventHashHex": "438288d9815e3a9a7b6792eb3941e578ebace26e1d7e7f68b6aaf0853b1c336a"
+    }
+  ]
+}

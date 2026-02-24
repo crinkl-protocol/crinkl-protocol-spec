@@ -1,0 +1,42 @@
+{
+  "kind": "canonicalization",
+  "cases": [
+    {
+      "id": "canon.object-key-order.simple",
+      "inputJson": "{\"b\":1,\"a\":2}",
+      "expectedCanonical": "{\"a\":2,\"b\":1}"
+    },
+    {
+      "id": "canon.object-key-order.nested",
+      "inputJson": "{\"z\":{\"b\":true,\"a\":false},\"a\":[3,2,1]}",
+      "expectedCanonical": "{\"a\":[3,2,1],\"z\":{\"a\":false,\"b\":true}}"
+    },
+    {
+      "id": "canon.string-escaping",
+      "inputJson": "{\"s\":\"a\\n\\t\\\\\\\"b\"}",
+      "expectedCanonical": "{\"s\":\"a\\n\\t\\\\\\\"b\"}"
+    },
+    {
+      "id": "canon.unicode",
+      "inputJson": "{\"s\":\"café\",\"t\":\"\\u0063\\u0061\\u0066\\u00E9\"}",
+      "expectedCanonical": "{\"s\":\"café\",\"t\":\"café\"}"
+    },
+    {
+      "id": "canon.number.negative-zero",
+      "inputJson": "{\"n\":-0}",
+      "expectedCanonical": "{\"n\":0}"
+    },
+    {
+      "id": "canon.number.exponent-plus",
+      "inputJson": "{\"n\":1e21}",
+      "expectedCanonical": "{\"n\":1e+21}"
+    },
+    {
+      "id": "canon.predicate-definition.wf001",
+      "inputJson": "{\"settlement\":{\"recipientRewardUnits\":\"250\",\"promoterRewardUnits\":\"100\"},\"statementId\":\"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"schemaVersion\":1,\"routing\":{\"cbsaCode\":\"12420\",\"categorySlug\":\"coffee\"},\"protocolVersion\":\"1.0.0-rc.1\",\"exclusion\":{\"storeId\":\"crinkl-store-starbucks\",\"lookbackDays\":30},\"promoterGate\":{\"minTokenUnits\":\"1000\"}}",
+      "expectedCanonical": "{\"exclusion\":{\"lookbackDays\":30,\"storeId\":\"crinkl-store-starbucks\"},\"promoterGate\":{\"minTokenUnits\":\"1000\"},\"protocolVersion\":\"1.0.0-rc.1\",\"routing\":{\"categorySlug\":\"coffee\",\"cbsaCode\":\"12420\"},\"schemaVersion\":1,\"settlement\":{\"promoterRewardUnits\":\"100\",\"recipientRewardUnits\":\"250\"},\"statementId\":\"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}",
+      "expectedSha256Hex": "7bfba95864b08325ec4b0237b646988581380dd4cb5ca3408716fc96b3b5e0a4",
+      "expectedSha256Id": "sha256:7bfba95864b08325ec4b0237b646988581380dd4cb5ca3408716fc96b3b5e0a4"
+    }
+  ]
+}

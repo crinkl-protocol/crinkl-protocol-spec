@@ -1,0 +1,67 @@
+bindingVersion: 1
+protocolVersion: "1.0.0-rc.1"
+
+# Crinkl platform pipeline/ops binding (non-normative): internal transport subjects and DLQ.
+# This file is intentionally separate from binding.protocol.yaml.
+subjects:
+  # Pipeline (transport-level)
+  ingestReceipt: "pipeline.ingest.receipt"
+  ocrRequest: "pipeline.ocr.request"
+  ocrResult: "pipeline.ocr.result"
+  ocrFinalRequest: "pipeline.ocr.final.request"
+  ocrFinalOcrDone: "pipeline.ocr.final.ocr.done"
+  ocrFinalNormalizeDone: "pipeline.ocr.final.normalize.done"
+  ocrFinalDecision: "pipeline.ocr.final.decision"
+  ocrFinalApplied: "pipeline.ocr.final.applied"
+  ocrFinalResult: "pipeline.ocr.final.result"
+  normalizeRequest: "pipeline.normalize.request"
+  normalizeDone: "pipeline.normalize.done"
+
+  # DLQ
+  deadLetter: "event.deadletter"
+
+streams:
+  ingest:
+    name: "CRNKL_PIPELINE"
+    subjects:
+      - ingestReceipt
+      - ocrRequest
+      - ocrResult
+      - normalizeRequest
+      - normalizeDone
+    description: "Pipeline messages (ingest -> OCR -> normalize)"
+    retention: "limits"
+
+  finalOcr:
+    name: "CRNKL_OCR_FINAL"
+    subjects:
+      - ocrFinalRequest
+      - ocrFinalOcrDone
+      - ocrFinalNormalizeDone
+      - ocrFinalDecision
+      - ocrFinalApplied
+      - ocrFinalResult
+    description: "Final OCR messages"
+    retention: "limits"
+
+  deadletter:
+    name: "CRNKL_DLQ"
+    subjects:
+      - deadLetter
+    description: "Dead-letter events"
+    retention: "limits"
+
+subjectSchemas:
+  ingestReceipt: "schemas/pipeline.ingest.receipt.schema.json"
+  ocrRequest: "schemas/pipeline.ocr.request.schema.json"
+  ocrResult: "schemas/pipeline.ocr.result.schema.json"
+  ocrFinalRequest: "schemas/pipeline.ocr.final.request.schema.json"
+  ocrFinalOcrDone: "schemas/pipeline.ocr.final.ocr.done.schema.json"
+  ocrFinalNormalizeDone: "schemas/pipeline.ocr.final.normalize.done.schema.json"
+  ocrFinalDecision: "schemas/pipeline.ocr.final.decision.schema.json"
+  ocrFinalApplied: "schemas/pipeline.ocr.final.applied.schema.json"
+  ocrFinalResult: "schemas/pipeline.ocr.final.result.schema.json"
+  normalizeRequest: "schemas/pipeline.normalize.request.schema.json"
+  normalizeDone: "schemas/pipeline.normalize.done.schema.json"
+
+  deadLetter: "schemas/event.deadletter.schema.json"

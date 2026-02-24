@@ -1,0 +1,363 @@
+{
+  "kind": "token.spendAttestation.portableV1.fromSpendStream",
+  "cases": [
+    {
+      "id": "token.spendAttestation.portableV1.hardVerified.basic",
+      "issuerPrivateKeySeedHex": "9d61b19deffd5a60ba844af492ec2cc44449c5697b326919703bac031cae7f60",
+      "issuerPublicKeyBase64": "11qYAYKxCrfVS/7TyWQHOg7hcvPapiMlrwIaaPcHURo=",
+      "spendStreamEvents": [
+        {
+          "eventId": "evt-1",
+          "eventName": "RECEIPT_UPLOADED",
+          "spendId": "spend-1",
+          "wallet": "wallet-1",
+          "payload": {
+            "uploadId": "up-1",
+            "imageDataRef": "blob:ref-1",
+            "metadata": {
+              "source": "test"
+            }
+          },
+          "timestamp": "2024-01-01T00:00:00.000Z",
+          "protocolVersion": "1.0.0-rc.1",
+          "prevHash": null,
+          "eventHash": "c0af851a805e872e8ff3cbe1486e2dc04924c2f821d126a4eab243b211de97f7",
+          "signature": ""
+        },
+        {
+          "eventId": "evt-2",
+          "eventName": "SPEND_HARD_VERIFIED",
+          "spendId": "spend-1",
+          "wallet": "wallet-1",
+          "payload": {
+            "storeId": "Wal\u2605Mart Supercenter #1234",
+            "totalCents": "1234",
+            "currency": "USD",
+            "timestamp": "2024-01-01T00:00:00.000Z",
+            "geoRegion": "US-CA",
+            "verificationVersion": "1.0.0"
+          },
+          "timestamp": "2024-01-01T00:00:01.000Z",
+          "protocolVersion": "1.0.0-rc.1",
+          "prevHash": "c0af851a805e872e8ff3cbe1486e2dc04924c2f821d126a4eab243b211de97f7",
+          "eventHash": "1a512042feed3950aabe2251fcf73683a8078630bdc94c574dcff1970dd2c552",
+          "signature": ""
+        }
+      ],
+      "expectedToken": {
+        "tokenType": "SPEND_ATTESTATION",
+        "schemaVersion": 1,
+        "spendId": "spend-1",
+        "wallet": "wallet-1",
+        "canonical": {
+          "status": "HARD_VERIFIED",
+          "storeHash": "sha256:bea4a788c3baf302cd44157d639ce4a769f72660207da084a1449e65531c906b",
+          "timestamp": "2024-01-01T00:00:00.000Z",
+          "date": "2024-01-01",
+          "totalCents": "1234",
+          "currency": "USD",
+          "verificationVersion": "1.0.0"
+        },
+        "lineage": {
+          "headEventHash": "1a512042feed3950aabe2251fcf73683a8078630bdc94c574dcff1970dd2c552",
+          "eventCount": 2
+        },
+        "protocol": {
+          "protocolVersion": "1.0.0-rc.1"
+        },
+        "signatures": {
+          "issuedBy": "crinkl-authority",
+          "publicKey": "11qYAYKxCrfVS/7TyWQHOg7hcvPapiMlrwIaaPcHURo=",
+          "tokenHash": "36ae0f09f8805f38de2cc51fd4a81528fa61010f44167ee7df133865e5f997fa",
+          "signature": "1Pex4LnVlPR8NH59iFZB3jD3dy/9hu/jJpamdBZI5nbVJAPlM+N/PNE2mODT3qIFCyA5BZgCYHq4UhScQtuuAg=="
+        }
+      }
+    },
+    {
+      "id": "token.spendAttestation.portableV1.corrected.storeDateTotal",
+      "issuerPrivateKeySeedHex": "9d61b19deffd5a60ba844af492ec2cc44449c5697b326919703bac031cae7f60",
+      "issuerPublicKeyBase64": "11qYAYKxCrfVS/7TyWQHOg7hcvPapiMlrwIaaPcHURo=",
+      "spendStreamEvents": [
+        {
+          "eventId": "evt-1",
+          "eventName": "RECEIPT_UPLOADED",
+          "spendId": "spend-2",
+          "wallet": "wallet-2",
+          "payload": {
+            "uploadId": "up-2",
+            "imageDataRef": "blob:ref-2",
+            "metadata": {
+              "source": "test"
+            }
+          },
+          "timestamp": "2024-02-01T00:00:00.000Z",
+          "protocolVersion": "1.0.0-rc.1",
+          "prevHash": null,
+          "eventHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "signature": ""
+        },
+        {
+          "eventId": "evt-2",
+          "eventName": "SPEND_HARD_VERIFIED",
+          "spendId": "spend-2",
+          "wallet": "wallet-2",
+          "payload": {
+            "storeId": "crinkl-store-old",
+            "totalCents": "1200",
+            "currency": "USD",
+            "timestamp": "2024-02-01T00:00:00.000Z",
+            "verificationVersion": "1.0.0"
+          },
+          "timestamp": "2024-02-01T00:00:01.000Z",
+          "protocolVersion": "1.0.0-rc.1",
+          "prevHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "eventHash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "signature": ""
+        },
+        {
+          "eventId": "evt-3",
+          "eventName": "SPEND_CORRECTED",
+          "spendId": "spend-2",
+          "wallet": "wallet-2",
+          "payload": {
+            "correctedFields": {
+              "schemaVersion": 1,
+              "deltas": [
+                {
+                  "field": "storeId",
+                  "originalValue": "crinkl-store-old",
+                  "correctedValue": "crinkl-store-new",
+                  "detectionReason": "user_report"
+                },
+                {
+                  "field": "totalCents",
+                  "originalValue": "1200",
+                  "correctedValue": "1550",
+                  "detectionReason": "user_report"
+                },
+                {
+                  "field": "currency",
+                  "originalValue": "USD",
+                  "correctedValue": "CAD",
+                  "detectionReason": "user_report"
+                },
+                {
+                  "field": "timestamp",
+                  "originalValue": "2024-02-01T00:00:00.000Z",
+                  "correctedValue": "2024-02-02T01:02:03.000Z",
+                  "detectionReason": "user_report"
+                }
+              ],
+              "correctionSource": "user_report",
+              "originalVerificationVersion": "1.0.0"
+            },
+            "verificationVersion": "1.0.0"
+          },
+          "timestamp": "2024-02-02T01:02:04.000Z",
+          "protocolVersion": "1.0.0-rc.1",
+          "prevHash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "eventHash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "signature": ""
+        }
+      ],
+      "expectedToken": {
+        "tokenType": "SPEND_ATTESTATION",
+        "schemaVersion": 1,
+        "spendId": "spend-2",
+        "canonical": {
+          "status": "CORRECTED",
+          "storeHash": "sha256:75e79abea7e5832bd50d9a88790db9740e6dea67dd9346f96281131f290e4cfa",
+          "timestamp": "2024-02-02T01:02:03.000Z",
+          "date": "2024-02-02",
+          "totalCents": "1550",
+          "currency": "CAD",
+          "verificationVersion": "1.0.0"
+        },
+        "lineage": {
+          "headEventHash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "eventCount": 3
+        },
+        "protocol": {
+          "protocolVersion": "1.0.0-rc.1"
+        },
+        "signatures": {
+          "issuedBy": "crinkl-authority",
+          "publicKey": "11qYAYKxCrfVS/7TyWQHOg7hcvPapiMlrwIaaPcHURo=",
+          "tokenHash": "2ff778994e88f59eeaa3a92a7e0832428dce490f0488682172f538f8325724db",
+          "signature": "RWOsj/kus/nc5tXYbzxjifFSN9/DfL4hwnQwv0qIMkD2C+kr06A1n9z2cxgw/t3UagDMBux2TYAGfLc5nC/NCQ=="
+        }
+      }
+    },
+    {
+      "id": "token.spendAttestation.portableV1.invalidated.duplicate",
+      "issuerPrivateKeySeedHex": "9d61b19deffd5a60ba844af492ec2cc44449c5697b326919703bac031cae7f60",
+      "issuerPublicKeyBase64": "11qYAYKxCrfVS/7TyWQHOg7hcvPapiMlrwIaaPcHURo=",
+      "spendStreamEvents": [
+        {
+          "eventId": "evt-1",
+          "eventName": "RECEIPT_UPLOADED",
+          "spendId": "spend-3",
+          "wallet": "wallet-3",
+          "payload": {
+            "uploadId": "up-3",
+            "imageDataRef": "blob:ref-3",
+            "metadata": {
+              "source": "test"
+            }
+          },
+          "timestamp": "2024-03-01T00:00:00.000Z",
+          "protocolVersion": "1.0.0-rc.1",
+          "prevHash": null,
+          "eventHash": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "signature": ""
+        },
+        {
+          "eventId": "evt-2",
+          "eventName": "SPEND_INVALIDATED",
+          "spendId": "spend-3",
+          "wallet": "wallet-3",
+          "payload": {
+            "reason": "POTENTIAL_DUPLICATE",
+            "riskFlags": [
+              "potential_duplicate"
+            ]
+          },
+          "timestamp": "2024-03-01T00:00:02.000Z",
+          "protocolVersion": "1.0.0-rc.1",
+          "prevHash": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "eventHash": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "signature": ""
+        }
+      ],
+      "expectedToken": {
+        "tokenType": "SPEND_ATTESTATION",
+        "schemaVersion": 1,
+        "spendId": "spend-3",
+        "canonical": {
+          "status": "INVALIDATED"
+        },
+        "lineage": {
+          "headEventHash": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "eventCount": 2
+        },
+        "protocol": {
+          "protocolVersion": "1.0.0-rc.1"
+        },
+        "signatures": {
+          "issuedBy": "crinkl-authority",
+          "publicKey": "11qYAYKxCrfVS/7TyWQHOg7hcvPapiMlrwIaaPcHURo=",
+          "tokenHash": "9665a08fb6f2b3894ad98d4af08c6be82d8e8b2982a3bc44fedcb2df29a32e91",
+          "signature": "KjQBZxO7yl7qzlf7/EITIWBH7Fqx303v3xdRIJTmSFf/LD7O3wvUe+wkFHmsPBAfrugQ8Ze1Q1oErXh1dWo0Dw=="
+        }
+      }
+    },
+    {
+      "id": "token.spendAttestation.portableV1.corrected.then.invalidated",
+      "issuerPrivateKeySeedHex": "9d61b19deffd5a60ba844af492ec2cc44449c5697b326919703bac031cae7f60",
+      "issuerPublicKeyBase64": "11qYAYKxCrfVS/7TyWQHOg7hcvPapiMlrwIaaPcHURo=",
+      "spendStreamEvents": [
+        {
+          "eventId": "evt-1",
+          "eventName": "RECEIPT_UPLOADED",
+          "spendId": "spend-4",
+          "wallet": "wallet-4",
+          "payload": {
+            "uploadId": "up-4",
+            "imageDataRef": "blob:ref-4",
+            "metadata": {
+              "source": "test"
+            }
+          },
+          "timestamp": "2024-04-01T00:00:00.000Z",
+          "protocolVersion": "1.0.0-rc.1",
+          "prevHash": null,
+          "eventHash": "1111111111111111111111111111111111111111111111111111111111111111",
+          "signature": ""
+        },
+        {
+          "eventId": "evt-2",
+          "eventName": "SPEND_HARD_VERIFIED",
+          "spendId": "spend-4",
+          "wallet": "wallet-4",
+          "payload": {
+            "storeId": "crinkl-store-foo",
+            "totalCents": "2200",
+            "currency": "USD",
+            "timestamp": "2024-04-01T00:00:00.000Z",
+            "verificationVersion": "1.0.0"
+          },
+          "timestamp": "2024-04-01T00:00:01.000Z",
+          "protocolVersion": "1.0.0-rc.1",
+          "prevHash": "1111111111111111111111111111111111111111111111111111111111111111",
+          "eventHash": "2222222222222222222222222222222222222222222222222222222222222222",
+          "signature": ""
+        },
+        {
+          "eventId": "evt-3",
+          "eventName": "SPEND_CORRECTED",
+          "spendId": "spend-4",
+          "wallet": "wallet-4",
+          "payload": {
+            "correctedFields": {
+              "schemaVersion": 1,
+              "deltas": [
+                {
+                  "field": "storeId",
+                  "originalValue": "crinkl-store-foo",
+                  "correctedValue": "crinkl-store-bar",
+                  "detectionReason": "automated_qa"
+                }
+              ],
+              "correctionSource": "automated_qa",
+              "originalVerificationVersion": "1.0.0"
+            },
+            "verificationVersion": "1.0.0"
+          },
+          "timestamp": "2024-04-01T00:00:02.000Z",
+          "protocolVersion": "1.0.0-rc.1",
+          "prevHash": "2222222222222222222222222222222222222222222222222222222222222222",
+          "eventHash": "3333333333333333333333333333333333333333333333333333333333333333",
+          "signature": ""
+        },
+        {
+          "eventId": "evt-4",
+          "eventName": "SPEND_INVALIDATED",
+          "spendId": "spend-4",
+          "wallet": "wallet-4",
+          "payload": {
+            "reason": "POTENTIAL_DUPLICATE",
+            "riskFlags": [
+              "potential_duplicate"
+            ]
+          },
+          "timestamp": "2024-04-01T00:00:03.000Z",
+          "protocolVersion": "1.0.0-rc.1",
+          "prevHash": "3333333333333333333333333333333333333333333333333333333333333333",
+          "eventHash": "4444444444444444444444444444444444444444444444444444444444444444",
+          "signature": ""
+        }
+      ],
+      "expectedToken": {
+        "tokenType": "SPEND_ATTESTATION",
+        "schemaVersion": 1,
+        "spendId": "spend-4",
+        "canonical": {
+          "status": "INVALIDATED"
+        },
+        "lineage": {
+          "headEventHash": "4444444444444444444444444444444444444444444444444444444444444444",
+          "eventCount": 4
+        },
+        "protocol": {
+          "protocolVersion": "1.0.0-rc.1"
+        },
+        "signatures": {
+          "issuedBy": "crinkl-authority",
+          "publicKey": "11qYAYKxCrfVS/7TyWQHOg7hcvPapiMlrwIaaPcHURo=",
+          "tokenHash": "2a1f7000fe224b0b7e23373bef3c6a77b9886203c381426e9da557f9653eca04",
+          "signature": "s45rDcADnfy0gEbMZ2RVnQuvayV1adpogpJ9puqIsG1XNrXQiCw5vqaGGG2C9Z1GeeL2X7RHlLoV5JSvDLjyCw=="
+        }
+      }
+    }
+  ]
+}

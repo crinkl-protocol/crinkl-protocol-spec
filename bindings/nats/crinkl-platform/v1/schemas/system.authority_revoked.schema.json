@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "crinkl://bindings/nats/crinkl-platform/v1/system.authority_revoked",
+  "title": "system.authority_revoked",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "eventId",
+    "eventName",
+    "chainId",
+    "signedBy",
+    "payload",
+    "timestamp",
+    "protocolVersion",
+    "prevHash",
+    "eventHash",
+    "signature"
+  ],
+  "properties": {
+    "eventId": { "type": "string", "minLength": 1 },
+    "eventName": { "const": "AUTHORITY_REVOKED" },
+    "chainId": { "type": "string", "minLength": 1 },
+    "signedBy": { "type": "string", "minLength": 1 },
+    "payload": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["authorityId", "validUntil", "revokedBy", "reason", "txRef", "revokedAt"],
+      "properties": {
+        "authorityId": { "type": "string", "minLength": 1 },
+        "validUntil": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$"
+        },
+        "revokedBy": { "type": "string", "minLength": 1 },
+        "reason": { "type": "string", "minLength": 1 },
+        "txRef": { "type": "string", "minLength": 1 },
+        "revokedAt": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$"
+        }
+      }
+    },
+    "timestamp": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$"
+    },
+    "protocolVersion": { "const": "1.0.0-rc.1" },
+    "prevHash": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" },
+    "eventHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "signature": { "type": "string", "minLength": 1 }
+  }
+}

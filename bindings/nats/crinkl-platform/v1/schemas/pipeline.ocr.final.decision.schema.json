@@ -1,0 +1,140 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "crinkl://bindings/nats/crinkl-platform/v1/pipeline.ocr.final.decision",
+  "title": "pipeline.ocr.final.decision",
+  "$ref": "#/$defs/OcrFinalDecisionPayload",
+  "$defs": {
+    "NonEmptyString": { "type": "string", "minLength": 1 },
+    "IsoDateTimeLoose": { "type": "string", "format": "iso-date-time-loose" },
+    "OcrFinalRequestPayload": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["submissionId", "objectKey", "requestedAt", "sessionId"],
+      "properties": {
+        "submissionId": { "$ref": "#/$defs/NonEmptyString" },
+        "objectKey": { "$ref": "#/$defs/NonEmptyString" },
+        "objectKeys": { "type": "array", "items": { "$ref": "#/$defs/NonEmptyString" } },
+        "requestedAt": { "$ref": "#/$defs/IsoDateTimeLoose" },
+        "tenantId": { "$ref": "#/$defs/NonEmptyString" },
+        "sessionId": { "$ref": "#/$defs/NonEmptyString" }
+      }
+    },
+    "NormalizedReceipt": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "store": { "type": "string" },
+        "date": { "type": "string" },
+        "total": { "type": "number" },
+        "currency": { "type": "string" },
+        "location": { "type": "string" },
+        "lineItems": {
+          "type": "array",
+          "items": { "type": "object", "additionalProperties": true }
+        },
+        "version": { "type": "string" }
+      }
+    },
+    "OcrFinalResultPayload": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["submissionId", "objectKey", "text", "source", "receivedAt", "sessionId"],
+      "properties": {
+        "submissionId": { "$ref": "#/$defs/NonEmptyString" },
+        "objectKey": { "$ref": "#/$defs/NonEmptyString" },
+        "objectKeys": { "type": "array", "items": { "$ref": "#/$defs/NonEmptyString" } },
+        "text": { "type": "string" },
+        "confidence": { "type": "number" },
+        "source": { "type": "string", "enum": ["paddle", "cloud"] },
+        "pages": { "type": "number" },
+        "receivedAt": { "$ref": "#/$defs/IsoDateTimeLoose" },
+        "tenantId": { "$ref": "#/$defs/NonEmptyString" },
+        "sessionId": { "$ref": "#/$defs/NonEmptyString" },
+        "stitchedPath": { "type": "string" },
+        "normalized": { "type": "object", "additionalProperties": true },
+        "normalizedReceipt": { "$ref": "#/$defs/NormalizedReceipt" }
+      }
+    },
+    "ReceiptStatusUpdate": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "sessionId",
+        "tenantId",
+        "status",
+        "stage",
+        "reason",
+        "store",
+        "storeId",
+        "totalCents",
+        "currency",
+        "riskFlags",
+        "updatedAt"
+      ],
+      "properties": {
+        "sessionId": { "$ref": "#/$defs/NonEmptyString" },
+        "tenantId": { "$ref": "#/$defs/NonEmptyString" },
+        "status": { "type": "string" },
+        "stage": { "type": "string" },
+        "reason": { "type": "string" },
+        "store": { "type": "string" },
+        "storeId": { "type": "string" },
+        "totalCents": { "type": "string" },
+        "currency": { "type": "string" },
+        "riskFlags": { "type": "string" },
+        "updatedAt": { "$ref": "#/$defs/IsoDateTimeLoose" }
+      }
+    },
+    "FinalDecision": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["verified", "decisionReason", "finalResult", "hardVerified", "spendInvalidated", "receiptStatusUpdate", "fsm"],
+      "properties": {
+        "verified": { "type": "boolean" },
+        "decisionReason": { "type": "string" },
+        "canonicalStoreId": { "type": "string" },
+        "storeDisplayName": { "type": "string" },
+        "finalResult": { "$ref": "#/$defs/OcrFinalResultPayload" },
+        "hardVerified": { "type": "object", "additionalProperties": true },
+        "spendInvalidated": { "type": "object", "additionalProperties": true },
+        "receiptStatusUpdate": { "$ref": "#/$defs/ReceiptStatusUpdate" },
+        "fsm": {
+          "type": "object",
+          "additionalProperties": true,
+          "required": ["occurredAt", "id", "dedupeKey"],
+          "properties": {
+            "occurredAt": { "$ref": "#/$defs/IsoDateTimeLoose" },
+            "id": { "type": "string" },
+            "dedupeKey": { "type": "string" }
+          }
+        }
+      }
+    },
+    "ResolverHints": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "triggerReasons": { "type": "array", "items": { "type": "string" } },
+        "rawStore": { "type": "string" },
+        "softStore": { "type": "string" },
+        "hardStore": { "type": "string" },
+        "storeConfidence": { "type": "number" },
+        "date": { "type": "string" },
+        "totalCents": { "type": "number" }
+      }
+    },
+    "OcrFinalDecisionPayload": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["request", "finalDecision"],
+      "properties": {
+        "request": { "$ref": "#/$defs/OcrFinalRequestPayload" },
+        "finalDecision": { "$ref": "#/$defs/FinalDecision" },
+        "softExtractedFields": { "type": "object", "additionalProperties": true },
+        "softInjectedFields": { "type": "array", "items": { "type": "string" } },
+        "softRiskFlags": { "type": "array", "items": { "type": "string" } },
+        "resolver": { "$ref": "#/$defs/ResolverHints" }
+      }
+    }
+  }
+}

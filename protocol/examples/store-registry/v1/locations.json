@@ -1,0 +1,11 @@
+[
+  {
+    "storeLocationId": "crinkl-storeloc-pga-superstore-us-ca-001",
+    "storeId": "crinkl-store-pga-superstore",
+    "geoRegion": "US-CA",
+    "label": "PGA Superstore #001 (Example)",
+    "externalIds": [
+      { "namespace": "gs1", "type": "gln", "value": "0000000000000" }
+    ]
+  }
+]

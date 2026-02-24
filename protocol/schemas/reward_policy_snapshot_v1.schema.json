@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "crinkl://protocol/schemas/reward_policy_snapshot_v1",
+  "title": "RewardPolicySnapshotV1",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["policyId", "policyVersion", "parameters"],
+  "properties": {
+    "policyId": { "type": "string", "minLength": 1 },
+    "policyVersion": { "type": "string", "minLength": 1 },
+    "policyVersionLabel": { "type": "string", "minLength": 1 },
+    "effectiveFrom": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$"
+    },
+    "crinklPolicyHash": { "type": "string", "minLength": 1 },
+
+    "reserveCheckpointId": { "type": "string", "minLength": 1 },
+    "snapshotDate": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+
+    "rulesetId": { "type": "string", "minLength": 1 },
+    "coinMultiplierRulesetId": { "type": "string", "minLength": 1 },
+
+    "rewardPolicyConfig": { "type": "object", "additionalProperties": true },
+
+    "parameters": { "type": "object", "additionalProperties": true }
+  }
+}

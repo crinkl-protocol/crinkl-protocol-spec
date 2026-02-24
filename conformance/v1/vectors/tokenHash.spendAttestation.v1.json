@@ -1,0 +1,17 @@
+{
+  "kind": "tokenHash.spendAttestation.v1",
+  "cases": [
+    {
+      "id": "tokenHash.spendAttestation.unsigned.v1",
+      "unsignedTokenJson": "{\"tokenType\":\"SPEND_ATTESTATION\",\"schemaVersion\":1,\"spendId\":\"spend-1\",\"wallet\":\"wallet-1\",\"canonical\":{\"status\":\"HARD_VERIFIED\",\"storeHash\":\"sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\",\"date\":\"2024-01-01\",\"totalCents\":\"1234\",\"currency\":\"USD\",\"timestamp\":\"2024-01-01T00:00:00.000Z\",\"verificationVersion\":\"1.0.0\"},\"lineage\":{\"headEventHash\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"eventCount\":3},\"protocol\":{\"protocolVersion\":\"1.0.0-rc.1\"}}",
+      "expectedCanonical": "{\"canonical\":{\"currency\":\"USD\",\"date\":\"2024-01-01\",\"status\":\"HARD_VERIFIED\",\"storeHash\":\"sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\",\"timestamp\":\"2024-01-01T00:00:00.000Z\",\"totalCents\":\"1234\",\"verificationVersion\":\"1.0.0\"},\"lineage\":{\"eventCount\":3,\"headEventHash\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"},\"protocol\":{\"protocolVersion\":\"1.0.0-rc.1\"},\"schemaVersion\":1,\"spendId\":\"spend-1\",\"tokenType\":\"SPEND_ATTESTATION\",\"wallet\":\"wallet-1\"}",
+      "expectedTokenHashHex": "a8e643def40ef692899c0324c28df732503862d0f6c8ca8b0a600d9412c04e22"
+    },
+    {
+      "id": "tokenHash.spendAttestation.unsigned.noWallet.v1",
+      "unsignedTokenJson": "{\"tokenType\":\"SPEND_ATTESTATION\",\"schemaVersion\":1,\"spendId\":\"spend-1\",\"canonical\":{\"status\":\"HARD_VERIFIED\",\"storeHash\":\"sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\",\"date\":\"2024-01-01\",\"totalCents\":\"1234\",\"currency\":\"USD\",\"timestamp\":\"2024-01-01T00:00:00.000Z\",\"verificationVersion\":\"1.0.0\"},\"lineage\":{\"headEventHash\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"eventCount\":3},\"protocol\":{\"protocolVersion\":\"1.0.0-rc.1\"}}",
+      "expectedCanonical": "{\"canonical\":{\"currency\":\"USD\",\"date\":\"2024-01-01\",\"status\":\"HARD_VERIFIED\",\"storeHash\":\"sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\",\"timestamp\":\"2024-01-01T00:00:00.000Z\",\"totalCents\":\"1234\",\"verificationVersion\":\"1.0.0\"},\"lineage\":{\"eventCount\":3,\"headEventHash\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"},\"protocol\":{\"protocolVersion\":\"1.0.0-rc.1\"},\"schemaVersion\":1,\"spendId\":\"spend-1\",\"tokenType\":\"SPEND_ATTESTATION\"}",
+      "expectedTokenHashHex": "7c6bea7a05309c6b333515292c8648e0625aef6f959de69e0d09ff570839cad6"
+    }
+  ]
+}
