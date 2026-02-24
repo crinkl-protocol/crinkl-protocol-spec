@@ -2,6 +2,10 @@
 
 Specification for transforming receipt submissions into deterministic, attested spend records with cryptographically-linked event streams.
 
+<p align="center">
+  <img src="diagrams/protocol_token_factory.svg" alt="Crinkl protocol layer produces signed token outputs: Spend Attestation, Reward Commitment, Observed GMV, and Observed Spend Distribution." width="1200" />
+</p>
+
 ## Quick Start
 
 1. **[INTRODUCTION.md](protocol/INTRODUCTION.md)** — What the protocol does

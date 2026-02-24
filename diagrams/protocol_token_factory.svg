@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 860" role="img" aria-labelledby="title desc">
+  <title id="title">Crinkl protocol token factory</title>
+  <desc id="desc">Diagram showing the protocol layer producing four signed token outputs from receipt and event inputs.</desc>
+
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0b1324"/>
+      <stop offset="100%" stop-color="#121b33"/>
+    </linearGradient>
+
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L12,6 L0,12 z" fill="#cbd5e1"/>
+    </marker>
+
+    <style>
+      .section-title { font: 700 30px 'Segoe UI', Arial, sans-serif; fill: #f8fafc; }
+      .box-title { font: 700 24px 'Segoe UI', Arial, sans-serif; fill: #f8fafc; }
+      .box-text { font: 500 20px 'Segoe UI', Arial, sans-serif; fill: #cbd5e1; }
+      .token-title { font: 700 23px 'Segoe UI', Arial, sans-serif; fill: #fef3c7; }
+      .token-text { font: 500 18px 'Segoe UI', Arial, sans-serif; fill: #fde68a; }
+      .line { stroke: #cbd5e1; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+      .dashed { stroke-dasharray: 8 8; }
+      .muted { fill: #94a3b8; font: 500 18px 'Segoe UI', Arial, sans-serif; }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="1600" height="860" fill="url(#bg)"/>
+
+  <rect x="120" y="90" width="1360" height="116" rx="16" fill="#0f1a31" stroke="#334155" stroke-width="2"/>
+  <text x="800" y="136" class="section-title" text-anchor="middle">Inputs</text>
+  <text x="800" y="172" class="box-text" text-anchor="middle">Receipt uploads + append-only spend/system events</text>
+
+  <rect x="120" y="240" width="1360" height="318" rx="18" fill="#111d36" stroke="#3b82f6" stroke-width="3"/>
+  <text x="800" y="284" class="section-title" text-anchor="middle">Protocol Layer</text>
+
+  <rect x="172" y="312" width="628" height="206" rx="14" fill="#1a2644" stroke="#64748b" stroke-width="2"/>
+  <text x="486" y="350" class="box-title" text-anchor="middle">Verification Pipeline</text>
+  <text x="486" y="386" class="box-text" text-anchor="middle">Soft Verified -> Hard Verified -> Corrected / Invalidated</text>
+  <text x="486" y="420" class="muted" text-anchor="middle">Deterministic normalization + append-only state transitions</text>
+
+  <rect x="836" y="312" width="592" height="206" rx="14" fill="#1a2644" stroke="#64748b" stroke-width="2"/>
+  <text x="1132" y="350" class="box-title" text-anchor="middle">Reward + Commitment Path</text>
+  <text x="1132" y="386" class="box-text" text-anchor="middle">Provisional/Final rewards + Reward Batch Committed</text>
+  <text x="1132" y="420" class="muted" text-anchor="middle">Economic commitments anchored for verifiable issuance</text>
+
+  <rect x="120" y="600" width="1360" height="236" rx="18" fill="#1d2433" stroke="#f59e0b" stroke-width="3"/>
+  <text x="800" y="634" class="section-title" text-anchor="middle">Token Factory Outputs</text>
+
+  <rect x="162" y="672" width="318" height="132" rx="12" fill="#2a2230" stroke="#fbbf24" stroke-width="2"/>
+  <text x="321" y="715" class="token-title" text-anchor="middle">Spend Attestation</text>
+  <text x="321" y="746" class="token-text" text-anchor="middle">Canonical spend truth</text>
+
+  <rect x="506" y="672" width="318" height="132" rx="12" fill="#2a2230" stroke="#fbbf24" stroke-width="2"/>
+  <text x="665" y="715" class="token-title" text-anchor="middle">Reward Commitment</text>
+  <text x="665" y="746" class="token-text" text-anchor="middle">Committed economic action</text>
+
+  <rect x="850" y="672" width="318" height="132" rx="12" fill="#2a2230" stroke="#fbbf24" stroke-width="2"/>
+  <text x="1009" y="715" class="token-title" text-anchor="middle">Observed GMV</text>
+  <text x="1009" y="746" class="token-text" text-anchor="middle">As-of throughput snapshot</text>
+
+  <rect x="1194" y="672" width="244" height="132" rx="12" fill="#2a2230" stroke="#fbbf24" stroke-width="2"/>
+  <text x="1316" y="706" class="token-title" text-anchor="middle">Observed Spend</text>
+  <text x="1316" y="734" class="token-title" text-anchor="middle">Distribution</text>
+  <text x="1316" y="766" class="token-text" text-anchor="middle">Category + region mix</text>
+
+  <path class="line" d="M800 206 L800 240"/>
+  <path class="line" d="M486 518 L486 660 L321 660 L321 672"/>
+  <path class="line" d="M1132 518 L1132 660 L665 660 L665 672"/>
+  <path class="line" d="M1132 518 L1132 660 L1009 660 L1009 672"/>
+  <path class="line" d="M1132 518 L1132 660 L1316 660 L1316 672"/>
+  <path class="line dashed" d="M620 440 C720 530 860 600 1009 660 L1009 672"/>
+</svg>
