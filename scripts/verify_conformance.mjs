@@ -9,7 +9,7 @@ import { fileURLToPath } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..");
-const conformanceRoot = path.join(repoRoot, "conformance", "v1");
+const conformanceRoot = path.join(repoRoot, "07-conformance", "vectors", "v1");
 const strictCoverage = process.argv.includes("--strict-coverage");
 
 function readJson(filePath) {
