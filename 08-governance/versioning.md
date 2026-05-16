@@ -7,7 +7,7 @@ normative: true
 
 # Protocol Evolution
 
-Current version: **1.0.0-rc.1**
+Current version: **1.0.0-rc.2**
 
 This document describes how the Crinkl Protocol evolves without creating forked implementations. It is normative only where it constrains verifier behavior; governance and rollout timelines are non-normative.
 

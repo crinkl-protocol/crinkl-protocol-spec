@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "crinkl://protocol/schemas/experimental/campaign-epoch.v1",
+  "title": "CampaignEpochV1",
+  "description": "Experimental non-core condition/campaign extension schema. This candidate schema is not required for Core Spend Attestation validity.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "campaignId",
+    "epochId",
+    "epochVersion",
+    "effectiveFrom",
+    "timingRule",
+    "conditionHash",
+    "ruleSetHash",
+    "rewardRuleHash",
+    "fundingTrancheId",
+    "claimLevel",
+    "issuerAuthority",
+    "createdAt"
+  ],
+  "properties": {
+    "status": { "const": "experimental" },
+    "layer": { "const": "condition/campaign extension" },
+    "coreSpendAttestationRequired": { "const": false },
+
+    "campaignId": { "$ref": "#/$defs/Identifier" },
+    "epochId": { "$ref": "#/$defs/Identifier" },
+    "epochVersion": { "type": "integer", "minimum": 1 },
+    "effectiveFrom": { "$ref": "#/$defs/TimestampISO" },
+    "effectiveTo": { "$ref": "#/$defs/TimestampISO" },
+    "timingRule": {
+      "type": "string",
+      "enum": ["SPEND_TIMESTAMP", "ATTESTATION_TIMESTAMP", "CLAIM_TIMESTAMP"]
+    },
+    "conditionId": { "$ref": "#/$defs/Identifier" },
+    "conditionHash": { "$ref": "#/$defs/Sha256Id" },
+    "ruleSetHash": { "$ref": "#/$defs/Sha256Id" },
+    "candidateSetHash": { "$ref": "#/$defs/Sha256Id" },
+    "targetMerchantSetRoot": { "$ref": "#/$defs/Hash" },
+    "targetMerchantSetHash": { "$ref": "#/$defs/Sha256Id" },
+    "rewardRuleHash": { "$ref": "#/$defs/Sha256Id" },
+    "fundingTrancheId": { "$ref": "#/$defs/Identifier" },
+    "claimLevel": {
+      "type": "string",
+      "enum": ["OBSERVED", "ATTRIBUTED", "INCREMENTAL"]
+    },
+    "incrementality": {
+      "type": "object",
+      "additionalProperties": true,
+      "anyOf": [
+        { "required": ["method"] },
+        { "required": ["baselineRef"] },
+        { "required": ["holdoutRef"] }
+      ],
+      "properties": {
+        "method": { "type": "string", "minLength": 1 },
+        "baselineRef": { "$ref": "#/$defs/Identifier" },
+        "holdoutRef": { "$ref": "#/$defs/Identifier" }
+      }
+    },
+    "previousEpochId": { "$ref": "#/$defs/Identifier" },
+    "issuerAuthority": { "$ref": "#/$defs/Identifier" },
+    "createdAt": { "$ref": "#/$defs/TimestampISO" }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "claimLevel": { "const": "INCREMENTAL" }
+        },
+        "required": ["claimLevel"]
+      },
+      "then": {
+        "required": ["incrementality"]
+      }
+    }
+  ],
+  "$defs": {
+    "Identifier": {
+      "type": "string",
+      "minLength": 1
+    },
+    "TimestampISO": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$"
+    },
+    "Hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "Sha256Id": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    }
+  }
+}

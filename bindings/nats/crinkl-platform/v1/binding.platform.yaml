@@ -1,5 +1,5 @@
 bindingVersion: 1
-protocolVersion: "1.0.0-rc.1"
+protocolVersion: "1.0.0-rc.2"
 
 # Crinkl platform pipeline/ops binding (non-normative): internal transport subjects and DLQ.
 # This file is intentionally separate from binding.protocol.yaml.

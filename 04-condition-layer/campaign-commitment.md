@@ -12,6 +12,8 @@ normative: true
 > This document defines how campaign rules compose existing Crinkl proof surfaces into marketer-recognizable commerce outcomes without changing canonical Spend Token semantics.
 >
 > Implementation status: terminology and primitive families are proposed for v1; settlement artifacts such as `CampaignRuleV1`, `AudienceQualificationV1`, `VerifiedConversionV1`, `ConversionApprovalV1`, and `CampaignSettlementLeafV1` remain candidate shapes until platform, PWA, and public settlement surfaces are aligned.
+>
+> Experimental schemas: candidate machine-readable schemas for CampaignEpoch, CampaignAmendment, and FundingTranche live in `../schemas/experimental/`. They are non-core condition/campaign extension schemas and are not required for Core Spend Attestation validity.
 
 ## 1) Scope and Boundary
 
@@ -73,6 +75,151 @@ Any proof used for campaign qualification or conversion MUST bind, directly or t
 - public outputs required by the primitive
 
 Any payout-bearing campaign flow MUST include a scope-specific `nullifier` so the verifier or settlement authority can prevent duplicate payment without requiring a stable wallet identifier.
+
+## 3a) CampaignEpoch Primitive
+
+A **Campaign** is a mutable parent container for sponsor objective, campaign type, market scope, and epoch history. A Campaign does not itself define final eligibility.
+
+Campaign eligibility is defined only by immutable **CampaignEpoch** records. A Campaign may evolve only by appending epochs; no amendment may retroactively alter the rules, funding terms, target merchant set, timing rule, proof results, or earned rewards of a prior epoch.
+
+### Discovery and merchant sets
+
+- **AnchorBrand** activity MAY help discover a **CandidateSet**.
+- **CandidateSet** discovery is not campaign eligibility.
+- A reviewed CandidateSet becomes a **TargetMerchantSet**.
+- A TargetMerchantSet contains approved **EligibleMerchant** entries for an epoch.
+- The approved TargetMerchantSet for an active CampaignEpoch may change only by creating a new epoch.
+- TargetMerchantSet changes require a new `targetMerchantSetRoot` or `targetMerchantSetHash`.
+
+### CampaignEpoch
+
+A CampaignEpoch is an immutable, append-only, funded rule window.
+
+```text
+CampaignEpochV1 {
+  campaignId: Identifier,
+  epochId: Identifier,
+  epochVersion: Integer,
+  effectiveFrom: TimestampISO,
+  effectiveTo?: TimestampISO,
+  timingRule: "SPEND_TIMESTAMP" | "ATTESTATION_TIMESTAMP" | "CLAIM_TIMESTAMP",
+  conditionId?: Identifier,
+  conditionHash: "sha256:" + Hash,
+  ruleSetHash: "sha256:" + Hash,
+  candidateSetHash?: "sha256:" + Hash,
+  targetMerchantSetRoot?: Hash,
+  targetMerchantSetHash?: "sha256:" + Hash,
+  rewardRuleHash: "sha256:" + Hash,
+  fundingTrancheId: Identifier,
+  claimLevel: "OBSERVED" | "ATTRIBUTED" | "INCREMENTAL",
+  previousEpochId?: Identifier,
+  issuerAuthority: Identifier,
+  createdAt: TimestampISO
+}
+```
+
+`ClaimLevel` meanings:
+
+- `OBSERVED` means verified spend occurred under the epoch rule.
+- `ATTRIBUTED` means spend matched attribution conditions defined by the epoch.
+- `INCREMENTAL` requires a baseline, holdout, or incrementality method specified by the epoch.
+
+`RuleSetHash` is the canonical hash over condition, target merchant set reference/root, reward rule, claim level, effective window, timing rule, and funding reference. It MUST be computed with RFC 8785 canonical JSON and SHA-256 over the epoch rule material, excluding signatures and transport-only metadata.
+
+`FundingTranche` is a budget allocation bound to a specific CampaignEpoch. A tranche may fund rewards only under the rule set it was committed to. Budget increases are represented by child tranche records; the original tranche amount MUST NOT be mutated.
+
+```text
+FundingTrancheV1 {
+  fundingTrancheId: Identifier,
+  parentFundingTrancheId?: Identifier,
+  campaignId: Identifier,
+  epochId: Identifier,
+  ruleSetHash: "sha256:" + Hash,
+  amount: String(Integer >= 0),
+  asset: String,
+  createdAt: TimestampISO
+}
+```
+
+### CampaignAmendment
+
+A CampaignAmendment is a forward-only event that closes or supersedes a prior epoch and appends a new CampaignEpoch. It MUST NOT mutate prior epochs.
+
+```text
+CampaignAmendmentV1 {
+  campaignId: Identifier,
+  previousEpochId: Identifier,
+  nextEpochId: Identifier,
+  amendmentHash: "sha256:" + Hash,
+  ruleSetHash: "sha256:" + Hash,
+  effectiveFrom: TimestampISO,
+  issuerAuthority: Identifier,
+  createdAt: TimestampISO,
+  reason?: String
+}
+```
+
+`amendmentHash` MUST be computed over `CampaignAmendmentV1` with `amendmentHash` and transport-only metadata omitted.
+
+Candidate future system-stream event:
+
+```text
+CAMPAIGN_EPOCH_APPENDED {
+  campaignId: Identifier,
+  previousEpochId: Identifier,
+  nextEpochId: Identifier,
+  amendmentHash: "sha256:" + Hash,
+  ruleSetHash: "sha256:" + Hash,
+  effectiveFrom: TimestampISO,
+  issuerAuthority: Identifier,
+  createdAt: TimestampISO
+}
+```
+
+`CAMPAIGN_EPOCH_APPENDED` is a future candidate system-stream event. It is not part of the current Core event catalog or NATS binding. If activated later, it should use the System-Stream Event Envelope in `../01-core/spend-event.md`.
+
+Normative rules:
+
+- CampaignEpoch records are append-only.
+- Prior epochs remain verifiable after amendment.
+- CampaignAmendment applies prospectively only.
+- A sponsor MUST NOT lower, remove, or invalidate rewards already earned under an earlier epoch.
+- A verifier MUST evaluate a spend against exactly one CampaignEpoch.
+- Epoch selection MUST use the declared `timingRule`.
+- If `timingRule` is missing, the CampaignEpoch is invalid.
+- Reward rules may change only by creating a new epoch with a new `rewardRuleHash`.
+- Budget top-ups MAY attach to the same epoch only through child FundingTranche records bound to the same `campaignId`, `epochId`, and `ruleSetHash`.
+- Unspent budget MAY roll forward only if the prior epoch funding policy permits it.
+- Earned rewards are immutable once committed.
+- Campaign history remains auditable as a sequence of epochs.
+- `claimLevel = "INCREMENTAL"` is invalid unless the epoch rule material specifies a baseline, holdout, or incrementality method.
+
+### Epoch amendment example
+
+Campaign: Coffee campaign in CBSA 31080.
+
+Epoch 1:
+
+- `AnchorBrand`: Starbucks
+- `targetMerchantSetRoot`: `root_A`
+- reward: 500 points
+- `claimLevel`: `OBSERVED`
+- `timingRule`: `SPEND_TIMESTAMP`
+- `effectiveFrom`: May 1
+- `effectiveTo`: May 15
+
+If the sponsor wants to raise the reward to 750 points and remove one EligibleMerchant, Epoch 1 MUST NOT be edited.
+
+Epoch 2:
+
+- `previousEpochId`: Epoch 1
+- `targetMerchantSetRoot`: `root_B`
+- reward: 750 points
+- `timingRule`: `SPEND_TIMESTAMP`
+- `effectiveFrom`: May 16
+- `effectiveTo`: May 31
+
+Receipts from May 1 through May 15 remain evaluated under Epoch 1. Receipts from May 16 onward are evaluated under Epoch 2.
 
 ## 4) Primitive Families
 
@@ -328,6 +475,8 @@ Audience Qualification proves the holder satisfies the campaign audience rule.
 AudienceQualificationV1 {
   schemaVersion: 1,
   campaignId: Identifier,
+  epochId: Identifier,
+  ruleSetHash: "sha256:" + Hash,
   campaignParamsHash: "sha256:" + Hash,
   scopeId: "sha256:" + Hash,
   nullifier: "sha256:" + Hash,
@@ -352,6 +501,8 @@ Verified Conversion proves the campaign-required new purchase or outcome occurre
 VerifiedConversionV1 {
   schemaVersion: 1,
   campaignId: Identifier,
+  epochId: Identifier,
+  ruleSetHash: "sha256:" + Hash,
   campaignParamsHash: "sha256:" + Hash,
   qualificationHash: "sha256:" + Hash,
   conversionSpendTokenHash: "sha256:" + Hash,
@@ -376,6 +527,8 @@ Conversion Approval is the verifier-signed decision that audience qualification 
 ConversionApprovalV1 {
   schemaVersion: 1,
   campaignId: Identifier,
+  epochId: Identifier,
+  ruleSetHash: "sha256:" + Hash,
   campaignParamsHash: "sha256:" + Hash,
   qualificationHash: "sha256:" + Hash,
   conversionHash: "sha256:" + Hash,
@@ -411,6 +564,8 @@ Payout Settlement is the economic consequence of a valid Conversion Approval. Se
 Settlement MUST bind, directly or by hash reference:
 
 - `campaignId`
+- `epochId`
+- `ruleSetHash`
 - `campaignParamsHash`
 - `qualificationHash`
 - `conversionHash`
@@ -435,6 +590,8 @@ CampaignSettlementLeafV1 {
   leafType: "CAMPAIGN_SETTLEMENT_LEAF",
   settlementId: Identifier,
   campaignId: Identifier,
+  epochId: Identifier,
+  ruleSetHash: "sha256:" + Hash,
   campaignParamsHash: "sha256:" + Hash,
   qualificationHash: "sha256:" + Hash,
   conversionHash: "sha256:" + Hash,
@@ -477,6 +634,7 @@ The system event envelope supplies `chainId`, `signedBy`, `prevHash`, `eventHash
 Normative constraints:
 
 - `campaignId` and `campaignParamsHash` MUST match the `CampaignRuleV1` that authorized settlement.
+- `epochId` and `ruleSetHash` MUST match the CampaignEpoch that authorized the ProofOfMatch.
 - `root` MUST be computed over `CampaignSettlementLeafV1` leaves for that campaign settlement batch.
 - `leafCount` MUST equal the number of committed leaves.
 - `totalPayoutAmount` and `payoutAsset` MUST equal the sum and asset class represented by the committed leaves.
@@ -490,21 +648,23 @@ Normative constraints:
 A verifier processing a Campaign Rule MUST:
 
 1. Recompute `campaignParamsHash` from `CampaignRuleV1`.
-2. Verify each primitive requirement uses a supported primitive name and proof mode.
-3. Verify Audience Qualification:
+2. Select exactly one CampaignEpoch using the epoch `timingRule`; reject missing `timingRule` or ambiguous epoch matches.
+3. Recompute `ruleSetHash` from the selected CampaignEpoch rule material.
+4. Verify each primitive requirement uses a supported primitive name and proof mode.
+5. Verify Audience Qualification:
    - verify all referenced Spend Tokens and proofs
    - verify `scopeId` and `nullifier` binding
    - reject replayed qualification nullifiers within the campaign scope
-4. Verify Verified Conversion:
+6. Verify Verified Conversion:
    - verify the conversion Spend Attestation Token per `../03-portability/spend-attestation-token.md`
    - verify `conversionSpendTokenHash` and `conversionHeadEventHash`
    - verify the conversion occurred inside the campaign conversion window
    - verify it occurred after audience qualification when required
    - reject replayed conversion or settlement nullifiers
-5. Verify payout terms against the campaign rule.
-6. Emit or accept `ConversionApprovalV1`.
-7. Settle through the Reward Layer and, when enabled, the Commitment Layer.
-8. If `settlement.publicCommitment.enabled` is true:
+7. Verify payout terms against the selected CampaignEpoch.
+8. Emit or accept `ConversionApprovalV1`.
+9. Settle through the Reward Layer and, when enabled, the Commitment Layer.
+10. If `settlement.publicCommitment.enabled` is true:
    - compute `CampaignSettlementLeafV1` from the approved conversion
    - include it in a campaign settlement batch root
    - emit `CAMPAIGN_SETTLEMENT_COMMITTED`

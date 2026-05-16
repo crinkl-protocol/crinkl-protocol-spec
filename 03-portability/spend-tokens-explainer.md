@@ -8,12 +8,12 @@ normative: false
 # Spend Tokens
 ## Spend Attestations, Commitments, and Aggregate Tokens: A Minimal Token Set for Economic Truth
 
-Draft (based on Crinkl Protocol v1.0.0-rc.1)
+Draft (based on Crinkl Protocol v1.0.0-rc.2)
 Authors: Alvin Tanpoco with AI-assisted drafting and formalization
 Status: Working draft / canonical explainer
 Last updated: 2026-01-03
 
-This document is a non-normative explainer aligned with Crinkl Protocol v1.0.0-rc.1.
+This document is a non-normative explainer aligned with Crinkl Protocol v1.0.0-rc.2.
 Normative rules live in `../00-purpose/what-crinkl-proves.md`, `spend-attestation-token.md`,
 `../01-core/verification-state.md`, `../00-purpose/threat-model.md`, and related references.
 

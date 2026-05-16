@@ -58,6 +58,9 @@ When two artifacts disagree, the higher authority wins and the lower one is cons
 - `bindings/`
   - Canonical transport mapping (subjects/streams for NATS, schema selection, binding version).
   - Canonical payload JSON Schemas used for runtime validation on that transport.
+- `schemas/experimental/`
+  - Candidate non-core extension schemas for implementation alignment.
+  - Experimental schemas are machine-readable but do not change Core Spend Attestation validity.
 - `formal/`
   - Canonical invariant checks (model-checking expectations).
 - `07-conformance/`

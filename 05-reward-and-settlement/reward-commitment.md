@@ -27,6 +27,12 @@ A Reward Commitment Token:
 
 Reward commitments are batch-level, recipient-scoped, and derive from Reward Ledger events (REWARD_*_ISSUED) plus a system-stream commitment event (REWARD_BATCH_COMMITTED and related).
 
+## Campaign Epoch Binding
+
+For campaign flows, a Reward Commitment is produced only after a valid ProofOfMatch for exactly one CampaignEpoch. The Reward Commitment or campaign settlement leaf MUST bind directly or by hash reference to the selected `campaignId`, `epochId`, `ruleSetHash`, approval artifact, and payout terms.
+
+A CampaignAmendment MUST NOT lower, remove, or invalidate rewards already earned under an earlier epoch. Earned rewards are immutable once committed. Later epochs may change reward rules only prospectively through a new `rewardRuleHash`; they do not alter prior Reward Commitment validity.
+
 **Recipient scoping:** Reward Commitment Tokens require recipient binding for verification of economic issuance. The `recipientId` field is REQUIRED. The representation of `recipientId` is schema-defined:
 - `WalletRef` (transparent, schema v1a/v2a)
 - `Commitment` (blinded, schema v1b/v2b)
