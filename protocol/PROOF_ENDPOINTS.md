@@ -1,11 +1,17 @@
-# Public Proof Endpoints (Trustless GMV + Issuance)
+# Public Proof Endpoint Appendix
 
-This doc lists the public endpoints and the exact proof each one provides. All endpoints are unauthenticated and must avoid PII.
+> **Status: non-normative API appendix**
+>
+> This document lists example endpoint surfaces for serving already-defined protocol artifacts. It is not part of core protocol validity, and deployments MAY expose different paths or authentication policies as long as token/proof verification follows the normative procedures in `TOKENS.md`, `COMMITMENT_LAYER.md`, and `TRUSTLESS_TOKEN_VERIFICATION.md`.
+
+Any public proof endpoint MUST avoid PII and MUST NOT become a lookup oracle over receipt history, wallet identity, campaign participation, or campaign-scoped audience membership.
 
 **RecipientId note:** Reward commitment tokens expose a `recipientId`. By default this is a **blinded hash** (not a wallet address). It is safe to return publicly as a non-identifying commitment.
 
+**SpendId lookup note:** Per-spend proof lookup is safe only when `spendId` values are high entropy and the endpoint applies an explicit access policy or holder-provided proof of knowledge. Public enumeration of spend IDs, recent spend IDs, or campaign-scoped spend membership is not a protocol requirement and SHOULD be avoided.
+
 ## 1) GET `/v1/gmv/daily/:date/token`
-**Returns:** Observed GMV token for a UTC day.  
+**Returns:** Verified GMV token for a UTC day.
 **Proves:** The issuer attested the aggregate GMV snapshot for that date (no DB trust; signature checkable).
 
 ## 2) POST `/v1/gmv/verify`
@@ -36,13 +42,26 @@ This doc lists the public endpoints and the exact proof each one provides. All e
 **Proves:** The spend’s reward commitment is included in the anchored batch (Merkle inclusion).
 
 ## 8) GET `/api/public/proofs/issued-gmv/recent?limit=N`
-**Returns:** last N spendIds + per‑spend step results and proof material.  
-**Proves:** “These are the last N spends and each is both GMV‑counted and reward‑issued,” without DB trust.
+**Status:** deployment-specific audit endpoint, not a required public protocol endpoint.
+**Returns:** aggregate or redacted recent proof samples; MUST NOT expose raw recent `spendId` lists unless an explicit audit policy allows it.
+**Proves:** bounded audit sampling of issued-GMV proof construction, without making recent spend history publicly enumerable.
 
 ## 9) POST `/api/public/proofs/issued-gmv/verify`
 **Input:** `spendToken + gmvToken + gmvInclusionProof + rewardToken + batchProof + batchAnchor`.  
 **Returns:** step‑by‑step checks + final ok.  
 **Proves:** Full expression for a spend: **attested spend → counted in GMV → reward issued → anchored**.
+
+## 10) GET `/api/public/proofs/campaign-settlement/:settlementBatchId`
+**Status:** optional extension endpoint for `CAMPAIGN_SETTLEMENT_COMMITTED`.
+**Returns:** `{settlementBatchId, campaignId, campaignParamsHash, root, leafCount, totalPayoutAmount, payoutAsset, schemaVersion, txRef, committedAt}` plus the signed system-stream event when available.
+**Proves:** A campaign settlement batch root was signed by an authorized committer and publicly anchored.
+
+## 11) GET `/api/public/proofs/campaign-settlement/:settlementBatchId/approval/:approvalHash`
+**Status:** optional extension endpoint for holder-, sponsor-, or auditor-authorized lookup.
+**Returns:** `{settlementBatchId, approvalHash, leafHash, merkleProof, leaf}` where `leaf` is a `CampaignSettlementLeafV1` or a redacted leaf plus disclosure proof.
+**Proves:** A verifier-approved campaign conversion was included in a public campaign settlement batch.
+
+This endpoint MUST NOT allow public enumeration of campaign participants. Deployments SHOULD require the requester to know `approvalHash`, `settlementNullifier`, or another high-entropy authorization handle.
 
 ---
 
@@ -53,5 +72,6 @@ This doc lists the public endpoints and the exact proof each one provides. All e
 4) Verify reward token signature.  
 5) Verify reward batch inclusion proof.  
 6) Verify batch anchor on-chain.  
+7) For campaign settlement, verify `CAMPAIGN_SETTLEMENT_COMMITTED`, leaf inclusion, and `txRef` anchoring.
 
-If all pass, the proof does **not** depend on the Crinkl DB.
+If all pass, the proof does **not** depend on the Crinkl DB. Endpoint availability itself is still deployment policy, not protocol validity.

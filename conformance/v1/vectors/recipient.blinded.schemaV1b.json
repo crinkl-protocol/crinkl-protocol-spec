@@ -19,7 +19,7 @@
       "blinderBatch1": "def456",
       "blinderBatch2": "ghi789",
       "expectedRecipientIdBatch1": "sha256:8c48fd43a6c391d14c1ff6f7d8fe75fa5e739cf5bba0669860dec187a78b2418",
-      "expectedRecipientIdBatch2": "sha256:b9e2a8c6fe7db5c49d8e1f3a2c5b7e9d1f3a5c7e9b1d3f5a7c9e1f3a5c7e9b1d",
+      "expectedRecipientIdBatch2": "sha256:ac2055a9d11b0f1064fc7a360189c12d52b5bc388d47563fe19194265760057e",
       "unlinkabilityNote": "Observer cannot determine these are the same wallet without the blinder openings"
     },
     {

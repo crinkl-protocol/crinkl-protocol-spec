@@ -55,11 +55,11 @@
   <text x="665" y="746" class="token-text" text-anchor="middle">Committed economic action</text>
 
   <rect x="850" y="672" width="318" height="132" rx="12" fill="#2a2230" stroke="#fbbf24" stroke-width="2"/>
-  <text x="1009" y="715" class="token-title" text-anchor="middle">Observed GMV</text>
+  <text x="1009" y="715" class="token-title" text-anchor="middle">Verified GMV</text>
   <text x="1009" y="746" class="token-text" text-anchor="middle">As-of throughput snapshot</text>
 
   <rect x="1194" y="672" width="244" height="132" rx="12" fill="#2a2230" stroke="#fbbf24" stroke-width="2"/>
-  <text x="1316" y="706" class="token-title" text-anchor="middle">Observed Spend</text>
+  <text x="1316" y="706" class="token-title" text-anchor="middle">Verified Spend</text>
   <text x="1316" y="734" class="token-title" text-anchor="middle">Distribution</text>
   <text x="1316" y="766" class="token-text" text-anchor="middle">Category + region mix</text>
 

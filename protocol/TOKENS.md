@@ -95,7 +95,7 @@ Verifiers MUST distinguish:
 
 If multiple valid tokens are presented for the same scope:
 - **Spend Attestation Tokens:** scope key is `spendId`. The token with the greatest `lineage.eventCount` MUST be treated as the newest snapshot. If two tokens share the same `spendId` and `lineage.eventCount` but differ in `lineage.headEventHash` or `canonical.status`, verifiers MUST treat this as an error (`OrderingViolation` / fork or issuer equivocation) and MUST NOT pick a winner.
-- **Observed GMV Tokens:** scope key is `(window.type, window.date)`. Verifiers SHOULD select the token with the greatest `asOf.computedAt` they trust; `prevGMVTokenHash` may be used to audit continuity.
+- **Verified GMV Tokens:** scope key is `(window.type, window.date)`. Verifiers SHOULD select the token with the greatest `asOf.computedAt` they trust; `prevGMVTokenHash` may be used to audit continuity.
 - **Reward Commitment Tokens:** scope key is `(chainId, batch.batchId, recipientId)`. These tokens refer to a specific committed batch; they are not superseded by later spend corrections. If two valid tokens share the same scope key but disagree on committed root/leaf/proof, verifiers MUST treat this as an error and MUST NOT pick a winner.
 
 ## Core Token Types
@@ -104,11 +104,11 @@ The protocol defines four token outputs, each derived from existing protocol pri
 
 1. **Spend Attestation Token** — canonical spend attestation derived from the spend-stream. This is an **epistemic claim**: it asserts canonical spend state according to protocol verification rules.
 2. **Reward Commitment Token** — externally committed reward issuance derived from the reward ledger + commitment layer. This records **economic consequence**: value issued based on a spend attestation.
-3. **Observed GMV Token** — a privacy-safe daily "as-of" commitment to aggregate spend totals (and optionally issued/rewarded totals) without exposing receipts.
-4. **Observed Spend Distribution Token** — a privacy-safe daily "as-of" dimensional breakdown of aggregate spend by store category and geographic region (CBSA metro area), derived from the same snapshot as the Observed GMV Token.
+3. **Verified GMV Token** — a privacy-safe daily "as-of" commitment to aggregate spend totals (and optionally issued/rewarded totals) without exposing receipts.
+4. **Verified Spend Distribution Token** — a privacy-safe daily "as-of" dimensional breakdown of aggregate spend by store category and geographic region (CBSA metro area), derived from the same snapshot as the Verified GMV Token.
 
 **Closed set (normative, protocol v1):** `tokenType` values for core portable tokens are a closed set:
-`SPEND_ATTESTATION`, `REWARD_COMMITMENT`, `OBSERVED_GMV`, `OBSERVED_SPEND_DISTRIBUTION`.
+`SPEND_ATTESTATION`, `REWARD_COMMITMENT`, `VERIFIED_GMV`, `VERIFIED_SPEND_DISTRIBUTION`.
 New core token types require an explicit specification update (and potentially a protocol version bump); experimental/extension tokens MUST be clearly labeled and MUST NOT be required for core verification.
 
 See the Economic Reinforcement Invariant in ABSTRACT.md for the relationship between epistemic and economic commitments.
@@ -116,7 +116,7 @@ See the Economic Reinforcement Invariant in ABSTRACT.md for the relationship bet
 Per the Identity Minimization Invariant (ABSTRACT.md), wallet exposure follows token-specific rules:
 - **Spend Attestation** — wallet is optional; canonical spend truth does not require identity disclosure
 - **Reward Commitment** — `recipientId` is required (scoped to unique recipient); representation is schema-defined (WalletRef or Commitment)
-- **Observed GMV** — wallet MUST NOT appear; aggregate claims are privacy-preserving
+- **Verified GMV** — wallet MUST NOT appear; aggregate claims are privacy-preserving
 
 These token types are intentionally separable:
 - Spend attestation is defined by the Attestation Ledger state machine.
@@ -461,14 +461,14 @@ This produces a portable “spend ↔ reward” linkage without requiring the ve
 
 **Bounded claim (normative):** when present, `rewardInclusionProof` proves only that a `(spendId, rewardEventHash)` reference is included under the aggregated leaf’s `rewardEventsRoot`, and that the aggregated leaf is included in the batch root. Verifying the underlying reward event envelope (and therefore the meaning of `rewardEventHash`) is optional audit material and may be provided out-of-band.
 
-## Observed GMV Token
+## Verified GMV Token
 
 > “Aggregate economic throughput must be provable, append-only, correction-aware, and privacy-preserving.”
-**Identity prohibition:** Per the Identity Minimization Invariant (ABSTRACT.md), Observed GMV Tokens MUST NOT include wallet identifiers, recipient references, or any data that would enable reconstruction of per-user spend patterns. Spends are referenced only via `spendId` within the committed `spendHeadSetRoot`; aggregates expose only totals and Merkle roots.
+**Identity prohibition:** Per the Identity Minimization Invariant (ABSTRACT.md), Verified GMV Tokens MUST NOT include wallet identifiers, recipient references, or any data that would enable reconstruction of per-user spend patterns. Spends are referenced only via `spendId` within the committed `spendHeadSetRoot`; aggregates expose only totals and Merkle roots.
 
 ### Explicit non-claims (normative)
 
-An Observed GMV Token:
+A Verified GMV Token:
 - does NOT claim “all receipts are valid forever”; it is an **as-of snapshot** that may be superseded by later tokens for the same window;
 - does NOT imply rewards were issued or economically backed unless `issuedGMV` and/or explicit commitment/backing artifacts are provided;
 - does NOT reveal wallet ownership or user identity; per-spend inclusion proofs do not imply ownership.
@@ -498,11 +498,11 @@ Crinkl treats GMV as an append-only aggregate claim derived from canonical spend
 
 GMV commitments preserve user privacy by committing only to aggregate totals and Merkle roots of spend heads, without exposing receipt data, merchants, or individual transactions. Corrections are expressed via new GMV commitment artifacts rather than mutation of historical records.
 
-### How a Receipt Becomes Observed GMV
+### How a Receipt Becomes Verified GMV
 
-A receipt contributes to Observed GMV only after **Hard Verification** (or subsequent **Correction**) produces a finalized spend (see STATE_MACHINES.md)—a canonical spend record with total amount, currency, and timestamp. Rewards and economic backing (e.g., BTC moving) are separate: they may happen around the same time, but they do not define Observed GMV.
+A receipt contributes to Verified GMV only after **Hard Verification** (or subsequent **Correction**) produces a finalized spend (see STATE_MACHINES.md)—a canonical spend record with total amount, currency, and timestamp. Rewards and economic backing (e.g., BTC moving) are separate: they may happen around the same time, but they do not define Verified GMV.
 
-Observed GMV is included when an issuer **publishes an Observed GMV Token** for a specific UTC day. To compute it, the issuer picks an “as-of” time (`asOf.computedAt`), selects all finalized spends whose finalized timestamp falls in that UTC day and are not `INVALIDATED`, and sums their totals into `observedGMV`.
+Verified GMV is included when an issuer **publishes a Verified GMV Token** for a specific UTC day. To compute it, the issuer picks an “as-of” time (`asOf.computedAt`), selects all finalized spends whose finalized timestamp falls in that UTC day and are not `INVALIDATED`, and sums their totals into `verifiedGMV`.
 
 The token contains no receipt images/text; instead it includes a single hash (`asOf.spendHeadSetRoot`) that acts like a fingerprint of “the set of spends that were counted”, so the issuer can later give a user a small proof that their spend was included without publishing every spend or sharing receipts (see per-spend inclusion proofs below).
 
@@ -512,17 +512,17 @@ If later corrections change a spend’s finalized timestamp or total, the issuer
 
 The claim is:
 
-- the **Observed GMV** for a fixed UTC day (sum of finalized spend totals as-of a specific computation time), and
-- optionally the **Issued/Rewarded GMV** (sum over spends for which rewards were issued). **Critical:** Observed GMV and Issued GMV are independent—spend corrections do not trigger reward clawbacks.
+- the **Verified GMV** for a fixed UTC day (sum of finalized spend totals as-of a specific computation time), and
+- optionally the **Issued/Rewarded GMV** (sum over spends for which rewards were issued). **Critical:** Verified GMV and Issued GMV are independent—spend corrections do not trigger reward clawbacks.
 
 Every GMV token MUST be explicit about its **window** and its **as-of** semantics.
 
 ### Portable shape (normative)
 
 ```text
-ObservedGmvTokenV1 {
-  tokenType: "OBSERVED_GMV",
-  schemaVersion: 1,
+VerifiedGmvTokenV1 {
+  tokenType: "VERIFIED_GMV",
+  schemaVersion: 2,
 
   window: { type: "UTC_DAY", date: DateISO }, // YYYY-MM-DD
 
@@ -534,7 +534,7 @@ ObservedGmvTokenV1 {
     spendRule: "CANONICAL_HEAD_ASOF"
   },
 
-  observedGMV: { currency: CurrencyCode, totalCents: Amount, spendCount: Integer },
+  verifiedGMV: { currency: CurrencyCode, totalCents: Amount, spendCount: Integer },
 
   issuedGMV?: {
     currency: CurrencyCode,
@@ -577,7 +577,7 @@ ObservedGmvTokenV1 {
 
 #### Supersession and corrections for the same window
 
-Issuers MAY publish multiple Observed GMV Tokens for the same `window.date` over time.
+Issuers MAY publish multiple Verified GMV Tokens for the same `window.date` over time.
 
 - Later tokens for the same window are interpreted as newer **as-of snapshots**, not mutations of history.
 - If the issuer knows the immediately prior published GMV token for the same window, it SHOULD set `prevGMVTokenHash` to form a chain.
@@ -585,10 +585,10 @@ Issuers MAY publish multiple Observed GMV Tokens for the same `window.date` over
 
 Auditors can compute deltas between two snapshots for the same window as:
 
-- `observedGMV.totalCentsDelta = BigInt(observedGMV.totalCents(new)) - BigInt(observedGMV.totalCents(old))`
-- `observedGMV.spendCountDelta = observedGMV.spendCount(new) - observedGMV.spendCount(old)`
+- `verifiedGMV.totalCentsDelta = BigInt(verifiedGMV.totalCents(new)) - BigInt(verifiedGMV.totalCents(old))`
+- `verifiedGMV.spendCountDelta = verifiedGMV.spendCount(new) - verifiedGMV.spendCount(old)`
 
-> Optional extension: an issuer MAY also publish an explicit delta token type (e.g., `OBSERVED_GMV_DELTA`) for audit-friendly “GMV went down because spends were invalidated” narratives. This is non-normative and not required for verifiers.
+> Optional extension: an issuer MAY also publish an explicit delta token type (e.g., `VERIFIED_GMV_DELTA`) for audit-friendly “GMV went down because spends were invalidated” narratives. This is non-normative and not required for verifiers.
 
 ### spendHeadSetRoot construction (normative)
 
@@ -618,27 +618,27 @@ Internal node hash MUST be `SHA256(0x01 || sort(left,right))` (domain-separated,
 
 ### Verification procedure (normative)
 
-To verify an Observed GMV Token, a verifier MUST:
+To verify a Verified GMV Token, a verifier MUST:
 
 1. Verify required fields and supported versions (`schemaVersion`); reject on unsupported versions.
 2. Recompute `tokenHash` from the unsigned token and verify `signatures.signature` against `signatures.publicKey`.
 3. Verify that `signatures.publicKey` is an authorized issuer key for `signatures.issuedBy` under the applicable trust root mapping (Authority Registry or configured issuer set); reject if unauthorized (see `SECURITY_MODEL.md#trust-roots`).
 4. Apply local acceptance policy:
-   - treat `observedGMV` as an "as-of" snapshot that may be superseded by later GMV tokens for the same window, and
+   - treat `verifiedGMV` as an "as-of" snapshot that may be superseded by later GMV tokens for the same window, and
    - treat `issuedGMV` (when present) as a statement about issued rewards, not about spend attestation.
 
 If an issuer provides the underlying leaf set and optional inclusion proofs out-of-band, a verifier MAY recompute `spendHeadSetRoot` and audit which spends were counted.
 
 ### Optional: Per-spend inclusion proof (normative)
 
-An issuer MAY provide a per-spend inclusion proof that allows a holder of a `spendId` (typically the user who uploaded the receipt) to verify that their spend was included in a specific Observed GMV Token, without requiring the issuer to publish the full set of spends.
+An issuer MAY provide a per-spend inclusion proof that allows a holder of a `spendId` (typically the user who uploaded the receipt) to verify that their spend was included in a specific Verified GMV Token, without requiring the issuer to publish the full set of spends.
 
 **Semantics (normative):** this proof asserts only **membership** of `spendLeaf` under `asOf.spendHeadSetRoot` for the referenced GMV token. It does not assert ownership, identity, or reward eligibility.
 
 #### Proof shape (normative)
 
 ```text
-ObservedGmvInclusionProofV1 {
+VerifiedGmvInclusionProofV1 {
   schemaVersion: 1,
   gmvTokenHash: "sha256:" + Hash,
   spendLeaf: SpendHeadLeafV1,
@@ -649,9 +649,9 @@ ObservedGmvInclusionProofV1 {
 
 #### Verification (normative)
 
-To verify an `ObservedGmvInclusionProofV1`, a verifier MUST:
+To verify a `VerifiedGmvInclusionProofV1`, a verifier MUST:
 
-1. Fetch the referenced Observed GMV Token and verify its signature, and verify that its `signatures.tokenHash` equals `gmvTokenHash`.
+1. Fetch the referenced Verified GMV Token and verify its signature, and verify that its `signatures.tokenHash` equals `gmvTokenHash`.
 2. Recompute `leafHash = SHA256(0x00 || RFC8785_canonicalize(spendLeaf))` and verify it equals `leafHash`.
 3. Starting from `leafHash`, iteratively compute the parent hash with each element of `siblings` using `SHA256(0x01 || sort(left,right))` until a candidate root is produced, and verify it equals the token’s `asOf.spendHeadSetRoot`.
 
@@ -664,7 +664,7 @@ If a verifier needs a **non-transferable** inclusion artifact (e.g., a brand req
 This is distinct from Merkle membership: it binds inclusion to a `scopeId` so the artifact cannot be reused across scopes without detection.
 
 ```text
-ObservedGmvInclusionAttestationV1 {
+VerifiedGmvInclusionAttestationV1 {
   schemaVersion: 1,
   gmvTokenHash: "sha256:" + Hash,
   scopeId: "sha256:" + Hash,
@@ -674,20 +674,20 @@ ObservedGmvInclusionAttestationV1 {
 }
 ```
 
-To verify an `ObservedGmvInclusionAttestationV1`, a verifier MUST:
-1. Verify the referenced Observed GMV Token and verify `gmvTokenHash` matches its `signatures.tokenHash`.
+To verify a `VerifiedGmvInclusionAttestationV1`, a verifier MUST:
+1. Verify the referenced Verified GMV Token and verify `gmvTokenHash` matches its `signatures.tokenHash`.
 2. Recompute the attestation `tokenHash` and verify its signature, and verify issuer authorization for `issuedBy/publicKey`.
 3. Verify the `scopeId` matches the verifier's expected scope for the request.
 
-## Observed Spend Distribution Token
+## Verified Spend Distribution Token
 
-The Observed Spend Distribution Token extends the GMV primitive with **dimensional breakdowns** — the same aggregate spend data sliced by geographic region and store category. It shares the same `spendHeadSetRoot`, spend filtering, and as-of semantics as the Observed GMV Token for the same window.
+The Verified Spend Distribution Token extends the GMV primitive with **dimensional breakdowns** — the same aggregate spend data sliced by geographic region and store category. It shares the same `spendHeadSetRoot`, spend filtering, and as-of semantics as the Verified GMV Token for the same window.
 
-**Identity prohibition:** Like Observed GMV Tokens, Observed Spend Distribution Tokens MUST NOT include wallet identifiers, recipient references, or any data that would enable reconstruction of per-user spend patterns. Only aggregate counts and totals per dimension are exposed.
+**Identity prohibition:** Like Verified GMV Tokens, Verified Spend Distribution Tokens MUST NOT include wallet identifiers, recipient references, or any data that would enable reconstruction of per-user spend patterns. Only aggregate counts and totals per dimension are exposed.
 
 ### Explicit non-claims (normative)
 
-An Observed Spend Distribution Token:
+A Verified Spend Distribution Token:
 - does NOT claim individual spend details; it is an aggregate snapshot by dimension;
 - does NOT reveal wallet ownership or user identity;
 - does NOT imply rewards were issued unless `issuedDistribution` is present;
@@ -696,9 +696,9 @@ An Observed Spend Distribution Token:
 ### Portable shape (normative)
 
 ```text
-ObservedSpendDistributionTokenV1 {
-  tokenType: "OBSERVED_SPEND_DISTRIBUTION",
-  schemaVersion: 1,
+VerifiedSpendDistributionTokenV1 {
+  tokenType: "VERIFIED_SPEND_DISTRIBUTION",
+  schemaVersion: 2,
 
   window: { type: "UTC_DAY", date: DateISO },
 
@@ -708,12 +708,12 @@ ObservedSpendDistributionTokenV1 {
     spendRule: "CANONICAL_HEAD_ASOF"
   },
 
-  observedDistribution: {
+  verifiedDistribution: {
     currency: CurrencyCode,
     totalCents: Amount,
     spendCount: Integer,
     byCategory: Record<String, { spendCount: Integer, totalCents: Amount }>,
-    byRegion?: Record<CBSACode, { spendCount: Integer, totalCents: Amount }>
+    byGeoRegion?: Record<RegionCode, { spendCount: Integer, totalCents: Amount }>
   },
 
   issuedDistribution?: {
@@ -721,7 +721,7 @@ ObservedSpendDistributionTokenV1 {
     totalCents: Amount,
     rewardedSpendCount: Integer,
     byCategory: Record<String, { spendCount: Integer, totalCents: Amount }>,
-    byRegion?: Record<CBSACode, { spendCount: Integer, totalCents: Amount }>,
+    byGeoRegion?: Record<RegionCode, { spendCount: Integer, totalCents: Amount }>,
     policyVersion?: String
   },
 
@@ -733,28 +733,27 @@ ObservedSpendDistributionTokenV1 {
 
 ### Derivation rules (normative)
 
-- `asOf.spendHeadSetRoot` MUST be computed identically to the Observed GMV Token for the same window and as-of time. Implementations SHOULD derive both tokens from the same snapshot computation.
+- `asOf.spendHeadSetRoot` MUST be computed identically to the Verified GMV Token for the same window and as-of time. Implementations SHOULD derive both tokens from the same snapshot computation.
 - `byCategory` keys MUST be canonical store category identifiers as defined by the store registry (see `STORE_REGISTRY.md`). Spends whose store cannot be resolved to a category MUST be bucketed under the key `"Unknown"`.
-- `byRegion` keys MUST be `CBSACode` values (see `DATA_STRUCTURES.md#cbsacode`): CBSA numeric codes for US metro areas (e.g., `"12420"`), `"non-metro:{state}"` for rural US spends, ISO 3166-1 alpha-2 codes for non-US spends, or `"UNKNOWN"` for unresolvable locations. Spends with no resolvable geographic data MUST be bucketed under `"UNKNOWN"`.
-- `byCategory` and `byRegion` record keys MUST be sorted lexicographically (UTF-8 byte order) for canonical serialization.
-- `observedDistribution.totalCents` MUST equal the sum of all `byCategory` values' `totalCents`. The same holds for `spendCount`.
+- `byGeoRegion` keys MUST be canonical region bucket values derived from the canonical spend head. Implementations MAY use ISO 3166-2 subdivisions, ISO 3166-1 alpha-2 country codes, CBSA numeric codes, or non-metro fallbacks when those are the canonical region buckets emitted by the verifier. Spends with no resolvable geographic data MUST be bucketed under `"Unknown"`.
+- `byCategory` and `byGeoRegion` record keys MUST be sorted lexicographically (UTF-8 byte order) for canonical serialization.
+- `verifiedDistribution.totalCents` MUST equal the sum of all `byCategory` values' `totalCents`. The same holds for `spendCount`.
 - If `issuedDistribution` is present, it follows the same rules scoped to rewarded spends only.
 - `prevDistributionTokenHash`, when present, MUST reference the `tokenHash` of the immediately prior published distribution token for the same `(window.type, window.date)`.
 
 ### Privacy floor (implementation guidance, non-normative)
 
-Implementations SHOULD define a minimum-spend-count threshold below which a `byRegion` CBSA bucket is rolled up into a coarser grouping (e.g., state-level or `"UNKNOWN"`) to prevent re-identification via small-population geographic areas cross-tabulated with category and time. The specific threshold is an implementation/policy decision.
+Implementations SHOULD define a minimum-spend-count threshold below which a `byGeoRegion` bucket is rolled up into a coarser grouping (e.g., state-level or `"Unknown"`) to prevent re-identification via small-population geographic areas cross-tabulated with category and time. The specific threshold is an implementation/policy decision.
 
 ### Supersession
 
-Distribution tokens follow the same supersession rules as Observed GMV Tokens: scope key is `(window.type, window.date)`, preference by greatest `asOf.computedAt`.
+Distribution tokens follow the same supersession rules as Verified GMV Tokens: scope key is `(window.type, window.date)`, preference by greatest `asOf.computedAt`.
 
 ### Verification procedure (normative)
 
-To verify an Observed Spend Distribution Token, a verifier MUST:
+To verify a Verified Spend Distribution Token, a verifier MUST:
 
 1. Verify required fields and supported versions (`schemaVersion`); reject on unsupported versions.
 2. Recompute `tokenHash` from the unsigned token and verify `signatures.signature` against `signatures.publicKey`.
 3. Verify that `signatures.publicKey` is an authorized issuer key for `signatures.issuedBy` under the applicable trust root mapping; reject if unauthorized.
 4. Apply local acceptance policy (treat as an as-of snapshot that may be superseded).
-

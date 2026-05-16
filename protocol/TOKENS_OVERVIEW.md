@@ -57,9 +57,9 @@ Crinkl tokens do not introduce a protocol-level identity graph:
 - Aggregate and truth tokens do not expose wallets or users.
 - Identity and payout routing are application-layer concerns.
 
-## The Three Core Token Types
+## The Four Core Token Types
 
-The protocol defines three token outputs. Together, they form the minimum viable set needed to represent economic reality, economic action, and economic scale.
+The protocol defines four token outputs. Together, they form the minimum viable set needed to represent economic reality, economic action, economic scale, and economic distribution.
 
 ### 1) Spend Attestation Token
 
@@ -113,7 +113,7 @@ This makes reward attestations credible to:
 - Agents
 - Counterparties
 
-### 3) Observed GMV Token
+### 3) Verified GMV Token
 
 Aggregate economic throughput, without surveillance.
 
@@ -130,13 +130,13 @@ Aggregate economic throughput, without surveillance.
 
 **Why it matters**
 
-Observed GMV Tokens provide:
+Verified GMV Tokens provide:
 - Append-only aggregate snapshots
 - Explicit “as-of” semantics
 - Correction via supersession, not mutation
 - Privacy-preserving commitments to the underlying spend set
 
-Observed GMV Tokens allow third parties to verify throughput claims without database access, receipt exposure, or blind trust.
+Verified GMV Tokens allow third parties to verify throughput claims without database access, receipt exposure, or blind trust.
 
 They are designed to support:
 - Auditing
@@ -144,7 +144,29 @@ They are designed to support:
 - Agent-based reasoning
 - Historical comparison
 
-## Why Only Three Tokens?
+### 4) Verified Spend Distribution Token
+
+Dimensional distribution of verified spend, without surveillance.
+
+**What it asserts**
+- “As of a specific computation time, verified spend is distributed across categories and regions as shown.”
+- Aggregate totals by category
+- Aggregate totals by region (CBSA / fallback region buckets)
+- Alignment to the same spend snapshot model as Verified GMV
+
+**What it does not assert**
+- User identities
+- Individual receipt details
+- Recipient ownership or payout balances
+
+**Why it matters**
+
+Verified Spend Distribution Tokens provide:
+- Auditable dimensional breakdowns for category/region strategy
+- Privacy-safe local-business signal without per-user exposure
+- Compatibility with the same as-of/supersession model as GMV snapshots
+
+## Why Only Four Tokens?
 
 Crinkl deliberately avoids proliferating token types. Each token corresponds to a fundamental question:
 
@@ -152,7 +174,8 @@ Crinkl deliberately avoids proliferating token types. Each token corresponds to 
 |---|---|
 | “Is this spend true?” | Spend Attestation |
 | “Was value issued?” | Reward Commitment |
-| “How much activity occurred?” | Observed GMV |
+| “How much activity occurred?” | Verified GMV |
+| “Where is activity distributed?” | Verified Spend Distribution |
 
 More complex claims (eligibility, attribution, segmentation, incentives) are built by composing these primitives — not by redefining them.
 

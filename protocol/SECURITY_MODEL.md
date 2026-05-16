@@ -110,14 +110,14 @@ At minimum, a verifier MUST:
 
 ### Aggregate Commitments (GMV)
 
-Observed GMV Tokens are intended to be portable and privacy-safe. They MUST NOT include receipt images, raw OCR text, store names, itemization, or ingestion metadata.
+Verified GMV Tokens are intended to be portable and privacy-safe. They MUST NOT include receipt images, raw OCR text, store names, itemization, or ingestion metadata.
 
 Their integrity rests on:
 
 - a deterministic token hash (RFC 8785 canonicalization + SHA-256), signed by the protocol authority, and
 - a deterministic Merkle root (`spendHeadSetRoot`) committing to which spends and which canonical head states were counted (domain-separated leaf/internal hashing consistent with the Commitment Layer).
 
-Observed GMV Tokens attest that the included spends reached a defined verification tier and were deemed reward-eligible under the active `policyVersion` at the time of commitment. The confidence conveyed is bounded by protocol verification semantics and does not imply external ground-truth validation or fraud impossibility.
+Verified GMV Tokens attest that the included spends reached a defined verification tier and were counted under the token's declared as-of rule. They do not imply reward eligibility unless `issuedGMV`, reward commitment artifacts, or an explicit policy artifact is present. The confidence conveyed is bounded by protocol verification semantics and does not imply external ground-truth validation or fraud impossibility.
 
 ## Protocol Invariants
 

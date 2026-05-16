@@ -1,5 +1,5 @@
 # Spend Tokens
-## Spend Attestations and Observed GMV: A Minimal Token Set for Economic Truth
+## Spend Attestations, Commitments, and Aggregate Tokens: A Minimal Token Set for Economic Truth
 
 Draft (based on Crinkl Protocol v1.0.0-rc.1)
 Authors: Alvin Tanpoco with AI-assisted drafting and formalization
@@ -34,11 +34,12 @@ bucketing, on-chain commitments), along with usage patterns and explicit non-cla
 
 ## 1. Purpose and Scope
 
-We want a verifier to answer three questions using portable artifacts:
+We want a verifier to answer four questions using portable artifacts:
 
 1) Is this spend true under protocol-defined verification rules?
 2) Was value issued because of this spend, and can that issuance be proven later?
 3) How much verified activity occurred in a time window, without revealing users?
+4) Where is verified activity distributed by category or market bucket, without revealing users?
 
 These answers should be deterministic, correction-aware, portable, and
 identity-minimizing.
@@ -144,10 +145,10 @@ state, or trusting an HTTP API response as truth.
 
 Portable tokens may include hashed references and commitment-safe roots/proofs.
 
-## 6. The Three Core Spend Token Types
+## 6. The Four Core Spend Token Types
 
-The Crinkl Protocol defines three core token outputs as the minimal basis for
-representing economic truth and action.
+The Crinkl Protocol defines four core token outputs as the minimal basis for
+representing economic truth, economic action, aggregate scale, and aggregate distribution.
 
 ### 6.1 Spend Attestation Token
 
@@ -183,7 +184,7 @@ corrected, a newer token may supersede prior snapshots for that spend.
 - Current spend validity "as of now."
 - Clawback or reversal semantics unless explicitly specified elsewhere.
 
-### 6.3 Observed GMV Token
+### 6.3 Verified GMV Token
 
 **Purpose:** aggregate economic throughput without surveillance.
 
@@ -197,8 +198,24 @@ corrected, a newer token may supersede prior snapshots for that spend.
 - Individual receipts.
 - Reward balances.
 
-**Interpretation:** Observed GMV is a snapshot with explicit as-of semantics.
+**Interpretation:** Verified GMV is a snapshot with explicit as-of semantics.
 Tokens can be reissued for the same window as corrections occur.
+
+### 6.4 Verified Spend Distribution Token
+
+**Purpose:** aggregate category and market distribution without surveillance.
+
+**Asserts:**
+- As of a computation time, verified spend is distributed across declared categories and geographic buckets as shown.
+- Aggregate totals and counts per category and, when present, per geographic bucket.
+- The same spend snapshot model and `spendHeadSetRoot` semantics as the Verified GMV Token.
+
+**Does not assert:**
+- User identities.
+- Individual receipts.
+- Reward balances or ownership.
+
+**Interpretation:** Verified Spend Distribution is a privacy-safe dimensional snapshot. Tokens can be reissued for the same window as corrections occur.
 
 ## 7. Verification: What a Verifier Does
 
@@ -222,8 +239,9 @@ Tokens are immutable artifacts after signing. Corrections do not mutate prior
 tokens; they emit new events and new tokens.
 
 - Spend tokens: new heads supersede old snapshots for the same `spendId`.
-- Observed GMV tokens: reissued for the same window; verifiers choose the newest
+- Verified GMV tokens: reissued for the same window; verifiers choose the newest
   trusted `computedAt` for "latest-as-of" semantics.
+- Verified Spend Distribution tokens: reissued for the same window and snapshot model as Verified GMV.
 - Reward commitments: do not roll back by default when spends are corrected.
 
 This maintains a stable audit trail while supporting operational correction.
@@ -233,7 +251,7 @@ This maintains a stable audit trail while supporting operational correction.
 ### 9.1 Identity minimization defaults
 
 - Spend truth does not require identity exposure (truth != ownership).
-- Observed GMV explicitly prohibits recipient identity exposure.
+- Verified GMV explicitly prohibits recipient identity exposure.
 - Reward commitments include a recipient identifier only because issuance must be
   auditable.
 
@@ -288,8 +306,10 @@ This enables inclusion proofs and non-repudiation.
 
 - Brand promotions without surveillance: users present Spend Attestation Tokens
   and optional ZK proofs to prove eligibility without revealing receipts.
-- Measurement and negotiation: partners consume signed Observed GMV snapshots for
+- Measurement and negotiation: partners consume signed Verified GMV snapshots for
   a window, enabling auditing without private dashboards.
+- Market/category planning: consumers verify aggregate distribution snapshots
+  without access to raw receipts or identity-linked history.
 - Agent-compatible verification: agents verify tokens locally rather than relying
   on untrusted claims.
 - Auditable reward programs: Reward Commitment Tokens plus on-chain commitments
@@ -311,8 +331,10 @@ Spend Tokens define a minimal, portable, correction-aware representation of
 verified commerce:
 - Spend Attestation: "Is this spend true under protocol semantics?"
 - Reward Commitment: "Was value issued (and committed)?"
-- Observed GMV: "How much verified activity occurred, as-of time T, without
+- Verified GMV: "How much verified activity occurred, as-of time T, without
   surveillance?"
+- Verified Spend Distribution: "Where did verified activity occur by category
+  or market bucket, without surveillance?"
 
 By separating truth from economics and making tokens portable, Spend Tokens turn
 real-world commerce into machine-verifiable facts that downstream systems and

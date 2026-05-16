@@ -1,14 +1,14 @@
 [
   {
-    "storeId": "crinkl-store-pga-superstore",
-    "displayName": "PGA Superstore",
+    "storeId": "crinkl-store-example-merchant",
+    "displayName": "Example Merchant",
     "logo": {
-      "uri": "https://cdn.crinkl.example/logos/pga-superstore.png",
+      "uri": "https://cdn.crinkl.example/logos/example-merchant.png",
       "contentHash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
       "mimeType": "image/png"
     },
-    "categories": ["golf-retail"],
-    "aliases": ["PGA SUPERSTORE", "PGA SUPRSTORE", "PGA SUPER STORE"],
+    "categories": ["example-category"],
+    "aliases": ["EXAMPLE MERCHANT", "EXMPL MERCH", "EXAMPLE STORE"],
     "externalIds": [
       { "namespace": "google", "type": "place_id", "value": "ChIJ__EXAMPLE__" }
     ],

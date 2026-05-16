@@ -1,8 +1,10 @@
 # Zero-Knowledge Extension Layer
 
-> **Status: v1 (optional extension) — closed statement set for interoperability**
+> **Status: v1 optional extension — interface stable, concrete commitment schemes and some circuits incomplete**
 >
 > This section defines the interface for ZK extensions. Concrete statement types and the circuits that implement them are captured in `ZK_CIRCUIT_CATALOG.md`.
+>
+> Implementation status: the minimal promo-open proof lane is demo-supported. Wallet-secret rollout proofs and general commitment-scheme standardization are target architecture, not required core protocol behavior.
 
 ## Purpose
 
@@ -108,10 +110,13 @@ scopeId = "sha256:" + SHA-256(RFC8785(scope))
 
 **Scope incorporation (normative):**
 
-When a ZK statement includes scope binding:
-- The `scopeId` MUST be incorporated into the statement identifier calculation (so statements with different scopes are cryptographically distinct)
-- Commitment domain separation SHOULD include `scopeId` (implementation-specific; see circuit catalog)
-- Public inputs to the proof circuit MAY include `scopeId` or its hash to enforce binding at verification time
+`statementId` identifies the predicate independent of redemption scope. `scopeId` identifies the verification, redemption, or settlement context in which that predicate is being used.
+
+When a ZK proof is used inside a scoped flow:
+- the proof transcript or public inputs MUST bind both `statementId` and `scopeId`;
+- changing either `statementId` or `scopeId` MUST make proof verification fail;
+- `scopeId` MUST NOT be folded back into `statementId`, because `scopeId` itself may reference `statementId` in higher-level artifacts;
+- commitment domain separation MAY include `scopeId` when a circuit profile requires context-specific commitments, but this is circuit-specific and must be documented in `ZK_CIRCUIT_CATALOG.md`.
 
 **Privacy note on scope binding:**
 

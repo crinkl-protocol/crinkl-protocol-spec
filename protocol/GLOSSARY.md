@@ -80,17 +80,21 @@ The per-`chainId` event stream of protocol system events (e.g., authority regist
 
 An aggregate sum of spend totals over a specified time window.
 
-In this protocol, GMV is always defined with explicit window and “as-of” semantics (see the Observed GMV Token in TOKENS.md).
+In this protocol, GMV is always defined with explicit window and “as-of” semantics (see the Verified GMV Token in TOKENS.md).
 
-## Observed GMV
+## Verified GMV
 
 GMV computed by summing canonical (hard-verified and corrected) spend totals for a given window, as-of a specific computation time; it may change over time as corrections append.
+
+## Verified Spend Distribution
+
+A privacy-preserving aggregate breakdown of verified spend by category and geographic bucket for a given window, as-of a specific computation time. It shares the same snapshot semantics as Verified GMV and MUST NOT expose wallet identifiers, recipient references, or per-user spend patterns.
 
 ## Issued GMV (Rewarded GMV)
 
 GMV derived from reward issuance artifacts (append-only with no clawbacks), and therefore should remain stable for a given policy epoch.
 
-**Relationship invariant:** Issued GMV MAY diverge permanently from Observed GMV due to corrections/invalidations after issuance; the protocol does not assume clawbacks as a mechanism to force equality.
+**Relationship invariant:** Issued GMV MAY diverge permanently from Verified GMV due to corrections/invalidations after issuance; the protocol does not assume clawbacks as a mechanism to force equality.
 
 ## RecipientRef
 
@@ -121,7 +125,8 @@ Wallet exposure elsewhere is governed by the **Identity Minimization Invariant**
 
 - **Spend Attestation Tokens**: `wallet` is **optional**—spend truth does not imply ownership.
 - **Reward Commitment Tokens**: `recipientId` is **required**—but MAY be `WalletRef` or `Commitment` per schema.
-- **Observed GMV Tokens**: `wallet` is **prohibited**—aggregate claims have no wallet semantics.
+- **Verified GMV Tokens**: `wallet` is **prohibited**—aggregate claims have no wallet semantics.
+- **Verified Spend Distribution Tokens**: `wallet` is **prohibited**—aggregate distribution claims have no wallet semantics.
 
 **Deployment note (non-normative):** In early deployments, an Issuer MAY treat `WalletRef` as an issuer-provisioned or custodial wallet address (i.e., a routing scope for value), rather than a user-supplied self-custody address. This does not change protocol semantics: spend truth does not imply ownership, and any mapping from app user → wallet is application-layer and out of protocol.
 
@@ -144,6 +149,36 @@ A stable identifier for a ZK statement, typically computed as `sha256(RFC8785_ca
 A stable identifier for a predicate definition used by routing/distribution, computed as `sha256(RFC8785_canonicalize(predicateDefinition))`.
 
 `predicateDefinition` references `statementId` and adds coordination-layer inputs (for example routing scope, exclusion rules, promoter gate, settlement parameters). It is a pointer artifact and does not change protocol truth or proof verification semantics.
+
+## Campaign Spend Proof Primitive
+
+A finite proof family used to express campaign rules over identity-free Spend Attestation Tokens. The v1 campaign primitive families are Spend Validity, Scoped Buyer State, Frequency / Intensity, Category / Competitive Relationship, Market / Context, and Outcome / Conversion.
+
+Campaign Spend Proof Primitives are defined in `CAMPAIGN_SPEND_PROOF_PRIMITIVES.md`. They compose existing token, proof, scope, nullifier, reward, and commitment surfaces; they do not introduce a new core token type.
+
+## Audience Qualification
+
+A campaign-scoped proof that a holder satisfies the audience side of a Campaign Rule. Audience Qualification is a marketing-facing term for qualification proof over Campaign Spend Proof Primitives.
+
+Audience Qualification MUST NOT mint a Spend Attestation Token. It only proves campaign qualification within an explicit scope and time window.
+
+## Verified Conversion
+
+A campaign-scoped proof that the required commerce outcome occurred. In payout-bearing campaigns, a Verified Conversion references a Spend Attestation Token produced by the normal verification pipeline.
+
+Verified Conversion is a marketing-facing term for an Outcome / Conversion proof. It is not a new token type.
+
+## Conversion Approval
+
+A verifier-signed decision that Audience Qualification and Verified Conversion satisfy a Campaign Rule and may proceed to settlement.
+
+Conversion Approval binds the campaign parameters, qualification proof, conversion Spend Token hash, payout terms, settlement scope, and settlement nullifier.
+
+## Campaign Settlement Commitment
+
+A public settlement commitment for cleared campaign conversions. It is represented by `CAMPAIGN_SETTLEMENT_COMMITTED` plus a Merkle root over `CampaignSettlementLeafV1` leaves.
+
+Campaign Settlement Commitment is not a token and does not publish raw audience proofs, raw Spend Tokens, wallet identities, raw receipt data, or sensitive market details. It binds campaign settlement to campaign parameters, verifier approval, conversion Spend Token hash, payout totals, authority signature, and public chain anchoring.
 
 ## ZK Witness
 

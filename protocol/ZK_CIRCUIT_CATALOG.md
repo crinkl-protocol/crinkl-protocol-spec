@@ -1,12 +1,14 @@
 # ZK Circuit Catalog (v1)
 
-> **Status: v1.0-ready for the demo statement set**
+> **Status: v1 optional extension — demo-supported statements plus unfinished wallet rollout target**
 >
 > This document is the missing “wiring layer” between:
 > - a brand campaign’s **eligibility rule** (`statementId`), and
 > - the **proof artifact** a verifier expects (`proofSystem`, `circuitId`, `verifyingKeyId`).
 >
-> The Promo Protocol does not define an arbitrary “campaign DSL”. Instead, campaigns reference **statement types** from a closed catalog, and each statement type has one or more supported proof circuits.
+> The offer-delivery profile in `PROMO_PROTOCOL.md` does not define arbitrary campaign rules. Campaign rule composition uses `CAMPAIGN_SPEND_PROOF_PRIMITIVES.md`; this catalog maps referenced **statement types** to supported proof circuits.
+>
+> Implementation status: Halo2/Bulletproof statement proofs listed below are the demo-supported lane. `WalletRolloutProofV1` is an interface and target architecture until a concrete circuit entry and verifying key profile are added.
 
 ## 1) What this catalog is for
 
@@ -88,7 +90,7 @@ Proof verification MUST fail if any of the following change:
 - `statementId`
 - `scopeId` (redemption scope binding)
 
-**Promo binding profile (required when used inside the Promo Protocol):**
+**Offer-delivery binding profile (required when used inside `PROMO_PROTOCOL.md`):**
 
 When this spend proof is used in a `PromoEligibilityClaimV1`:
 - `publicInputs.scopeId` MUST equal the claim’s `scopeId`
@@ -151,7 +153,7 @@ Proof verification MUST fail if any of the following change:
 - `statementId`
 - `scopeId` (redemption scope binding)
 
-**Promo binding profile (required when used inside the Promo Protocol):**
+**Offer-delivery binding profile (required when used inside `PROMO_PROTOCOL.md`):**
 
 When this spend proof is used in a `PromoEligibilityClaimV1`:
 - `publicInputs.scopeId` MUST equal the claim’s `scopeId`
@@ -314,7 +316,7 @@ The current demo encodes **dayIndex** (32-bit) and uses depth 4.
 
 Verifiers MUST reject if any of these values change, or if `publicInputs` do not match the statement fields.
 
-**Promo binding profile (required when used inside the Promo Protocol):**
+**Offer-delivery binding profile (required when used inside `PROMO_PROTOCOL.md`):**
 
 When this spend proof is used in a `PromoEligibilityClaimV1`:
 - `publicInputs.scopeId` MUST equal the claim’s `scopeId`
@@ -330,7 +332,7 @@ The v1 demo statement types are:
 - `SPEND_STOREHASH_IN_SET_AND_DAYINDEX_GTE` (store allowlist + Bulletproofs range proof over `C_dayIndex`)
 - `SPEND_STOREHASH_IN_ROOT_AND_DAYINDEX_GTE_AND_TOTAL_GTE` (private store + time window + total, Halo2 IPA)
 
-This is sufficient to demonstrate the **end-to-end promo protocol** (campaign → wallet filter → claim → brand verification → encrypted decision) with real ZK statement proofs.
+This is sufficient to demonstrate the **end-to-end offer-delivery profile** (campaign -> wallet filter -> claim -> brand verification -> encrypted decision) with real ZK statement proofs.
 
 ## 3.5 How “category in last 30 days” is expressed in v1
 
@@ -345,7 +347,7 @@ How the verifier gets the allowlist is outside the ZK proof system and is typica
 - derived from a signed Store Registry snapshot (`STORE_REGISTRY.md`), using `StoreEntryV1.categories`, or
 - a verifier-curated allowlist (explicitly not a new protocol trust root; it’s the verifier’s campaign definition).
 
-This gives v1 a complete, interoperable path to run the demo promo end-to-end without introducing a SNARK/STARK/zkVM yet.
+This gives v1 a complete, interoperable path to run the demo offer-opening flow end-to-end without requiring wallet-secret rollout proofs yet.
 
 **Scaling note (non-normative):** to avoid large statements, future statement types can replace explicit `allowedStoreHashes` with a committed set reference (e.g., Merkle root) and require a set-membership circuit (typically SNARK/STARK/zkVM) when the verifier does not want to reveal the allowlist.
 
@@ -376,7 +378,7 @@ so the wallet cannot “retry” to get a better bucket.
 
 **Catalog entry (placeholder):**
 
-For v1, the interface is fixed (`WalletRolloutProofV1`), but the concrete circuit is still under selection (SNARK vs zkVM).
+For v1, the interface is reserved (`WalletRolloutProofV1`), but the concrete circuit is still under selection (SNARK vs zkVM). A deployment MUST NOT claim support for wallet-secret rollout proofs until this catalog contains a concrete `proofSystem`, `circuitId`, and `verifyingKeyId` profile for the rollout circuit.
 
 Once selected, this catalog MUST be updated to include at least one concrete entry like:
 

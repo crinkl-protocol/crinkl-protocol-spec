@@ -8,17 +8,18 @@
 
 ## 1) Baseline (What Exists in the Core Spec)
 
-The protocol already produces three verifiable token outputs:
+The protocol already produces four verifiable token outputs:
 
 1. **Spend Attestation Token** — a privacy-safe, portable claim about canonical Spend attestation (HARD_VERIFIED / CORRECTED / INVALIDATED), derived from the spend-stream.
 2. **Reward Commitment Token** — system-stream commitment events + recipient inclusion proofs under committed batch roots.
-3. **Observed GMV Token** — Crinkl formalizes GMV as a privacy-safe daily “as-of” commitment to aggregate spend totals (and optionally issued/rewarded totals) without exposing receipts.
+3. **Verified GMV Token** — Crinkl formalizes GMV as a privacy-safe daily “as-of” commitment to aggregate spend totals (and optionally issued/rewarded totals) without exposing receipts.
+4. **Verified Spend Distribution Token** — privacy-safe dimensional breakdowns of verified spend by category and region.
 
 Spend Attestation Tokens MAY additionally include ZK commitments and be accompanied by ZK statement proofs as optional proof material (see ZK_LAYER.md and TOKENS.md).
 
 These are derived from protocol primitives; they do not introduce new roots (no "user object", no identity graph). These outputs MUST NOT introduce new protocol trust roots, identity graphs, or mutable user-scoped state.
 
-**Extension token boundary (normative):** any additional token types introduced by extensions MUST be explicitly labeled non-core and MUST NOT be required to verify the core token set defined in `TOKENS.md` (`SPEND_ATTESTATION`, `REWARD_COMMITMENT`, `OBSERVED_GMV`).
+**Extension token boundary (normative):** any additional token types introduced by extensions MUST be explicitly labeled non-core and MUST NOT be required to verify the core token set defined in `TOKENS.md` (`SPEND_ATTESTATION`, `REWARD_COMMITMENT`, `VERIFIED_GMV`, `VERIFIED_SPEND_DISTRIBUTION`).
 
 ## 2) Spend ↔ Reward Linkage (Optional, Additive)
 
@@ -60,9 +61,9 @@ Extensions are the easiest way to accidentally violate privacy invariants. Imple
 - **Rate limiting MUST NOT create protocol-visible identity**: rate-limit keys and reputation systems are operational and MUST NOT become public identifiers or be embedded into tokens/proofs.
 - **Redemption anti-replay MUST be scope-scoped**: `nullifier` MUST be scoped by `scopeId` to prevent cross-campaign linkability.
 
-## 4) Per-Spend Observed GMV Proofs (Optional, Additive)
+## 4) Per-Spend Verified GMV Proofs (Optional, Additive)
 
-Observed GMV Tokens commit to the set of spends counted via `asOf.spendHeadSetRoot` (see TOKENS.md). As an additive capability, issuers MAY return a **per-spend inclusion proof** to a user who knows a `spendId`, so the user can verify that their hard-verified (or corrected) spend was counted in a specific day’s Observed GMV snapshot without the issuer publishing the full spend list.
+Verified GMV Tokens commit to the set of spends counted via `asOf.spendHeadSetRoot` (see TOKENS.md). As an additive capability, issuers MAY return a **per-spend inclusion proof** to a user who knows a `spendId`, so the user can verify that their hard-verified (or corrected) spend was counted in a specific day’s Verified GMV snapshot without the issuer publishing the full spend list.
 
 **Verification tier bound:** Only spends that have reached a terminal verification state (HARD_VERIFIED or CORRECTED) at the snapshot boundary MAY be provable as included.
 
@@ -76,20 +77,20 @@ This is intended to be:
 
 See TOKENS.md for the proof shape and verification procedure.
 
-## 5) Observed Spend Distribution Token (Additive)
+## 5) Verified Spend Distribution Token (Additive)
 
-The Observed Spend Distribution Token extends the GMV primitive with **dimensional breakdowns**: the same aggregate spend data sliced by store category and geographic region. It shares the same `spendHeadSetRoot`, spend filtering, and as-of semantics as the Observed GMV Token for the same window.
+The Verified Spend Distribution Token extends the GMV primitive with **dimensional breakdowns**: the same aggregate spend data sliced by store category and geographic region. It shares the same `spendHeadSetRoot`, spend filtering, and as-of semantics as the Verified GMV Token for the same window.
 
 **Key properties:**
 
 - **Derived from same snapshot** — identical `spendHeadSetRoot` and spend filtering as GMV token; implementations SHOULD compute both tokens from a single snapshot pass.
 - **Same cryptographic model** — Ed25519 signed, authority-authenticated, temporally chained via `prevDistributionTokenHash`.
 - **Identity-free** — only aggregated counts and totals per dimension; no wallet identifiers, no per-user data.
-- **Dual accounting** — `observedDistribution` (all verified spends) vs `issuedDistribution` (rewarded spends only), mirroring GMV's observed/issued split.
+- **Dual accounting** — `verifiedDistribution` (all verified spends) vs `issuedDistribution` (rewarded spends only), mirroring GMV's verified/issued split.
 
 **Geographic dimension — CBSA metro areas:**
 
-`byRegion` keys use `CBSACode` values (see `DATA_STRUCTURES.md#cbsacode`): US OMB Core Based Statistical Area codes (~390 metro areas) providing local-business-meaningful granularity. Non-metro US spends use `"non-metro:{state}"`, non-US spends use ISO 3166-1 alpha-2 country codes, and unresolvable locations use `"UNKNOWN"`.
+`byGeoRegion` keys use canonical region bucket values derived from the canonical spend head (see `DATA_STRUCTURES.md#regioncode` and `DATA_STRUCTURES.md#cbsacode`). Implementations MAY use US OMB Core Based Statistical Area codes, non-metro fallbacks, ISO 3166-2 subdivisions, or ISO 3166-1 alpha-2 country codes when those are the verifier's canonical buckets. Unresolvable locations use `"Unknown"`.
 
 CBSA codes are derived from store physical location via the store registry and public OMB crosswalk (city/county → CBSA), not from receipt text. Implementations SHOULD define a privacy floor (minimum spend count per CBSA bucket) below which small-population areas are rolled up into a coarser grouping.
 
@@ -97,7 +98,7 @@ CBSA codes are derived from store physical location via the store registry and p
 
 `byCategory` keys are canonical store category identifiers from the store registry (see `STORE_REGISTRY.md`). Unresolvable stores are bucketed under `"Unknown"`.
 
-See `TOKENS.md#observed-spend-distribution-token` for the normative portable shape and verification procedure.
+See `TOKENS.md#verified-spend-distribution-token` for the normative portable shape and verification procedure.
 
 ## 6) Future Extensions (Placeholder)
 
@@ -106,16 +107,16 @@ Future additions SHOULD prefer:
 - optional proof material attached to existing token bundles (Spend Attestation / Reward Commitment), and/or
 - new commitment types and leaf schemas within the Commitment Layer when external anchoring is required.
 
-Future extensions SHOULD NOT introduce new token categories that duplicate or reinterpret protocol truth, reward eligibility, or verification semantics.
+Future extensions SHOULD NOT introduce new token categories that duplicate or reinterpret protocol truth, reward eligibility, or verification semantics. Campaign rule composition SHOULD use Campaign Spend Proof Primitives (`CAMPAIGN_SPEND_PROOF_PRIMITIVES.md`) over existing token and proof surfaces.
 
-## 6) Store Registry Snapshots (Optional, Additive)
+## 7) Store Registry Snapshots (Optional, Additive)
 
 Interoperable “store” and “store location” identification requires a shared taxonomy. The core protocol intentionally keeps Spend Attestation Tokens portable and privacy-safe by including only:
 
 - `canonical.storeHash` (deterministic hash over a canonical `storeId`)
 - optionally coarse location (`geoRegion`) and metro area (`cbsaCode`) when available
 
-To let verifiers compute `storeHash` deterministically for a known merchant (e.g., “PGA Superstore”) without trusting a private API, issuers MAY publish a **signed, Merkle-rooted store registry snapshot** as a **non-core extension token**.
+To let verifiers compute `storeHash` deterministically for a known merchant (e.g., “Example Merchant”) without trusting a private API, issuers MAY publish a **signed, Merkle-rooted store registry snapshot** as a **non-core extension token**.
 
 This snapshot is:
 - publicly replicable (portable verification requires only the snapshot token + public rules),
