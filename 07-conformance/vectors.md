@@ -284,6 +284,22 @@ Note: Reward Ledger is immutable. Fraud does not modify or claw back rewards.
 
 ---
 
+## 13. CampaignEpoch Examples (7 vectors)
+
+These are normative conformance expectations for campaign implementations. They are examples until a machine-readable CampaignEpoch vector format is added.
+
+| # | Scenario | Expected Behavior |
+|---|----------|-------------------|
+| 1 | Append Epoch 2 with `previousEpochId = Epoch 1`, new `epochId`, new `ruleSetHash`, and prospective `effectiveFrom` | ✓ Accept valid epoch append |
+| 2 | Edit Epoch 1 in place to change `rewardRuleHash`, `targetMerchantSetRoot`, or `effectiveTo` after proof or reward activity | ✗ Reject invalid retroactive mutation |
+| 3 | Remove one EligibleMerchant by creating Epoch 2 with a new `targetMerchantSetRoot` or `targetMerchantSetHash` | ✓ Accept TargetMerchantSet change through a new epoch |
+| 4 | Sponsor lowers or invalidates a reward already earned under Epoch 1 after a valid ProofOfMatch | ✗ Reject reward downgrade for an already-earned claim |
+| 5 | CampaignEpoch omits `timingRule` | ✗ Reject invalid CampaignEpoch |
+| 6 | Add budget as a child FundingTranche bound to the same `campaignId`, `epochId`, and `ruleSetHash` without changing condition, TargetMerchantSet reference, reward rule, claim level, effective window, timing rule, or funding policy | ✓ Accept budget top-up without rule change |
+| 7 | `claimLevel = "INCREMENTAL"` without a baseline, holdout, or incrementality method in the epoch rule material | ✗ Reject invalid INCREMENTAL claim |
+
+---
+
 ## Vector Count Summary
 
 | Category | Count |
@@ -300,4 +316,5 @@ Note: Reward Ledger is immutable. Fraud does not modify or claw back rewards.
 | Rate limiting | 4 |
 | Complete traces | 4 |
 | Edge cases | 5 |
-| **Total** | **92** |
+| CampaignEpoch examples | 7 |
+| **Total** | **99** |

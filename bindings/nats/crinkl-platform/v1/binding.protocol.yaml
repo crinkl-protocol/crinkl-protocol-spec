@@ -1,5 +1,5 @@
 bindingVersion: 1
-protocolVersion: "1.0.0-rc.1"
+protocolVersion: "1.0.0-rc.2"
 
 # Canonical Crinkl Protocol binding (normative): protocol events + system events only.
 # Platform pipeline/ops subjects (pipeline.*, DLQ, etc.) are defined in binding.platform.yaml.

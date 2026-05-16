@@ -74,6 +74,16 @@ The exact reward math remains app/issuer-defined, but for interoperability the s
 
 See JSON schema: `schemas/reward_policy_snapshot_v1.schema.json`.
 
+## 4a) Campaign funding and reward rule references
+
+CampaignEpochs reference reward policy by hash; they do not move reward math into Core.
+
+- `rewardRuleHash` identifies the reward rule used by one CampaignEpoch.
+- `FundingTranche` identifies a budget allocation committed to that CampaignEpoch.
+- `RuleSetHash` binds the condition, TargetMerchantSet reference/root, reward rule, claim level, effective window, timing rule, and funding reference.
+
+Reward rules MAY change only by creating a new CampaignEpoch with a new `rewardRuleHash`. Budget increases MUST NOT mutate the original FundingTranche amount. If `ruleSetHash` is unchanged, a budget top-up MAY attach to the same CampaignEpoch through a child FundingTranche record with `parentFundingTrancheId`. If `ruleSetHash` changes, the campaign MUST append a new epoch. Unspent budget MAY roll forward only when the prior epoch funding policy permits it.
+
 ## 5) Reserve / backing artifacts (issuer claims, not protocol truth)
 
 Crinkl tokens and events are explicit about non-claims:

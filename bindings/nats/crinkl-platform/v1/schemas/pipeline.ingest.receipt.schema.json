@@ -40,7 +40,7 @@
         "commandName": { "const": "INGEST_RECEIPT" },
         "payload": { "$ref": "#/$defs/IngestReceiptPayload" },
         "timestamp": { "$ref": "#/$defs/IsoDateTimeLoose" },
-        "protocolVersion": { "const": "1.0.0-rc.1" },
+        "protocolVersion": { "const": "1.0.0-rc.2" },
         "context": { "$ref": "#/$defs/CommandContext" }
       }
     }

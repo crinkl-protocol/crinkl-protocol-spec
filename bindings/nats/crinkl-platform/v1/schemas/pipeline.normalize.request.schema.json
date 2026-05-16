@@ -37,7 +37,7 @@
         "commandName": { "const": "NORMALIZE_REQUEST" },
         "payload": { "$ref": "#/$defs/NormalizationRequestPayload" },
         "timestamp": { "$ref": "#/$defs/IsoDateTimeLoose" },
-        "protocolVersion": { "const": "1.0.0-rc.1" },
+        "protocolVersion": { "const": "1.0.0-rc.2" },
         "context": { "$ref": "#/$defs/CommandContext" }
       }
     }

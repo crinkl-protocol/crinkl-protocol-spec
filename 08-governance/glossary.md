@@ -163,6 +163,60 @@ A finite proof family used to express campaign rules over identity-free Spend At
 
 Campaign Spend Proof Primitives are defined in `../04-condition-layer/campaign-commitment.md`. They compose existing token, proof, scope, nullifier, reward, and commitment surfaces; they do not introduce a new core token type.
 
+## Campaign
+
+A mutable parent container for sponsor objective, campaign type, market scope, and CampaignEpoch history. A Campaign does not itself define final eligibility.
+
+## AnchorBrand
+
+A sponsor or reference brand whose observed activity may help discover a CandidateSet. AnchorBrand activity is discovery input only; it is not campaign eligibility by itself.
+
+## CandidateSet
+
+A discovered set of merchants or merchant references that may be reviewed for campaign use. CandidateSet discovery is not the same as campaign eligibility.
+
+## EligibleMerchant
+
+A merchant entry approved for inclusion in a TargetMerchantSet for a specific campaign epoch.
+
+## TargetMerchantSet
+
+The reviewed set of EligibleMerchant entries bound to a CampaignEpoch by `targetMerchantSetRoot` or `targetMerchantSetHash`.
+
+## CampaignEpoch
+
+An immutable, append-only, funded rule window. A CampaignEpoch binds `campaignId`, `epochId`, `epochVersion`, effective window, timing rule, condition hash, RuleSetHash, TargetMerchantSet reference, reward rule hash, FundingTranche, claim level, previous epoch reference when present, issuer authority, and creation time.
+
+## CampaignAmendment
+
+A forward-only event that closes or supersedes a prior CampaignEpoch and appends a new CampaignEpoch. A CampaignAmendment MUST NOT mutate prior epochs.
+
+## FundingTranche
+
+A budget allocation bound to a specific CampaignEpoch. A FundingTranche may fund rewards only under the rule set it was committed to.
+
+Budget increases are represented as child FundingTranche records (`parentFundingTrancheId`) bound to the same CampaignEpoch and same RuleSetHash. The original FundingTranche amount MUST NOT be mutated.
+
+## RuleSetHash
+
+The canonical hash over condition, TargetMerchantSet reference/root, reward rule, claim level, effective window, timing rule, and funding reference.
+
+## ClaimLevel
+
+The campaign claim strength asserted by a CampaignEpoch. Allowed values are:
+
+- `OBSERVED` — verified spend occurred under the epoch rule.
+- `ATTRIBUTED` — spend matched attribution conditions defined by the epoch.
+- `INCREMENTAL` — requires a baseline, holdout, or incrementality method specified by the epoch.
+
+## ProofOfMatch
+
+The campaign-facing spelling of Proof of Match. A ProofOfMatch evaluates spend against exactly one CampaignEpoch and is downstream of Spend Attestation.
+
+## RewardCommitment
+
+The campaign-facing spelling of Reward Commitment. A RewardCommitment is produced only after valid proof material such as ProofOfMatch and records downstream economic consequence without changing spend truth.
+
 ## Audience Qualification
 
 A campaign-scoped proof that a holder satisfies the audience side of a Campaign Rule. Audience Qualification is a marketing-facing term for qualification proof over Campaign Spend Proof Primitives.

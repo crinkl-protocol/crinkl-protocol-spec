@@ -6,7 +6,7 @@ A spend attestation proves that a purchase event was observed, normalized, verif
 
 The protocol is designed so that campaigns, reward systems, analytics tools, agents, and settlement layers can verify commerce facts without requiring raw receipt access or user identity.
 
-[![Version](https://img.shields.io/badge/version-v1.0.0--rc.1-blue)](versions/CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-v1.0.0--rc.2-blue)](versions/CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-Apache%202.0-green)](LICENSE)
 [![CI](https://github.com/crinkl-protocol/crinkl-protocol-spec/actions/workflows/drift-check.yml/badge.svg)](https://github.com/crinkl-protocol/crinkl-protocol-spec/actions/workflows/drift-check.yml)
 
@@ -20,8 +20,8 @@ Crinkl proves that commerce evidence advanced through a defined proof lifecycle:
 4. A hard-verified Spend Event may produce a Spend Attestation.
 5. The Spend Attestation may be packaged as a Spend Attestation Token.
 6. External systems may verify the attestation.
-7. Conditions may evaluate one or more attestations.
-8. Valid condition matches may trigger rewards, settlement, campaigns, analytics, or agent responses.
+7. Conditions and CampaignEpochs may evaluate one or more attestations.
+8. Valid ProofOfMatch results may trigger rewards, settlement, campaigns, analytics, or agent responses.
 
 ## What Crinkl Does Not Prove
 
@@ -54,6 +54,7 @@ Core protocol validity does not depend on campaigns, rewards, Solana, ZK, MCP, R
 | Spend Attestation | Core | Signed claim that a Spend Event was verified according to Crinkl rules. |
 | Spend Attestation Token | Portability | Portable representation of a Spend Attestation for external verification. |
 | Condition | Condition Layer | Rule over one or more Spend Attestations. |
+| CampaignEpoch | Condition Layer | Immutable, append-only funded rule window for campaign eligibility. |
 | Proof of Match | Condition Layer | Result of evaluating attestations against a condition. |
 | Reward Commitment | Reward/Settlement | Downstream accounting or promise based on valid proof of match. |
 
@@ -75,7 +76,7 @@ Downstream layers consume spend proof; they do not define it.
 
 | Layer | Documents |
 |---|---|
-| Condition rules | [`04-condition-layer/`](04-condition-layer/) |
+| Condition rules and CampaignEpochs | [`04-condition-layer/`](04-condition-layer/) |
 | Reward and settlement | [`05-reward-and-settlement/`](05-reward-and-settlement/) |
 | ZK, agent, REST/MCP, Solana, offer delivery | [`06-extensions/`](06-extensions/) |
 | Conformance | [`07-conformance/`](07-conformance/) |
@@ -94,10 +95,11 @@ Downstream layers consume spend proof; they do not define it.
 | [`06-extensions/`](06-extensions/) | Optional ZK, agent query, transport, Solana, offer-delivery, and registry profiles. |
 | [`07-conformance/`](07-conformance/) | Vectors, verifier test suite, compatibility notes. |
 | [`08-governance/`](08-governance/) | Versioning, change process, authority hierarchy, and shared glossary. |
+| [`schemas/experimental/`](schemas/experimental/) | Candidate non-core extension schemas; not required for Core Spend Attestation validity. |
 
 ## Current Version
 
-**v1.0.0-rc.1** — see [`versions/CHANGELOG.md`](versions/CHANGELOG.md).
+**v1.0.0-rc.2** — see [`versions/CHANGELOG.md`](versions/CHANGELOG.md).
 Planned stable release tag: **v1.0.0**.
 
 ## Verification
