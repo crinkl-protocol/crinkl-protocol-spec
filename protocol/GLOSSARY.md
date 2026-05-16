@@ -174,6 +174,12 @@ A verifier-signed decision that Audience Qualification and Verified Conversion s
 
 Conversion Approval binds the campaign parameters, qualification proof, conversion Spend Token hash, payout terms, settlement scope, and settlement nullifier.
 
+## Campaign Settlement Commitment
+
+A public settlement commitment for cleared campaign conversions. It is represented by `CAMPAIGN_SETTLEMENT_COMMITTED` plus a Merkle root over `CampaignSettlementLeafV1` leaves.
+
+Campaign Settlement Commitment is not a token and does not publish raw audience proofs, raw Spend Tokens, wallet identities, raw receipt data, or sensitive market details. It binds campaign settlement to campaign parameters, verifier approval, conversion Spend Token hash, payout totals, authority signature, and public chain anchoring.
+
 ## ZK Witness
 
 Wallet-only private material that allows a holder to open ZK commitments and generate ZK statement proofs (e.g., openings for `zk.commitments.C_total`). ZK witness material is not portable and must be treated as sensitive.

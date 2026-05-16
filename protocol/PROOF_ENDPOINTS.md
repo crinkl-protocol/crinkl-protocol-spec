@@ -4,7 +4,7 @@
 >
 > This document lists example endpoint surfaces for serving already-defined protocol artifacts. It is not part of core protocol validity, and deployments MAY expose different paths or authentication policies as long as token/proof verification follows the normative procedures in `TOKENS.md`, `COMMITMENT_LAYER.md`, and `TRUSTLESS_TOKEN_VERIFICATION.md`.
 
-Any public proof endpoint MUST avoid PII and MUST NOT become a lookup oracle over receipt history, wallet identity, or campaign participation.
+Any public proof endpoint MUST avoid PII and MUST NOT become a lookup oracle over receipt history, wallet identity, campaign participation, or campaign-scoped audience membership.
 
 **RecipientId note:** Reward commitment tokens expose a `recipientId`. By default this is a **blinded hash** (not a wallet address). It is safe to return publicly as a non-identifying commitment.
 
@@ -51,6 +51,18 @@ Any public proof endpoint MUST avoid PII and MUST NOT become a lookup oracle ove
 **Returns:** step‑by‑step checks + final ok.  
 **Proves:** Full expression for a spend: **attested spend → counted in GMV → reward issued → anchored**.
 
+## 10) GET `/api/public/proofs/campaign-settlement/:settlementBatchId`
+**Status:** optional extension endpoint for `CAMPAIGN_SETTLEMENT_COMMITTED`.
+**Returns:** `{settlementBatchId, campaignId, campaignParamsHash, root, leafCount, totalPayoutAmount, payoutAsset, schemaVersion, txRef, committedAt}` plus the signed system-stream event when available.
+**Proves:** A campaign settlement batch root was signed by an authorized committer and publicly anchored.
+
+## 11) GET `/api/public/proofs/campaign-settlement/:settlementBatchId/approval/:approvalHash`
+**Status:** optional extension endpoint for holder-, sponsor-, or auditor-authorized lookup.
+**Returns:** `{settlementBatchId, approvalHash, leafHash, merkleProof, leaf}` where `leaf` is a `CampaignSettlementLeafV1` or a redacted leaf plus disclosure proof.
+**Proves:** A verifier-approved campaign conversion was included in a public campaign settlement batch.
+
+This endpoint MUST NOT allow public enumeration of campaign participants. Deployments SHOULD require the requester to know `approvalHash`, `settlementNullifier`, or another high-entropy authorization handle.
+
 ---
 
 ### Minimal verification order (for any verifier)
@@ -60,5 +72,6 @@ Any public proof endpoint MUST avoid PII and MUST NOT become a lookup oracle ove
 4) Verify reward token signature.  
 5) Verify reward batch inclusion proof.  
 6) Verify batch anchor on-chain.  
+7) For campaign settlement, verify `CAMPAIGN_SETTLEMENT_COMMITTED`, leaf inclusion, and `txRef` anchoring.
 
 If all pass, the proof does **not** depend on the Crinkl DB. Endpoint availability itself is still deployment policy, not protocol validity.

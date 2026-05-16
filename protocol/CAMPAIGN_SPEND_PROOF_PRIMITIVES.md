@@ -4,7 +4,7 @@
 >
 > This document defines how campaign rules compose existing Crinkl proof surfaces into marketer-recognizable commerce outcomes without changing canonical Spend Token semantics.
 >
-> Implementation status: terminology and primitive families are proposed for v1; settlement artifacts such as `CampaignRuleV1`, `AudienceQualificationV1`, `VerifiedConversionV1`, and `ConversionApprovalV1` remain candidate shapes until platform, PWA, and public settlement surfaces are aligned.
+> Implementation status: terminology and primitive families are proposed for v1; settlement artifacts such as `CampaignRuleV1`, `AudienceQualificationV1`, `VerifiedConversionV1`, `ConversionApprovalV1`, and `CampaignSettlementLeafV1` remain candidate shapes until platform, PWA, and public settlement surfaces are aligned.
 
 ## 1) Scope and Boundary
 
@@ -260,7 +260,13 @@ CampaignRuleV1 {
   settlement: {
     rewardPolicyId?: "sha256:" + Hash,
     settlementPolicyId?: "sha256:" + Hash,
-    replayScope: RedemptionScopeV1
+    replayScope: RedemptionScopeV1,
+    publicCommitment?: {
+      enabled: Boolean,
+      chainId: Identifier,
+      commitmentSchema: "CAMPAIGN_SETTLEMENT_LEAF_V1",
+      authorizedCommitter: Identifier
+    }
   },
 
   hashes: {
@@ -406,6 +412,72 @@ Settlement MUST bind, directly or by hash reference:
 - settlement nullifier
 - verifier approval hash
 
+### 6.5 Campaign Settlement Commitment
+
+Marketing term: **Public Settlement**.
+
+Campaign Settlement Commitment is the public/on-chain settlement surface for payout-bearing campaigns. It commits cleared conversions after `ConversionApprovalV1` without publishing raw audience proof inputs, wallet identity, raw receipt data, or sensitive market details.
+
+This is not a token. It is a system-stream commitment event plus a Merkle root that MAY be anchored on-chain through the Commitment Layer's chain-binding conventions.
+
+Each committed leaf represents one cleared campaign conversion:
+
+```text
+CampaignSettlementLeafV1 {
+  schemaVersion: 1,
+  leafType: "CAMPAIGN_SETTLEMENT_LEAF",
+  settlementId: Identifier,
+  campaignId: Identifier,
+  campaignParamsHash: "sha256:" + Hash,
+  qualificationHash: "sha256:" + Hash,
+  conversionHash: "sha256:" + Hash,
+  conversionSpendTokenHash: "sha256:" + Hash,
+  conversionHeadEventHash: Hash,
+  approvalHash: "sha256:" + Hash,
+
+  payout: {
+    amount: String(Integer >= 0),
+    asset: "POINTS" | "BTC" | "CRINKL" | String
+  },
+
+  settlementScopeId: "sha256:" + Hash,
+  settlementNullifier: "sha256:" + Hash,
+  clearedAt: TimestampISO
+}
+```
+
+`CampaignSettlementLeafV1` is hashed with the same Merkle conventions as commitment leaves unless a chain binding specifies a stricter domain separator. Verifiers MUST reject leaves that omit `approvalHash`, `conversionSpendTokenHash`, or `settlementNullifier`.
+
+Campaign settlement batches are committed with a system-stream event:
+
+```text
+CAMPAIGN_SETTLEMENT_COMMITTED {
+  settlementBatchId: Identifier,
+  campaignId: Identifier,
+  campaignParamsHash: "sha256:" + Hash,
+  root: Hash,
+  leafCount: Integer,
+  totalPayoutAmount: String(Integer >= 0),
+  payoutAsset: "POINTS" | "BTC" | "CRINKL" | String,
+  schemaVersion: "campaign-settlement-v1",
+  txRef: String,
+  committedAt: TimestampISO
+}
+```
+
+The system event envelope supplies `chainId`, `signedBy`, `prevHash`, `eventHash`, and the authority signature as defined in `EVENTS.md`.
+
+Normative constraints:
+
+- `campaignId` and `campaignParamsHash` MUST match the `CampaignRuleV1` that authorized settlement.
+- `root` MUST be computed over `CampaignSettlementLeafV1` leaves for that campaign settlement batch.
+- `leafCount` MUST equal the number of committed leaves.
+- `totalPayoutAmount` and `payoutAsset` MUST equal the sum and asset class represented by the committed leaves.
+- `txRef` MUST reference the public chain anchor for `root` under the deployment's chain binding.
+- `settlementNullifier` MUST be campaign-scoped and MUST NOT be a stable wallet, account, or user identifier.
+- Public settlement leaves MUST NOT contain raw receipt artifacts, raw Spend Tokens, wallet addresses, user identifiers, or uncommitted sensitive geography.
+- A deployment that stores only `root` on-chain MUST publish enough system-stream history for third parties to recover `campaignId`, `campaignParamsHash`, `schemaVersion`, `signedBy`, `committedAt`, and authority validity.
+
 ## 7) Verification Procedure
 
 A verifier processing a Campaign Rule MUST:
@@ -425,6 +497,11 @@ A verifier processing a Campaign Rule MUST:
 5. Verify payout terms against the campaign rule.
 6. Emit or accept `ConversionApprovalV1`.
 7. Settle through the Reward Layer and, when enabled, the Commitment Layer.
+8. If `settlement.publicCommitment.enabled` is true:
+   - compute `CampaignSettlementLeafV1` from the approved conversion
+   - include it in a campaign settlement batch root
+   - emit `CAMPAIGN_SETTLEMENT_COMMITTED`
+   - verify the system-stream authority and on-chain `txRef` before treating the public settlement as final
 
 ## 8) Privacy and Scoped Proof Memory
 
@@ -439,6 +516,7 @@ The correct campaign memory model is scoped proof memory:
 - buyer-state labels are derived only within explicit campaign scopes and time windows
 - raw receipt artifacts SHOULD expire according to deployment retention policy
 - durable settlement records SHOULD reference hashes and commitments rather than raw receipt data or stable identity
+- public settlement commitments SHOULD reveal only campaign-level settlement facts and hash references, not audience proof inputs or holder identity
 
 ## 9) Relationship to Offer Delivery
 
@@ -475,6 +553,7 @@ Conversion Approval:
 Payout Settlement:
 
 - settlement issues the reward and may later be proven through Reward Commitment Token inclusion
+- public settlement commits the campaign conversion root through `CAMPAIGN_SETTLEMENT_COMMITTED`
 
 Critical invariant:
 
