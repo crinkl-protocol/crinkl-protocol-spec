@@ -138,7 +138,7 @@ A signed statement asserting that a specific economic event occurred. Spend toke
 **Reward Commitment Token (RCT)**
 A proof bundle indicating that a recipient’s aggregated reward leaf is included under a committed batch root. An RCT includes batch metadata, the recipient identifier (`recipientId`, which may be a blinded commitment), a Merkle inclusion proof, and the signed commitment history that authenticates the batch root. The wallet address itself is not revealed when blinded schemas are used. Formally defined in §5.2.
 
-**Observed GMV Token (Optional Derived Artifact)**
+**Verified GMV Token (Optional Derived Artifact)**
 A signed, verifiable record of measured economic throughput over a defined window, derived from verified attestations. This is an optional portability artifact for third-party verification of aggregate throughput; it is not required by the core primitive.
 
 ### 4.3 Threat Model

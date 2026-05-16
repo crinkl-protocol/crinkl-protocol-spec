@@ -40,7 +40,8 @@ The protocol emits portable, privacy-preserving tokens for downstream compositio
 
 - **Spend Attestation Token** — canonical spend claim; wallet optional (TOKENS.md)
 - **Reward Commitment Token** — inclusion proof under committed batch; `recipientId` required, representation schema-defined (TOKENS.md, COMMITMENT_LAYER.md)
-- **Observed GMV Token** — aggregate spend commitment; wallet prohibited (TOKENS.md)
+- **Verified GMV Token** — aggregate spend commitment; wallet prohibited (TOKENS.md)
+- **Verified Spend Distribution Token** — aggregate category and region distribution; wallet prohibited (TOKENS.md)
 
 ## Business Context (non-normative)
 

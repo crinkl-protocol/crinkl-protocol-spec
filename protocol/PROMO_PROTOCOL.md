@@ -1,14 +1,34 @@
-# Promo Protocol (Brand-Verifiable Promo Delivery)
+# Brand-Verifiable Offer Delivery Profile
 
-> **Status: v1 (optional extension) — promo delivery + verifier rules**
+> **Status: v1 optional extension — offer delivery profile, not campaign protocol**
 >
-> This document defines the **message formats** and **verifier rules** for delivering brand promotions to wallets and unlocking them using Crinkl protocol artifacts.
+> This document defines the **message formats** and **verifier rules** for delivering brand offers to wallets and unlocking them using Crinkl protocol artifacts.
 >
-> It is intentionally minimal: it standardizes *how wallets and brands interoperate*, without defining a full “campaign DSL”.
+> It is intentionally minimal: it standardizes *how wallets and brands interoperate*, without defining a full campaign rule or settlement layer. Campaign rule composition is defined by `CAMPAIGN_SPEND_PROOF_PRIMITIVES.md`.
+>
+> Implementation status: the message/profile boundary is normative. The demo profile and wallet-secret rollout proof target are explicitly transitional until `ZK_CIRCUIT_CATALOG.md` defines a concrete wallet rollout circuit.
 
-## 1) Objectives
+## 1) Boundary
 
-The Promo Protocol aims to make the following true:
+This document is an offer-delivery profile. It is not the campaign primitive.
+
+Use `CAMPAIGN_SPEND_PROOF_PRIMITIVES.md` for:
+
+- composing campaign rules from Spend Validity, Scoped Buyer State, Frequency / Intensity, Category / Competitive Relationship, Market / Context, and Outcome / Conversion
+- audience qualification and verified conversion terminology
+- verifier-signed conversion approval
+- settlement binding requirements
+
+Use this document for:
+
+- campaign or offer messages sent to wallets
+- holder proof submission
+- rollout and only-once proof interfaces
+- encrypted grant or rejection payloads
+
+## 2) Objectives
+
+This offer-delivery profile aims to make the following true:
 
 1) Brands define promotion rules and fund rewards.  
 2) Promotions are delivered to wallet apps.  
@@ -21,29 +41,30 @@ The Promo Protocol aims to make the following true:
 9) Wallets cannot retry to get a better reward (anti-gaming for rollout assignment).  
 10) The unlocked reward/promo is sent so only that wallet can see it (encryption to wallet delivery key).  
 
-## 2) Non-goals
+## 3) Non-goals
 
 - No “user” object or protocol identity graph (wallets only).
 - No full campaign language with arbitrary composition (beyond statement registry).
+- No verified conversion settlement. See `CAMPAIGN_SPEND_PROOF_PRIMITIVES.md`.
 - No promise that campaigns are broadcast end-to-end encrypted (delivery encryption is specified; broadcast privacy is deferred).
 - No reward policy math in-protocol (reward math is a Reward Layer concern; see `REWARD_LAYER.md` + `POLICY_LAYER.md`).
 
-## 3) Actors and trust boundaries
+## 4) Actors and trust boundaries
 
 - **Issuer (Crinkl protocol operator)**: signs `SpendAttestationTokenV1` (ground truth of verified spend). May publish verifier parameter registries.
 - **Wallet**: receives non-portable witness material, generates eligibility proofs, and decrypts delivered promos.
 - **Brand Verifier**: validates spend tokens + proofs locally and decides whether to grant a promo.
 - **Relay (e.g., Crinkl infrastructure)**: transports messages. The protocol assumes the relay is **not** a secrecy boundary.
 
-## 4) Canonical identifiers
+## 5) Canonical identifiers
 
-### 4.1 Statement identity
+### 5.1 Statement identity
 
 Statements are defined in `ZK_FOUNDATION.md` and `ZK_LAYER.md`.
 
 - `statementId = "sha256:" + SHA-256(RFC8785_canonicalize(statement))`
 
-### 4.2 Redemption scope and `scopeId`
+### 5.2 Redemption scope and `scopeId`
 
 `scopeId` defines where “only once” dedupe applies, without requiring wallet identity disclosure.
 
@@ -61,11 +82,11 @@ RedemptionScopeV1 {
 
 - `scopeId = "sha256:" + SHA-256(RFC8785_canonicalize(scope))`
 
-### 4.3 Promo payload identity
+### 5.3 Promo payload identity
 
 Brands MAY define a `payloadId` (opaque) to identify a specific encrypted promo payload they return (e.g., to reference in an observation ack).
 
-### 4.4 Predicate definition identity (`predicateId`) for pointer-based distribution
+### 5.4 Predicate definition identity (`predicateId`) for pointer-based distribution
 
 For closed-loop promos and external surfaces, distribution MUST reference a predicate pointer, not an audience list.
 
@@ -98,15 +119,15 @@ Canonical identity:
 - `predicateId = "sha256:" + SHA-256(RFC8785_canonicalize(predicateDefinition))`
 
 Normative requirements:
-- `statementId` MUST be computed per §4.1 and MUST be immutable once referenced by `predicateId`.
+- `statementId` MUST be computed per §5.1 and MUST be immutable once referenced by `predicateId`.
 - `protocolVersion` MUST match campaign/proof artifacts used with this predicate.
 - Predicate definitions MUST be immutable by version; changing any field produces a new `predicateId`.
 - Distribution payloads MUST reference `predicateId` (and promo metadata) only; they MUST NOT contain materialized audience lists.
 - `routing` / `exclusion` / `promoterGate` / `settlement` semantics are coordination-layer inputs and MUST NOT alter proof verification semantics.
 
-## 5) Campaign message (brand → wallets)
+## 6) Campaign message (brand → wallets)
 
-The Promo Protocol does not define broadcast transport. It defines the *portable campaign object* that may be carried by any transport.
+This profile does not define broadcast transport. It defines the *portable campaign object* that may be carried by any transport.
 
 ```text
 PromoCampaignV1 {
@@ -146,11 +167,11 @@ PromoCampaignV1 {
 - `variantCount` MUST be > 0.
 - `rolloutThreshold` MUST be in `[0, variantCount]`.
 
-## 6) Wallet eligibility claim (wallet → brand, via relay)
+## 7) Wallet eligibility claim (wallet → brand, via relay)
 
 Wallets decide locally whether to engage a campaign. If they engage, they submit an eligibility claim.
 
-### 6.1 Required fields
+### 7.1 Required fields
 
 ```text
 PromoEligibilityClaimV1 {
@@ -173,7 +194,7 @@ PromoEligibilityClaimV1 {
   // Where to deliver the promo (wallet-generated, per-campaign key)
   deliveryPublicKeySpkiBase64: Base64
 
-  // Demo profile convenience only (see §6.5)
+  // Demo profile convenience only (see §7.5)
   nullifier?: "sha256:" + Hash
 }
 ```
@@ -181,9 +202,9 @@ PromoEligibilityClaimV1 {
 **Encryption (normative):**
 - The wallet MUST deliver `PromoEligibilityClaimV1` inside an encrypted envelope to `proofSubmissionPublicKeySpkiBase64` (see `ENCRYPTION_ENVELOPES.md`).
 
-### 6.1a Promo binding profile (normative)
+### 7.1a Promo binding profile (normative)
 
-To keep the promo protocol **brand-verifiable**, the verifier MUST be able to check that the eligibility proof and the rollout/only-once outputs are about the same promotion scope.
+To keep offer delivery **brand-verifiable**, the verifier MUST be able to check that the eligibility proof and the rollout/only-once outputs are about the same promotion scope.
 
 For `PromoEligibilityClaimV1`:
 
@@ -193,11 +214,11 @@ For `PromoEligibilityClaimV1`:
 
 **Cryptographic binding requirement:** verification of `spendProof` MUST fail if any of the bound values above are changed. (In a SNARK, these are public inputs; in a transcript-based proof system, they MUST be transcript-bound.)
 
-### 6.2 Rollout proof (target: brand-verifiable, wallet-secret-derived)
+### 7.2 Rollout proof (target: brand-verifiable, wallet-secret-derived)
 
 To satisfy “consistent assignment” and “no retry”, a brand needs a verifier-checkable artifact that prevents a wallet from choosing its own bucket/nullifier.
 
-The Promo Protocol standardizes the **interface**; the proof system/circuit is versioned by `(proofSystem, circuitId, verifyingKeyId)`.
+This profile standardizes the **interface**; the proof system/circuit is versioned by `(proofSystem, circuitId, verifyingKeyId)`.
 
 ```text
 WalletRolloutProofV1 {
@@ -226,7 +247,7 @@ WalletRolloutProofV1 {
 
 > The wallet-secret nullifier derivation is defined in `ZK_FOUNDATION.md`; circuits MUST enforce that derivation (or prove equivalence).
 
-### 6.3 Rollout assignment token (v0.5 transitional, issuer-signed)
+### 7.3 Rollout assignment token (v0.5 transitional, issuer-signed)
 
 Some deployments may use an issuer-signed assignment until a wallet-secret-derived rollout proof is available.
 
@@ -236,7 +257,7 @@ This token is described in `ZK_FOUNDATION.md` (“Deterministic bucketing”) an
 
 **1.0 target (normative intent):** deployments that aim for “brands rely only on spend tokens” MUST reject `rolloutAssignmentToken` and require `walletRolloutProof`.
 
-### 6.4 Spend-scoped nullifier note (transitional)
+### 7.4 Spend-scoped nullifier note (transitional)
 
 Some implementations may additionally compute a **spend-scoped** anti-replay identifier:
 
@@ -244,7 +265,7 @@ Some implementations may additionally compute a **spend-scoped** anti-replay ide
 
 This is useful as a *per-spend* replay guard, but it is **precomputable** from public context and is not the privacy target for “only once per wallet per promotion”. A brand-verifiable 1.0 design SHOULD rely on the wallet-secret-derived `nullifier` (from `WalletRolloutProofV1`) for “only once”.
 
-### 6.5 Demo profile (Halo2 promo, current implementation)
+### 7.5 Demo profile (Halo2 promo, current implementation)
 
 The v1 demo showcases the **advanced** promo flow using Halo2 proofs for real commerce predicates:
 - Eligibility proofs use `SpendZkStatementProofV1` with:
@@ -261,9 +282,9 @@ This demo profile is **non-normative** and intended to illustrate the Halo2-base
 **Demo decision payload (non-normative):** the demo harness may return a simplified decision object with
 `type` (`PROMO_GRANT` / `PROMO_REJECTION`), `granted` (boolean), `arm` (`control`/`treatment`), and `observeNonce`
 instead of the full `PromoGrantV1` / `PromoRejectionV1` shapes. Production deployments SHOULD use the normative
-grant/rejection payloads defined in §8.
+grant/rejection payloads defined in §9.
 
-## 7) Brand verification procedure (normative)
+## 8) Brand verification procedure (normative)
 
 Given a decrypted `PromoEligibilityClaimV1`, a brand verifier MUST:
 
@@ -286,19 +307,19 @@ Given a decrypted `PromoEligibilityClaimV1`, a brand verifier MUST:
 7) Cross-check consistency:
    - `spendProof.publicInputs.nullifier` MUST equal the rollout `nullifier`.
    - `spendProof.publicInputs.bucket`, `variantCount`, and `rolloutThreshold` MUST match the campaign’s rollout parameters.  
-8) Determine the promo delivery key:
+8) Determine the offer delivery key:
    - If `walletRolloutProof` is present: use `deliveryPublicKeySpkiBase64` from the claim.
    - If `rolloutAssignmentToken` is present: the claim’s `deliveryPublicKeySpkiBase64` MUST match the token’s delivery key; use the token’s value.
 9) Only-once enforcement: if `nullifier` was already seen for this `scopeId`, reject. Otherwise store it.  
 10) Determine control/treatment: `inRollout = (bucket < rolloutThreshold)`.  
 11) If granting, encrypt a promo payload to the selected delivery key and return it.
-12) If rejecting, return a `PromoRejectionV1` encrypted to the selected delivery key (see §8.2).
+12) If rejecting, return a `PromoRejectionV1` encrypted to the selected delivery key (see §9.2).
 
-## 8) Promo decision (brand → wallet)
+## 9) Promo decision (brand → wallet)
 
-The brand returns exactly one encrypted decision payload per request: either a grant (§8.1) or a rejection (§8.2).
+The brand returns exactly one encrypted decision payload per request: either a grant (§9.1) or a rejection (§9.2).
 
-### 8.1 Promo grant
+### 9.1 Promo grant
 
 ```text
 PromoGrantV1 {
@@ -321,7 +342,7 @@ PromoGrantV1 {
 **Control arm guidance (normative intent):**
 - For A/B experiments, brands SHOULD return a `PromoGrantV1` for both treatment and control (the difference is `arm` and the `promo` payload content, e.g., with vs without bonus points). This avoids “no response” ambiguity at the wallet.
 
-### 8.2 Promo rejection (structured)
+### 9.2 Promo rejection (structured)
 
 When rejecting an eligibility claim (invalid token/proof, already redeemed, unsupported version, etc.), brands SHOULD return a structured rejection so wallets can display deterministic outcomes and implement backoff/retry correctly.
 
@@ -354,11 +375,11 @@ Recommended `rejection.code` values (non-exhaustive):
 **Encryption (normative):**
 - The brand MUST return `PromoRejectionV1` inside an encrypted envelope to `deliveryPublicKeySpkiBase64` (see `ENCRYPTION_ENVELOPES.md`).
 
-## 9) Reward issuance and Reward Commitment Tokens
+## 10) Reward issuance and Reward Commitment Tokens
 
-Promo eligibility and promo delivery are distinct from reward issuance:
+Offer eligibility and delivery are distinct from reward issuance:
 
-- The promo protocol MUST NOT require `RewardCommitmentTokenV1` as an eligibility input.
+- This offer-delivery profile MUST NOT require `RewardCommitmentTokenV1` as an eligibility input.
 - Reward issuance is an economic consequence recorded by Reward Ledger events and (optionally) anchored by the Commitment Layer (`REWARD_LAYER.md`, `EVENTS.md`, `COMMITMENT_LAYER.md`).
 - `RewardCommitmentTokenV1` exists to provide **verifiable proof that rewards were actually issued** (economic non-repudiation), and MAY be used for:
   - brand reconciliation/invoicing,

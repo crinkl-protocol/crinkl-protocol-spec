@@ -17,7 +17,7 @@
 ## Non-goals
 
 - This registry does **not** define a new protocol trust root. It reuses existing issuer/authority key authorization rules (see `SECURITY_MODEL.md#trust-roots`).
-- This registry does **not** change core Spend Attestation / Reward Commitment / Observed GMV verification procedures.
+- This registry does **not** change core Spend Attestation / Reward Commitment / Verified GMV / Verified Spend Distribution verification procedures.
 - This registry does **not** require any recipient identity exposure.
 
 ## Core primitives
@@ -100,7 +100,7 @@ StoreRegistrySnapshotTokenV1 {
 ```text
 StoreEntryV1 {
   storeId: Identifier,              // canonical key (namespaced)
-  displayName: String,              // human-friendly name ("PGA Superstore")
+  displayName: String,              // human-friendly name ("Example Merchant")
   logo?: StoreLogoV1,               // OPTIONAL; display-only UI hint (not needed for token verification)
   brandKey?: Identifier,            // optional grouping key (issuer-defined)
   categories?: [String],            // optional; array MUST be sorted lexicographically

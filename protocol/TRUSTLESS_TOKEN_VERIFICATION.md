@@ -21,17 +21,17 @@ can
 Proves:
 - The issuer attests to a specific finalized spend head without DB access.
 
-## 2) Verify an Observed GMV Token
+## 2) Verify a Verified GMV Token
 
 Steps:
 1) Recompute the GMV token hash from the unsigned fields.  
 2) Verify the Ed25519 signature against the issuer public key.  
-3) Read `window.date`, `asOf.computedAt`, and `observedGMV`.  
+3) Read `window.date`, `asOf.computedAt`, and `verifiedGMV`.
 
 Proves:
 - The issuer attests to the GMV total for that UTC day as-of a specific time, without DB trust.
 
-## 3) Prove a spend is counted in Observed GMV (Merkle inclusion)
+## 3) Prove a spend is counted in Verified GMV (Merkle inclusion)
 
 Steps:
 1) Obtain the inclusion proof: `{spendLeaf, leafHash, siblings}` for the GMV token.  

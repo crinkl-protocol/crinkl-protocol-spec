@@ -1,5 +1,9 @@
 # ZK Foundation (Minimum Viable Promo Flow)
 
+> **Status: explanatory / demo foundation for optional ZK proofs**
+>
+> This document describes the minimum proof spine for proof-backed offer opening. It is not required for core Spend Token validity, does not define campaign settlement, and does not make wallet-secret rollout proofs production-ready.
+
 This document captures the **minimum ZK foundation** needed to support a simple brand promo use case in v1.0.
 
 Example v1 promo predicates:
@@ -7,9 +11,9 @@ Example v1 promo predicates:
 - “If `canonical.totalCents >= 1000`, grant promo”
 - “If `canonical.storeHash ∈ allowlist` AND `canonical.timestamp ≥ now - 30 days`, grant promo”
 
-It is intentionally **not** a complex campaign DSL. It defines the *spine* we can build on, while keeping v1 statement types closed and interoperable.
+It is intentionally **not** a complex campaign DSL. It defines the proof spine we can build on, while keeping v1 statement types closed and interoperable. Campaign rule composition is defined separately in `CAMPAIGN_SPEND_PROOF_PRIMITIVES.md`.
 
-For the normative promo wire formats (campaign message, eligibility claim, encrypted promo delivery), see `PROMO_PROTOCOL.md` and `ENCRYPTION_ENVELOPES.md`.
+For the normative offer-delivery wire formats (campaign message, eligibility claim, encrypted delivery), see `PROMO_PROTOCOL.md` and `ENCRYPTION_ENVELOPES.md`.
 
 ## Goal
 
@@ -44,14 +48,14 @@ This implements the **selective disclosure** pattern from verifiable credentials
 7) **Verify + grant**: brand verifies token + statementId + proof; returns an encrypted promo artifact
 8) **Display**: PWA decrypts and displays promo
 
-## What we mock vs what we implement (now)
+## Demo support boundary
 
-We can mock many parts while implementing the foundation correctly:
+The demo profile can illustrate the proof spine without making every transport or settlement surface normative:
 
-- **Mock now**: PWA UX, campaign delivery, relay, and brand promo issuance
-- **Implement now**: commitments + wallet witness + proof binding rules + verifier behavior
+- demo/implementation surfaces: PWA UX, campaign delivery, relay, and brand offer issuance
+- normative proof spine: commitments, wallet witness, proof binding rules, and verifier behavior
 
-The demo can use scripts to act as “mock PWA” and “mock brand”.
+The demo can use scripts to act as PWA and verifier simulators. Those scripts are not the protocol.
 
 ## The spine (minimal primitives to standardize)
 
@@ -118,7 +122,7 @@ SpendStoreHashInSetAndDayIndexGteStatementV1 {
 
 Routing/distribution predicates MAY reference `statementId` via a separate predicate definition and `predicateId` (see `PROMO_PROTOCOL.md`); this does not alter statement verification semantics.
 
-We do not attempt to standardize all campaign types yet.
+This document does not standardize campaign types. Campaign rule composition is defined in `CAMPAIGN_SPEND_PROOF_PRIMITIVES.md`.
 
 ### 4) Proof binding rules (tighten what must be bound)
 
@@ -213,7 +217,7 @@ Brands often want a controlled rollout (A/B testing): “for this `scopeId`, det
 
 This protocol can support that without introducing a user/identity layer, but there is an important sequencing:
 
-- **Near-term (recommended, non-ZK):** keep brands blind to the wallet by using an **issuer-signed rollout assignment** that carries a scope-bound bucket + nullifier, plus a per-scope promo delivery key. This uses the same audit-friendly primitives as the rest of the protocol (RFC8785 + SHA-256 + Ed25519) and does not require a SNARK/STARK circuit.
+- **Near-term (recommended, non-ZK):** keep brands blind to the wallet by using an **issuer-signed rollout assignment** that carries a scope-bound bucket + nullifier, plus a per-scope delivery key. This uses the same audit-friendly primitives as the rest of the protocol (RFC8785 + SHA-256 + Ed25519) and does not require a SNARK/STARK circuit.
 - **Target (privacy-preserving ZK):** move the same bucketing/nullifier computation **inside the proof system** so the verifier does not need (or receive) any issuer-signed assignment and does not learn a stable wallet key.
 
 **A practical v0.5 construction (non-normative, recommended until a circuit exists):**

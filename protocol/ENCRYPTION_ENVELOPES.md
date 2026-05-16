@@ -4,7 +4,7 @@
 >
 > This document standardizes a minimal encrypted “envelope” used to transport:
 > - wallet-only witness material (non-portable), and
-> - wallet ↔ brand promo protocol messages
+> - wallet ↔ brand offer-delivery messages
 >
 > The relay (e.g., Crinkl infrastructure) is assumed to be **untrusted for secrecy** and MUST NOT be required to decrypt these envelopes.
 
