@@ -30,11 +30,14 @@ This extension does **not**:
 - introduce a new core `tokenType`
 - change `SpendAttestationTokenV1`
 - define a global buyer profile or identity graph
+- define active promoter queues, slot state, or local-area FIFO matching
 - define reward math, budgets, or sponsor pricing as protocol validity rules
 - require public disclosure of raw receipts, wallet identity, or sensitive market geography
 - prove incrementality or lift without an explicit control/holdout policy
 
 Campaigns are not custom logic. Campaigns are parameterized rules composed from six finite Campaign Spend Proof Primitives.
+
+Campaign rules define policy. Runtime matching profiles MAY consume that policy to produce match-specific artifacts. A campaign settlement that depends on runtime matching MUST bind the runtime profile output by hash; it MUST NOT treat audience qualification alone as a matched conversion.
 
 ## 2) Marketing Terms and Protocol Terms
 
@@ -268,6 +271,10 @@ CampaignRuleV1 {
     rewardPolicyId?: "sha256:" + Hash,
     settlementPolicyId?: "sha256:" + Hash,
     replayScope: RedemptionScopeV1,
+    runtimeProfile?: {
+      profileId: Identifier,
+      profilePolicyHash: "sha256:" + Hash
+    },
     publicCommitment?: {
       enabled: Boolean,
       chainId: Identifier,
@@ -387,6 +394,11 @@ ConversionApprovalV1 {
     asset: "POINTS" | "BTC" | "CRINKL" | String
   },
 
+  runtimeProfileBinding?: {
+    profileId: Identifier,
+    profileBindingHash: "sha256:" + Hash
+  },
+
   settlementScopeId: "sha256:" + Hash,
   settlementNullifier: "sha256:" + Hash,
   approvedBy: Identifier,
@@ -416,6 +428,7 @@ Settlement MUST bind, directly or by hash reference:
 - `conversionHash`
 - `conversionSpendTokenHash`
 - payout amount and asset
+- runtime profile binding hash when the campaign rule declares `settlement.runtimeProfile`
 - settlement nullifier
 - verifier approval hash
 
@@ -445,6 +458,11 @@ CampaignSettlementLeafV1 {
   payout: {
     amount: String(Integer >= 0),
     asset: "POINTS" | "BTC" | "CRINKL" | String
+  },
+
+  runtimeProfile?: {
+    profileId: Identifier,
+    profileBindingHash: "sha256:" + Hash
   },
 
   settlementScopeId: "sha256:" + Hash,
@@ -482,6 +500,7 @@ Normative constraints:
 - `totalPayoutAmount` and `payoutAsset` MUST equal the sum and asset class represented by the committed leaves.
 - `txRef` MUST reference the public chain anchor for `root` under the deployment's chain binding.
 - `settlementNullifier` MUST be campaign-scoped and MUST NOT be a stable wallet, account, or user identifier.
+- If the campaign rule declares `settlement.runtimeProfile`, each settlement leaf MUST include `runtimeProfile.profileId` and `runtimeProfile.profileBindingHash`, and verifiers MUST validate the referenced runtime profile before treating settlement as final.
 - Public settlement leaves MUST NOT contain raw receipt artifacts, raw Spend Tokens, wallet addresses, user identifiers, or uncommitted sensitive geography.
 - A deployment that stores only `root` on-chain MUST publish enough system-stream history for third parties to recover `campaignId`, `campaignParamsHash`, `schemaVersion`, `signedBy`, `committedAt`, and authority validity.
 
@@ -501,10 +520,11 @@ A verifier processing a Campaign Rule MUST:
    - verify the conversion occurred inside the campaign conversion window
    - verify it occurred after audience qualification when required
    - reject replayed conversion or settlement nullifiers
-5. Verify payout terms against the campaign rule.
-6. Emit or accept `ConversionApprovalV1`.
-7. Settle through the Reward Layer and, when enabled, the Commitment Layer.
-8. If `settlement.publicCommitment.enabled` is true:
+5. If `settlement.runtimeProfile` is present, verify the profile binding hash and profile-specific match/consumption rules.
+6. Verify payout terms against the campaign rule.
+7. Emit or accept `ConversionApprovalV1`.
+8. Settle through the Reward Layer and, when enabled, the Commitment Layer.
+9. If `settlement.publicCommitment.enabled` is true:
    - compute `CampaignSettlementLeafV1` from the approved conversion
    - include it in a campaign settlement batch root
    - emit `CAMPAIGN_SETTLEMENT_COMMITTED`
@@ -531,7 +551,22 @@ The correct campaign memory model is scoped proof memory:
 
 This document defines the campaign proof composition and verified conversion settlement surface. Offer delivery MAY use these primitives, but offer delivery is not the campaign settlement primitive.
 
-## 10) Example: New-to-Brand Conquest Campaign
+## 10) Relationship to Boost Matching
+
+`../06-extensions/boost-matching-profile.md` defines a runtime matching profile for campaigns that require an active promoter queue, local-market filtering, FIFO selection, and slot consumption.
+
+Campaign rules decide whether a buyer spend and promoter qualification can participate. The Boost profile decides which active promoter slot, if any, matches the buyer conversion at runtime.
+
+For Boost campaigns:
+
+- `CampaignRuleV1` defines the offer rule, campaign window, conversion rule, and settlement policy.
+- `AudienceQualificationV1` MAY qualify a promoter to open a slot, but it does not by itself select a promoter for a buyer conversion.
+- `VerifiedConversionV1` MUST reference the buyer's normal Spend Attestation Token.
+- `ConversionApprovalV1.runtimeProfileBinding` and `CampaignSettlementLeafV1.runtimeProfile` MUST bind the Boost match/slot-consumption result.
+
+Boost matching MUST NOT use campaign routing metadata as local-area settlement truth. Local-area truth comes from canonical Spend Token market fields, such as `canonical.cbsaCode` or `canonical.geoRegion`, for the buyer conversion and eligible promoter spend anchors.
+
+## 11) Example: New-to-Brand Conquest Campaign
 
 Marketing name: **New-to-Brand Conquest Campaign**.
 

@@ -131,6 +131,7 @@ Normative requirements:
 - Predicate definitions MUST be immutable by version; changing any field produces a new `predicateId`.
 - Distribution payloads MUST reference `predicateId` (and promo metadata) only; they MUST NOT contain materialized audience lists.
 - `routing` / `exclusion` / `promoterGate` / `settlement` semantics are coordination-layer inputs and MUST NOT alter proof verification semantics.
+- `routing.cbsaCode` is discovery and routing metadata. It MUST NOT be used as local-area settlement truth for runtime matching profiles. Profiles such as `boost-matching-profile.md` MUST verify local-area matches from canonical Spend Token market fields.
 
 ## 6) Campaign message (brand → wallets)
 

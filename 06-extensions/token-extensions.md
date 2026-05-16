@@ -114,7 +114,7 @@ Future additions SHOULD prefer:
 - optional proof material attached to existing token bundles (Spend Attestation / Reward Commitment), and/or
 - new commitment types and leaf schemas within the Commitment Layer when external anchoring is required.
 
-Future extensions SHOULD NOT introduce new token categories that duplicate or reinterpret protocol truth, reward eligibility, or verification semantics. Campaign rule composition SHOULD use Campaign Spend Proof Primitives (`../04-condition-layer/campaign-commitment.md`) over existing token and proof surfaces.
+Future extensions SHOULD NOT introduce new token categories that duplicate or reinterpret protocol truth, reward eligibility, or verification semantics. Campaign rule composition SHOULD use Campaign Spend Proof Primitives (`../04-condition-layer/campaign-commitment.md`) over existing token and proof surfaces. Runtime matching extensions SHOULD bind their results by hash into campaign approval and settlement artifacts rather than introducing new Spend Token categories.
 
 ## 7) Store Registry Snapshots (Optional, Additive)
 

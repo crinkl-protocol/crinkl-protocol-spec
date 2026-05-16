@@ -77,7 +77,7 @@ Downstream layers consume spend proof; they do not define it.
 |---|---|
 | Condition rules | [`04-condition-layer/`](04-condition-layer/) |
 | Reward and settlement | [`05-reward-and-settlement/`](05-reward-and-settlement/) |
-| ZK, agent, REST/MCP, Solana, offer delivery | [`06-extensions/`](06-extensions/) |
+| ZK, agent, REST/MCP, Solana, offer delivery, runtime matching | [`06-extensions/`](06-extensions/) |
 | Conformance | [`07-conformance/`](07-conformance/) |
 | Governance | [`08-governance/`](08-governance/) |
 
@@ -91,7 +91,7 @@ Downstream layers consume spend proof; they do not define it.
 | [`03-portability/`](03-portability/) | Spend Attestation Tokens, verifier requirements, identity exclusion, replay/auditability. |
 | [`04-condition-layer/`](04-condition-layer/) | Conditions, condition evaluation, proof of match, campaign commitment. |
 | [`05-reward-and-settlement/`](05-reward-and-settlement/) | Reward Commitment, GMV, distribution, settlement bindings. |
-| [`06-extensions/`](06-extensions/) | Optional ZK, agent query, transport, Solana, offer-delivery, and registry profiles. |
+| [`06-extensions/`](06-extensions/) | Optional ZK, agent query, transport, Solana, offer-delivery, runtime matching, and registry profiles. |
 | [`07-conformance/`](07-conformance/) | Vectors, verifier test suite, compatibility notes. |
 | [`08-governance/`](08-governance/) | Versioning, change process, authority hierarchy, and shared glossary. |
 

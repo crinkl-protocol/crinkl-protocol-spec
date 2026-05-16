@@ -23,6 +23,7 @@ Canonical entrypoint for version 1 of the Crinkl Protocol specification. Each se
 - [../06-extensions/zk-circuit-catalog.md](../06-extensions/zk-circuit-catalog.md) — mapping from statement types to proof circuits (optional extension)
 - [../04-condition-layer/campaign-commitment.md](../04-condition-layer/campaign-commitment.md) — campaign rule composition from finite spend proof primitives (optional extension)
 - [../06-extensions/offer-delivery-profile.md](../06-extensions/offer-delivery-profile.md) — offer delivery profile + verifier rules (optional extension)
+- [../06-extensions/boost-matching-profile.md](../06-extensions/boost-matching-profile.md) — runtime Boost matching, local-area FIFO, and slot-consumption profile (optional extension)
 - [../06-extensions/encryption-envelopes.md](../06-extensions/encryption-envelopes.md) — encrypted envelope formats for wallet/brand messages (optional extension)
 - [../06-extensions/token-extensions.md](../06-extensions/token-extensions.md) — privacy-first credentials + agent delegation (optional extension)
 - [../00-purpose/threat-model.md](../00-purpose/threat-model.md) — protocol security properties and invariants
