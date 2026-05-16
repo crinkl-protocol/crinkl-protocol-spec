@@ -45,6 +45,8 @@ SpendStreamEvent {
 
 **Signer (normative):** spend-stream events MUST be signed by a spend-stream trust root authorized for the event’s `protocolVersion` (operator/verifier authority in v1). The `wallet` field is data (scoping) and MUST NOT be interpreted as the event signer unless a future protocol version explicitly defines wallet-signing.
 
+**Wallet scope boundary (normative):** `wallet` is required in the v1 spend-stream envelope for issuer-side replay, routing, abuse controls, and reward handling. It MUST NOT be interpreted as user identity, payment signer, ownership proof, or a requirement for portable token verification. A valid portable Spend Attestation Token MAY be derived from a wallet-scoped spend stream while omitting `wallet`; external verifiers MUST verify the token signature and included proof material rather than requiring private wallet lookup.
+
 **eventId uniqueness:** `eventId` MUST be deterministically derived from `(spendId, eventName, payload, protocolVersion)`. Replaying an event with an existing `eventId` MUST be treated as a no-op if all fields match; mismatched fields with the same `eventId` MUST be rejected with `DuplicateEventConflict`.
 
 ### System-Stream Event Envelope

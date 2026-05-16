@@ -1,6 +1,6 @@
 # Data Structures
 
-This section defines the canonical data structures used by the Crinkl Protocol. Many structures are wallet-scoped (spend-stream), while some are system-scoped (system-stream) and are not bound to a wallet.
+This section defines the canonical data structures used by the Crinkl Protocol. Many internal event-stream structures are wallet-scoped (spend-stream), while some are system-scoped (system-stream) and are not bound to a wallet. Wallet-scoped event structure does not imply that portable Spend Attestation Tokens must expose wallet identity.
 
 ## Serialization
 

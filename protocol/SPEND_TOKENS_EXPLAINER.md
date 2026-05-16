@@ -85,6 +85,11 @@ cryptographically anchored issuance record.
 Canonical spend truth and aggregate throughput claims do not require identity.
 Identity appears only where it is necessary to verify economic issuance.
 
+The issuer's internal spend stream can be wallet-scoped for replay, routing,
+abuse controls, and reward handling. The portable Spend Attestation Token is not
+the internal stream: it proves a commerce fact and should omit wallet, user,
+account, and session identifiers by default.
+
 ### 3.4 Explicit non-claims
 
 Unless explicitly stated, tokens do not prove user intent/ownership, merchant
@@ -254,6 +259,9 @@ This maintains a stable audit trail while supporting operational correction.
 - Verified GMV explicitly prohibits recipient identity exposure.
 - Reward commitments include a recipient identifier only because issuance must be
   auditable.
+- Wallet scope in the issuer's internal stream is not a portability requirement.
+  A portable Spend Attestation Token can be identity-free even when derived from
+  a wallet-scoped event stream.
 
 ### 9.2 Portable token "no footguns"
 

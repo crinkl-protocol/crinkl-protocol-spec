@@ -36,11 +36,12 @@ This implements the **selective disclosure** pattern from verifiable credentials
 
 ## Target end-to-end flow (receipt total > 1000 → promo)
 
-1) **Upload**: user uploads receipt via PWA; Crinkl binds submission to wallet → `spendId`
+1) **Upload**: user uploads receipt via PWA; Crinkl binds submission to wallet inside the issuer-managed stream → `spendId`
 2) **Verify**: pipeline emits `SPEND_SOFT_VERIFIED` then `SPEND_HARD_VERIFIED` (canonical fields include `totalCents`)
 3) **Attest**: Crinkl issues `SpendAttestationTokenV1`:
    - signed
    - includes the required `zk.commitments` bound to (`spendId`, `lineage.headEventHash`) for the statement type being proven (e.g., `C_total`, `C_dayIndex`)
+   - omits wallet by default for external portable verification
    - **portable token omits the committed field** (selective disclosure via ZK proof)
 4) **Campaign arrives**: brand publishes a campaign referencing a `statementId` for the eligibility rule and provides a brand public key + endpoints
 5) **Local check + proof** (client-side option): PWA decrypts wallet-only witness and generates `SpendZkStatementProofV1`

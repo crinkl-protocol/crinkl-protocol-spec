@@ -57,6 +57,8 @@ Crinkl tokens do not introduce a protocol-level identity graph:
 - Aggregate and truth tokens do not expose wallets or users.
 - Identity and payout routing are application-layer concerns.
 
+The issuer's internal spend stream may still carry `wallet: WalletRef` for replay, routing, abuse controls, and reward handling. That internal scope is not the portable token. Portable Spend Attestation Tokens are identity-free by default and omit wallet unless recipient binding is explicitly required.
+
 ## The Four Core Token Types
 
 The protocol defines four token outputs. Together, they form the minimum viable set needed to represent economic reality, economic action, economic scale, and economic distribution.

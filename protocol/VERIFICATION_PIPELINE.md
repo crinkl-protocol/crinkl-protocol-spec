@@ -24,6 +24,8 @@ Events are only meaningful if emitted by an authorized signer:
 
 Wallet addresses (`wallet: WalletRef`) are carried as data to scope spends and (optionally) recipient binding, but wallets are not assumed to be event signers in protocol v1.
 
+This wallet scope is internal to the spend-stream envelope. Hard verification may produce a portable Spend Attestation Token from the wallet-scoped stream, but that token SHOULD omit `wallet` for external verification unless recipient binding is explicitly required.
+
 ## Soft Verification
 
 Low-latency preliminary assessment producing provisional values for user feedback and optional provisional rewards. Does not produce canonical Spend records.

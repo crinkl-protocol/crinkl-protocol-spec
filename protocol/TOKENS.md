@@ -56,6 +56,8 @@ Audit bundles MAY include sensitive or voluminous context (e.g., raw event strea
 
 **Clarification (normative intent):** spend-stream events may contain operational references (e.g., `imageDataRef` in `RECEIPT_UPLOADED`) that are meaningful inside an issuer’s pipeline but are not required (and often not appropriate) for third-party portability. A portable token verifier MUST be able to decide validity without fetching those references or replaying non-public pipeline state.
 
+**Wallet-scope boundary (normative):** portable token verification is intentionally downstream of internal spend-stream construction. Internal wallet-scoped event fields do not become portable token fields unless they are explicitly included in the signed token. The default portable Spend Attestation Token for external verification omits wallet, user, account, and session identifiers.
+
 **Portable tokens MUST NOT include:**
 
 - receipt images or raw OCR text
@@ -117,6 +119,7 @@ Per the Identity Minimization Invariant (ABSTRACT.md), wallet exposure follows t
 - **Spend Attestation** — wallet is optional; canonical spend truth does not require identity disclosure
 - **Reward Commitment** — `recipientId` is required (scoped to unique recipient); representation is schema-defined (WalletRef or Commitment)
 - **Verified GMV** — wallet MUST NOT appear; aggregate claims are privacy-preserving
+- **Verified Spend Distribution** — wallet MUST NOT appear; aggregate claims are privacy-preserving
 
 These token types are intentionally separable:
 - Spend attestation is defined by the Attestation Ledger state machine.
@@ -178,6 +181,7 @@ SpendAttestationTokenV1 {
 
 **Derivation rules (normative):**
 - `wallet` is OPTIONAL. When present, it MUST equal the wallet from the spend-stream. Portable tokens intended for third-party verification SHOULD omit `wallet` unless recipient binding is required.
+- `SpendStreamEvent.wallet` is internal source scope. `SpendAttestationTokenV1.wallet` is optional disclosure, not a field inherited by default from the spend-stream.
 
 **Wallet inclusion policy (normative guidance):**
 

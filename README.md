@@ -11,6 +11,8 @@
 
 An open protocol for producing identity-free, cryptographically signed spend attestations from raw receipt data — portable proof that commerce happened, without revealing who.
 
+Issuer-managed event streams MAY carry wallet scope for replay, routing, abuse controls, or reward handling. Portable Spend Attestation Tokens are separate derived artifacts and are identity-free by default: they omit wallet, user, account, and session identifiers unless an explicit verifier policy requires recipient binding.
+
 </div>
 
 ---

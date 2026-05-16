@@ -52,10 +52,15 @@ Legend: ──→ verification transition  │ terminal states
 ## Wallet and recipient scope (plain English)
 
 Problem:
-Some app flows use user account ids (like Privy DIDs or tenant ids) as routing handles. Those handles are application-layer identifiers and MUST NOT be embedded into portable Spend Attestation Tokens.
+Some app flows use user account ids (like Privy DIDs or tenant ids) as routing handles. Spend-stream envelopes also carry `wallet: WalletRef` in protocol v1. These handles can be necessary inside an issuer's system, but they are not the portable proof that a spend happened.
 
 Solution:
-When a protocol artifact requires wallet or recipient scope, use the appropriate protocol field (`WalletRef` or `RecipientRef`) and keep login/session identifiers out of protocol-visible artifacts. Internal issuer-managed wallet routing MAY exist in platform systems, but portable Spend Attestation Tokens remain identity-free unless a future schema explicitly defines optional ownership binding.
+Keep two scopes separate:
+
+- **Internal event stream scope:** `SpendStreamEvent.wallet` is required in v1 so issuers can replay, route, dedupe, investigate abuse, and handle rewards within a bounded system.
+- **Portable proof scope:** a Spend Attestation Token is a derived token. It SHOULD omit `wallet` for third-party verification unless recipient binding is explicitly required by the verifier policy.
+
+When a protocol artifact requires wallet or recipient scope, use the appropriate protocol field (`WalletRef` or `RecipientRef`) and keep login/session identifiers out of protocol-visible artifacts. Internal issuer-managed wallet routing MAY exist in platform systems, but it MUST NOT be copied into portable Spend Attestation Tokens by default.
 
 ## Determinism (LLM clarification)
 

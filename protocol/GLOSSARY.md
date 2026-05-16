@@ -121,7 +121,7 @@ Wallet semantics (address routing, ownership verification) are application-layer
 
 A reference to a wallet address (Solana public key or equivalent). In the Commitment Layer, `WalletRef` is one representation of `RecipientRef` (transparent schemas v1a, v2a).
 
-Wallet exposure elsewhere is governed by the **Identity Minimization Invariant**: wallets appear only where verification semantics require them.
+Wallet exposure elsewhere is governed by the **Identity Minimization Invariant**: wallets appear only where verification semantics require them. In protocol v1, `SpendStreamEvent.wallet` is internal event-stream scope for issuer replay, routing, abuse controls, or reward handling. It is not a user identity claim and it is not a requirement for portable Spend Attestation Token verification.
 
 - **Spend Attestation Tokens**: `wallet` is **optional**—spend truth does not imply ownership.
 - **Reward Commitment Tokens**: `recipientId` is **required**—but MAY be `WalletRef` or `Commitment` per schema.
