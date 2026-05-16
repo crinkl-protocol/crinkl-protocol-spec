@@ -88,6 +88,7 @@ SystemStreamEvent {
 | SPEND_CORRECTED | `{ correctedFields, verificationVersion }` |
 | FRAUD_FLAGGED | `{ fraudType, evidenceRef? }` |
 
+*SPEND_REVIEW_REQUESTED is informational and MUST NOT participate in attestation state transitions or reopen an `INVALIDATED` spend.*
 *FRAUD_FLAGGED is observational and MUST NOT participate in attestation state transitions.*
 
 **Hard verification duplicate rule (normative):** If duplicate suspicion is present (e.g., `riskFlags` includes `potential_duplicate`), producers MUST NOT emit `SPEND_HARD_VERIFIED`. They MUST emit `SPEND_INVALIDATED` (e.g., `reason = "POTENTIAL_DUPLICATE"`) or `SPEND_CORRECTED` if explicitly linking to a canonical prior spend.

@@ -99,7 +99,7 @@ All protocol fields are expressed using a small set of scalar types. Implementat
 
 - **Type:** JSON string
 - **Format:** `YYYY-MM-DD` (UTC date; no time component)
-- **Normalization:** MUST be zero-padded and represent the UTC day boundary used by the protocol (e.g., Observed GMV windows in `TOKENS.md`)
+- **Normalization:** MUST be zero-padded and represent the UTC day boundary used by the protocol (e.g., Verified GMV windows in `TOKENS.md`)
 
 ### Points / Satoshis
 
@@ -317,7 +317,7 @@ The following types are used in structures above. Enumerations are normative; im
 - **Type:** JSON string
 - **Format:** CBSA numeric code as string (e.g., `"12420"` for Austin-Round Rock-Georgetown, TX) or a non-metro fallback in the format `"non-metro:{RegionCode}"` (e.g., `"non-metro:US-MT"`)
 - **Source:** US Office of Management and Budget (OMB) Core Based Statistical Area definitions. Free public crosswalk: city/county → CBSA. Updated periodically by OMB.
-- **Usage:** metro-area-level geographic bucketing for aggregate tokens (Observed Spend Distribution) and optional enrichment of per-spend data. Provides local-business-meaningful granularity (~390 US metro areas) while preserving reasonable privacy properties for aggregation.
+- **Usage:** optional metro-area-level geographic bucketing for aggregate tokens (`verifiedDistribution.byGeoRegion` / `issuedDistribution.byGeoRegion`) and optional enrichment of per-spend data. Provides local-business-meaningful granularity (~390 US metro areas) while preserving reasonable privacy properties for aggregation.
 
 **Derivation (normative):**
 

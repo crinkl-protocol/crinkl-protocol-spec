@@ -1,0 +1,81 @@
+{
+  "kind": "token.verifiedSpendDistribution.v1",
+  "cases": [
+    {
+      "id": "token.verifiedSpendDistribution.v1.daily.basic",
+      "issuerPrivateKeySeedHex": "9d61b19deffd5a60ba844af492ec2cc44449c5697b326919703bac031cae7f60",
+      "issuerPublicKeyBase64": "11qYAYKxCrfVS/7TyWQHOg7hcvPapiMlrwIaaPcHURo=",
+      "expectedToken": {
+        "tokenType": "VERIFIED_SPEND_DISTRIBUTION",
+        "schemaVersion": 2,
+        "window": {
+          "type": "UTC_DAY",
+          "date": "2026-02-24"
+        },
+        "asOf": {
+          "computedAt": "2026-02-24T00:05:00.000Z",
+          "spendHeadSetRoot": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "spendRule": "CANONICAL_HEAD_ASOF"
+        },
+        "verifiedDistribution": {
+          "currency": "USD",
+          "totalCents": "124567",
+          "spendCount": 42,
+          "byCategory": {
+            "coffee-fast-casual": {
+              "spendCount": 12,
+              "totalCents": "28670"
+            },
+            "grocery-supermarkets": {
+              "spendCount": 30,
+              "totalCents": "95897"
+            }
+          },
+          "byGeoRegion": {
+            "12420": {
+              "spendCount": 16,
+              "totalCents": "47200"
+            },
+            "41740": {
+              "spendCount": 26,
+              "totalCents": "77367"
+            }
+          }
+        },
+        "issuedDistribution": {
+          "currency": "USD",
+          "totalCents": "98450",
+          "rewardedSpendCount": 33,
+          "byCategory": {
+            "coffee-fast-casual": {
+              "spendCount": 10,
+              "totalCents": "23500"
+            },
+            "grocery-supermarkets": {
+              "spendCount": 23,
+              "totalCents": "74950"
+            }
+          },
+          "byGeoRegion": {
+            "12420": {
+              "spendCount": 14,
+              "totalCents": "40100"
+            },
+            "41740": {
+              "spendCount": 19,
+              "totalCents": "58350"
+            }
+          },
+          "policyVersion": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "prevDistributionTokenHash": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "signatures": {
+          "issuedBy": "crinkl-authority",
+          "publicKey": "11qYAYKxCrfVS/7TyWQHOg7hcvPapiMlrwIaaPcHURo=",
+          "tokenHash": "8ddffad72c7efd31d723779ee210f0fbab3ffe5d2bf4d1fc13ef834506d7bebc",
+          "signature": "SoWD60Qd8BZSYiSRiduhmV0iDlsLy7TDmjLV/e/yBUwU1+9SLfuIXgf6Klji5xesMhxi/Sg/8C4hKHuasLowDQ=="
+        }
+      }
+    }
+  ]
+}

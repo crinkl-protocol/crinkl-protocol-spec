@@ -198,7 +198,7 @@ Hard verification OCR is generally accurate at store name extraction unless the 
 
 1. **Policy calibration** — When policy-injected ≠ hard-extracted, investigate the mismatch source
 2. **Image quality detection** — When extraction fails, flag as `riskFlags = ["low_image_quality"]`
-3. **Alias discovery** — When policy says "Starbucks" and OCR extracts "STARBKS", candidate alias identified
+3. **Alias discovery** — When policy says "Example Merchant" and OCR extracts "EXMPL MERCH", candidate alias identified
 
 ### Correction-Driven Learning
 

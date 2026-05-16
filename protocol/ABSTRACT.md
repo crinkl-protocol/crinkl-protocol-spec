@@ -72,7 +72,8 @@ Canonical spend truth and aggregate economic claims MUST NOT require or imply us
 |------------|-------------------|
 | Spend Attestation | Optional — truth ≠ ownership |
 | Reward Commitment | Required — scoped to `recipientId` (schema-defined) |
-| Observed GMV | Prohibited — aggregate, privacy-preserving claim |
+| Verified GMV | Prohibited — aggregate, privacy-preserving claim |
+| Verified Spend Distribution | Prohibited — aggregate, privacy-preserving claim |
 
 The Commitment Layer proves that rewards were issued under a verifiable recipient scope; it does not define who a user is or how value is routed.
 
@@ -83,8 +84,11 @@ In addition to per-spend attestations, the protocol defines system-scoped primit
 **Commitment Layer** (optional)
 Anchors reward batches on-chain via Merkle roots, providing non-repudiation and verifiable inclusion.
 
-**Observed GMV Token**
+**Verified GMV Token**
 Privacy-preserving, append-only "as-of" snapshots of aggregate GMV. Corrections emit new tokens for the same window rather than mutating history.
+
+**Verified Spend Distribution Token**
+Privacy-preserving, append-only "as-of" snapshots of aggregate spend distribution by category and geographic bucket. It shares the same snapshot model as Verified GMV without exposing receipt details, wallet identifiers, or per-user spend patterns.
 
 ## Deployment Posture
 

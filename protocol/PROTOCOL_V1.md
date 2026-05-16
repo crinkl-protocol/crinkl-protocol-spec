@@ -4,7 +4,7 @@ Canonical entrypoint for version 1 of the Crinkl Protocol specification. Each se
 
 - [GLOSSARY.md](./GLOSSARY.md) — normative term definitions
 - [INTRODUCTION.md](./INTRODUCTION.md) — protocol overview and scope
-- [MODEL.md](./MODEL.md) — core protocol concepts (wallet-anchored objects and ledgers)
+- [MODEL.md](./MODEL.md) — core protocol concepts (spend-centric objects, scoped recipients, and ledgers)
 - [TOKENS.md](./TOKENS.md) — token outputs (attestation + commitments)
 - [DATA_STRUCTURES.md](./DATA_STRUCTURES.md) — canonical schema definitions
 - [VERIFICATION_PIPELINE.md](./VERIFICATION_PIPELINE.md) — soft and hard verification flows
@@ -14,7 +14,8 @@ Canonical entrypoint for version 1 of the Crinkl Protocol specification. Each se
 - [ZK_LAYER.md](./ZK_LAYER.md) — optional zero-knowledge extension layer
 - [ZK_FOUNDATION.md](./ZK_FOUNDATION.md) — minimum viable promo flow (ZK spine)
 - [ZK_CIRCUIT_CATALOG.md](./ZK_CIRCUIT_CATALOG.md) — mapping from statement types to proof circuits (optional extension)
-- [PROMO_PROTOCOL.md](./PROMO_PROTOCOL.md) — promo message formats + verifier rules (optional extension)
+- [CAMPAIGN_SPEND_PROOF_PRIMITIVES.md](./CAMPAIGN_SPEND_PROOF_PRIMITIVES.md) — campaign rule composition from finite spend proof primitives (optional extension)
+- [PROMO_PROTOCOL.md](./PROMO_PROTOCOL.md) — offer delivery profile + verifier rules (optional extension)
 - [ENCRYPTION_ENVELOPES.md](./ENCRYPTION_ENVELOPES.md) — encrypted envelope formats for wallet/brand messages (optional extension)
 - [TOKEN_EXTENSIONS.md](./TOKEN_EXTENSIONS.md) — privacy-first credentials + agent delegation (optional extension)
 - [SECURITY_MODEL.md](./SECURITY_MODEL.md) — protocol security properties and invariants

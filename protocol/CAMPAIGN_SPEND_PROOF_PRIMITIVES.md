@@ -1,0 +1,485 @@
+# Campaign Spend Proof Primitives
+
+> **Status: draft v1 optional extension - campaign rule composition**
+>
+> This document defines how campaign rules compose existing Crinkl proof surfaces into marketer-recognizable commerce outcomes without changing canonical Spend Token semantics.
+>
+> Implementation status: terminology and primitive families are proposed for v1; settlement artifacts such as `CampaignRuleV1`, `AudienceQualificationV1`, `VerifiedConversionV1`, and `ConversionApprovalV1` remain candidate shapes until platform, PWA, and public settlement surfaces are aligned.
+
+## 1) Scope and Boundary
+
+Campaign Spend Proof Primitives are finite proof families used to express campaign rules over identity-free Spend Attestation Tokens.
+
+This extension composes:
+
+- `SpendAttestationTokenV1` from `TOKENS.md`
+- `SpendZkStatementProofV1` and wallet witnesses from `TOKENS.md` / `ZK_LAYER.md`
+- `statementId`, `scopeId`, and `nullifier` from `ZK_FOUNDATION.md`
+- reward issuance and reward commitments from `REWARD_LAYER.md` and `COMMITMENT_LAYER.md`
+- store/category/market references from `STORE_REGISTRY.md`
+
+This extension does **not**:
+
+- introduce a new core `tokenType`
+- change `SpendAttestationTokenV1`
+- define a global buyer profile or identity graph
+- define reward math, budgets, or sponsor pricing as protocol validity rules
+- require public disclosure of raw receipts, wallet identity, or sensitive market geography
+- prove incrementality or lift without an explicit control/holdout policy
+
+Campaigns are not custom logic. Campaigns are parameterized rules composed from six finite Campaign Spend Proof Primitives.
+
+## 2) Marketing Terms and Protocol Terms
+
+The protocol terms below are normative. Marketing-facing terms are aliases for operator, sponsor, and product surfaces. Marketing aliases MUST NOT change verification semantics.
+
+| Protocol primitive | Marketing-facing term | Meaning |
+|---|---|---|
+| Spend Validity | Verified Purchase | A valid, verified commerce event exists. |
+| Scoped Buyer State | Audience State | A holder's state relative to a campaign scope and lookback window. |
+| Frequency / Intensity | Purchase Frequency / Spend Intensity | How often, how much, or how recently qualifying behavior occurred. |
+| Category / Competitive Relationship | Category / Competitive Set | The relationship between spend behavior and a brand, category, competitor, or adjacent set. |
+| Market / Context | Market Targeting / Context | The market, channel, store cluster, time window, or campaign context in which the rule applies. |
+| Outcome / Conversion | Verified Outcome / Verified Conversion | The required commerce outcome occurred and can be evaluated for settlement. |
+
+Derived marketing labels such as "new-to-brand", "repeat buyer", "lapsed buyer", "conquest audience", and "retained buyer" are values produced by primitive composition. They are not new primitive families.
+
+## 3) Common Proof Constraints
+
+Every Campaign Spend Proof Primitive MUST be evaluated inside an explicit scope.
+
+The scope MUST bind:
+
+- `campaignId`
+- verifier or settlement authority
+- statement or primitive definition hash
+- applicable time window
+- replay boundary
+
+Any proof used for campaign qualification or conversion MUST bind, directly or through referenced artifacts:
+
+- `spendTokenHash`
+- `lineage.headEventHash`
+- `statementId` or primitive definition hash
+- `scopeId`
+- proof mode
+- public outputs required by the primitive
+
+Any payout-bearing campaign flow MUST include a scope-specific `nullifier` so the verifier or settlement authority can prevent duplicate payment without requiring a stable wallet identifier.
+
+## 4) Primitive Families
+
+### 4.1 Spend Validity
+
+Marketing term: **Verified Purchase**.
+
+Spend Validity proves that a referenced Spend Attestation Token represents a valid commerce event under the verifier's acceptance policy.
+
+Minimum checks:
+
+1. Verify the Spend Attestation Token per `TOKENS.md`.
+2. Verify issuer authority for the signing key.
+3. Verify `canonical.status` is accepted by the campaign rule.
+4. Verify freshness policy if the campaign requires latest-head evidence.
+
+Typical public or committed fields:
+
+- `spendTokenHash`
+- `lineage.headEventHash`
+- verification tier
+- store or brand reference
+- category reference
+- amount bucket or commitment
+- timestamp bucket or commitment
+- market/context commitment
+
+Spend Validity is the atomic primitive. Every other primitive depends on one or more valid spend references.
+
+### 4.2 Scoped Buyer State
+
+Marketing term: **Audience State**.
+
+Scoped Buyer State classifies a proof subject relative to a campaign scope, rule, and lookback window.
+
+Valid state labels are campaign-derived outputs, for example:
+
+- `NEW_TO_BRAND`
+- `REPEAT`
+- `ACTIVE`
+- `LAPSED`
+- `RETURNING`
+- `EXISTING`
+- `COMPETITOR_BUYER`
+- `CONVERTED`
+- `RETAINED`
+
+Normative constraints:
+
+- Buyer state MUST be scoped to a campaign, verifier, rule, and time window.
+- Buyer state MUST NOT be treated as a global protocol profile.
+- "New-to-brand" means first observed within the declared scope and lookback, not globally new for all time.
+- Buyer state proofs SHOULD use commitments, nullifiers, or ZK statements when public disclosure would reveal sensitive spend history.
+
+### 4.3 Frequency / Intensity
+
+Marketing terms: **Purchase Frequency** and **Spend Intensity**.
+
+Frequency / Intensity measures the strength of behavior inside a scope.
+
+Examples:
+
+- at least 2 purchases in 30 days
+- 5 category purchases in 90 days
+- at least USD 50 of category spend
+- high-frequency buyer
+- high-value buyer
+- recent buyer
+
+Normative constraints:
+
+- Count and amount thresholds MUST declare their lookback window.
+- Threshold proofs MUST bind to the campaign scope.
+- If individual Spend Tokens are not disclosed, the proof MUST expose only the minimum public output needed for verification, such as `count >= N` or `sum >= threshold`.
+- Nullifiers used for replay protection MUST be scope-specific.
+
+### 4.4 Category / Competitive Relationship
+
+Marketing terms: **Category**, **Competitive Set**, and **Conquest Audience**.
+
+Category / Competitive Relationship defines what the spend behavior relates to.
+
+Examples:
+
+- category buyer
+- competitor buyer but not sponsor buyer
+- adjacent-category buyer
+- competitor spender
+- adjacent-category spender
+- brand switcher
+- conquest target
+
+Normative constraints:
+
+- Store/category/brand sets SHOULD be represented by deterministic identifiers, sorted allowlists, or committed set roots.
+- When category membership depends on a registry, the verifier SHOULD reference a signed Store Registry snapshot or a campaign-defined allowlist root.
+- Competitive relationships MUST be expressed as campaign rule parameters, not as token mutations.
+- If a campaign hides the competitive set, the proof MUST bind to the committed set root used by the verifier.
+
+### 4.5 Market / Context
+
+Marketing terms: **Market Targeting**, **Geo Targeting**, and **Campaign Context**.
+
+Market / Context constrains where, when, and under what campaign context a proof qualifies.
+
+Examples:
+
+- CBSA
+- city or region bucket
+- store cluster
+- retailer or channel
+- campaign window
+- launch market
+- time bucket
+
+Normative constraints:
+
+- Market/context claims MUST be scoped to the campaign rule.
+- Sensitive geography SHOULD be committed or proven privately rather than publicly disclosed.
+- Public settlement MAY reveal a coarse market bucket when needed for budget, queue, or local-market accounting.
+- Market/context commitments MUST NOT become stable identity-linked purchase history.
+
+### 4.6 Outcome / Conversion
+
+Marketing terms: **Verified Outcome** and **Verified Conversion**.
+
+Outcome / Conversion proves the required commerce event happened after the campaign rule was active.
+
+Examples:
+
+- first verified receipt submitted
+- qualifying purchase occurred
+- repeat purchase happened
+- lapsed buyer returned
+- new Spend Attestation Token was issued
+- campaign match approved
+- reward settlement triggered
+
+Normative constraints:
+
+- A verified conversion MUST be represented by a new or referenced `SpendAttestationTokenV1` whose canonical status satisfies the campaign's conversion rule.
+- The conversion Spend Token MUST be produced by the normal hard-verification flow. Campaign qualification MUST NOT mint a Spend Token.
+- The conversion proof MUST bind to the campaign rule, qualification scope, conversion window, and conversion spend token hash.
+- Settlement MAY proceed only after conversion approval.
+
+## 5) Campaign Rule Artifact
+
+A Campaign Rule is a canonical, hash-identifiable rule composed from Campaign Spend Proof Primitives.
+
+```text
+CampaignRuleV1 {
+  schemaVersion: 1,
+  protocolVersion: Version,
+
+  campaignId: Identifier,
+  sponsor: {
+    sponsorId: Identifier,
+    brandId?: Identifier
+  },
+  verifier: {
+    verifierId: Identifier,
+    authorizedIssuerIds?: [Identifier]
+  },
+
+  publicTerms: {
+    startsAt: TimestampISO,
+    endsAt: TimestampISO,
+    payoutAmount?: String(Integer >= 0),
+    payoutAsset?: "POINTS" | "BTC" | "CRINKL" | String,
+    budgetRef?: Identifier
+  },
+
+  audience: {
+    marketingName?: String,          // e.g. "Category conquest audience"
+    requiredPrimitives: [CampaignSpendProofPrimitiveRequirementV1]
+  },
+
+  conversion: {
+    marketingName?: String,          // e.g. "First verified sponsor purchase"
+    requiredPrimitives: [CampaignSpendProofPrimitiveRequirementV1],
+    requiredNewSpend?: {
+      minimumVerification: "HARD_VERIFIED",
+      acceptedStatuses?: [String],   // allowed values: "HARD_VERIFIED", "CORRECTED"
+      mustOccurAfterQualification: true,
+      storeHash?: "sha256:" + Hash,
+      storeSetRoot?: Hash,
+      categoryId?: Identifier,
+      marketScope?: String
+    }
+  },
+
+  settlement: {
+    rewardPolicyId?: "sha256:" + Hash,
+    settlementPolicyId?: "sha256:" + Hash,
+    replayScope: RedemptionScopeV1
+  },
+
+  hashes: {
+    audienceHash: "sha256:" + Hash,
+    conversionHash: "sha256:" + Hash,
+    rewardPolicyHash?: "sha256:" + Hash,
+    campaignParamsHash: "sha256:" + Hash
+  }
+}
+```
+
+`campaignParamsHash` MUST be computed over `CampaignRuleV1` with `hashes.campaignParamsHash`, signatures, and transport-only metadata omitted.
+
+`audienceHash` MUST be computed over `audience`. `conversionHash` MUST be computed over `conversion`. `rewardPolicyHash` MUST be computed over the referenced reward policy artifact when present. All hashes use RFC 8785 canonical JSON and SHA-256 encoded as `"sha256:" + lowercase hex`.
+
+`minimumVerification: "HARD_VERIFIED"` means the conversion spend must have passed the hard-verification pipeline. A verifier MAY accept `CORRECTED` as a later canonical hard-verification head when the campaign rule includes `CORRECTED` in `acceptedStatuses`.
+
+`CampaignSpendProofPrimitiveRequirementV1` is a requirement descriptor:
+
+```text
+CampaignSpendProofPrimitiveRequirementV1 {
+  primitive:
+    "SPEND_VALIDITY" |
+    "SCOPED_BUYER_STATE" |
+    "FREQUENCY_INTENSITY" |
+    "CATEGORY_COMPETITIVE_RELATIONSHIP" |
+    "MARKET_CONTEXT" |
+    "OUTCOME_CONVERSION",
+
+  marketingAlias?: String,
+  proofMode: "DISCLOSED_TOKENS" | "ZK_PROOF" | "COMMITTED_AGGREGATE",
+  statementId?: "sha256:" + Hash,
+  statement?: Object,
+  publicOutputs: [String],
+  privateInputsDescription?: String,
+  lookbackWindowDays?: Integer,
+  conversionWindowDays?: Integer
+}
+```
+
+Unknown primitive names MUST be rejected by conforming verifiers.
+
+## 6) Proof and Approval Artifacts
+
+### 6.1 Audience Qualification
+
+Marketing term: **Audience Qualification**.
+
+Audience Qualification proves the holder satisfies the campaign audience rule.
+
+```text
+AudienceQualificationV1 {
+  schemaVersion: 1,
+  campaignId: Identifier,
+  campaignParamsHash: "sha256:" + Hash,
+  scopeId: "sha256:" + Hash,
+  nullifier: "sha256:" + Hash,
+  proofMode: "DISCLOSED_TOKENS" | "ZK_PROOF" | "COMMITTED_AGGREGATE",
+  primitiveProofs: [Object],
+  qualifiedAt: TimestampISO,
+  qualificationHash: "sha256:" + Hash
+}
+```
+
+Audience Qualification MUST NOT mint a Spend Token. It only proves qualification for a campaign scope.
+
+`qualificationHash` MUST be computed over `AudienceQualificationV1` with `qualificationHash` omitted.
+
+### 6.2 Verified Conversion
+
+Marketing term: **Verified Conversion**.
+
+Verified Conversion proves the campaign-required new purchase or outcome occurred.
+
+```text
+VerifiedConversionV1 {
+  schemaVersion: 1,
+  campaignId: Identifier,
+  campaignParamsHash: "sha256:" + Hash,
+  qualificationHash: "sha256:" + Hash,
+  conversionSpendTokenHash: "sha256:" + Hash,
+  conversionHeadEventHash: Hash,
+  conversionNullifier: "sha256:" + Hash,
+  occurredAt: TimestampISO,
+  conversionHash: "sha256:" + Hash
+}
+```
+
+The `conversionSpendTokenHash` MUST reference a Spend Attestation Token issued by the normal verification pipeline. The campaign does not create a special Spend Token type.
+
+`conversionHash` MUST be computed over `VerifiedConversionV1` with `conversionHash` omitted.
+
+### 6.3 Conversion Approval
+
+Marketing term: **Conversion Approval**.
+
+Conversion Approval is the verifier-signed decision that audience qualification and verified conversion satisfy the campaign rule and may proceed to settlement.
+
+```text
+ConversionApprovalV1 {
+  schemaVersion: 1,
+  campaignId: Identifier,
+  campaignParamsHash: "sha256:" + Hash,
+  qualificationHash: "sha256:" + Hash,
+  conversionHash: "sha256:" + Hash,
+  conversionSpendTokenHash: "sha256:" + Hash,
+  conversionHeadEventHash: Hash,
+
+  payout: {
+    amount: String(Integer >= 0),
+    asset: "POINTS" | "BTC" | "CRINKL" | String
+  },
+
+  settlementScopeId: "sha256:" + Hash,
+  settlementNullifier: "sha256:" + Hash,
+  approvedBy: Identifier,
+  approvedAt: TimestampISO,
+
+  signatures: {
+    publicKey: Base64,
+    approvalHash: "sha256:" + Hash,
+    signature: Base64
+  }
+}
+```
+
+`approvalHash` MUST be computed over `ConversionApprovalV1` with `signatures` omitted. The verifier signature MUST be over `approvalHash`. Verifiers MUST reject approvals when the signer is not authorized for the campaign scope.
+
+### 6.4 Payout Settlement
+
+Marketing term: **Payout Settlement**.
+
+Payout Settlement is the economic consequence of a valid Conversion Approval. Settlement MAY be represented by Reward Ledger events, Reward Commitment Tokens, or chain-specific settlement accounts. This extension does not replace the Reward Layer or Commitment Layer.
+
+Settlement MUST bind, directly or by hash reference:
+
+- `campaignId`
+- `campaignParamsHash`
+- `qualificationHash`
+- `conversionHash`
+- `conversionSpendTokenHash`
+- payout amount and asset
+- settlement nullifier
+- verifier approval hash
+
+## 7) Verification Procedure
+
+A verifier processing a Campaign Rule MUST:
+
+1. Recompute `campaignParamsHash` from `CampaignRuleV1`.
+2. Verify each primitive requirement uses a supported primitive name and proof mode.
+3. Verify Audience Qualification:
+   - verify all referenced Spend Tokens and proofs
+   - verify `scopeId` and `nullifier` binding
+   - reject replayed qualification nullifiers within the campaign scope
+4. Verify Verified Conversion:
+   - verify the conversion Spend Attestation Token per `TOKENS.md`
+   - verify `conversionSpendTokenHash` and `conversionHeadEventHash`
+   - verify the conversion occurred inside the campaign conversion window
+   - verify it occurred after audience qualification when required
+   - reject replayed conversion or settlement nullifiers
+5. Verify payout terms against the campaign rule.
+6. Emit or accept `ConversionApprovalV1`.
+7. Settle through the Reward Layer and, when enabled, the Commitment Layer.
+
+## 8) Privacy and Scoped Proof Memory
+
+Campaign implementations MUST NOT rely only on client-side token storage for replay safety or buyer-state integrity.
+
+Campaign implementations also MUST NOT create a global identity-linked purchase repository.
+
+The correct campaign memory model is scoped proof memory:
+
+- holders keep identity-free Spend Tokens and wallet-only witnesses as positive evidence
+- verifiers keep only the minimum campaign-scoped nullifiers, commitments, and approval hashes required for replay prevention and settlement audit
+- buyer-state labels are derived only within explicit campaign scopes and time windows
+- raw receipt artifacts SHOULD expire according to deployment retention policy
+- durable settlement records SHOULD reference hashes and commitments rather than raw receipt data or stable identity
+
+## 9) Relationship to Offer Delivery
+
+`PROMO_PROTOCOL.md` defines an offer-delivery profile: campaign message, holder proof submission, rollout/only-once proof, and encrypted grant or rejection. It is useful for presenting or unlocking offers.
+
+This document defines the campaign proof composition and verified conversion settlement surface. Offer delivery MAY use these primitives, but offer delivery is not the campaign settlement primitive.
+
+## 10) Example: New-to-Brand Conquest Campaign
+
+Marketing name: **New-to-Brand Conquest Campaign**.
+
+Sponsor: `sponsor_brand`.
+
+Audience: **Category conquest audience**.
+
+Audience Qualification:
+
+- Spend Validity: verified competitor Spend Tokens
+- Frequency / Intensity: at least 2 qualifying purchases
+- Category / Competitive Relationship: sponsor-defined competitor set
+- Market / Context: CBSA scope and 30-day lookback
+- Scoped Buyer State: competitor buyer within campaign scope
+
+Verified Conversion:
+
+- Outcome / Conversion: first verified sponsor-brand purchase after qualification
+- Spend Validity: conversion Spend Token is `HARD_VERIFIED`
+- Market / Context: conversion occurs inside campaign window and market scope
+
+Conversion Approval:
+
+- verifier signs `campaignParamsHash`, `qualificationHash`, `conversionHash`, `conversionSpendTokenHash`, payout amount, and settlement nullifier
+
+Payout Settlement:
+
+- settlement issues the reward and may later be proven through Reward Commitment Token inclusion
+
+Critical invariant:
+
+```text
+Audience qualification does not mint a Spend Token.
+Verified conversion mints or references the new Spend Token.
+Settlement pays only after conversion approval.
+```

@@ -1,11 +1,17 @@
-# Public Proof Endpoints (Trustless GMV + Issuance)
+# Public Proof Endpoint Appendix
 
-This doc lists the public endpoints and the exact proof each one provides. All endpoints are unauthenticated and must avoid PII.
+> **Status: non-normative API appendix**
+>
+> This document lists example endpoint surfaces for serving already-defined protocol artifacts. It is not part of core protocol validity, and deployments MAY expose different paths or authentication policies as long as token/proof verification follows the normative procedures in `TOKENS.md`, `COMMITMENT_LAYER.md`, and `TRUSTLESS_TOKEN_VERIFICATION.md`.
+
+Any public proof endpoint MUST avoid PII and MUST NOT become a lookup oracle over receipt history, wallet identity, or campaign participation.
 
 **RecipientId note:** Reward commitment tokens expose a `recipientId`. By default this is a **blinded hash** (not a wallet address). It is safe to return publicly as a non-identifying commitment.
 
+**SpendId lookup note:** Per-spend proof lookup is safe only when `spendId` values are high entropy and the endpoint applies an explicit access policy or holder-provided proof of knowledge. Public enumeration of spend IDs, recent spend IDs, or campaign-scoped spend membership is not a protocol requirement and SHOULD be avoided.
+
 ## 1) GET `/v1/gmv/daily/:date/token`
-**Returns:** Observed GMV token for a UTC day.  
+**Returns:** Verified GMV token for a UTC day.
 **Proves:** The issuer attested the aggregate GMV snapshot for that date (no DB trust; signature checkable).
 
 ## 2) POST `/v1/gmv/verify`
@@ -36,8 +42,9 @@ This doc lists the public endpoints and the exact proof each one provides. All e
 **Proves:** The spend’s reward commitment is included in the anchored batch (Merkle inclusion).
 
 ## 8) GET `/api/public/proofs/issued-gmv/recent?limit=N`
-**Returns:** last N spendIds + per‑spend step results and proof material.  
-**Proves:** “These are the last N spends and each is both GMV‑counted and reward‑issued,” without DB trust.
+**Status:** deployment-specific audit endpoint, not a required public protocol endpoint.
+**Returns:** aggregate or redacted recent proof samples; MUST NOT expose raw recent `spendId` lists unless an explicit audit policy allows it.
+**Proves:** bounded audit sampling of issued-GMV proof construction, without making recent spend history publicly enumerable.
 
 ## 9) POST `/api/public/proofs/issued-gmv/verify`
 **Input:** `spendToken + gmvToken + gmvInclusionProof + rewardToken + batchProof + batchAnchor`.  
@@ -54,4 +61,4 @@ This doc lists the public endpoints and the exact proof each one provides. All e
 5) Verify reward batch inclusion proof.  
 6) Verify batch anchor on-chain.  
 
-If all pass, the proof does **not** depend on the Crinkl DB.
+If all pass, the proof does **not** depend on the Crinkl DB. Endpoint availability itself is still deployment policy, not protocol validity.

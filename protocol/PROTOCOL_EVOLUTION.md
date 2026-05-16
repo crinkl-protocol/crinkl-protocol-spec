@@ -10,7 +10,7 @@ The protocol has multiple version “surfaces” with different compatibility ex
 
 - **`protocolVersion`** (events, tokens): gates semantic interpretation of envelopes and required rules. Unknown `protocolVersion` MUST be rejected (see `DATA_STRUCTURES.md#schema-evolution`).
 - **`schemaVersion`** (token schemas, event payload schemas, commitment leaf schemas, statement schemas): gates structure and verification procedure. Unknown `schemaVersion` MUST be rejected for portable verification surfaces.
-- **ZK metadata** (`proofSystem`, `circuitId`, `verifierKeyId`): gates proof verification. Unknown circuits/keys MUST be rejected.
+- **ZK metadata** (`proofSystem`, `circuitId`, `verifyingKeyId`): gates proof verification. Unknown circuits/keys MUST be rejected.
 
 ## Version numbering
 

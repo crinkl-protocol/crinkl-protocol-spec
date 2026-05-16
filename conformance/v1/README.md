@@ -11,6 +11,10 @@ Goal: any implementation (server, platform, third-party verifier) can run the sa
 - Cross-wallet nullifier derivation (scope-bound, privacy-preserving)
 - Blinded recipient commitments (hash of wallet + blinder)
 
+Executable verifier:
+- See [`conformance/VERIFY.md`](../VERIFY.md)
+- Run `node scripts/verify_conformance.mjs` from repo root.
+
 ## Layout
 
 - `manifest.json` — lists vector files and basic metadata.
@@ -26,6 +30,7 @@ Goal: any implementation (server, platform, third-party verifier) can run the sa
 ### Tokens
 - `token.spendAttestation.portableV1.fromSpendStream.json` — Spend attestation token derivation
 - `tokenHash.spendAttestation.v1.json` — Spend token hash computation
+- `token.verifiedSpendDistribution.v1.json` — Verified spend distribution token derivation
 
 ### Commitment Layer
 - `merkle.rewardBatch.schemaV1.json` — Merkle tree for aggregated reward leaves (schema 1a/1b)

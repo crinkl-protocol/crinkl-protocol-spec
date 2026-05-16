@@ -1,9 +1,9 @@
 [
   {
-    "storeLocationId": "crinkl-storeloc-pga-superstore-us-ca-001",
-    "storeId": "crinkl-store-pga-superstore",
+    "storeLocationId": "crinkl-storeloc-example-merchant-us-ca-001",
+    "storeId": "crinkl-store-example-merchant",
     "geoRegion": "US-CA",
-    "label": "PGA Superstore #001 (Example)",
+    "label": "Example Merchant #001",
     "externalIds": [
       { "namespace": "gs1", "type": "gln", "value": "0000000000000" }
     ]

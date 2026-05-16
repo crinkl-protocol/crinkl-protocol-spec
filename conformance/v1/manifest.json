@@ -36,6 +36,10 @@
       "file": "vectors/token.spendAttestation.portableV1.fromSpendStream.json"
     },
     {
+      "kind": "token.verifiedSpendDistribution.v1",
+      "file": "vectors/token.verifiedSpendDistribution.v1.json"
+    },
+    {
       "kind": "nullifier.crossWallet",
       "file": "vectors/nullifier.crossWallet.json"
     },

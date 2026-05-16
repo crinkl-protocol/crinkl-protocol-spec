@@ -37,8 +37,7 @@ UPLOADED ──→ SOFT_VERIFIED ──→ HARD_VERIFIED ──→ CORRECTED*
 | UPLOADED | SOFT_VERIFIED | `SPEND_SOFT_VERIFIED.softVerificationStatus = SOFT_VERIFIED` |
 | UPLOADED | INVALIDATED | `SPEND_INVALIDATED` emitted (no valid Spend derivable) |
 | SOFT_VERIFIED | HARD_VERIFIED | `SPEND_HARD_VERIFIED` emitted (canonical fields present) |
-| SOFT_VERIFIED | INVALIDATED | `SPEND_INVALIDATED` emitted |
-| SOFT_VERIFIED | INVALIDATED | Duplicate suspicion confirmed at hard verification (e.g., `riskFlags` contains `potential_duplicate`; verifier MUST emit `SPEND_INVALIDATED`/`SPEND_CORRECTED`, not `SPEND_HARD_VERIFIED`) |
+| SOFT_VERIFIED | INVALIDATED | `SPEND_INVALIDATED` emitted. If duplicate suspicion is confirmed at hard verification (e.g., `riskFlags` contains `potential_duplicate`), verifier MUST emit `SPEND_INVALIDATED` or `SPEND_CORRECTED`, not `SPEND_HARD_VERIFIED`. |
 | HARD_VERIFIED | CORRECTED | `SPEND_CORRECTED` emitted (supersedes canonical interpretation) |
 | HARD_VERIFIED | INVALIDATED | `SPEND_INVALIDATED` emitted (supersedes canonical interpretation) |
 | CORRECTED | CORRECTED | additional `SPEND_CORRECTED` emitted (further supersession) |
@@ -51,6 +50,8 @@ Illegal transitions are rejected.
 **Correction semantics (normative):** `SPEND_CORRECTED` appends a new head that supersedes the prior canonical interpretation while preserving append-only history.
 
 **Soft verification non-transition (normative):** `SPEND_SOFT_VERIFIED` events with `softVerificationStatus != SOFT_VERIFIED` MUST NOT advance the verification state; the derived state remains `UPLOADED` and is considered ineligible for reward issuance.
+
+**Review request non-transition (normative):** `SPEND_REVIEW_REQUESTED` is informational. It MUST NOT advance, reopen, or supersede attestation state, and it MUST NOT reintroduce a valid Spend after an `INVALIDATED` head.
 
 ## Reward State Machine (Reward Ledger)
 
