@@ -1,131 +1,116 @@
-<div align="center">
-
 # Crinkl Protocol
+
+Crinkl Protocol defines how real-world commerce evidence becomes signed, privacy-preserving spend proof.
+
+A spend attestation proves that a purchase event was observed, normalized, verified, and signed by an authorized verifier.
+
+The protocol is designed so that campaigns, reward systems, analytics tools, agents, and settlement layers can verify commerce facts without requiring raw receipt access or user identity.
 
 [![Version](https://img.shields.io/badge/version-v1.0.0--rc.1-blue)](versions/CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-Apache%202.0-green)](LICENSE)
 [![CI](https://github.com/crinkl-protocol/crinkl-protocol-spec/actions/workflows/drift-check.yml/badge.svg)](https://github.com/crinkl-protocol/crinkl-protocol-spec/actions/workflows/drift-check.yml)
-[![TLA+](https://img.shields.io/badge/formal_verification-TLA%2B-purple)](formal/CrinklProtocol.tla)
 
-**Turn receipts into cryptographic proof of commerce.**
+## What Crinkl Proves
 
-An open protocol for producing identity-free, cryptographically signed spend attestations from raw receipt data — portable proof that commerce happened, without revealing who.
+Crinkl proves that commerce evidence advanced through a defined proof lifecycle:
 
-Issuer-managed event streams MAY carry wallet scope for replay, routing, abuse controls, or reward handling. Portable Spend Attestation Tokens are separate derived artifacts and are identity-free by default: they omit wallet, user, account, and session identifiers unless an explicit verifier policy requires recipient binding.
+1. Evidence is submitted.
+2. Evidence is normalized into a Spend Event.
+3. The Spend Event receives a verification state.
+4. A hard-verified Spend Event may produce a Spend Attestation.
+5. The Spend Attestation may be packaged as a Spend Attestation Token.
+6. External systems may verify the attestation.
+7. Conditions may evaluate one or more attestations.
+8. Valid condition matches may trigger rewards, settlement, campaigns, analytics, or agent responses.
 
-</div>
+## What Crinkl Does Not Prove
 
----
+Crinkl Core does not define checkout, payment authorization, card processing, merchant order management, ad delivery, identity graph construction, behavioral targeting, loyalty program ownership, brand campaign strategy, or agent purchasing.
 
-<p align="center">
-  <img src="diagrams/protocol_token_factory.svg" alt="Crinkl protocol layer produces signed token outputs: Spend Attestation, Reward Commitment, Verified GMV, and Verified Spend Distribution." width="1200" />
-</p>
+Crinkl may support those systems downstream by providing verified spend proof.
 
-**Key properties:** Deterministic | Replayable | Append-only | Cryptographically linked (SHA-256) | Signed (Ed25519)
+## Core Lifecycle
 
----
+The spec follows this dependency order:
 
-## Quick Start
+```text
+Evidence before claims.
+Claims before attestations.
+Attestations before conditions.
+Conditions before rewards.
+Rewards before campaigns.
+Campaigns before agents and markets.
+```
 
-1. **[INTRODUCTION.md](protocol/INTRODUCTION.md)** — What the protocol does
-2. **[GLOSSARY.md](protocol/GLOSSARY.md)** — Locked definitions (attestation, commitment, etc.)
-3. **[MODEL.md](protocol/MODEL.md)** — Core concepts (5 min read)
-4. **[TOKENS.md](protocol/TOKENS.md)** — Token outputs (spend attestation, reward commitments, Verified GMV, Verified Spend Distribution)
-5. **[DATA_STRUCTURES.md](protocol/DATA_STRUCTURES.md)** — Schemas and normalization rules
-6. **[Test Vectors](reference/EXAMPLES.md)** — 60+ cases
+Core protocol validity does not depend on campaigns, rewards, Solana, ZK, MCP, REST, agents, ads, brand budgets, or promotion logic.
 
-## Export PDF
+## Core Objects
 
-Build a single PDF from the Markdown spec using Dockerized Pandoc (no local Pandoc install required):
+| Object | Layer | Purpose |
+|---|---|---|
+| Commerce Evidence | Purpose/Core | Raw or semi-structured input that may support a spend claim. |
+| Spend Event | Core | Normalized representation of a purchase event. |
+| Verification State | Core/Lifecycle | Current confidence and status for a Spend Event. |
+| Spend Attestation | Core | Signed claim that a Spend Event was verified according to Crinkl rules. |
+| Spend Attestation Token | Portability | Portable representation of a Spend Attestation for external verification. |
+| Condition | Condition Layer | Rule over one or more Spend Attestations. |
+| Proof of Match | Condition Layer | Result of evaluating attestations against a condition. |
+| Reward Commitment | Reward/Settlement | Downstream accounting or promise based on valid proof of match. |
+
+## Privacy Boundary
+
+Internal Crinkl processing may use wallet-scoped or session-scoped references for replay, routing, abuse controls, and reward handling.
+
+Portable spend proofs must not require user identity, raw receipt access, private wallet lookup, app-user lookup, or cross-context behavioral profiles. The protocol is identity-minimized and identity-excluded from portable proofs by default; it does not claim full anonymity.
+
+## Verification and Portability
+
+Portable verification depends on canonical bytes, RFC 8785 serialization, SHA-256 hashes, Ed25519 signatures, issuer authority, supported versions, and included proof material.
+
+A portable Spend Attestation Token must exclude raw receipt images and must not require user identity. Deep audit may use event fragments or audit bundles, but those are not required for baseline portable verification.
+
+## Optional Profiles and Extensions
+
+Downstream layers consume spend proof; they do not define it.
+
+| Layer | Documents |
+|---|---|
+| Condition rules | [`04-condition-layer/`](04-condition-layer/) |
+| Reward and settlement | [`05-reward-and-settlement/`](05-reward-and-settlement/) |
+| ZK, agent, REST/MCP, Solana, offer delivery | [`06-extensions/`](06-extensions/) |
+| Conformance | [`07-conformance/`](07-conformance/) |
+| Governance | [`08-governance/`](08-governance/) |
+
+## Repository Structure
+
+| Directory | Role |
+|---|---|
+| [`00-purpose/`](00-purpose/) | Purpose, non-goals, and threat model. |
+| [`01-core/`](01-core/) | Evidence, Spend Events, verification states, canonicalization, signatures, privacy boundaries. |
+| [`02-proof-lifecycle/`](02-proof-lifecycle/) | Ingestion, normalization, soft/hard verification, correction, attestation issuance. |
+| [`03-portability/`](03-portability/) | Spend Attestation Tokens, verifier requirements, identity exclusion, replay/auditability. |
+| [`04-condition-layer/`](04-condition-layer/) | Conditions, condition evaluation, proof of match, campaign commitment. |
+| [`05-reward-and-settlement/`](05-reward-and-settlement/) | Reward Commitment, GMV, distribution, settlement bindings. |
+| [`06-extensions/`](06-extensions/) | Optional ZK, agent query, transport, Solana, offer-delivery, and registry profiles. |
+| [`07-conformance/`](07-conformance/) | Vectors, verifier test suite, compatibility notes. |
+| [`08-governance/`](08-governance/) | Versioning, change process, authority hierarchy, and shared glossary. |
+
+## Current Version
+
+**v1.0.0-rc.1** — see [`versions/CHANGELOG.md`](versions/CHANGELOG.md).
+Planned stable release tag: **v1.0.0**.
+
+## Verification
+
+```bash
+python3 scripts/check_drift.py
+node scripts/verify_conformance.mjs
+```
+
+PDF export:
 
 ```bash
 ./scripts/export_protocol_pdf.sh
 ```
 
-Output: `dist/crinkl-protocol.pdf`
-
-## Structure
-
-```
-/protocol    — Normative specification
-/reference   — Implementation guidance, examples, JSON schemas
-/versions    — Changelog and version snapshots
-/diagrams    — Visual material
-/formal      — TLA+ model checking specifications
-```
-
-## Key Properties
-
-| Property | Guarantee |
-|----------|-----------|
-| Deterministic | Same input + protocolVersion = same output |
-| Replayable | Final state reconstructible from events alone |
-| Append-only | Ledgers grow; entries never deleted |
-| Cryptographically linked | Events chained via prevHash |
-| Signed | Ed25519 signatures on all events |
-
-## Cryptographic Specifications
-
-| Component | Specification |
-|-----------|---------------|
-| Serialization | RFC 8785 (JSON Canonicalization) |
-| Hash | SHA-256, lowercase hex |
-| Signature | Ed25519, base64 |
-
-## Protocol Documents
-
-| Document | Purpose |
-|----------|---------|
-| [PROTOCOL_V1.md](protocol/PROTOCOL_V1.md) | Top-level spec |
-| [GLOSSARY.md](protocol/GLOSSARY.md) | Normative term definitions |
-| [MODEL.md](protocol/MODEL.md) | Domain model |
-| [TOKENS.md](protocol/TOKENS.md) | Token outputs (spend attestation, reward commitments, Verified GMV, Verified Spend Distribution) |
-| [DATA_STRUCTURES.md](protocol/DATA_STRUCTURES.md) | Schemas, normalization |
-| [STATE_MACHINES.md](protocol/STATE_MACHINES.md) | State transitions |
-| [EVENTS.md](protocol/EVENTS.md) | Event definitions |
-| [VERIFICATION_PIPELINE.md](protocol/VERIFICATION_PIPELINE.md) | Verification flow |
-| [REWARD_LAYER.md](protocol/REWARD_LAYER.md) | Reward issuance |
-| [COMMITMENT_LAYER.md](protocol/COMMITMENT_LAYER.md) | On-chain reward proofs |
-| [TOKEN_EXTENSIONS.md](protocol/TOKEN_EXTENSIONS.md) | Privacy-first credentials + agent delegation (draft) |
-| [CAMPAIGN_SPEND_PROOF_PRIMITIVES.md](protocol/CAMPAIGN_SPEND_PROOF_PRIMITIVES.md) | Campaign rule composition and public settlement commitment (draft optional extension) |
-| [PROMO_PROTOCOL.md](protocol/PROMO_PROTOCOL.md) | Offer delivery profile and verifier rules (optional extension) |
-| [PROOF_ENDPOINTS.md](protocol/PROOF_ENDPOINTS.md) | Public proof endpoint appendix (non-normative) |
-| [SECURITY_MODEL.md](protocol/SECURITY_MODEL.md) | Threat model |
-| [RATE_LIMITING.md](protocol/RATE_LIMITING.md) | Rate limits |
-| [PROTOCOL_EVOLUTION.md](protocol/PROTOCOL_EVOLUTION.md) | Versioning |
-
-## Optional Campaign Extension
-
-Campaigns are defined as parameterized rules over existing Spend Attestation Tokens and proof surfaces. The draft campaign extension does not introduce a new core token type: audience qualification proves who qualifies, verified conversion references a normal hard-verified Spend Token, and public settlement may commit cleared conversions through `CAMPAIGN_SETTLEMENT_COMMITTED`.
-
-## Wire Formats
-
-| Format | Location | Status | Use Case |
-|--------|----------|--------|----------|
-| JSON Schema | [event.schema.json](reference/schemas/event.schema.json) | Normative (for JSON) | Validation + interop |
-| Conformance Vectors | [conformance/v1](conformance/v1) | Normative | Canonicalization, hashing, signatures, Merkle roots/proofs |
-
-## Formal Verification
-
-TLA+ specification: [formal/CrinklProtocol.tla](formal/CrinklProtocol.tla)
-
-Verified invariants:
-- No reward without verification
-- Final reward requires hard verification
-- Corrections only after finalization
-- Rewards are immutable (no clawback)
-
-## Current Version
-
-**v1.0.0-rc.1** — See [CHANGELOG.md](versions/CHANGELOG.md)  
-Planned stable release tag: **v1.0.0**
-
-## Provenance
-
-Publication and history notes: [PROVENANCE.md](PROVENANCE.md)
-
-## Verification
-
-- Drift check: `python3 scripts/check_drift.py`
-- Conformance checks: `node scripts/verify_conformance.mjs`
-- Formal model check: `bash scripts/run_tlc.sh`
+Reform notes for this lifecycle refactor are in [`REFORM_NOTES.md`](REFORM_NOTES.md).

@@ -131,15 +131,15 @@ def main() -> int:
     if m.group(1) != protocol_version:
         return die(f"README.md version mismatch: README={m.group(1)} binding={protocol_version}")
 
-    evolution = read_text(repo_root / "protocol" / "PROTOCOL_EVOLUTION.md")
+    evolution = read_text(repo_root / "08-governance" / "versioning.md")
     m2 = re.search(r"Current version:\s+\*\*(\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?)\*\*", evolution)
     if not m2:
-        return die("protocol/PROTOCOL_EVOLUTION.md missing 'Current version: **X.Y.Z**'")
+        return die("08-governance/versioning.md missing 'Current version: **X.Y.Z**'")
     if m2.group(1) != protocol_version:
-        return die(f"PROTOCOL_EVOLUTION.md version mismatch: PROTOCOL_EVOLUTION={m2.group(1)} binding={protocol_version}")
+        return die(f"versioning.md version mismatch: versioning={m2.group(1)} binding={protocol_version}")
 
-    # EVENTS.md must mention every bound protocol/system event name.
-    events_md = read_text(repo_root / "protocol" / "EVENTS.md")
+    # spend-event.md must mention every bound protocol/system event name.
+    events_md = read_text(repo_root / "01-core" / "spend-event.md")
     bound_event_names = {
         subject_to_event_name(v)
         for v in protocol_subjects.values()
@@ -148,15 +148,15 @@ def main() -> int:
     present = set(re.findall(r"\|\s*([A-Z0-9_]+)\s*\|", events_md))
     missing = sorted([n for n in bound_event_names if n and n not in present])
     if missing:
-        return die(f"protocol/EVENTS.md missing event(s): {', '.join(missing)}")
+        return die(f"01-core/spend-event.md missing event(s): {', '.join(missing)}")
 
-    # reference/schemas/event.schema.json must cover all spend-stream event names.
-    ref_schema = read_json(repo_root / "reference" / "schemas" / "event.schema.json")
+    # 01-core/schemas/event.schema.json must cover all spend-stream event names.
+    ref_schema = read_json(repo_root / "01-core" / "schemas" / "event.schema.json")
     ref_enum = set(((ref_schema.get("properties") or {}).get("eventName") or {}).get("enum") or [])
     spend_names = {subject_to_event_name(v) for v in protocol_subjects.values() if v.startswith("event.")}
     spend_missing = sorted([n for n in spend_names if n and n not in ref_enum])
     if spend_missing:
-        return die(f"reference/schemas/event.schema.json missing eventName enum(s): {', '.join(spend_missing)}")
+        return die(f"01-core/schemas/event.schema.json missing eventName enum(s): {', '.join(spend_missing)}")
 
     print(f"[drift-check] OK (protocolVersion={protocol_version})")
     return 0
