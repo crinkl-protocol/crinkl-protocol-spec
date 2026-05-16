@@ -137,6 +137,7 @@ These are testable “MUST NOT” constraints intended to prevent protocol drift
 - The protocol MUST NOT require trusting any HTTP API response as an authority for protocol “truth” (only signed and/or committed artifacts per this spec).
 - The protocol MUST NOT require receipt images, OCR text, or human review artifacts to validate portable tokens.
 - The protocol MUST NOT define or require a protocol-level identity graph (wallet routing and identity are application-layer concerns).
+- The protocol MUST NOT require private wallet lookup or app-user lookup to validate a portable Spend Attestation Token.
 - The protocol MUST NOT introduce mutable, user-scoped state as a verification prerequisite (verification relies on append-only streams and commitments only).
 
 ## Fraud Handling

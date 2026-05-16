@@ -68,6 +68,8 @@ The protocol minimizes identity exposure by default.
 
 Canonical spend truth and aggregate economic claims MUST NOT require or imply user identity disclosure. Recipient identifiers are exposed only when required to verify economic issuance.
 
+Internal spend-stream envelopes MAY include `wallet: WalletRef` for issuer-side replay, routing, abuse controls, or reward handling. That field is internal stream scope, not a public identity claim and not a requirement for portable proof. Portable Spend Attestation Tokens are distinct derived artifacts and SHOULD omit wallet for external verification unless recipient binding is explicitly required.
+
 | Token Type | Recipient Exposure |
 |------------|-------------------|
 | Spend Attestation | Optional — truth ≠ ownership |

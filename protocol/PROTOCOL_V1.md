@@ -25,4 +25,6 @@ Canonical entrypoint for version 1 of the Crinkl Protocol specification. Each se
 
 **Integrity:** All events MUST include `eventHash` (SHA-256) and `prevHash` (linking to prior event in stream). Events MUST be signed with Ed25519.
 
+**Identity boundary:** Internal spend-stream events MAY be wallet-scoped for issuer replay, routing, abuse controls, and reward handling. Portable Spend Attestation Tokens are separate derived artifacts and SHOULD omit wallet, user, account, and session identifiers for external verification unless recipient binding is explicitly required.
+
 **Serialization:** Canonical JSON per RFC 8785 is REQUIRED. Alternative encodings (e.g., deterministic protobuf) MUST produce byte-identical hashes.

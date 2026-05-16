@@ -17,13 +17,15 @@ Soft verification enables responsive UX. Hard verification produces the canonica
 
 A user photographs a grocery receipt:
 
-1. **Ingest** — `RECEIPT_UPLOADED` binds submission to wallet
+1. **Ingest** — `RECEIPT_UPLOADED` binds submission to wallet inside the issuer-managed spend stream
 2. **Soft Verify** — `SPEND_SOFT_VERIFIED` emits approximate extraction; operators may issue provisional rewards
 3. **Hard Verify** — `SPEND_HARD_VERIFIED` produces canonical Spend (store, total, currency, timestamp); operators may issue final rewards
 4. **Commit** (optional) — reward batch anchored on-chain via Merkle root
 5. **Tokenize** — portable Spend Attestation Token + Reward Commitment Token (if committed)
 
 Corrections append (`SPEND_CORRECTED`); they never mutate.
+
+The wallet binding in step 1 is internal stream scope for replay, routing, abuse controls, and reward handling. The portable Spend Attestation Token produced at tokenization is a separate derived artifact and is identity-free by default; it can prove that the spend happened without exposing wallet, user, account, or session identity.
 
 ## Reward Gating
 
