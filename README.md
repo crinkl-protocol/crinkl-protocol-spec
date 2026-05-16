@@ -85,9 +85,16 @@ Output: `dist/crinkl-protocol.pdf`
 | [REWARD_LAYER.md](protocol/REWARD_LAYER.md) | Reward issuance |
 | [COMMITMENT_LAYER.md](protocol/COMMITMENT_LAYER.md) | On-chain reward proofs |
 | [TOKEN_EXTENSIONS.md](protocol/TOKEN_EXTENSIONS.md) | Privacy-first credentials + agent delegation (draft) |
+| [CAMPAIGN_SPEND_PROOF_PRIMITIVES.md](protocol/CAMPAIGN_SPEND_PROOF_PRIMITIVES.md) | Campaign rule composition and public settlement commitment (draft optional extension) |
+| [PROMO_PROTOCOL.md](protocol/PROMO_PROTOCOL.md) | Offer delivery profile and verifier rules (optional extension) |
+| [PROOF_ENDPOINTS.md](protocol/PROOF_ENDPOINTS.md) | Public proof endpoint appendix (non-normative) |
 | [SECURITY_MODEL.md](protocol/SECURITY_MODEL.md) | Threat model |
 | [RATE_LIMITING.md](protocol/RATE_LIMITING.md) | Rate limits |
 | [PROTOCOL_EVOLUTION.md](protocol/PROTOCOL_EVOLUTION.md) | Versioning |
+
+## Optional Campaign Extension
+
+Campaigns are defined as parameterized rules over existing Spend Attestation Tokens and proof surfaces. The draft campaign extension does not introduce a new core token type: audience qualification proves who qualifies, verified conversion references a normal hard-verified Spend Token, and public settlement may commit cleared conversions through `CAMPAIGN_SETTLEMENT_COMMITTED`.
 
 ## Wire Formats
 
