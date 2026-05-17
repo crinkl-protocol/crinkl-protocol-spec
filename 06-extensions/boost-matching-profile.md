@@ -68,7 +68,6 @@ BoostRosterPolicyV1 {
   schemaVersion: 1,
   profileId: "BOOST_LOCAL_AREA_MATCHING",
   campaignId: Identifier,
-  campaignParamsHash: "sha256:" + Hash,
   predicateId?: "sha256:" + Hash,
 
   locationPolicy: {
@@ -87,7 +86,9 @@ BoostRosterPolicyV1 {
 
 Normative constraints:
 
-- `campaignId` and `campaignParamsHash` MUST match the `CampaignRuleV1` that authorizes settlement.
+- `campaignId` MUST match the `CampaignRuleV1` that authorizes settlement.
+- `rosterPolicyHash` MUST match `CampaignRuleV1.settlement.runtimeProfile.profilePolicyHash`.
+- `BoostRosterPolicyV1` MUST NOT include `campaignParamsHash` in its own hash preimage; otherwise the campaign rule hash and profile-policy hash become circular. Runtime artifacts bind both `campaignParamsHash` and `rosterPolicyHash` after the campaign rule is frozen.
 - `marketSource` MUST be `SPEND_TOKEN_CANONICAL_LOCATION`.
 - `routingMetadataUse` MUST be `DISCOVERY_ONLY`; campaign routing metadata MUST NOT replace canonical buyer/promoter Spend Token market fields.
 - `rosterOrder` MUST preserve activation order across the whole campaign/runtime profile.
