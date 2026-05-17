@@ -869,6 +869,10 @@ To prevent cross-chain replay/ambiguity of commitments, chain bindings MUST defi
 
 Verifiers SHOULD reject commitment artifacts whose `txRef` cannot be parsed or does not match the expected commitment location for the deployment.
 
+Campaign settlement commitment requirements are defined in
+`campaign-settlement-gcd.md`. The Solana campaign settlement binding is defined
+in `../06-extensions/solana-campaign-settlement-binding.md`.
+
 Chain bindings are documented separately from this core specification.
 
 ## Implementation Notes

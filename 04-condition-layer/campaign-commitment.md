@@ -11,7 +11,7 @@ normative: true
 >
 > This document defines how campaign rules compose existing Crinkl proof surfaces into marketer-recognizable commerce outcomes without changing canonical Spend Token semantics.
 >
-> Implementation status: terminology and primitive families are proposed for v1; settlement artifacts such as `CampaignRuleV1`, `AudienceQualificationV1`, `VerifiedConversionV1`, `ConversionApprovalV1`, and `CampaignSettlementLeafV1` remain candidate shapes until platform, PWA, and public settlement surfaces are aligned.
+> Implementation status: terminology and primitive families are proposed for v1; public campaign settlement anchoring is frozen by `../05-reward-and-settlement/campaign-settlement-gcd.md`.
 >
 > Experimental schemas: candidate machine-readable schemas for CampaignEpoch, CampaignAmendment, and FundingTranche live in `../schemas/experimental/`. They are non-core condition/campaign extension schemas and are not required for Core Spend Attestation validity.
 
@@ -427,6 +427,7 @@ CampaignRuleV1 {
     audienceHash: "sha256:" + Hash,
     conversionHash: "sha256:" + Hash,
     rewardPolicyHash?: "sha256:" + Hash,
+    ruleSetHash: "sha256:" + Hash,
     campaignParamsHash: "sha256:" + Hash
   }
 }
@@ -434,7 +435,7 @@ CampaignRuleV1 {
 
 `campaignParamsHash` MUST be computed over `CampaignRuleV1` with `hashes.campaignParamsHash`, signatures, and transport-only metadata omitted.
 
-`audienceHash` MUST be computed over `audience`. `conversionHash` MUST be computed over `conversion`. `rewardPolicyHash` MUST be computed over the referenced reward policy artifact when present. All hashes use RFC 8785 canonical JSON and SHA-256 encoded as `"sha256:" + lowercase hex`.
+`audienceHash` MUST be computed over `audience`. `conversionHash` MUST be computed over `conversion`. `rewardPolicyHash` MUST be computed over the referenced reward policy artifact when present. `ruleSetHash` MUST match the selected `CampaignEpochV1.ruleSetHash`. All hashes use RFC 8785 canonical JSON and SHA-256 encoded as `"sha256:" + lowercase hex`.
 
 `minimumVerification: "HARD_VERIFIED"` means the conversion spend must have passed the hard-verification pipeline. A verifier MAY accept `CORRECTED` as a later canonical hard-verification head when the campaign rule includes `CORRECTED` in `acceptedStatuses`.
 
@@ -618,6 +619,8 @@ Campaign settlement batches are committed with a system-stream event:
 CAMPAIGN_SETTLEMENT_COMMITTED {
   settlementBatchId: Identifier,
   campaignId: Identifier,
+  epochId: Identifier,
+  ruleSetHash: "sha256:" + Hash,
   campaignParamsHash: "sha256:" + Hash,
   root: Hash,
   leafCount: Integer,

@@ -77,8 +77,8 @@ Downstream layers consume spend proof; they do not define it.
 | Layer | Documents |
 |---|---|
 | Condition rules and CampaignEpochs | [`04-condition-layer/`](04-condition-layer/) |
-| Reward and settlement | [`05-reward-and-settlement/`](05-reward-and-settlement/) |
-| ZK, agent, REST/MCP, Solana, offer delivery | [`06-extensions/`](06-extensions/) |
+| Reward and settlement | [`05-reward-and-settlement/`](05-reward-and-settlement/) including [`campaign-settlement-gcd.md`](05-reward-and-settlement/campaign-settlement-gcd.md) |
+| ZK, agent, REST/MCP, Solana, offer delivery | [`06-extensions/`](06-extensions/) including [`solana-campaign-settlement-binding.md`](06-extensions/solana-campaign-settlement-binding.md) |
 | Conformance | [`07-conformance/`](07-conformance/) |
 | Governance | [`08-governance/`](08-governance/) |
 
