@@ -11,9 +11,9 @@ normative: true
 >
 > This document defines how campaign rules compose existing Crinkl proof surfaces into marketer-recognizable commerce outcomes without changing canonical Spend Token semantics.
 >
-> Implementation status: terminology and primitive families are proposed for v1; settlement artifacts such as `CampaignRuleV1`, `AudienceQualificationV1`, `VerifiedConversionV1`, `ConversionApprovalV1`, and `CampaignSettlementLeafV1` remain candidate shapes until platform, PWA, and public settlement surfaces are aligned.
+> Implementation status: terminology and primitive families are proposed for v1. `CampaignRuleV1` and `CampaignSettlementLeafV1` are frozen as GCD candidate schemas for public campaign settlement commitments. Other settlement artifacts such as `AudienceQualificationV1`, `VerifiedConversionV1`, and `ConversionApprovalV1` remain candidate shapes until platform, PWA, and public settlement surfaces are aligned.
 >
-> Experimental schemas: candidate machine-readable schemas for CampaignEpoch, CampaignAmendment, and FundingTranche live in `../schemas/experimental/`. They are non-core condition/campaign extension schemas and are not required for Core Spend Attestation validity.
+> Experimental schemas: candidate machine-readable schemas for CampaignRule, CampaignSettlementLeaf, CampaignEpoch, CampaignAmendment, and FundingTranche live in `../schemas/experimental/`. They are non-core condition/campaign extension schemas and are not required for Core Spend Attestation validity.
 
 ## 1) Scope and Boundary
 
@@ -436,6 +436,25 @@ CampaignRuleV1 {
 
 `audienceHash` MUST be computed over `audience`. `conversionHash` MUST be computed over `conversion`. `rewardPolicyHash` MUST be computed over the referenced reward policy artifact when present. All hashes use RFC 8785 canonical JSON and SHA-256 encoded as `"sha256:" + lowercase hex`.
 
+### CampaignRuleV1 GCD schema freeze
+
+The machine-readable GCD candidate schema is `../schemas/experimental/campaign-rule.v1.schema.json`.
+
+For public campaign settlement commitments, `CampaignRuleV1` is the canonical campaign-rule preimage. Producers and verifiers MUST apply these rules:
+
+- The object MUST validate against `campaign-rule.v1.schema.json`.
+- `schemaVersion` MUST be `1`.
+- `protocolVersion` MUST be present.
+- `campaignId`, `sponsor`, `verifier`, `publicTerms`, `audience`, `conversion`, `settlement`, and `hashes` are required.
+- `publicTerms.startsAt` and `publicTerms.endsAt` MUST be UTC millisecond timestamps and define the public rule window for this rule object.
+- `settlement.replayScope` MUST bind the verifier, campaign, and statement identity used for replay/nullifier semantics.
+- `settlement.publicCommitment.authorizedCommitter`, when present, identifies the authority expected to publish public settlement commitments for this campaign rule.
+- Primitive-specific `statement` objects are allowed inside `CampaignSpendProofPrimitiveRequirementV1` and are part of the hash preimage. When a statement is present, `statementId` MUST also be present. This is where campaign-specific condition identifiers, market identifiers such as CBSA codes, category references, or committed set references are bound without adding new top-level campaign fields.
+- `hashes.campaignParamsHash` MUST be omitted from the hash preimage; `audienceHash`, `conversionHash`, and any present `rewardPolicyHash` remain part of the artifact and may be included in the preimage.
+- Signatures, transport metadata, database identifiers, runtime-only labels, raw receipts, wallet identifiers, buyer identifiers, and private proof inputs MUST NOT be included in the `campaignParamsHash` preimage.
+- Arrays are hash-significant. Producers MUST emit arrays in their intended canonical order; verifiers MUST NOT reorder arrays before hashing.
+- Unknown fields are not part of this frozen GCD schema. New public rule fields require a new schema version or an explicit schema update before they can affect `campaignParamsHash`.
+
 `minimumVerification: "HARD_VERIFIED"` means the conversion spend must have passed the hard-verification pipeline. A verifier MAY accept `CORRECTED` as a later canonical hard-verification head when the campaign rule includes `CORRECTED` in `acceptedStatuses`.
 
 `CampaignSpendProofPrimitiveRequirementV1` is a requirement descriptor:
@@ -612,12 +631,34 @@ CampaignSettlementLeafV1 {
 
 `CampaignSettlementLeafV1` is hashed with the same Merkle conventions as commitment leaves unless a chain binding specifies a stricter domain separator. Verifiers MUST reject leaves that omit `approvalHash`, `conversionSpendTokenHash`, or `settlementNullifier`.
 
+### CampaignSettlementLeafV1 GCD schema freeze
+
+The machine-readable GCD candidate schema is `../schemas/experimental/campaign-settlement-leaf.v1.schema.json`.
+
+For public campaign settlement commitments, `CampaignSettlementLeafV1` is the canonical leaf preimage. Producers and verifiers MUST apply these rules:
+
+- The object MUST validate against `campaign-settlement-leaf.v1.schema.json`.
+- `schemaVersion` MUST be `1`.
+- `leafType` MUST be `"CAMPAIGN_SETTLEMENT_LEAF"`.
+- `campaignId`, `epochId`, `ruleSetHash`, and `campaignParamsHash` MUST bind the leaf to the frozen campaign rule and selected CampaignEpoch.
+- `qualificationHash`, `conversionHash`, `conversionSpendTokenHash`, `conversionHeadEventHash`, and `approvalHash` MUST bind the leaf to the approved conversion evidence without publishing raw proof inputs.
+- `payout.amount` MUST be a non-negative base-10 integer string. `payout.asset` MUST be non-empty and MUST match the settlement batch `payoutAsset`.
+- `settlementScopeId` and `settlementNullifier` MUST be campaign-scoped and MUST NOT be stable wallet, account, or user identifiers.
+- Raw receipt artifacts, raw Spend Tokens, wallet addresses, user identifiers, and uncommitted sensitive geography MUST NOT appear in the leaf.
+- Leaf hash is `SHA-256(0x00 || RFC8785_canonicalize(CampaignSettlementLeafV1))`, encoded as lowercase hex.
+- Batch roots MUST use the Commitment Layer internal-node rule: `SHA-256(0x01 || left || right)` with sorted-pair internal hashing.
+- Leaves in a campaign settlement batch MUST be sorted by `settlementNullifier`, then `approvalHash`, then `settlementId`, using ascending lexicographic order of UTF-8 bytes.
+- Duplicate `settlementNullifier` values in a campaign settlement batch MUST be rejected.
+- Unknown fields are not part of this frozen GCD schema. New public settlement-leaf fields require a new schema version or an explicit schema update before they can affect a public settlement root.
+
 Campaign settlement batches are committed with a system-stream event:
 
 ```text
 CAMPAIGN_SETTLEMENT_COMMITTED {
   settlementBatchId: Identifier,
   campaignId: Identifier,
+  epochId: Identifier,
+  ruleSetHash: "sha256:" + Hash,
   campaignParamsHash: "sha256:" + Hash,
   root: Hash,
   leafCount: Integer,
@@ -630,6 +671,23 @@ CAMPAIGN_SETTLEMENT_COMMITTED {
 ```
 
 The system event envelope supplies `chainId`, `signedBy`, `prevHash`, `eventHash`, and the authority signature as defined in `../01-core/spend-event.md`.
+
+### Campaign settlement authority requirements
+
+Campaign settlement authority follows the System-Stream Authority Registry in `../05-reward-and-settlement/settlement-bindings.md#authority-registry`.
+
+For public campaign settlement commitments:
+
+- `ConversionApprovalV1.approvedBy` MUST identify a verifier authorized for the campaign rule scope.
+- `CampaignRuleV1.settlement.publicCommitment.authorizedCommitter`, when present, MUST identify the expected settlement committer for public settlement roots.
+- `SystemStreamEvent.signedBy` for `CAMPAIGN_SETTLEMENT_COMMITTED` MUST be a registered authority for the event `chainId` at the event-effective time.
+- For `CAMPAIGN_SETTLEMENT_COMMITTED`, the event-effective time is `payload.committedAt`.
+- Verifiers MUST reconstruct the Authority Registry for `chainId` at `committedAt` and verify the event signature against that authority's public key.
+- Authority rotation MUST be represented through `AUTHORITY_REGISTERED` and `AUTHORITY_REVOKED` system-stream events.
+- A retired authority remains valid for commitments whose effective time falls inside its validity window and MUST be rejected for commitments whose effective time falls after revocation.
+- The Authority Registry is a rotation log, not a delegation graph. Verifiers MUST NOT infer transitive delegation from `predecessorId`.
+- If more than one authority is simultaneously valid for the same `chainId` and time window, verifiers MUST treat that interval as invalid or ambiguous.
+- A chain-specific program authority, such as a Solana commitment authority, MUST be mapped to the system-stream authority identity for the deployment. The chain program alone does not replace system-stream authority verification.
 
 Normative constraints:
 

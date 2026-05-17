@@ -127,7 +127,7 @@ Commitment-layer event semantics are defined in `../05-reward-and-settlement/set
 | REWARD_BATCH_BACKING_ATTESTED | `{ batchId, backingAsset, backingAmount, backingVault, backingTxRef, backedAt }` |
 | REWARD_BATCH_CORRECTION | `{ correctionBatchId, targetBatchId, reason, adjustments, root, txRef, committedAt }` |
 | CUMULATIVE_SNAPSHOT_COMMITTED | `{ snapshotId, snapshotRoot, leafCount, throughBatchId, throughEventHash, txRef, committedAt }` |
-| CAMPAIGN_SETTLEMENT_COMMITTED | `{ settlementBatchId, campaignId, campaignParamsHash, root, leafCount, totalPayoutAmount, payoutAsset, schemaVersion, txRef, committedAt }` |
+| CAMPAIGN_SETTLEMENT_COMMITTED | `{ settlementBatchId, campaignId, epochId, ruleSetHash, campaignParamsHash, root, leafCount, totalPayoutAmount, payoutAsset, schemaVersion, txRef, committedAt }` |
 | AUTHORITY_REGISTERED | `{ authorityId, publicKey, validFrom, predecessorId?, txRef, registeredAt }` |
 | AUTHORITY_REVOKED | `{ authorityId, validUntil, revokedBy, reason, txRef, revokedAt }` |
 
@@ -135,7 +135,7 @@ Commitment-layer event semantics are defined in `../05-reward-and-settlement/set
 
 `REWARD_BATCH_BACKING_ATTESTED` is an operator attestation about economic backing for a reward batch. It MUST NOT be interpreted as independent verification of spend attestation; it only provides a verifiable reference (`backingTxRef`) to an external asset movement intended to back reward liabilities for `batchId`.
 
-`CAMPAIGN_SETTLEMENT_COMMITTED` is the public settlement commitment for cleared campaign conversions. It binds a campaign-specific settlement root to `campaignId`, `campaignParamsHash`, payout totals, authority signature, and `txRef`. It MUST NOT publish raw audience proof inputs, wallet identities, raw receipt data, or sensitive market details. See ../04-condition-layer/campaign-commitment.md.
+`CAMPAIGN_SETTLEMENT_COMMITTED` is the public settlement commitment for cleared campaign conversions. It binds a campaign-specific settlement root to `campaignId`, `epochId`, `ruleSetHash`, `campaignParamsHash`, payout totals, authority signature, and `txRef`. It MUST NOT publish raw audience proof inputs, wallet identities, raw receipt data, or sensitive market details. See ../04-condition-layer/campaign-commitment.md.
 
 See ../05-reward-and-settlement/settlement-bindings.md for reward commitment events and ../04-condition-layer/campaign-commitment.md for campaign settlement commitments.
 

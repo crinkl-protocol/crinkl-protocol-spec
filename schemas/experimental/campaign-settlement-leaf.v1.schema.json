@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "crinkl://protocol/schemas/experimental/campaign-settlement-leaf.v1",
+  "title": "CampaignSettlementLeafV1",
+  "description": "Frozen GCD candidate schema for one cleared campaign conversion included in a public campaign settlement root. This non-core condition/campaign extension schema is not required for Core Spend Attestation validity.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "leafType",
+    "settlementId",
+    "campaignId",
+    "epochId",
+    "ruleSetHash",
+    "campaignParamsHash",
+    "qualificationHash",
+    "conversionHash",
+    "conversionSpendTokenHash",
+    "conversionHeadEventHash",
+    "approvalHash",
+    "payout",
+    "settlementScopeId",
+    "settlementNullifier",
+    "clearedAt"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "leafType": { "const": "CAMPAIGN_SETTLEMENT_LEAF" },
+    "settlementId": { "$ref": "#/$defs/Identifier" },
+    "campaignId": { "$ref": "#/$defs/Identifier" },
+    "epochId": { "$ref": "#/$defs/Identifier" },
+    "ruleSetHash": { "$ref": "#/$defs/Sha256Id" },
+    "campaignParamsHash": { "$ref": "#/$defs/Sha256Id" },
+    "qualificationHash": { "$ref": "#/$defs/Sha256Id" },
+    "conversionHash": { "$ref": "#/$defs/Sha256Id" },
+    "conversionSpendTokenHash": { "$ref": "#/$defs/Sha256Id" },
+    "conversionHeadEventHash": { "$ref": "#/$defs/Hash" },
+    "approvalHash": { "$ref": "#/$defs/Sha256Id" },
+    "payout": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["amount", "asset"],
+      "properties": {
+        "amount": { "$ref": "#/$defs/NonNegativeIntegerString" },
+        "asset": { "$ref": "#/$defs/Asset" }
+      }
+    },
+    "settlementScopeId": { "$ref": "#/$defs/Sha256Id" },
+    "settlementNullifier": { "$ref": "#/$defs/Sha256Id" },
+    "clearedAt": { "$ref": "#/$defs/TimestampISO" }
+  },
+  "$defs": {
+    "Identifier": {
+      "type": "string",
+      "minLength": 1
+    },
+    "TimestampISO": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$"
+    },
+    "Hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "Sha256Id": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "NonNegativeIntegerString": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)$"
+    },
+    "Asset": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}
