@@ -47,6 +47,9 @@ Executable verifier:
 - `nullifier.crossWallet.json` — Cross-wallet nullifier derivation for multi-wallet proofs
 - `recipient.blinded.schemaV1b.json` — Blinded recipient commitments (schema 1b/2b)
 
+### Campaign Runtime Profiles
+- `boost.localAreaMatching.v1.json` — Boost local-area matching proof checks, including actor separation so a promoter cannot settle as the matched buyer
+
 ## Contract
 
 - Vector files are **append-only** within a given `v1` suite.

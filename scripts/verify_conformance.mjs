@@ -46,6 +46,12 @@ function canonicalizeJson(value) {
   throw new Error(`unsupported JSON value type: ${typeof value}`);
 }
 
+function hashObjectWithoutField(value, hashField) {
+  const preimage = JSON.parse(JSON.stringify(value));
+  delete preimage[hashField];
+  return `sha256:${sha256HexUtf8(canonicalizeJson(preimage))}`;
+}
+
 function ed25519PrivateKeyFromSeedHex(seedHex) {
   const seed = Buffer.from(seedHex, "hex");
   if (seed.length !== 32) throw new Error(`ed25519 seed must be 32 bytes, got ${seed.length}`);
@@ -101,6 +107,97 @@ function runScenario(events) {
 
 function fail(failures, kind, caseId, message) {
   failures.push(`[${kind}] ${caseId}: ${message}`);
+}
+
+function validateBoostLocalAreaMatchingCase(c) {
+  const errors = [];
+  const assertCase = (condition, error) => {
+    if (!condition) errors.push(error);
+  };
+  const hashField = (value, field, error) => {
+    assertCase(hashObjectWithoutField(value, field) === value[field], error);
+  };
+
+  hashField(c.rosterPolicy, "rosterPolicyHash", "roster_policy_hash_mismatch");
+  hashField(c.promoterQueueSlot, "slotHash", "slot_hash_mismatch");
+  hashField(
+    c.localAreaMatch.actorSeparation,
+    "actorSeparationHash",
+    "actor_separation_hash_mismatch"
+  );
+  hashField(c.localAreaMatch, "matchHash", "match_hash_mismatch");
+  hashField(c.slotConsumption, "consumptionHash", "consumption_hash_mismatch");
+  hashField(c.settlementBinding, "settlementBindingHash", "settlement_binding_hash_mismatch");
+  hashField(c.matchingProof, "proofHash", "matching_proof_hash_mismatch");
+
+  assertCase(
+    c.rosterPolicy.profileId === "BOOST_LOCAL_AREA_MATCHING",
+    "profile_id_mismatch"
+  );
+  assertCase(
+    c.rosterPolicy.actorSeparation?.mode === "PROMOTER_MUST_NOT_BE_BUYER",
+    "actor_separation_policy_missing"
+  );
+  assertCase(
+    c.rosterPolicy.actorSeparation?.subjectSource === "CAMPAIGN_SCOPED_ACTOR_COMMITMENT",
+    "actor_separation_subject_source_invalid"
+  );
+  assertCase(
+    c.promoterQueueSlot.slotStatus === "ACTIVE",
+    "selected_slot_not_active"
+  );
+  assertCase(
+    c.localAreaMatch.selectedSlotHash === c.promoterQueueSlot.slotHash,
+    "selected_slot_hash_mismatch"
+  );
+  assertCase(
+    c.localAreaMatch.selectedActivationSequence === c.promoterQueueSlot.activationSequence,
+    "selected_activation_sequence_mismatch"
+  );
+  assertCase(
+    c.localAreaMatch.actorSeparation?.selectedPromoterActorCommitment ===
+      c.promoterQueueSlot.promoterActorCommitment,
+    "selected_promoter_actor_commitment_mismatch"
+  );
+  assertCase(
+    c.localAreaMatch.actorSeparation?.result === "DISTINCT",
+    "actor_separation_result_invalid"
+  );
+  assertCase(
+    c.localAreaMatch.actorSeparation?.buyerActorCommitment !==
+      c.localAreaMatch.actorSeparation?.selectedPromoterActorCommitment,
+    "actor_separation_violation"
+  );
+  assertCase(
+    c.slotConsumption.slotHash === c.promoterQueueSlot.slotHash,
+    "consumption_slot_hash_mismatch"
+  );
+  assertCase(
+    c.slotConsumption.matchHash === c.localAreaMatch.matchHash,
+    "consumption_match_hash_mismatch"
+  );
+  assertCase(
+    c.settlementBinding.matchHash === c.localAreaMatch.matchHash,
+    "settlement_match_hash_mismatch"
+  );
+  assertCase(
+    c.settlementBinding.actorSeparationHash ===
+      c.localAreaMatch.actorSeparation.actorSeparationHash,
+    "settlement_actor_separation_hash_mismatch"
+  );
+  assertCase(
+    c.settlementBinding.slotConsumptionHash === c.slotConsumption.consumptionHash,
+    "settlement_consumption_hash_mismatch"
+  );
+  assertCase(
+    c.matchingProof.settlementBindingHash === c.settlementBinding.settlementBindingHash,
+    "proof_settlement_binding_hash_mismatch"
+  );
+  assertCase(
+    c.matchingProof.actorSeparationHash === c.localAreaMatch.actorSeparation.actorSeparationHash,
+    "proof_actor_separation_hash_mismatch"
+  );
+  return errors;
 }
 
 function main() {
@@ -433,6 +530,26 @@ function main() {
               fail(failures, kind, c.id, "expectedLeafCanonical mismatch");
             }
           }
+        }
+      }
+      continue;
+    }
+
+    if (kind === "boost.localAreaMatching.v1") {
+      executedKinds.push(kind);
+      for (const c of vector.cases) {
+        const errors = validateBoostLocalAreaMatchingCase(c);
+        checks += 24;
+        if (c.expectedValid === false) {
+          if (!errors.includes(c.expectedError)) {
+            fail(failures, kind, c.id, `expected ${c.expectedError}, got ${errors.join(", ")}`);
+          }
+          const unexpectedErrors = errors.filter((error) => error !== c.expectedError);
+          if (unexpectedErrors.length > 0) {
+            fail(failures, kind, c.id, `unexpected errors: ${unexpectedErrors.join(", ")}`);
+          }
+        } else if (errors.length > 0) {
+          fail(failures, kind, c.id, errors.join(", "));
         }
       }
       continue;

@@ -46,6 +46,10 @@
     {
       "kind": "recipient.blinded.schemaV1b",
       "file": "vectors/recipient.blinded.schemaV1b.json"
+    },
+    {
+      "kind": "boost.localAreaMatching.v1",
+      "file": "vectors/boost.localAreaMatching.v1.json"
     }
   ]
 }

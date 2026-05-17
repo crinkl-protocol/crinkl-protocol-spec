@@ -46,6 +46,7 @@ Conforming Boost implementations MUST preserve these invariants:
 7. A slot consumed by one approved match MUST be unavailable for later matches in every market.
 8. If no active slot satisfies the local-market policy, matching MUST fail closed without blocking other markets.
 9. Campaign routing metadata is discovery metadata only. Local-area settlement truth MUST come from canonical Spend Token market fields for the buyer conversion and promoter spend anchors.
+10. A selected promoter slot and the buyer conversion MUST be proven to come from distinct campaign-scoped actors. The verifier MUST reject self-matches.
 
 ## 3) Hashing Rules
 
@@ -79,6 +80,11 @@ BoostRosterPolicyV1 {
   rosterOrder: "GLOBAL_ACTIVATED_AT_ASC",
   slotConsumption: "CONSUME_ON_APPROVED_MATCH",
   routingMetadataUse: "DISCOVERY_ONLY",
+  actorSeparation: {
+    mode: "PROMOTER_MUST_NOT_BE_BUYER",
+    subjectSource: "CAMPAIGN_SCOPED_ACTOR_COMMITMENT",
+    proofMode: "COMMITTED" | "ZK_PROOF"
+  },
 
   rosterPolicyHash: "sha256:" + Hash
 }
@@ -93,6 +99,8 @@ Normative constraints:
 - `routingMetadataUse` MUST be `DISCOVERY_ONLY`; campaign routing metadata MUST NOT replace canonical buyer/promoter Spend Token market fields.
 - `rosterOrder` MUST preserve activation order across the whole campaign/runtime profile.
 - `slotConsumption` MUST consume the selected active slot after an approved match.
+- `actorSeparation.mode` MUST be `PROMOTER_MUST_NOT_BE_BUYER` for this profile.
+- Actor commitments MUST be scoped to the campaign/runtime profile and MUST NOT be stable wallet identifiers across campaigns.
 
 ## 5) Promoter Queue Slot
 
@@ -110,6 +118,7 @@ PromoterQueueSlotV1 {
   promoterQualificationHash: "sha256:" + Hash,
   promoterScopeId: "sha256:" + Hash,
   promoterNullifier: "sha256:" + Hash,
+  promoterActorCommitment: "sha256:" + Hash,
 
   promoterAnchorSpendTokenHashes: ["sha256:" + Hash],
   promoterAnchorHeadEventHashes: [Hash],
@@ -130,6 +139,7 @@ Normative constraints:
 - A slot MUST NOT be treated as a Spend Token or as proof that a buyer conversion occurred.
 - `promoterQualificationHash` MUST reference a valid `AudienceQualificationV1` for the same campaign and campaign params.
 - Each promoter anchor spend token MUST be valid under the campaign's promoter eligibility rule.
+- `promoterActorCommitment` MUST bind the private actor who opened the slot without exposing a wallet address or app-user identifier.
 - `activationSequence` MUST be monotonic within the campaign/runtime profile.
 - An `ACTIVE` slot MAY match in any market where its verified promoter spend anchors satisfy the `BoostRosterPolicyV1.locationPolicy`.
 - Wallet identifiers SHOULD NOT appear in public slot artifacts. Recipient routing, if required for payout, is an application-layer or Reward Layer concern.
@@ -165,6 +175,14 @@ LocalAreaBoostMatchV1 {
     promoterMarketRef?: String,
     proof?: Object
   },
+  actorSeparation: {
+    mode: "PROMOTER_MUST_NOT_BE_BUYER",
+    proofMode: "COMMITTED" | "ZK_PROOF",
+    buyerActorCommitment: "sha256:" + Hash,
+    selectedPromoterActorCommitment: "sha256:" + Hash,
+    result: "DISTINCT",
+    actorSeparationHash: "sha256:" + Hash
+  },
 
   matchedAt: TimestampISO,
   matchHash: "sha256:" + Hash
@@ -182,6 +200,10 @@ Normative constraints:
 - The selected slot MUST be the first eligible active slot after applying local-market filtering to the global roster.
 - A verifier MUST reject a match if an earlier active slot in `rosterSnapshotHash` also satisfies the campaign rule and local-market policy.
 - `eligibleSlotCount` MUST be the number of active slots in the roster snapshot that satisfy the campaign rule and local-market policy.
+- `actorSeparation.selectedPromoterActorCommitment` MUST equal the selected slot's `promoterActorCommitment`.
+- `actorSeparation.buyerActorCommitment` MUST bind the private actor behind the buyer conversion without exposing a wallet address or app-user identifier.
+- A verifier MUST reject the match if `actorSeparation.buyerActorCommitment` equals `actorSeparation.selectedPromoterActorCommitment`.
+- `actorSeparation.result` MUST be `DISTINCT` before settlement can bind the match.
 
 ## 7) Slot Consumption
 
@@ -226,6 +248,7 @@ BoostSettlementBindingV1 {
   buyerSpendTokenHash: "sha256:" + Hash,
   selectedSlotHash: "sha256:" + Hash,
   matchHash: "sha256:" + Hash,
+  actorSeparationHash: "sha256:" + Hash,
   slotConsumptionHash: "sha256:" + Hash,
   settlementBindingHash: "sha256:" + Hash
 }
@@ -244,11 +267,12 @@ A verifier processing a Boost settlement MUST:
 3. Verify the promoter `AudienceQualificationV1` referenced by `PromoterQueueSlotV1.promoterQualificationHash`.
 4. Verify each promoter anchor Spend Attestation Token and its canonical market fields used by the local policy.
 5. Verify the buyer `VerifiedConversionV1` and buyer Spend Attestation Token.
-6. Verify `LocalAreaBoostMatchV1` against the roster snapshot, local-market policy, and FIFO rule.
-7. Verify `BoostSlotConsumptionV1` consumes the selected active slot exactly once.
-8. Recompute `BoostSettlementBindingV1.settlementBindingHash`.
-9. Verify the campaign `ConversionApprovalV1` binds the Boost settlement binding hash.
-10. Verify reward issuance and, if enabled, campaign public settlement commitment.
+6. Verify `LocalAreaBoostMatchV1` against the roster snapshot, local-market policy, FIFO rule, and actor-separation rule.
+7. Reject the match if the selected promoter actor commitment equals the buyer actor commitment.
+8. Verify `BoostSlotConsumptionV1` consumes the selected active slot exactly once.
+9. Recompute `BoostSettlementBindingV1.settlementBindingHash`.
+10. Verify the campaign `ConversionApprovalV1` binds the Boost settlement binding hash.
+11. Verify reward issuance and, if enabled, campaign public settlement commitment.
 
 ## 10) Privacy and Disclosure
 

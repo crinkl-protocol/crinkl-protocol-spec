@@ -30,6 +30,7 @@ node scripts/verify_conformance.mjs
 - `token.verifiedSpendDistribution.v1`
 - `nullifier.crossWallet`
 - `recipient.blinded.schemaV1b` (recipient-id + canonical leaf construction checks)
+- `boost.localAreaMatching.v1` (Boost matching hash binding, FIFO slot binding, and promoter/buyer actor-separation rejection)
 
 Checks include:
 
@@ -39,6 +40,7 @@ Checks include:
 - Portable spend-attestation token hash/signature consistency.
 - Verified spend distribution token hash/signature consistency.
 - Nullifier derivation determinism and scope isolation.
+- Boost local-area matching proof binding and rejection of self-matches without exposing wallet identifiers.
 
 ## Current Data-Only Kinds
 

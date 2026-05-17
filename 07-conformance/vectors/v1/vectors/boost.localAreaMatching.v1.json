@@ -1,0 +1,274 @@
+{
+  "kind": "boost.localAreaMatching.v1",
+  "cases": [
+    {
+      "id": "boost.localArea.actorSeparation.acceptsDistinctActors",
+      "expectedValid": true,
+      "rosterPolicy": {
+        "schemaVersion": 1,
+        "profileId": "BOOST_LOCAL_AREA_MATCHING",
+        "campaignId": "promo_spec_boost_actor_separation",
+        "predicateId": "sha256:f67ea4b5b8c6851a42d1e38736c31e39d8d950411f9886cd47106684953115f1",
+        "locationPolicy": {
+          "mode": "SAME_CBSA",
+          "marketSource": "SPEND_TOKEN_CANONICAL_LOCATION"
+        },
+        "rosterOrder": "GLOBAL_ACTIVATED_AT_ASC",
+        "slotConsumption": "CONSUME_ON_APPROVED_MATCH",
+        "routingMetadataUse": "DISCOVERY_ONLY",
+        "actorSeparation": {
+          "mode": "PROMOTER_MUST_NOT_BE_BUYER",
+          "subjectSource": "CAMPAIGN_SCOPED_ACTOR_COMMITMENT",
+          "proofMode": "COMMITTED"
+        },
+        "rosterPolicyHash": "sha256:08f5807b4b212f78b831fccb1e4b84d3aff723be0dea40ce989cc31ac66ec6e3"
+      },
+      "promoterQueueSlot": {
+        "schemaVersion": 1,
+        "slotType": "PROMOTER_QUEUE_SLOT",
+        "slotId": "sha256:fb36ac0645c1c8d3b18cf44bd083917eb2eba29f23712a5d603def74ddcac38c",
+        "campaignId": "promo_spec_boost_actor_separation",
+        "campaignParamsHash": "sha256:2d347208c8da12dbb73438a701a4bfc5d52d1d8b96d9c6d9129449b7f2269d33",
+        "rosterPolicyHash": "sha256:08f5807b4b212f78b831fccb1e4b84d3aff723be0dea40ce989cc31ac66ec6e3",
+        "promoterQualificationHash": "sha256:73df30b36056f6c022951c68487180237d6dbc13b908559d41a6e1c2939824b4",
+        "promoterScopeId": "sha256:1a67d7c580f25f8ce5451dcfc4fe137223ebfbf770b7c29452cc61d5db6ef34f",
+        "promoterNullifier": "sha256:fc8748daeb9c1860cac9f9167974b9f0dabed8613262c1cbcde6f62d02ae23cb",
+        "promoterActorCommitment": "sha256:dc6fb428414661b4eda6c8952c0579f9de0c14aa7236f34422d7cbb348aa2c69",
+        "promoterAnchorSpendTokenHashes": [
+          "sha256:58ecdc16468a15b8b09e2db81522a8ddef9c12cb0ecfae4593a4dd95be76dc66"
+        ],
+        "promoterAnchorHeadEventHashes": [
+          "d8f4df9ff3cab50e3e6ccb6b724caa5d70ba307c436bfa9e75ddbfc9184c10f7"
+        ],
+        "promoterMarketProofMode": "COMMITTED",
+        "promoterMarketProof": {
+          "marketSource": "SPEND_TOKEN_CANONICAL_LOCATION",
+          "marketCommitment": "sha256:0e5bb978fd25a6791d2404640c39c22c173eca6da5a61b3a7dacc3e783038ebe"
+        },
+        "activatedAt": "2026-05-17T00:00:00.000Z",
+        "activationSequence": 1,
+        "expiresAt": "2026-06-17T00:00:00.000Z",
+        "slotStatus": "ACTIVE",
+        "slotHash": "sha256:9f11797ec7108077aa55cc1cfa2227fe4bc92c1a9426a80d52d6fec29874a62d"
+      },
+      "localAreaMatch": {
+        "schemaVersion": 1,
+        "matchType": "LOCAL_AREA_BOOST_MATCH",
+        "matchId": "sha256:4f11c2494eec9e2c16284397339ced2838adeff1f15b863732dd486f42d41c2f",
+        "campaignId": "promo_spec_boost_actor_separation",
+        "campaignParamsHash": "sha256:2d347208c8da12dbb73438a701a4bfc5d52d1d8b96d9c6d9129449b7f2269d33",
+        "rosterPolicyHash": "sha256:08f5807b4b212f78b831fccb1e4b84d3aff723be0dea40ce989cc31ac66ec6e3",
+        "buyerConversionHash": "sha256:5f81caee4c8d05c4574bea9b38092db8396b19a98282f836e815aa38ce195826",
+        "buyerSpendTokenHash": "sha256:25de4f0d649ab11885bf15c5d0b2f4e64112c37c05adf413a0fe28cd211483a2",
+        "buyerHeadEventHash": "3c9e7463510cefb351283203f7bf135be02e15de9a7835cdf75f4795910162dd",
+        "selectedSlotId": "sha256:fb36ac0645c1c8d3b18cf44bd083917eb2eba29f23712a5d603def74ddcac38c",
+        "selectedSlotHash": "sha256:9f11797ec7108077aa55cc1cfa2227fe4bc92c1a9426a80d52d6fec29874a62d",
+        "selectedActivationSequence": 1,
+        "rosterSnapshotHash": "sha256:3f9c3faac12957491fdc723a13de92dd6879d46e3cdb5c3054e56d8bcb2618c3",
+        "eligibleSlotCount": 1,
+        "marketMatch": {
+          "mode": "SAME_CBSA",
+          "proofMode": "COMMITTED",
+          "proof": {
+            "marketSource": "SPEND_TOKEN_CANONICAL_LOCATION",
+            "buyerMarketCommitment": "sha256:88cdfaee4ff9eee45ae26cd6dec6568127e75456b583ad8dde7a8a528c0d0fc8",
+            "promoterMarketCommitment": "sha256:0e5bb978fd25a6791d2404640c39c22c173eca6da5a61b3a7dacc3e783038ebe"
+          }
+        },
+        "actorSeparation": {
+          "schemaVersion": 1,
+          "separationType": "BOOST_ACTOR_SEPARATION",
+          "campaignId": "promo_spec_boost_actor_separation",
+          "campaignParamsHash": "sha256:2d347208c8da12dbb73438a701a4bfc5d52d1d8b96d9c6d9129449b7f2269d33",
+          "rosterPolicyHash": "sha256:08f5807b4b212f78b831fccb1e4b84d3aff723be0dea40ce989cc31ac66ec6e3",
+          "mode": "PROMOTER_MUST_NOT_BE_BUYER",
+          "proofMode": "COMMITTED",
+          "buyerActorCommitment": "sha256:e8850a6a77eec9c73038ad25063776701a27c24ec3ddb2d5b110e2dc7e03d1a3",
+          "selectedPromoterActorCommitment": "sha256:dc6fb428414661b4eda6c8952c0579f9de0c14aa7236f34422d7cbb348aa2c69",
+          "result": "DISTINCT",
+          "actorSeparationHash": "sha256:f63b4c75b6195ba585909315d87b1a42020f95fea7cbaf75866fc1bcdcae1bcf"
+        },
+        "matchedAt": "2026-05-17T00:00:00.000Z",
+        "matchHash": "sha256:6dd2f636868dd564be6412d78dca4bce076f4a939dad7bf6a28bed076af78f41"
+      },
+      "slotConsumption": {
+        "schemaVersion": 1,
+        "consumptionType": "BOOST_SLOT_CONSUMPTION",
+        "campaignId": "promo_spec_boost_actor_separation",
+        "campaignParamsHash": "sha256:2d347208c8da12dbb73438a701a4bfc5d52d1d8b96d9c6d9129449b7f2269d33",
+        "rosterPolicyHash": "sha256:08f5807b4b212f78b831fccb1e4b84d3aff723be0dea40ce989cc31ac66ec6e3",
+        "slotId": "sha256:fb36ac0645c1c8d3b18cf44bd083917eb2eba29f23712a5d603def74ddcac38c",
+        "slotHash": "sha256:9f11797ec7108077aa55cc1cfa2227fe4bc92c1a9426a80d52d6fec29874a62d",
+        "matchHash": "sha256:6dd2f636868dd564be6412d78dca4bce076f4a939dad7bf6a28bed076af78f41",
+        "consumptionNullifier": "sha256:510fcfe1fa735a9f7bee88f16669e33bd3022873aed4394e21d0decf0c965b8e",
+        "consumedAt": "2026-05-17T00:00:00.000Z",
+        "slotStatusAfter": "CONSUMED",
+        "consumptionHash": "sha256:67f1435105449a45bada25223fd94a684c2b1f4763caa242147975331e4343cb"
+      },
+      "settlementBinding": {
+        "schemaVersion": 1,
+        "profileId": "BOOST_LOCAL_AREA_MATCHING",
+        "campaignId": "promo_spec_boost_actor_separation",
+        "campaignParamsHash": "sha256:2d347208c8da12dbb73438a701a4bfc5d52d1d8b96d9c6d9129449b7f2269d33",
+        "rosterPolicyHash": "sha256:08f5807b4b212f78b831fccb1e4b84d3aff723be0dea40ce989cc31ac66ec6e3",
+        "buyerConversionHash": "sha256:5f81caee4c8d05c4574bea9b38092db8396b19a98282f836e815aa38ce195826",
+        "buyerSpendTokenHash": "sha256:25de4f0d649ab11885bf15c5d0b2f4e64112c37c05adf413a0fe28cd211483a2",
+        "selectedSlotHash": "sha256:9f11797ec7108077aa55cc1cfa2227fe4bc92c1a9426a80d52d6fec29874a62d",
+        "matchHash": "sha256:6dd2f636868dd564be6412d78dca4bce076f4a939dad7bf6a28bed076af78f41",
+        "actorSeparationHash": "sha256:f63b4c75b6195ba585909315d87b1a42020f95fea7cbaf75866fc1bcdcae1bcf",
+        "slotConsumptionHash": "sha256:67f1435105449a45bada25223fd94a684c2b1f4763caa242147975331e4343cb",
+        "settlementBindingHash": "sha256:83c405f49faf875b1fbfe4594b60dd21ec75e960b508dfaac46bcf1edcbbe734"
+      },
+      "matchingProof": {
+        "schemaVersion": 1,
+        "proofType": "BOOST_LOCAL_AREA_MATCHING_PROOF",
+        "profileId": "BOOST_LOCAL_AREA_MATCHING",
+        "campaignId": "promo_spec_boost_actor_separation",
+        "campaignParamsHash": "sha256:2d347208c8da12dbb73438a701a4bfc5d52d1d8b96d9c6d9129449b7f2269d33",
+        "rosterPolicyHash": "sha256:08f5807b4b212f78b831fccb1e4b84d3aff723be0dea40ce989cc31ac66ec6e3",
+        "selectedSlotHash": "sha256:9f11797ec7108077aa55cc1cfa2227fe4bc92c1a9426a80d52d6fec29874a62d",
+        "matchHash": "sha256:6dd2f636868dd564be6412d78dca4bce076f4a939dad7bf6a28bed076af78f41",
+        "actorSeparationHash": "sha256:f63b4c75b6195ba585909315d87b1a42020f95fea7cbaf75866fc1bcdcae1bcf",
+        "slotConsumptionHash": "sha256:67f1435105449a45bada25223fd94a684c2b1f4763caa242147975331e4343cb",
+        "settlementBindingHash": "sha256:83c405f49faf875b1fbfe4594b60dd21ec75e960b508dfaac46bcf1edcbbe734",
+        "proofMode": "COMMITTED_RUNTIME_PROFILE",
+        "proofHash": "sha256:da4fb9ee7c6de19aaad706219892832a8b83cb639ddbfce9d032768614b3b940"
+      }
+    },
+    {
+      "id": "boost.localArea.actorSeparation.rejectsSelfMatch",
+      "expectedValid": false,
+      "expectedError": "actor_separation_violation",
+      "rosterPolicy": {
+        "schemaVersion": 1,
+        "profileId": "BOOST_LOCAL_AREA_MATCHING",
+        "campaignId": "promo_spec_boost_actor_separation",
+        "predicateId": "sha256:f67ea4b5b8c6851a42d1e38736c31e39d8d950411f9886cd47106684953115f1",
+        "locationPolicy": {
+          "mode": "SAME_CBSA",
+          "marketSource": "SPEND_TOKEN_CANONICAL_LOCATION"
+        },
+        "rosterOrder": "GLOBAL_ACTIVATED_AT_ASC",
+        "slotConsumption": "CONSUME_ON_APPROVED_MATCH",
+        "routingMetadataUse": "DISCOVERY_ONLY",
+        "actorSeparation": {
+          "mode": "PROMOTER_MUST_NOT_BE_BUYER",
+          "subjectSource": "CAMPAIGN_SCOPED_ACTOR_COMMITMENT",
+          "proofMode": "COMMITTED"
+        },
+        "rosterPolicyHash": "sha256:08f5807b4b212f78b831fccb1e4b84d3aff723be0dea40ce989cc31ac66ec6e3"
+      },
+      "promoterQueueSlot": {
+        "schemaVersion": 1,
+        "slotType": "PROMOTER_QUEUE_SLOT",
+        "slotId": "sha256:fb36ac0645c1c8d3b18cf44bd083917eb2eba29f23712a5d603def74ddcac38c",
+        "campaignId": "promo_spec_boost_actor_separation",
+        "campaignParamsHash": "sha256:2d347208c8da12dbb73438a701a4bfc5d52d1d8b96d9c6d9129449b7f2269d33",
+        "rosterPolicyHash": "sha256:08f5807b4b212f78b831fccb1e4b84d3aff723be0dea40ce989cc31ac66ec6e3",
+        "promoterQualificationHash": "sha256:73df30b36056f6c022951c68487180237d6dbc13b908559d41a6e1c2939824b4",
+        "promoterScopeId": "sha256:1a67d7c580f25f8ce5451dcfc4fe137223ebfbf770b7c29452cc61d5db6ef34f",
+        "promoterNullifier": "sha256:fc8748daeb9c1860cac9f9167974b9f0dabed8613262c1cbcde6f62d02ae23cb",
+        "promoterActorCommitment": "sha256:dc6fb428414661b4eda6c8952c0579f9de0c14aa7236f34422d7cbb348aa2c69",
+        "promoterAnchorSpendTokenHashes": [
+          "sha256:58ecdc16468a15b8b09e2db81522a8ddef9c12cb0ecfae4593a4dd95be76dc66"
+        ],
+        "promoterAnchorHeadEventHashes": [
+          "d8f4df9ff3cab50e3e6ccb6b724caa5d70ba307c436bfa9e75ddbfc9184c10f7"
+        ],
+        "promoterMarketProofMode": "COMMITTED",
+        "promoterMarketProof": {
+          "marketSource": "SPEND_TOKEN_CANONICAL_LOCATION",
+          "marketCommitment": "sha256:0e5bb978fd25a6791d2404640c39c22c173eca6da5a61b3a7dacc3e783038ebe"
+        },
+        "activatedAt": "2026-05-17T00:00:00.000Z",
+        "activationSequence": 1,
+        "expiresAt": "2026-06-17T00:00:00.000Z",
+        "slotStatus": "ACTIVE",
+        "slotHash": "sha256:9f11797ec7108077aa55cc1cfa2227fe4bc92c1a9426a80d52d6fec29874a62d"
+      },
+      "localAreaMatch": {
+        "schemaVersion": 1,
+        "matchType": "LOCAL_AREA_BOOST_MATCH",
+        "matchId": "sha256:36926027342fb07588776adea49e6575f50c8caa0b49db18abf891a1d89b66d0",
+        "campaignId": "promo_spec_boost_actor_separation",
+        "campaignParamsHash": "sha256:2d347208c8da12dbb73438a701a4bfc5d52d1d8b96d9c6d9129449b7f2269d33",
+        "rosterPolicyHash": "sha256:08f5807b4b212f78b831fccb1e4b84d3aff723be0dea40ce989cc31ac66ec6e3",
+        "buyerConversionHash": "sha256:5f81caee4c8d05c4574bea9b38092db8396b19a98282f836e815aa38ce195826",
+        "buyerSpendTokenHash": "sha256:25de4f0d649ab11885bf15c5d0b2f4e64112c37c05adf413a0fe28cd211483a2",
+        "buyerHeadEventHash": "3c9e7463510cefb351283203f7bf135be02e15de9a7835cdf75f4795910162dd",
+        "selectedSlotId": "sha256:fb36ac0645c1c8d3b18cf44bd083917eb2eba29f23712a5d603def74ddcac38c",
+        "selectedSlotHash": "sha256:9f11797ec7108077aa55cc1cfa2227fe4bc92c1a9426a80d52d6fec29874a62d",
+        "selectedActivationSequence": 1,
+        "rosterSnapshotHash": "sha256:3f9c3faac12957491fdc723a13de92dd6879d46e3cdb5c3054e56d8bcb2618c3",
+        "eligibleSlotCount": 1,
+        "marketMatch": {
+          "mode": "SAME_CBSA",
+          "proofMode": "COMMITTED",
+          "proof": {
+            "marketSource": "SPEND_TOKEN_CANONICAL_LOCATION",
+            "buyerMarketCommitment": "sha256:88cdfaee4ff9eee45ae26cd6dec6568127e75456b583ad8dde7a8a528c0d0fc8",
+            "promoterMarketCommitment": "sha256:0e5bb978fd25a6791d2404640c39c22c173eca6da5a61b3a7dacc3e783038ebe"
+          }
+        },
+        "actorSeparation": {
+          "schemaVersion": 1,
+          "separationType": "BOOST_ACTOR_SEPARATION",
+          "campaignId": "promo_spec_boost_actor_separation",
+          "campaignParamsHash": "sha256:2d347208c8da12dbb73438a701a4bfc5d52d1d8b96d9c6d9129449b7f2269d33",
+          "rosterPolicyHash": "sha256:08f5807b4b212f78b831fccb1e4b84d3aff723be0dea40ce989cc31ac66ec6e3",
+          "mode": "PROMOTER_MUST_NOT_BE_BUYER",
+          "proofMode": "COMMITTED",
+          "buyerActorCommitment": "sha256:dc6fb428414661b4eda6c8952c0579f9de0c14aa7236f34422d7cbb348aa2c69",
+          "selectedPromoterActorCommitment": "sha256:dc6fb428414661b4eda6c8952c0579f9de0c14aa7236f34422d7cbb348aa2c69",
+          "result": "DISTINCT",
+          "actorSeparationHash": "sha256:7d8a81087bc804914913eb4c84d5e12fe4c97cfc0c6a4835b94102a1b6e798f8"
+        },
+        "matchedAt": "2026-05-17T00:00:00.000Z",
+        "matchHash": "sha256:22447d5ad260ff0b59ee0a1b59d7dc25c304119c5e4d6509fc8216567067bf35"
+      },
+      "slotConsumption": {
+        "schemaVersion": 1,
+        "consumptionType": "BOOST_SLOT_CONSUMPTION",
+        "campaignId": "promo_spec_boost_actor_separation",
+        "campaignParamsHash": "sha256:2d347208c8da12dbb73438a701a4bfc5d52d1d8b96d9c6d9129449b7f2269d33",
+        "rosterPolicyHash": "sha256:08f5807b4b212f78b831fccb1e4b84d3aff723be0dea40ce989cc31ac66ec6e3",
+        "slotId": "sha256:fb36ac0645c1c8d3b18cf44bd083917eb2eba29f23712a5d603def74ddcac38c",
+        "slotHash": "sha256:9f11797ec7108077aa55cc1cfa2227fe4bc92c1a9426a80d52d6fec29874a62d",
+        "matchHash": "sha256:22447d5ad260ff0b59ee0a1b59d7dc25c304119c5e4d6509fc8216567067bf35",
+        "consumptionNullifier": "sha256:039f1f01d18c15744391a0364b3c0137147c850ab72c738ca2b0aabed7938065",
+        "consumedAt": "2026-05-17T00:00:00.000Z",
+        "slotStatusAfter": "CONSUMED",
+        "consumptionHash": "sha256:f4ac4632e96ff908266a7886a2eb284fbe73268a2448e150b4b8f3ec1bd34809"
+      },
+      "settlementBinding": {
+        "schemaVersion": 1,
+        "profileId": "BOOST_LOCAL_AREA_MATCHING",
+        "campaignId": "promo_spec_boost_actor_separation",
+        "campaignParamsHash": "sha256:2d347208c8da12dbb73438a701a4bfc5d52d1d8b96d9c6d9129449b7f2269d33",
+        "rosterPolicyHash": "sha256:08f5807b4b212f78b831fccb1e4b84d3aff723be0dea40ce989cc31ac66ec6e3",
+        "buyerConversionHash": "sha256:5f81caee4c8d05c4574bea9b38092db8396b19a98282f836e815aa38ce195826",
+        "buyerSpendTokenHash": "sha256:25de4f0d649ab11885bf15c5d0b2f4e64112c37c05adf413a0fe28cd211483a2",
+        "selectedSlotHash": "sha256:9f11797ec7108077aa55cc1cfa2227fe4bc92c1a9426a80d52d6fec29874a62d",
+        "matchHash": "sha256:22447d5ad260ff0b59ee0a1b59d7dc25c304119c5e4d6509fc8216567067bf35",
+        "actorSeparationHash": "sha256:7d8a81087bc804914913eb4c84d5e12fe4c97cfc0c6a4835b94102a1b6e798f8",
+        "slotConsumptionHash": "sha256:f4ac4632e96ff908266a7886a2eb284fbe73268a2448e150b4b8f3ec1bd34809",
+        "settlementBindingHash": "sha256:074d2d82175c8fafca22a3f3544a71c1426a471fcb9131061ca7b00a584f648f"
+      },
+      "matchingProof": {
+        "schemaVersion": 1,
+        "proofType": "BOOST_LOCAL_AREA_MATCHING_PROOF",
+        "profileId": "BOOST_LOCAL_AREA_MATCHING",
+        "campaignId": "promo_spec_boost_actor_separation",
+        "campaignParamsHash": "sha256:2d347208c8da12dbb73438a701a4bfc5d52d1d8b96d9c6d9129449b7f2269d33",
+        "rosterPolicyHash": "sha256:08f5807b4b212f78b831fccb1e4b84d3aff723be0dea40ce989cc31ac66ec6e3",
+        "selectedSlotHash": "sha256:9f11797ec7108077aa55cc1cfa2227fe4bc92c1a9426a80d52d6fec29874a62d",
+        "matchHash": "sha256:22447d5ad260ff0b59ee0a1b59d7dc25c304119c5e4d6509fc8216567067bf35",
+        "actorSeparationHash": "sha256:7d8a81087bc804914913eb4c84d5e12fe4c97cfc0c6a4835b94102a1b6e798f8",
+        "slotConsumptionHash": "sha256:f4ac4632e96ff908266a7886a2eb284fbe73268a2448e150b4b8f3ec1bd34809",
+        "settlementBindingHash": "sha256:074d2d82175c8fafca22a3f3544a71c1426a471fcb9131061ca7b00a584f648f",
+        "proofMode": "COMMITTED_RUNTIME_PROFILE",
+        "proofHash": "sha256:a39b5ce1dc37a2795015ec76294fe2f157ba918cea1f009c85c5d09d2a57b679"
+      }
+    }
+  ]
+}
