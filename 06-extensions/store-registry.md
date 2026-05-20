@@ -182,6 +182,27 @@ Verifiers MUST:
 - For “brand campaigns”, prefer `storeHash ∈ allowedStoresRoot` (set-membership) so campaign rules can reference a stable allowlist root.
 - If location-level proofs are needed, use `storeLocationHash` or a set root of permitted locations (region/campaign-specific).
 
+### Campaign-scoped CBSA store-set snapshots
+
+Campaigns that route by CBSA MUST treat the platform store registry as a mutable source, not as the proof object itself.
+
+For a concrete activation, match, or settlement proof, the verifier derives a campaign-scoped immutable snapshot from the current registry:
+
+```text
+CbsaStoreSetSnapshotV1 {
+  registrySchema: "platform-cbsa-store-set-v1",
+  registryVersion: String,          // deterministic snapshot id, not a mutable table version
+  selectedCbsaCode: CBSACode,
+  eligibleStoreHashes: [Hash],      // sorted, deduped
+  cbsaRegistryRoot: Hash,           // SHA-256 commitment to snapshot metadata
+  cbsaStoreSetRoot: Hash            // proof-system-specific store-set root, e.g. Poseidon
+}
+```
+
+`registryVersion` changes when the derived eligible store set changes. Adding a store later creates a later snapshot/root and MUST NOT rewrite the snapshot used by an already-created proof.
+
+For Boost launch matching, the local-match territory source is `PROMOTER_ACTIVE_ELIGIBLE_CBSA_SET`. The promoter activation proof selects the eligible CBSA queue; the buyer match consumes that same queue. The `BOOST_MATCH_BUNDLE_V0` proof binds to `selectedCbsaCode`, `cbsaRegistryVersion`, `cbsaRegistryRoot`, and `cbsaStoreSetRoot` so a buyer match cannot silently move to a different metro/store set after the fact.
+
 ## Security & evolution
 
 - This is a **non-core extension**. Core token verification MUST NOT depend on this registry.

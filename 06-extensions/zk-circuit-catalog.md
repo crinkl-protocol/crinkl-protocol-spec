@@ -330,7 +330,113 @@ When this spend proof is used in a `PromoEligibilityClaimV1`:
 - `publicInputs.nullifier` MUST be present
 - `publicInputs.bucket`, `publicInputs.variantCount`, `publicInputs.rolloutThreshold` MUST be present when the campaign uses rollouts
 
-## 3.4 v1 demo profile (what 1.0 supports)
+### 3.4 Statement type: `BOOST_MATCH_BUNDLE_V0` (Boost repeat promoter + buyer match)
+
+**Intent (Boost launch profile):**
+
+Prove that a Boost match is bound to:
+- two qualifying promoter spends,
+- one qualifying buyer spend,
+- the same selected CBSA/store-set snapshot,
+- a pre-existing promoter activation / FIFO queue membership, and
+- an actor-separation rule so the promoter and buyer are not the same holder.
+
+This statement is for the Boost settlement bundle. It does not move platform point accounting on-chain by itself; it creates proof material that platform settlement and Solana evidence anchoring can bind to.
+
+For the Boost local-match launch profile, the campaign rule MUST declare the routing territory source as `PROMOTER_ACTIVE_ELIGIBLE_CBSA_SET`. In that profile, static campaign `routingCbsaCodes` are not the promoter activation gate. The selected CBSA is derived from the promoter activation proof's eligible CBSA output, and the buyer match MUST consume the FIFO queue for that same selected CBSA.
+
+**Supported circuits (current implementation path):**
+
+#### Circuit: `H2_BOOST_MATCH_BUNDLE_V0` (Halo2 IPA)
+
+- `proofSystem`: `HALO2_IPA`
+- `circuitId`: `H2_BOOST_MATCH_BUNDLE_V0`
+- `verifyingKeyId`: `sha256:` hash of the circuit verifying key bytes or pinned verifier description, scheme-specific.
+
+**Required statement / settlement fields:**
+
+```text
+statement.domain = "crinkl:statement:v1"
+statement.schemaVersion = 1
+statement.type = "BOOST_MATCH_BUNDLE_V0"
+statement.protocolVersion = Version
+
+statement.campaignRuleHash = "sha256:" + Hex32
+statement.settlementBindingHash = "sha256:" + Hex32
+statement.rosterPolicyHash = "sha256:" + Hex32
+statement.selectedQueueMembershipHash = "sha256:" + Hex32
+statement.selectedCbsaCode = CBSACode
+statement.cbsaRegistryVersion = String
+statement.cbsaRegistryRoot = "sha256:" + Hex32
+statement.cbsaStoreSetRoot = "poseidon:" + Hex32
+```
+
+**CBSA registry binding (normative intent):**
+
+The live store registry is mutable as stores are added or corrected. This proof MUST NOT bind to an unversioned live lookup.
+
+Instead, the verifier MUST derive an immutable campaign/match snapshot:
+
+- `routingTerritorySource`: for Boost local matching, `PROMOTER_ACTIVE_ELIGIBLE_CBSA_SET`.
+- `selectedCbsaCode`: the CBSA queue the buyer matched into.
+- `cbsaRegistryVersion`: a deterministic snapshot identifier derived from the registry schema, selected CBSA, eligible store count, and eligible store-set hash.
+- `cbsaRegistryRoot`: a SHA-256 commitment to the canonical CBSA snapshot metadata.
+- `cbsaStoreSetRoot`: the Poseidon store-set root used by the circuit for membership proofs.
+
+Adding stores later creates a later snapshot/root. It MUST NOT change the root used by an already-created activation, match, or settlement proof.
+
+**Required spend inputs:**
+
+The bundle contains exactly three spend proof inputs:
+
+```text
+promoterSpends[0]
+promoterSpends[1]
+buyerSpend
+```
+
+Each spend input MUST bind:
+- `spendId`
+- `binding.headEventHash`
+- `spendTokenHash`
+- `storeHash`
+- `dayIndex`
+- `totalCents`
+- `cbsaCode`
+
+The two promoter spends MUST be distinct qualifying spends for the activation rule. The buyer spend MUST be the qualifying buyer conversion spend. All three spend inputs MUST use the selected CBSA/store-set snapshot required by the campaign rule.
+
+For `PROMOTER_ACTIVE_ELIGIBLE_CBSA_SET`, the two promoter spends establish the activation CBSA set. A verifier MUST NOT reject promoter activation merely because that selected CBSA is outside a static campaign routing list. Static routing lists can describe fixed-market campaigns, but they do not replace promoter-derived territory for the Boost local-match profile.
+
+**Required wallet witness openings:**
+
+Each spend witness MUST provide openings for:
+- `storeHash`
+- `dayIndex`
+- `totalCents`
+- `cbsaCode`
+
+The promoter side additionally provides a promoter ownership secret for the activation proof. The buyer side provides a buyer ownership secret for the buyer claim.
+
+**Actor separation (normative intent):**
+
+The proof MUST bind promoter and buyer actor commitments and MUST reject if the promoter ownership secret and buyer ownership secret are equal.
+
+**Public inputs / transcript binding:**
+
+Verification MUST fail if any of the following change:
+- campaign rule hash
+- settlement binding hash
+- roster policy hash
+- selected queue membership hash
+- selected CBSA code
+- CBSA registry version/root
+- CBSA store-set root
+- any referenced spend id, head event hash, or spend token hash
+- promoter activation proof hash / commitment
+- buyer actor commitment
+
+## 3.5 v1 demo profile (what 1.0 supports)
 
 For v1.0, the protocol supports a demo brand campaign by constraining eligibility to statement types that exist in this catalog.
 
