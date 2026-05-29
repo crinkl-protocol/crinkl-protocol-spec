@@ -158,7 +158,22 @@ def main() -> int:
     if spend_missing:
         return die(f"01-core/schemas/event.schema.json missing eventName enum(s): {', '.join(spend_missing)}")
 
-    print(f"[drift-check] OK (protocolVersion={protocol_version})")
+    # Conformance manifest version must match the binding (catches half-applied version bumps).
+    manifest = read_json(repo_root / "07-conformance" / "vectors" / "v1" / "manifest.json")
+    mver = manifest.get("protocolVersion")
+    if mver != protocol_version:
+        return die(f"07-conformance manifest version mismatch: manifest={mver} binding={protocol_version}")
+
+    # Leak guard: this PUBLIC repo must not contain internal/private-tagged content.
+    leaked = [
+        str(md.relative_to(repo_root))
+        for md in repo_root.rglob("*.md")
+        if re.search(r"(?m)^\s*visibility:\s*(internal|private)\b", read_text(md))
+    ]
+    if leaked:
+        return die(f"leak guard: internal/private content present in PUBLIC spec: {', '.join(leaked[:8])}")
+
+    print(f"[drift-check] OK (protocolVersion={protocol_version}, manifest+leak-guard clean)")
     return 0
 
 
