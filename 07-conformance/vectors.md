@@ -217,7 +217,7 @@ Public key (hex):  d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f7075
 | 1 | Same image hash exists | ERROR_DUPLICATE | 409 |
 | 2 | OCR returns < 0.3 confidence | ERROR_UNREADABLE | 422 |
 | 3 | Image is not a receipt | ERROR_INVALID_FORMAT | 422 |
-| 4 | Receipt date > 90 days ago | ERROR_OUTSIDE_WINDOW | 422 |
+| 4 | Receipt date > 14 days ago | ERROR_OUTSIDE_WINDOW | 422 |
 | 5 | Image manipulation detected | ERROR_FRAUD | 403 |
 | 6 | Database unavailable | ERROR_SYSTEM | 500 |
 
@@ -279,8 +279,8 @@ Note: Reward Ledger is immutable. Fraud does not modify or claw back rewards.
 | 1 | Receipt total = $0.00 | Accept (valid zero-total receipt) |
 | 2 | 1000+ line items | Accept (no line item limit in protocol) |
 | 3 | Transaction date = today | Accept |
-| 4 | Transaction date = 89 days ago | Accept |
-| 5 | Transaction date = 91 days ago | Reject ERROR_OUTSIDE_WINDOW |
+| 4 | Transaction date = 13 days ago | Accept |
+| 5 | Transaction date = 15 days ago | Reject ERROR_OUTSIDE_WINDOW |
 
 ---
 
