@@ -26,6 +26,7 @@ This extension composes:
 - `statementId`, `scopeId`, and `nullifier` from `../06-extensions/zk-foundation.md`
 - reward issuance and reward commitments from `../05-reward-and-settlement/reward-layer.md` and `../05-reward-and-settlement/settlement-bindings.md`
 - store/category/market references from `../06-extensions/store-registry.md`
+- optional merchant authority claims from `../06-extensions/merchant-authority.md`
 
 This extension does **not**:
 
@@ -113,6 +114,7 @@ CampaignEpochV1 {
   fundingTrancheId: Identifier,
   claimLevel: "OBSERVED" | "ATTRIBUTED" | "INCREMENTAL",
   previousEpochId?: Identifier,
+  campaignAuthority?: CampaignAuthorityV1,
   issuerAuthority: Identifier,
   createdAt: TimestampISO
 }
@@ -124,7 +126,9 @@ CampaignEpochV1 {
 - `ATTRIBUTED` means spend matched attribution conditions defined by the epoch.
 - `INCREMENTAL` requires a baseline, holdout, or incrementality method specified by the epoch.
 
-`RuleSetHash` is the canonical hash over condition, target merchant set reference/root, reward rule, claim level, effective window, timing rule, and funding reference. It MUST be computed with RFC 8785 canonical JSON and SHA-256 over the epoch rule material, excluding signatures and transport-only metadata.
+`RuleSetHash` is the canonical hash over condition, target merchant set reference/root, reward rule, claim level, effective window, timing rule, funding reference, and `campaignAuthority` when present. It MUST be computed with RFC 8785 canonical JSON and SHA-256 over the epoch rule material, excluding signatures and transport-only metadata.
+
+`campaignAuthority` is optional for operator and system campaigns. If a campaign or epoch declares merchant-official authority (`CampaignAuthorityV1.authorityType = "VERIFIED_MERCHANT"`), the field is REQUIRED and MUST validate under `../06-extensions/merchant-authority.md`.
 
 `FundingTranche` is a budget allocation bound to a specific CampaignEpoch. A tranche may fund rewards only under the rule set it was committed to. Budget increases are represented by child tranche records; the original tranche amount MUST NOT be mutated.
 
@@ -193,6 +197,8 @@ Normative rules:
 - Earned rewards are immutable once committed.
 - Campaign history remains auditable as a sequence of epochs.
 - `claimLevel = "INCREMENTAL"` is invalid unless the epoch rule material specifies a baseline, holdout, or incrementality method.
+- A campaign that presents itself as merchant-official MUST bind `CampaignAuthorityV1` into the immutable rule material for the epoch.
+- A verifier MUST reject a merchant-official campaign when the referenced merchant claim is missing, expired, revoked, not `VERIFIED`, or does not cover the campaign target merchant set.
 
 ### Epoch amendment example
 
@@ -383,6 +389,7 @@ CampaignRuleV1 {
     verifierId: Identifier,
     authorizedIssuerIds?: [Identifier]
   },
+  campaignAuthority?: CampaignAuthorityV1,
 
   publicTerms: {
     startsAt: TimestampISO,
@@ -427,6 +434,7 @@ CampaignRuleV1 {
     audienceHash: "sha256:" + Hash,
     conversionHash: "sha256:" + Hash,
     rewardPolicyHash?: "sha256:" + Hash,
+    campaignAuthorityHash?: "sha256:" + Hash,
     ruleSetHash: "sha256:" + Hash,
     campaignParamsHash: "sha256:" + Hash
   }
@@ -435,7 +443,9 @@ CampaignRuleV1 {
 
 `campaignParamsHash` MUST be computed over `CampaignRuleV1` with `hashes.campaignParamsHash`, signatures, and transport-only metadata omitted.
 
-`audienceHash` MUST be computed over `audience`. `conversionHash` MUST be computed over `conversion`. `rewardPolicyHash` MUST be computed over the referenced reward policy artifact when present. `ruleSetHash` MUST match the selected `CampaignEpochV1.ruleSetHash`. All hashes use RFC 8785 canonical JSON and SHA-256 encoded as `"sha256:" + lowercase hex`.
+`audienceHash` MUST be computed over `audience`. `conversionHash` MUST be computed over `conversion`. `rewardPolicyHash` MUST be computed over the referenced reward policy artifact when present. `campaignAuthorityHash` MUST be computed over `campaignAuthority` when present. `ruleSetHash` MUST match the selected `CampaignEpochV1.ruleSetHash`. All hashes use RFC 8785 canonical JSON and SHA-256 encoded as `"sha256:" + lowercase hex`.
+
+`CampaignAuthorityV1` is defined by `../06-extensions/merchant-authority.md`. Its absence does not invalidate operator or system campaigns. Its absence MUST invalidate campaigns whose declared authority type is merchant-official or `VERIFIED_MERCHANT`.
 
 `minimumVerification: "HARD_VERIFIED"` means the conversion spend must have passed the hard-verification pipeline. A verifier MAY accept `CORRECTED` as a later canonical hard-verification head when the campaign rule includes `CORRECTED` in `acceptedStatuses`.
 
@@ -483,6 +493,7 @@ AudienceQualificationV1 {
   nullifier: "sha256:" + Hash,
   proofMode: "DISCLOSED_TOKENS" | "ZK_PROOF" | "COMMITTED_AGGREGATE",
   primitiveProofs: [Object],
+  campaignAuthorityHash?: "sha256:" + Hash,
   qualifiedAt: TimestampISO,
   qualificationHash: "sha256:" + Hash
 }
@@ -535,6 +546,7 @@ ConversionApprovalV1 {
   conversionHash: "sha256:" + Hash,
   conversionSpendTokenHash: "sha256:" + Hash,
   conversionHeadEventHash: Hash,
+  campaignAuthorityHash?: "sha256:" + Hash,
 
   payout: {
     amount: String(Integer >= 0),
@@ -571,6 +583,7 @@ Settlement MUST bind, directly or by hash reference:
 - `qualificationHash`
 - `conversionHash`
 - `conversionSpendTokenHash`
+- `campaignAuthorityHash` when present in the governing campaign rule
 - payout amount and asset
 - settlement nullifier
 - verifier approval hash
@@ -599,6 +612,7 @@ CampaignSettlementLeafV1 {
   conversionSpendTokenHash: "sha256:" + Hash,
   conversionHeadEventHash: Hash,
   approvalHash: "sha256:" + Hash,
+  campaignAuthorityHash?: "sha256:" + Hash,
 
   payout: {
     amount: String(Integer >= 0),
@@ -654,20 +668,21 @@ A verifier processing a Campaign Rule MUST:
 2. Select exactly one CampaignEpoch using the epoch `timingRule`; reject missing `timingRule` or ambiguous epoch matches.
 3. Recompute `ruleSetHash` from the selected CampaignEpoch rule material.
 4. Verify each primitive requirement uses a supported primitive name and proof mode.
-5. Verify Audience Qualification:
+5. If `CampaignAuthorityV1.authorityType = "VERIFIED_MERCHANT"`, verify the merchant claim attestation under `../06-extensions/merchant-authority.md` and reject missing, expired, revoked, unverified, or scope-mismatched claims.
+6. Verify Audience Qualification:
    - verify all referenced Spend Tokens and proofs
    - verify `scopeId` and `nullifier` binding
    - reject replayed qualification nullifiers within the campaign scope
-6. Verify Verified Conversion:
+7. Verify Verified Conversion:
    - verify the conversion Spend Attestation Token per `../03-portability/spend-attestation-token.md`
    - verify `conversionSpendTokenHash` and `conversionHeadEventHash`
    - verify the conversion occurred inside the campaign conversion window
    - verify it occurred after audience qualification when required
    - reject replayed conversion or settlement nullifiers
-7. Verify payout terms against the selected CampaignEpoch.
-8. Emit or accept `ConversionApprovalV1`.
-9. Settle through the Reward Layer and, when enabled, the Commitment Layer.
-10. If `settlement.publicCommitment.enabled` is true:
+8. Verify payout terms against the selected CampaignEpoch.
+9. Emit or accept `ConversionApprovalV1`.
+10. Settle through the Reward Layer and, when enabled, the Commitment Layer.
+11. If `settlement.publicCommitment.enabled` is true:
    - compute `CampaignSettlementLeafV1` from the approved conversion
    - include it in a campaign settlement batch root
    - emit `CAMPAIGN_SETTLEMENT_COMMITTED`

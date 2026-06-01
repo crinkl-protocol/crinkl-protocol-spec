@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "crinkl://protocol/schemas/merchant-authority/merchant_claim_event_v1",
+  "title": "MerchantClaimEventV1",
+  "description": "Payload schema for merchant claim authority events when carried in an append-only authority stream.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "schemaVersion",
+    "eventName",
+    "claimId",
+    "storeId",
+    "storeHash",
+    "claimScope",
+    "statusAfter",
+    "occurredAt"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "eventName": {
+      "type": "string",
+      "enum": [
+        "MERCHANT_CLAIM_SUBMITTED",
+        "MERCHANT_CLAIM_EVIDENCE_ADDED",
+        "MERCHANT_CLAIM_VERIFIED",
+        "MERCHANT_CLAIM_REJECTED",
+        "MERCHANT_CLAIM_REVOKED",
+        "MERCHANT_CLAIM_EXPIRED"
+      ]
+    },
+    "claimId": { "$ref": "#/$defs/Identifier" },
+    "actorId": { "$ref": "#/$defs/Identifier" },
+    "storeId": { "$ref": "#/$defs/Identifier" },
+    "storeHash": { "$ref": "#/$defs/Sha256Id" },
+    "storeLocationId": { "$ref": "#/$defs/Identifier" },
+    "storeLocationHash": { "$ref": "#/$defs/Sha256Id" },
+    "targetMerchantSetRoot": { "$ref": "#/$defs/Hash" },
+    "claimScope": {
+      "type": "string",
+      "enum": ["STORE", "LOCATION", "BRAND", "FRANCHISE_GROUP"]
+    },
+    "evidenceRefs": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/EvidenceRefV1" }
+    },
+    "claimAttestationHash": { "$ref": "#/$defs/Sha256Id" },
+    "statusAfter": {
+      "type": "string",
+      "enum": ["PENDING", "VERIFIED", "REJECTED", "REVOKED", "EXPIRED"]
+    },
+    "occurredAt": { "$ref": "#/$defs/TimestampISO" }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "claimScope": { "const": "LOCATION" } },
+        "required": ["claimScope"]
+      },
+      "then": {
+        "required": ["storeLocationId", "storeLocationHash"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "eventName": {
+            "enum": ["MERCHANT_CLAIM_VERIFIED", "MERCHANT_CLAIM_REJECTED", "MERCHANT_CLAIM_REVOKED"]
+          }
+        },
+        "required": ["eventName"]
+      },
+      "then": {
+        "required": ["claimAttestationHash"]
+      }
+    }
+  ],
+  "$defs": {
+    "Identifier": { "type": "string", "minLength": 1 },
+    "TimestampISO": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$"
+    },
+    "Hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "Sha256Id": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "EvidenceRefV1": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["evidenceType", "evidenceRef"],
+      "properties": {
+        "evidenceType": { "type": "string", "minLength": 1 },
+        "evidenceRef": { "type": "string", "minLength": 1 },
+        "evidenceHash": { "$ref": "#/$defs/Sha256Id" },
+        "collectedAt": { "$ref": "#/$defs/TimestampISO" }
+      }
+    }
+  }
+}
+

@@ -57,6 +57,7 @@ Core protocol validity does not depend on campaigns, rewards, Solana, ZK, MCP, R
 | CampaignEpoch | Condition Layer | Immutable, append-only funded rule window for campaign eligibility. |
 | Proof of Match | Condition Layer | Result of evaluating attestations against a condition. |
 | Reward Commitment | Reward/Settlement | Downstream accounting or promise based on valid proof of match. |
+| Merchant Claim Attestation | Extension | Optional authority proof over store identity for official merchant actions. |
 
 ## Privacy Boundary
 
@@ -78,7 +79,7 @@ Downstream layers consume spend proof; they do not define it.
 |---|---|
 | Condition rules and CampaignEpochs | [`04-condition-layer/`](04-condition-layer/) |
 | Reward and settlement | [`05-reward-and-settlement/`](05-reward-and-settlement/) including [`campaign-settlement-gcd.md`](05-reward-and-settlement/campaign-settlement-gcd.md) |
-| ZK, agent, REST/MCP, Solana, offer delivery | [`06-extensions/`](06-extensions/) including [`solana-campaign-settlement-binding.md`](06-extensions/solana-campaign-settlement-binding.md) |
+| ZK, merchant authority, agent, REST/MCP, Solana, offer delivery | [`06-extensions/`](06-extensions/) including [`merchant-authority.md`](06-extensions/merchant-authority.md) and [`solana-campaign-settlement-binding.md`](06-extensions/solana-campaign-settlement-binding.md) |
 | Conformance | [`07-conformance/`](07-conformance/) |
 | Governance | [`08-governance/`](08-governance/) |
 
@@ -92,7 +93,7 @@ Downstream layers consume spend proof; they do not define it.
 | [`03-portability/`](03-portability/) | Spend Attestation Tokens, verifier requirements, identity exclusion, replay/auditability. |
 | [`04-condition-layer/`](04-condition-layer/) | Conditions, condition evaluation, proof of match, campaign commitment. |
 | [`05-reward-and-settlement/`](05-reward-and-settlement/) | Reward Commitment, GMV, distribution, settlement bindings. |
-| [`06-extensions/`](06-extensions/) | Optional ZK, agent query, transport, Solana, offer-delivery, and registry profiles. |
+| [`06-extensions/`](06-extensions/) | Optional ZK, merchant authority, agent query, transport, Solana, offer-delivery, and registry profiles. |
 | [`07-conformance/`](07-conformance/) | Vectors, verifier test suite, compatibility notes. |
 | [`08-governance/`](08-governance/) | Versioning, change process, authority hierarchy, and shared glossary. |
 | [`schemas/experimental/`](schemas/experimental/) | Candidate non-core extension schemas; not required for Core Spend Attestation validity. |

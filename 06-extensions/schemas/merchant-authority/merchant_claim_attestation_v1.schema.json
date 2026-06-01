@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "crinkl://protocol/schemas/merchant-authority/merchant_claim_attestation_v1",
+  "title": "MerchantClaimAttestationV1",
+  "description": "Optional merchant authority extension artifact. This schema does not change core Spend Attestation Token validity.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "schemaVersion",
+    "attestationType",
+    "claimId",
+    "actorId",
+    "storeId",
+    "storeHash",
+    "claimScope",
+    "status",
+    "evidenceRefs",
+    "issuedAt",
+    "claimAttestationHash",
+    "signatures"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "attestationType": { "const": "MERCHANT_CLAIM_ATTESTATION" },
+    "claimId": { "$ref": "#/$defs/Identifier" },
+    "actorId": { "$ref": "#/$defs/Identifier" },
+    "storeId": { "$ref": "#/$defs/Identifier" },
+    "storeHash": { "$ref": "#/$defs/Sha256Id" },
+    "storeLocationId": { "$ref": "#/$defs/Identifier" },
+    "storeLocationHash": { "$ref": "#/$defs/Sha256Id" },
+    "targetMerchantSetRoot": { "$ref": "#/$defs/Hash" },
+    "claimScope": {
+      "type": "string",
+      "enum": ["STORE", "LOCATION", "BRAND", "FRANCHISE_GROUP"]
+    },
+    "status": {
+      "type": "string",
+      "enum": ["PENDING", "VERIFIED", "REJECTED", "REVOKED"]
+    },
+    "evidenceRefs": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/EvidenceRefV1" }
+    },
+    "verifiedBy": { "$ref": "#/$defs/Identifier" },
+    "verifiedAt": { "$ref": "#/$defs/TimestampISO" },
+    "expiresAt": { "$ref": "#/$defs/TimestampISO" },
+    "revokedAt": { "$ref": "#/$defs/TimestampISO" },
+    "rejectionReasonHash": { "$ref": "#/$defs/Sha256Id" },
+    "revocationReasonHash": { "$ref": "#/$defs/Sha256Id" },
+    "issuedAt": { "$ref": "#/$defs/TimestampISO" },
+    "claimAttestationHash": { "$ref": "#/$defs/Sha256Id" },
+    "signatures": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["issuedBy", "publicKey", "signature"],
+      "properties": {
+        "issuedBy": { "$ref": "#/$defs/Identifier" },
+        "publicKey": { "type": "string", "minLength": 1 },
+        "signature": { "type": "string", "minLength": 1 }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "status": { "const": "VERIFIED" } },
+        "required": ["status"]
+      },
+      "then": {
+        "required": ["verifiedBy", "verifiedAt"]
+      }
+    },
+    {
+      "if": {
+        "properties": { "claimScope": { "const": "LOCATION" } },
+        "required": ["claimScope"]
+      },
+      "then": {
+        "required": ["storeLocationId", "storeLocationHash"]
+      }
+    }
+  ],
+  "$defs": {
+    "Identifier": { "type": "string", "minLength": 1 },
+    "TimestampISO": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$"
+    },
+    "Hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "Sha256Id": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "EvidenceRefV1": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["evidenceType", "evidenceRef"],
+      "properties": {
+        "evidenceType": { "type": "string", "minLength": 1 },
+        "evidenceRef": { "type": "string", "minLength": 1 },
+        "evidenceHash": { "$ref": "#/$defs/Sha256Id" },
+        "collectedAt": { "$ref": "#/$defs/TimestampISO" }
+      }
+    }
+  }
+}
+
