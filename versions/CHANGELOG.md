@@ -2,6 +2,12 @@
 
 This repository is being prepared for its **first public release**. Earlier internal iterations existed, but version numbers have been reset for the public SemVer track.
 
+## v1.0.0-rc.2 extension update (2026-06-01)
+
+- Adds rc.2-compatible merchant authority extension artifacts for `MerchantClaimAttestationV1`, `MerchantClaimEventV1`, and `CampaignAuthorityV1`.
+- Clarifies that verified merchant campaigns require a campaign authority binding, while Spend Attestation Token validity and operator/system campaign validity remain unchanged.
+- Does not change the global `protocolVersion`; merchant authority uses artifact-level `schemaVersion` values.
+
 ## v1.0.0-rc.2 (2026-05-16)
 
 - Adds CampaignEpoch as the append-only campaign amendment primitive.

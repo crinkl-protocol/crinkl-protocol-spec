@@ -68,6 +68,7 @@ The protocol assumes trust in the following categories of roots. Each has a boun
 | System-stream authority keys (Authority Registry) | Authenticity/integrity of system-stream events (commitments, authority changes) for a `chainId` | Correctness of off-chain reward policy; spend truth beyond what is committed | `../01-core/spend-event.md`, `../05-reward-and-settlement/settlement-bindings.md` |
 | External chain consensus (when used) | Immutability/finality of published commitment records and authority registry transactions | Economic backing correctness; issuer honesty; availability of off-chain proofs | Chain bindings + deployment assumptions |
 | Token issuer authorization | That a token signature key is an authorized issuer key for the referenced `issuedBy` | That the token’s claim corresponds to external reality beyond the claim definition | `../03-portability/spend-attestation-token.md` + the applicable trust root mapping (Authority Registry or configured issuer set) |
+| Merchant-claim verifier authorization (optional extension) | That a merchant claim verifier issued a signed claim attestation for a bounded store identity scope | Spend truth; payment settlement; merchant intent for any spend; correctness of private evidence beyond the attestation semantics | `../06-extensions/merchant-authority.md` + deployment authorization mapping |
 
 **Signer-role isolation (normative):**
 - Keys authorized for system-stream signing MUST NOT be accepted for spend-stream event signing, and vice versa.

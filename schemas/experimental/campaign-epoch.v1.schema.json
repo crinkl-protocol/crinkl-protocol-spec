@@ -60,6 +60,7 @@
       }
     },
     "previousEpochId": { "$ref": "#/$defs/Identifier" },
+    "campaignAuthority": { "$ref": "#/$defs/CampaignAuthorityV1" },
     "issuerAuthority": { "$ref": "#/$defs/Identifier" },
     "createdAt": { "$ref": "#/$defs/TimestampISO" }
   },
@@ -73,6 +74,26 @@
       },
       "then": {
         "required": ["incrementality"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "campaignAuthority": {
+            "properties": {
+              "authorityType": { "const": "VERIFIED_MERCHANT" }
+            },
+            "required": ["authorityType"]
+          }
+        },
+        "required": ["campaignAuthority"]
+      },
+      "then": {
+        "properties": {
+          "campaignAuthority": {
+            "required": ["merchantClaimId", "claimAttestationHash", "claimScope"]
+          }
+        }
       }
     }
   ],
@@ -92,6 +113,32 @@
     "Sha256Id": {
       "type": "string",
       "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "CampaignAuthorityV1": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["schemaVersion", "authorityType", "actorId", "issuedAt"],
+      "properties": {
+        "schemaVersion": { "const": 1 },
+        "authorityType": {
+          "type": "string",
+          "enum": ["OPERATOR", "SYSTEM", "VERIFIED_MERCHANT"]
+        },
+        "actorId": { "$ref": "#/$defs/Identifier" },
+        "merchantClaimId": { "$ref": "#/$defs/Identifier" },
+        "claimAttestationHash": { "$ref": "#/$defs/Sha256Id" },
+        "claimScope": {
+          "type": "string",
+          "enum": ["STORE", "LOCATION", "BRAND", "FRANCHISE_GROUP"]
+        },
+        "storeId": { "$ref": "#/$defs/Identifier" },
+        "storeHash": { "$ref": "#/$defs/Sha256Id" },
+        "storeLocationId": { "$ref": "#/$defs/Identifier" },
+        "storeLocationHash": { "$ref": "#/$defs/Sha256Id" },
+        "targetMerchantSetRoot": { "$ref": "#/$defs/Hash" },
+        "issuedAt": { "$ref": "#/$defs/TimestampISO" },
+        "expiresAt": { "$ref": "#/$defs/TimestampISO" }
+      }
     }
   }
 }

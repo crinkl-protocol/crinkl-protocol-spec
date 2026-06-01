@@ -26,6 +26,7 @@ normative: true
 - This registry does **not** define a new protocol trust root. It reuses existing issuer/authority key authorization rules (see `../00-purpose/threat-model.md#trust-roots`).
 - This registry does **not** change core Spend Attestation / Reward Commitment / Verified GMV / Verified Spend Distribution verification procedures.
 - This registry does **not** require any recipient identity exposure.
+- This registry does **not** prove that an actor owns, operates, or may speak for a merchant. Merchant authority is defined separately in `merchant-authority.md`.
 
 ## Core primitives
 
@@ -155,6 +156,24 @@ StoreLocationEntryV1 {
 ```
 
 > Implementations SHOULD avoid embedding precise addresses inside this portable registry unless there is a strong interop need; prefer standardized external IDs (e.g. GLN / Place IDs) plus coarse `geoRegion`.
+
+## Relationship to Merchant Authority
+
+Store Registry entries define portable store identity. They do not confer authority.
+
+`merchant-authority.md` defines optional merchant claim
+attestations that bind an actor to a `storeId`, `storeHash`, optional
+`storeLocationId`, optional `storeLocationHash`, or committed merchant set.
+
+Normative boundary:
+
+- `StoreEntryV1` and `StoreLocationEntryV1` answer "which store identity is this?"
+- `MerchantClaimAttestationV1` answers "which actor has verified authority for this bounded store identity?"
+- `CampaignAuthorityV1` answers "which authority class created or amended this official action?"
+
+Verifiers MUST NOT infer merchant authority from registry inclusion alone.
+Official merchant actions MUST carry a merchant authority artifact or an
+equivalent deployment-defined authority proof.
 
 ## Inclusion proofs (portable)
 
