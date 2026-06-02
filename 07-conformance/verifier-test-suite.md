@@ -49,6 +49,33 @@ These kinds are present in `manifest.json` but are not yet machine-checked by th
 
 They remain versioned conformance artifacts; executable Merkle verification is tracked separately because chain-binding hashing semantics differ by implementation environment.
 
+## Public ZK verifier conformance
+
+Public ZK verifier vectors are a beta requirement. Until the public verifier package is selected, these vectors may be listed as data-only requirements; once the verifier package exists, they MUST be machine-checked by this suite or by a package-specific verifier test command linked from this suite.
+
+For `H2_PROMO_OPEN_MIN_V1`, public beta verifier vectors MUST include:
+
+- valid proof artifact passes
+- unknown `proofSystem` fails closed
+- unknown `circuitId` fails closed
+- unknown or mismatched `verifyingKeyId` fails closed
+- missing `publicInputs` fails closed
+- missing proof bytes fails closed
+- changed `spendIdHash` fails
+- changed `headEventHash` fails
+- changed `spendTokenHash` fails
+- changed `statementId` fails
+- changed `scopeId` fails
+- changed `nullifier` fails or is rejected by replay policy
+- changed `expectedStoreHash` fails
+- changed `minDayIndex` fails
+- changed `thresholdCents` fails
+- changed commitment public input fails
+- changed proof bytes fails
+- replayed nullifier in the same scope is rejected by the consuming flow
+
+The public verifier MUST verify the proof from the artifact and registry manifest. A hosted Crinkl verifier response is not sufficient conformance evidence by itself.
+
 ## Optional Strict Mode
 
 To fail when any data-only kinds remain:
