@@ -46,8 +46,36 @@ These kinds are present in `manifest.json` but are not yet machine-checked by th
 
 - `merkle.rewardBatch.schemaV1`
 - `merkle.rewardBatch.schemaV2.rewardEventsRoot`
+- `zk.h2PromoOpenMin.v1` (data artifact; machine-checked by `@crnkl/zk-verifier`)
 
 They remain versioned conformance artifacts; executable Merkle verification is tracked separately because chain-binding hashing semantics differ by implementation environment.
+
+## Public ZK verifier conformance
+
+Public ZK verifier vectors are a beta requirement. The selected package is `@crnkl/zk-verifier`. The public fixture descriptor is `vectors/v1/vectors/zk.h2PromoOpenMin.v1.json`, and the proof artifacts live under `vectors/v1/zk/h2-promo-open-min-v1/`. They are machine-checked by the package-specific commands listed in the descriptor.
+
+For `H2_PROMO_OPEN_MIN_V1`, public beta verifier vectors MUST include:
+
+- valid proof artifact passes
+- unknown `proofSystem` fails closed
+- unknown `circuitId` fails closed
+- unknown or mismatched `verifyingKeyId` fails closed
+- missing `publicInputs` fails closed
+- missing proof bytes fails closed
+- changed `spendIdHash` fails
+- changed `headEventHash` fails
+- changed `spendTokenHash` fails
+- changed `statementId` fails
+- changed `scopeId` fails
+- changed `nullifier` fails or is rejected by replay policy
+- changed `expectedStoreHash` fails
+- changed `minDayIndex` fails
+- changed `thresholdCents` fails
+- changed commitment public input fails
+- changed proof bytes fails
+- replayed nullifier in the same scope is rejected by the consuming flow
+
+The public verifier MUST verify the proof from the artifact and registry manifest. A hosted Crinkl verifier response is not sufficient conformance evidence by itself. The beta release checklist is `../08-governance/zk-beta-release-checklist.md`.
 
 ## Optional Strict Mode
 

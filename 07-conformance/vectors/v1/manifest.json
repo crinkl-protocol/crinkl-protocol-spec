@@ -46,6 +46,10 @@
     {
       "kind": "recipient.blinded.schemaV1b",
       "file": "vectors/recipient.blinded.schemaV1b.json"
+    },
+    {
+      "kind": "zk.h2PromoOpenMin.v1",
+      "file": "vectors/zk.h2PromoOpenMin.v1.json"
     }
   ]
 }

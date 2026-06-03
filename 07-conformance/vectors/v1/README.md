@@ -47,6 +47,10 @@ Executable verifier:
 - `nullifier.crossWallet.json` — Cross-wallet nullifier derivation for multi-wallet proofs
 - `recipient.blinded.schemaV1b.json` — Blinded recipient commitments (schema 1b/2b)
 
+### ZK Proofs
+- `zk.h2PromoOpenMin.v1.json` — Descriptor for the `H2_PROMO_OPEN_MIN_V1` public beta fixture set.
+- `zk/h2-promo-open-min-v1/` — Proof artifact, spend token binding fixture, verifier registry manifest, and fixture metadata.
+
 ## Contract
 
 - Vector files are **append-only** within a given `v1` suite.

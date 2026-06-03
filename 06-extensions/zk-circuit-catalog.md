@@ -330,6 +330,104 @@ When this spend proof is used in a `PromoEligibilityClaimV1`:
 - `publicInputs.nullifier` MUST be present
 - `publicInputs.bucket`, `publicInputs.variantCount`, `publicInputs.rolloutThreshold` MUST be present when the campaign uses rollouts
 
+### 3.3.1 Current alpha direct-store profile: `H2_PROMO_OPEN_MIN_V1`
+
+**Intent (alpha current-business profile):**
+
+Prove that a verified spend opens a promo because:
+
+- the private `storeHash` equals the public `expectedStoreHash`,
+- the private `dayIndex` is greater than or equal to `minDayIndex`, and
+- the private `totalCents` is greater than or equal to `thresholdCents`.
+
+This is a direct-store profile. It does not prove store-set membership and MUST NOT be described as proving CBSA inside ZK.
+
+**Supported circuit:**
+
+#### Circuit: `H2_PROMO_OPEN_MIN_V1` (Halo2 IPA)
+
+- `proofSystem`: `HALO2_IPA`
+- `circuitId`: `H2_PROMO_OPEN_MIN_V1`
+- `verifyingKeyId`: `sha256:` hash of the pinned Halo2 verifier profile.
+  - Alpha implementation profile: `sha256( UTF8( format!("{:?}", vk.pinned()) ) )`.
+  - Public beta MUST publish the exact registry entry and artifact/profile hash used by external verifiers.
+
+**Required statement fields:**
+
+```text
+statement.domain = "crinkl:statement:v1"
+statement.schemaVersion = 1
+statement.type = "SPEND_STOREHASH_EQ_AND_DAYINDEX_GTE_AND_TOTAL_GTE"
+statement.protocolVersion = Version
+
+statement.expectedStoreHash = "sha256:" + Hex32
+statement.minDayIndex = String(Integer >= 0)
+statement.thresholdCents = String(Integer >= 0)
+statement.currency = String(ISO-4217)
+```
+
+**Required token commitments:**
+
+- `SpendAttestationTokenV1.zk.commitments.C_store`
+- `SpendAttestationTokenV1.zk.commitments.C_dayIndex`
+- `SpendAttestationTokenV1.zk.commitments.C_total`
+
+**Required wallet witness openings:**
+
+- `SpendZkWitnessV1.openings.storeHash`
+- `SpendZkWitnessV1.openings.dayIndex`
+- `SpendZkWitnessV1.openings.totalCents`
+
+**Public inputs (normative for H2_PROMO_OPEN_MIN_V1):**
+
+The proof MUST expose and bind the following public inputs in this exact order:
+
+```text
+spendIdHash
+headEventHash
+spendTokenHash
+statementId
+scopeId
+nullifier
+expectedStoreHash
+minDayIndex
+thresholdCents
+commitmentStore
+commitmentDayIndex
+commitmentTotal
+```
+
+**Encoding:**
+
+- `spendIdHash`, `headEventHash`, `spendTokenHash`, `statementId`, `scopeId`, `nullifier`, and `expectedStoreHash` use `"sha256:" + hex32`.
+- `commitmentStore`, `commitmentDayIndex`, and `commitmentTotal` use `"poseidon:" + hex32`.
+- `minDayIndex` and `thresholdCents` are unsigned integers.
+
+**Verification failure matrix:**
+
+Verification MUST fail if any of the following change:
+
+- `proofSystem`
+- `circuitId`
+- `verifyingKeyId`
+- `spendIdHash`
+- `headEventHash`
+- `spendTokenHash`
+- `statementId`
+- `scopeId`
+- `nullifier`
+- `expectedStoreHash`
+- `minDayIndex`
+- `thresholdCents`
+- any commitment public input
+- proof bytes
+
+The consuming verifier or gateway MUST reject replayed `nullifier` values in the relevant `scopeId`.
+
+**Beta migration note:**
+
+`H2_PROMO_OPEN_MIN_V1` is acceptable as an alpha public profile if it is published with registry metadata and vectors. For broader campaigns that require private store-set or CBSA-store-set membership, use or migrate to the store-set profile `H2_PROMO_V1` and publish the corresponding registry entry and vectors.
+
 ### 3.4 Statement type: `BOOST_MATCH_BUNDLE_V0` (Boost repeat promoter + buyer match)
 
 **Intent (Boost launch profile):**
