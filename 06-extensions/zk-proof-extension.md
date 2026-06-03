@@ -23,6 +23,25 @@ ZK statements do not strengthen or supersede the verification tier of the underl
 
 For the minimum viable promo use case and the associated “wallet witness” foundation concepts, see `zk-foundation.md`.
 
+## Public beta publication model
+
+This repository is the public spec and artifact home for Crinkl ZK proof acceptance.
+
+Public beta ZK material MUST live here or be linked from here:
+
+- proof artifact contract
+- statement and scope rules
+- circuit catalog entries
+- verifier registry manifests
+- public input order
+- nullifier and replay rules
+- conformance vector names and expected outcomes
+- partner-facing verifier requirements
+
+Verifier implementation code MAY live in a separate public package/repository. A hosted Crinkl verification API MAY be offered as an integration convenience, but it MUST NOT be the only beta verification path. A beta verifier must be able to accept or reject a proof without trusting the Crinkl gateway's decision.
+
+Implementation repositories such as `crinkl-platform` operate proof services and gateways. They are not the public source of truth for verifier acceptance.
+
 ## Commitments
 
 Implementations MAY attach cryptographic commitments to Spend records (and to other deterministically-derived, hard-verified fields as the canonical schema evolves):
@@ -191,16 +210,21 @@ ZK proofs SHOULD be bound to the referenced spend token hash (`spendTokenHash`) 
 ```text
 SpendZkStatementProofV1 {
   schemaVersion: 1,
+  protocolVersion: Version,
   spendId: Identifier,
   spendTokenHash: "sha256:" + Hash,
   binding: { headEventHash: Hash }, // MUST match token.lineage.headEventHash
   statement: Object,             // RFC 8785 canonical JSON
   statementId: "sha256:" + Hash, // sha256(RFC8785_canonicalize(statement)); statement MUST include domain+schemaVersion (see ../06-extensions/zk-proof-extension.md)
+  scopeId: "sha256:" + Hash,
+  nullifier: "sha256:" + Hash,
   proofSystem: String,
   circuitId: String,             // versioned, unambiguous circuit identifier
   verifyingKeyId: "sha256:" + Hash, // identifier of verifier parameters / verifying key bytes (scheme-specific)
   publicInputs: Object,
-  proof: Base64
+  proof: Base64,
+  issuedBy: String,
+  createdAt: ISO8601DateTime
 }
 ```
 
@@ -214,10 +238,42 @@ To verify a `SpendZkStatementProofV1`, a verifier MUST:
 2. Verify `binding.headEventHash` equals the referenced token’s `lineage.headEventHash`; reject if mismatched.
 3. Recompute `statementId = sha256(RFC8785_canonicalize(statement))` and verify it equals `statementId`.
 4. Enforce statement schema policy: reject unknown `statement.domain` or unsupported `statement.schemaVersion` (see `../06-extensions/zk-proof-extension.md`).
-5. Resolve the verifying key bytes referenced by `verifyingKeyId` for `(proofSystem, circuitId)`; if the verifier cannot resolve them, it MUST reject.
-6. Verify the ZK proof using `proofSystem`, `circuitId`, `verifyingKeyId`, and `publicInputs`.
-7. If the referenced Spend Attestation Token includes `zk.commitments`, verify the proof’s `publicInputs` are bound to those commitments and the token’s binding context (`spendId`, `lineage.headEventHash`) (commitment scheme–specific; see ../06-extensions/zk-proof-extension.md).
-8. Proof verification MUST be performed in a way that is cryptographically bound to `spendTokenHash` (proof-system specific: e.g., a circuit public input or transcript binding). A proof that is not bound to `spendTokenHash` MUST NOT be treated as a proof about the referenced token.
+5. Verify the top-level `scopeId` and `nullifier` match the corresponding values in `publicInputs`.
+6. Resolve the verifying key bytes or verifier parameter profile referenced by `verifyingKeyId` for `(proofSystem, circuitId)`; if the verifier cannot resolve them, it MUST reject.
+7. Verify the ZK proof using `proofSystem`, `circuitId`, `verifyingKeyId`, and `publicInputs`.
+8. If the referenced Spend Attestation Token includes `zk.commitments`, verify the proof’s `publicInputs` are bound to those commitments and the token’s binding context (`spendId`, `lineage.headEventHash`) (commitment scheme–specific; see ../06-extensions/zk-proof-extension.md).
+9. Proof verification MUST be performed in a way that is cryptographically bound to `spendTokenHash` (proof-system specific: e.g., a circuit public input or transcript binding). A proof that is not bound to `spendTokenHash` MUST NOT be treated as a proof about the referenced token.
+
+#### Verifier registry manifest (normative)
+
+Public beta verifier artifacts MUST be published as a registry manifest that lets an external verifier resolve the exact verifier profile for each circuit.
+
+```text
+VerifierRegistryManifestV1 {
+  schemaVersion: 1,
+  protocolVersion: Version,
+  entries: [
+    {
+      schemaVersion: 1,
+      protocolVersion: Version,
+      proofSystem: String,
+      circuitId: String,
+      verifyingKeyId: "sha256:" + Hash,
+      publicInputOrder: [String],
+      verifierKeyIdProfile: String,
+      artifactHash?: "sha256:" + Hash,
+      sourceCommit?: String,
+      status: "alpha_current_business" | "beta_public" | "deprecated"
+    }
+  ]
+}
+```
+
+Verifier behavior:
+
+- Unknown `proofSystem`, `circuitId`, or `verifyingKeyId` MUST fail closed.
+- `publicInputOrder` is part of the verifier contract. Changing it requires a new registry entry or an explicit deprecation/migration entry.
+- A hosted verifier API response is not a substitute for this manifest; it is only an integration helper.
 
 **Redemption note:** redemption anti-replay requirements (e.g., `scopeId`/`nullifier`) are defined separately in `../06-extensions/zk-foundation.md`. This proof type is an eligibility proof; redemption introduces additional binding requirements.
 

@@ -300,6 +300,33 @@ These are normative conformance expectations for campaign implementations. They 
 
 ---
 
+## 14. ZK Public Verifier Requirements (18 vectors)
+
+These are public beta requirements for `H2_PROMO_OPEN_MIN_V1`. Concrete proof bytes and registry manifests must be published before beta external-verifier acceptance.
+
+| # | Scenario | Expected Behavior |
+|---|----------|-------------------|
+| 1 | Valid proof artifact and registry entry | ✓ Accept |
+| 2 | Unknown `proofSystem` | ✗ Reject fail-closed |
+| 3 | Unknown `circuitId` | ✗ Reject fail-closed |
+| 4 | Unknown or mismatched `verifyingKeyId` | ✗ Reject fail-closed |
+| 5 | Missing `publicInputs` | ✗ Reject malformed artifact |
+| 6 | Missing proof bytes | ✗ Reject malformed artifact |
+| 7 | Changed `spendIdHash` | ✗ Reject |
+| 8 | Changed `headEventHash` | ✗ Reject |
+| 9 | Changed `spendTokenHash` | ✗ Reject |
+| 10 | Changed `statementId` | ✗ Reject |
+| 11 | Changed `scopeId` | ✗ Reject |
+| 12 | Changed `nullifier` | ✗ Reject or replay-policy reject |
+| 13 | Changed `expectedStoreHash` | ✗ Reject |
+| 14 | Changed `minDayIndex` | ✗ Reject |
+| 15 | Changed `thresholdCents` | ✗ Reject |
+| 16 | Changed commitment public input | ✗ Reject |
+| 17 | Changed proof bytes | ✗ Reject |
+| 18 | Replayed nullifier in the same scope | ✗ Reject consuming flow |
+
+---
+
 ## Vector Count Summary
 
 | Category | Count |
@@ -317,4 +344,5 @@ These are normative conformance expectations for campaign implementations. They 
 | Complete traces | 4 |
 | Edge cases | 5 |
 | CampaignEpoch examples | 7 |
-| **Total** | **99** |
+| ZK public verifier requirements | 18 |
+| **Total** | **117** |

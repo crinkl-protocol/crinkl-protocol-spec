@@ -1,0 +1,52 @@
+{
+  "kind": "zk.h2PromoOpenMin.v1",
+  "schemaVersion": 1,
+  "protocolVersion": "1.0.0-rc.2",
+  "proofSystem": "HALO2_IPA",
+  "circuitId": "H2_PROMO_OPEN_MIN_V1",
+  "status": "beta_public",
+  "verifyingKeyId": "sha256:fe210bf4e5a3901c6fcb39a3b1e131dc67bc9006d3ef686d591264d4b773f228",
+  "artifactHash": "sha256:581d7c6f500093d8451f4cc1014bcc08b41ea77ab63fa35560cd167bd03e1ea1",
+  "sourceCommit": "f4636c7148a0b2f993b2064e690c6bc60d609c7e",
+  "packageName": "@crnkl/zk-verifier",
+  "packageCommit": "7a2e9cc",
+  "artifactDirectory": "zk/h2-promo-open-min-v1",
+  "files": [
+    {
+      "role": "validProof",
+      "file": "zk/h2-promo-open-min-v1/valid-proof.json",
+      "sha256": "sha256:4bfefc423c729e64c91edf9b7a65af93d6c5bda323b7c0f5dfe26a9cfcfea96a"
+    },
+    {
+      "role": "spendToken",
+      "file": "zk/h2-promo-open-min-v1/spend-token.json",
+      "sha256": "sha256:b0e574c64f4568eed58908e58fdd3f7f68b4267a5982d493d3402aba248bf741"
+    },
+    {
+      "role": "verifierRegistryManifest",
+      "file": "zk/h2-promo-open-min-v1/manifest.json",
+      "sha256": "sha256:649624e30379061542bb61e696b5fee1556bcc94e4efd0198f44af7d97fabff5"
+    },
+    {
+      "role": "fixtureMetadata",
+      "file": "zk/h2-promo-open-min-v1/fixture-metadata.json",
+      "sha256": "sha256:a6713fa9fac9c0cbde05584868ecb4f5ff3046401bb4491369faaa5299ad0d3e"
+    }
+  ],
+  "verifierCommands": [
+    "npm run test:preproduction",
+    "npm run test:release-binary",
+    "npm run verify:release-binary",
+    "CRNKL_ZK_DEMO_MANIFEST_PATH=/path/to/crinkl-platform/scripts/zk-demo-rs/Cargo.toml npm run test:halo2"
+  ],
+  "fixturePackageCommit": "0f73afb",
+  "releaseBinary": {
+    "file": "@crnkl/zk-verifier/bin/crnkl-zk-demo-linux-x64",
+    "platform": "linux-x64",
+    "sha256": "sha256:62e697ad391587f167c2006ffd91397b36207b577533dafc7edf5683f7f38af5",
+    "verifiedBy": [
+      "npm run verify:release-binary",
+      "npm run test:release-binary"
+    ]
+  }
+}
