@@ -108,7 +108,9 @@ The release candidate MUST state:
 
 For this beta fixture, Crinkl generated the proof using platform-side witness custody. Release notes MUST say plainly that external verifiers do not receive private witness values, but Crinkl's proof service can see selected witness values while generating platform-side proofs.
 
-A release candidate MUST NOT claim wallet-side proving or that Crinkl never sees witness values unless wallet-side proving or an equivalent separated prover boundary has passed its own release checklist.
+A release candidate MUST NOT claim that Crinkl never sees witness values unless
+a separated prover boundary, such as an attested TEE prover, has passed its own
+release checklist.
 
 ## Backend Distribution Gate
 

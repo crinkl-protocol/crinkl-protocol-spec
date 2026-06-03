@@ -13,7 +13,9 @@ normative: true
 >
 > It is intentionally minimal: it standardizes *how wallets and brands interoperate*, without defining a full campaign rule or settlement layer. Campaign rule composition is defined by `../04-condition-layer/campaign-commitment.md`.
 >
-> Implementation status: the message/profile boundary is normative. The demo profile and wallet-secret rollout proof target are explicitly transitional until `zk-circuit-catalog.md` defines a concrete wallet rollout circuit.
+> Implementation status: the message/profile boundary is normative. The demo
+> profile and private rollout proof interface are explicitly transitional until
+> `zk-circuit-catalog.md` defines a concrete release profile.
 
 ## 1) Boundary
 
@@ -221,9 +223,11 @@ For `PromoEligibilityClaimV1`:
 
 **Cryptographic binding requirement:** verification of `spendProof` MUST fail if any of the bound values above are changed. (In a SNARK, these are public inputs; in a transcript-based proof system, they MUST be transcript-bound.)
 
-### 7.2 Rollout proof (target: brand-verifiable, wallet-secret-derived)
+### 7.2 Rollout proof (reserved brand-verifiable interface)
 
-To satisfy “consistent assignment” and “no retry”, a brand needs a verifier-checkable artifact that prevents a wallet from choosing its own bucket/nullifier.
+To satisfy “consistent assignment” and “no retry”, a brand needs a
+verifier-checkable artifact that prevents the holder/prover boundary from
+choosing its own bucket/nullifier.
 
 This profile standardizes the **interface**; the proof system/circuit is versioned by `(proofSystem, circuitId, verifyingKeyId)`.
 
@@ -250,13 +254,17 @@ WalletRolloutProofV1 {
 **Normative semantics:**
 - `nullifier` MUST be scope-specific (changes when `scopeId` changes).
 - The verifier MUST store “seen” `nullifier` values and reject repeats for the same promotion scope (“only once per wallet per promotion”).
-- The proof MUST convince the verifier that `bucket` and `nullifier` are correctly derived from wallet-private secret material and `scopeId` (anti-gaming).
+- The proof MUST convince the verifier that `bucket` and `nullifier` are
+  correctly derived from private holder/prover secret material and `scopeId`
+  (anti-gaming).
 
-> The wallet-secret nullifier derivation is defined in `zk-foundation.md`; circuits MUST enforce that derivation (or prove equivalence).
+> The private nullifier derivation is defined in `zk-foundation.md`; a concrete
+> release profile MUST enforce that derivation or prove equivalence.
 
 ### 7.3 Rollout assignment token (v0.5 transitional, issuer-signed)
 
-Some deployments may use an issuer-signed assignment until a wallet-secret-derived rollout proof is available.
+Some deployments may use an issuer-signed assignment until a private rollout
+proof release profile is available.
 
 This token is described in `zk-foundation.md` (“Deterministic bucketing”) and is explicitly **non-core** (see `token-extensions.md`).
 
@@ -270,21 +278,26 @@ Some implementations may additionally compute a **spend-scoped** anti-replay ide
 
 - `spendNullifier = sha256(RFC8785({ v: 1, scopeId, spendTokenHash }))`
 
-This is useful as a *per-spend* replay guard, but it is **precomputable** from public context and is not the privacy target for “only once per wallet per promotion”. A brand-verifiable 1.0 design SHOULD rely on the wallet-secret-derived `nullifier` (from `WalletRolloutProofV1`) for “only once”.
+This is useful as a *per-spend* replay guard, but it is **precomputable** from
+public context and is not the privacy target for “only once per wallet per
+promotion”. A brand-verifiable production design SHOULD rely on a private
+holder/prover-derived `nullifier` once a concrete release profile is published.
 
-### 7.5 Demo profile (Halo2 promo, current implementation)
+### 7.5 Public beta profile
 
-The v1 demo showcases the **advanced** promo flow using Halo2 proofs for real commerce predicates:
-- Eligibility proofs use `SpendZkStatementProofV1` with:
-  - `statement.type = "SPEND_STOREHASH_IN_ROOT_AND_TIMESTAMP_GTE_AND_TOTAL_GTE"`
-  - `proofSystem = "HALO2_IPA"` and `circuitId = "H2_PROMO_V1"` (see `zk-circuit-catalog.md`).
+The public beta profile uses `SpendZkStatementProofV1` with the current
+direct-store verifier profile published in `zk-circuit-catalog.md` and the
+verifier registry manifest.
 
-To keep the demo runnable before wallet-secret rollout proofs are finalized, the demo profile allows:
+To keep the beta profile runnable before private rollout proofs are finalized,
+the profile allows:
 - **No rollout proof when `variantCount = rolloutThreshold = 1`.** The verifier treats the wallet as always in rollout (implicit bucket=0).
 - **Spend-scoped nullifier** derived as `sha256(RFC8785({ v: 1, scopeId, spendTokenHash }))` (see `zk-foundation.md`).
 - **Optional top-level `nullifier` in the claim** for convenience; verifiers MUST still enforce `spendProof.publicInputs.nullifier`.
 
-This demo profile is **non-normative** and intended to illustrate the Halo2-based statement capabilities; production deployments SHOULD use `WalletRolloutProofV1` once available.
+This profile is limited to the published beta verifier surface. Production
+deployments SHOULD use a concrete private rollout proof release profile once
+available.
 
 **Demo decision payload (non-normative):** the demo harness may return a simplified decision object with
 `type` (`PROMO_GRANT` / `PROMO_REJECTION`), `granted` (boolean), `arm` (`control`/`treatment`), and `observeNonce`

@@ -22,7 +22,7 @@ Campaign Spend Proof Primitives are finite proof families used to express campai
 This extension composes:
 
 - `SpendAttestationTokenV1` from `../03-portability/spend-attestation-token.md`
-- `SpendZkStatementProofV1` and wallet witnesses from `../06-extensions/zk-proof-extension.md`
+- `SpendZkStatementProofV1` and private witness envelopes from `../06-extensions/zk-proof-extension.md`
 - `statementId`, `scopeId`, and `nullifier` from `../06-extensions/zk-foundation.md`
 - reward issuance and reward commitments from `../05-reward-and-settlement/reward-layer.md` and `../05-reward-and-settlement/settlement-bindings.md`
 - store/category/market references from `../06-extensions/store-registry.md`
@@ -696,7 +696,7 @@ Campaign implementations also MUST NOT create a global identity-linked purchase 
 
 The correct campaign memory model is scoped proof memory:
 
-- holders keep identity-free Spend Tokens and wallet-only witnesses as positive evidence
+- holders keep identity-free Spend Tokens and private witness envelopes as positive evidence
 - verifiers keep only the minimum campaign-scoped nullifiers, commitments, and approval hashes required for replay prevention and settlement audit
 - buyer-state labels are derived only within explicit campaign scopes and time windows
 - raw receipt artifacts SHOULD expire according to deployment retention policy

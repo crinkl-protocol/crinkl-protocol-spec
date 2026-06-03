@@ -26,7 +26,7 @@ Excluded:
 
 - CBSA-in-circuit proof
 - store-set membership proof for `H2_PROMO_OPEN_MIN_V1`
-- wallet-side proving
+- separated prover-boundary proving
 - non-Linux release binary distribution
 - public production incident runbook
 

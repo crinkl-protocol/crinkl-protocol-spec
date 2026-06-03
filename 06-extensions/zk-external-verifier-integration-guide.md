@@ -142,7 +142,7 @@ Supported for this beta fixture:
 
 Not supported for this beta fixture:
 
-- wallet-side proving
+- separated prover-boundary proving
 - a claim that Crinkl never sees witness values
 - CBSA proven inside ZK
 - store-set membership proof for `H2_PROMO_OPEN_MIN_V1`
