@@ -126,7 +126,9 @@ A non-Linux partner release MUST add a Rust/WASM package, a platform-specific re
 
 ## Audit Package Gate
 
-The release candidate MUST include an audit package with:
+The release candidate MUST include an audit package. Current package: `08-governance/zk-beta-audit-package.md`.
+
+The audit package MUST include:
 
 - this checklist
 - public artifact inventory and hashes
@@ -140,7 +142,9 @@ The release candidate MUST include an audit package with:
 
 ## Partner Integration Gate
 
-The release candidate MUST include a partner integration guide that explains:
+The release candidate MUST include an external verifier integration guide. Current guide: `06-extensions/zk-external-verifier-integration-guide.md`.
+
+The guide MUST explain:
 
 - what files to download
 - how to verify file hashes

@@ -79,9 +79,10 @@ Downstream layers consume spend proof; they do not define it.
 |---|---|
 | Condition rules and CampaignEpochs | [`04-condition-layer/`](04-condition-layer/) |
 | Reward and settlement | [`05-reward-and-settlement/`](05-reward-and-settlement/) including [`campaign-settlement-gcd.md`](05-reward-and-settlement/campaign-settlement-gcd.md) |
-| ZK, merchant authority, agent, REST/MCP, Solana, offer delivery | [`06-extensions/`](06-extensions/) including [`merchant-authority.md`](06-extensions/merchant-authority.md) and [`solana-campaign-settlement-binding.md`](06-extensions/solana-campaign-settlement-binding.md) |
+| ZK, merchant authority, agent, REST/MCP, Solana, offer delivery | [`06-extensions/`](06-extensions/) including [`merchant-authority.md`](06-extensions/merchant-authority.md), [`zk-external-verifier-integration-guide.md`](06-extensions/zk-external-verifier-integration-guide.md), and [`solana-campaign-settlement-binding.md`](06-extensions/solana-campaign-settlement-binding.md) |
 | Conformance | [`07-conformance/`](07-conformance/) |
 | ZK beta release checklist | [`08-governance/zk-beta-release-checklist.md`](08-governance/zk-beta-release-checklist.md) |
+| ZK beta audit package | [`08-governance/zk-beta-audit-package.md`](08-governance/zk-beta-audit-package.md) |
 | Governance | [`08-governance/`](08-governance/) |
 
 ## Repository Structure
