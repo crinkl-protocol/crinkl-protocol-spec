@@ -320,7 +320,7 @@ The following types are used in structures above. Enumerations are normative; im
 
 - For US spends: implementations MUST derive `CBSACode` from the store's physical location via city/county → CBSA lookup using the OMB delineation file or equivalent public crosswalk. If a store falls outside any CBSA (rural area), the code MUST be `"non-metro:{state}"` where `{state}` is the ISO 3166-2 state code (e.g., `"non-metro:US-MT"`).
 - For non-US spends: `CBSACode` is not applicable. Implementations SHOULD use the ISO 3166-1 alpha-2 country code as a fallback region key in aggregate tokens.
-- If the store's location cannot be resolved to a CBSA, implementations MUST use `"UNKNOWN"`.
+- If the store's location cannot be resolved to a CBSA, implementations MUST use `"Unknown"`.
 
 **Privacy note:** some CBSAs have small populations. Implementations SHOULD define a minimum-spend-count threshold below which a CBSA bucket is rolled up into a coarser grouping (e.g., state or non-metro) in aggregate tokens. This threshold is an implementation/policy decision, not a protocol-level constant.
 
