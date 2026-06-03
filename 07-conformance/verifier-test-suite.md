@@ -75,7 +75,7 @@ For `H2_PROMO_OPEN_MIN_V1`, public beta verifier vectors MUST include:
 - changed proof bytes fails
 - replayed nullifier in the same scope is rejected by the consuming flow
 
-The public verifier MUST verify the proof from the artifact and registry manifest. A hosted Crinkl verifier response is not sufficient conformance evidence by itself.
+The public verifier MUST verify the proof from the artifact and registry manifest. A hosted Crinkl verifier response is not sufficient conformance evidence by itself. The beta release checklist is `../08-governance/zk-beta-release-checklist.md`.
 
 ## Optional Strict Mode
 

@@ -81,6 +81,7 @@ Downstream layers consume spend proof; they do not define it.
 | Reward and settlement | [`05-reward-and-settlement/`](05-reward-and-settlement/) including [`campaign-settlement-gcd.md`](05-reward-and-settlement/campaign-settlement-gcd.md) |
 | ZK, merchant authority, agent, REST/MCP, Solana, offer delivery | [`06-extensions/`](06-extensions/) including [`merchant-authority.md`](06-extensions/merchant-authority.md) and [`solana-campaign-settlement-binding.md`](06-extensions/solana-campaign-settlement-binding.md) |
 | Conformance | [`07-conformance/`](07-conformance/) |
+| ZK beta release checklist | [`08-governance/zk-beta-release-checklist.md`](08-governance/zk-beta-release-checklist.md) |
 | Governance | [`08-governance/`](08-governance/) |
 
 ## Repository Structure
