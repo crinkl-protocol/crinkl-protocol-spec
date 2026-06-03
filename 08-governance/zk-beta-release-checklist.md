@@ -17,7 +17,7 @@ Required release inputs:
 
 - `protocolVersion`: `1.0.0-rc.2`
 - public spec artifact commit: `46a4ad6` or a later commit that includes the same ZK artifact set
-- verifier package commit: `0f73afb` or a later commit that keeps the same fixture hash contract
+- verifier package commit: `7a2e9cc` or a later commit that keeps the same fixture hash and release-binary checksum contract
 - platform proof source commit: `f4636c7148a0b2f993b2064e690c6bc60d609c7e`
 - circuit profile: `H2_PROMO_OPEN_MIN_V1`
 - proof system: `HALO2_IPA`
@@ -62,10 +62,12 @@ Run from `crinkl-zk-verifier`:
 
 ```bash
 npm run test:preproduction
+npm run verify:release-binary
+npm run test:release-binary
 CRNKL_ZK_DEMO_MANIFEST_PATH=/path/to/crinkl-platform/scripts/zk-demo-rs/Cargo.toml npm run test:halo2
 ```
 
-The `test:halo2` command MUST verify the published fixture proof, not only a dynamically generated proof.
+The `test:release-binary` command MUST verify the published fixture proof through the packaged release binary. The `test:halo2` command MUST verify the published fixture proof and retain the source-build Cargo path as an additional check, not as the only public backend path.
 
 ## Acceptance Matrix
 
@@ -112,13 +114,15 @@ A release candidate MUST NOT claim wallet-side proving or that Crinkl never sees
 
 This checklist does not by itself approve a production-grade verifier backend distribution.
 
-Before public beta release, the release owner MUST choose one backend distribution profile:
+The selected backend distribution profile is a Linux x64 release binary in `@crnkl/zk-verifier`:
 
-- Rust/WASM package
-- release binary with checksums
-- partner-pinned source build with reproducible build instructions
+- binary: `bin/crnkl-zk-demo-linux-x64`
+- binary SHA-256: `62e697ad391587f167c2006ffd91397b36207b577533dafc7edf5683f7f38af5`
+- checksum file: `bin/checksums.sha256`
+- verification command: `npm run verify:release-binary`
+- published-fixture command: `npm run test:release-binary`
 
-The selected profile MUST include a verifier command that does not depend on an unpublished local platform Cargo manifest.
+A non-Linux partner release MUST add a Rust/WASM package, a platform-specific release binary with checksums, or partner-pinned source build instructions before making the same backend-distribution claim for that platform.
 
 ## Audit Package Gate
 

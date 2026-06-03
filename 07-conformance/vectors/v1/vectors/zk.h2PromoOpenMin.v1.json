@@ -9,7 +9,7 @@
   "artifactHash": "sha256:581d7c6f500093d8451f4cc1014bcc08b41ea77ab63fa35560cd167bd03e1ea1",
   "sourceCommit": "f4636c7148a0b2f993b2064e690c6bc60d609c7e",
   "packageName": "@crnkl/zk-verifier",
-  "packageCommit": "0f73afb",
+  "packageCommit": "7a2e9cc",
   "artifactDirectory": "zk/h2-promo-open-min-v1",
   "files": [
     {
@@ -35,6 +35,18 @@
   ],
   "verifierCommands": [
     "npm run test:preproduction",
+    "npm run test:release-binary",
+    "npm run verify:release-binary",
     "CRNKL_ZK_DEMO_MANIFEST_PATH=/path/to/crinkl-platform/scripts/zk-demo-rs/Cargo.toml npm run test:halo2"
-  ]
+  ],
+  "fixturePackageCommit": "0f73afb",
+  "releaseBinary": {
+    "file": "@crnkl/zk-verifier/bin/crnkl-zk-demo-linux-x64",
+    "platform": "linux-x64",
+    "sha256": "sha256:62e697ad391587f167c2006ffd91397b36207b577533dafc7edf5683f7f38af5",
+    "verifiedBy": [
+      "npm run verify:release-binary",
+      "npm run test:release-binary"
+    ]
+  }
 }
