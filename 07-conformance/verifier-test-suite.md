@@ -46,12 +46,13 @@ These kinds are present in `manifest.json` but are not yet machine-checked by th
 
 - `merkle.rewardBatch.schemaV1`
 - `merkle.rewardBatch.schemaV2.rewardEventsRoot`
+- `zk.h2PromoOpenMin.v1` (data artifact; machine-checked by `@crnkl/zk-verifier`)
 
 They remain versioned conformance artifacts; executable Merkle verification is tracked separately because chain-binding hashing semantics differ by implementation environment.
 
 ## Public ZK verifier conformance
 
-Public ZK verifier vectors are a beta requirement. Until the public verifier package is selected, these vectors may be listed as data-only requirements; once the verifier package exists, they MUST be machine-checked by this suite or by a package-specific verifier test command linked from this suite.
+Public ZK verifier vectors are a beta requirement. The selected package is `@crnkl/zk-verifier`. The public fixture descriptor is `vectors/v1/vectors/zk.h2PromoOpenMin.v1.json`, and the proof artifacts live under `vectors/v1/zk/h2-promo-open-min-v1/`. They are machine-checked by the package-specific commands listed in the descriptor.
 
 For `H2_PROMO_OPEN_MIN_V1`, public beta verifier vectors MUST include:
 
