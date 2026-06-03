@@ -220,7 +220,10 @@ CbsaStoreSetSnapshotV1 {
 
 `registryVersion` changes when the derived eligible store set changes. Adding a store later creates a later snapshot/root and MUST NOT rewrite the snapshot used by an already-created proof.
 
-For Boost launch matching, the local-match territory source is `PROMOTER_ACTIVE_ELIGIBLE_CBSA_SET`. The promoter activation proof selects the eligible CBSA queue; the buyer match consumes that same queue. The `BOOST_MATCH_BUNDLE_V0` proof binds to `selectedCbsaCode`, `cbsaRegistryVersion`, `cbsaRegistryRoot`, and `cbsaStoreSetRoot` so a buyer match cannot silently move to a different metro/store set after the fact.
+For launch matching profiles, the local-match territory source and immutable
+snapshot binding MUST be declared in that profile's release documentation. A
+buyer match MUST NOT silently move to a different metro/store set after the
+profile-specific snapshot has been fixed.
 
 ## Security & evolution
 

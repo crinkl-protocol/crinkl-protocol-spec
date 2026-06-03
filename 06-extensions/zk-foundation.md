@@ -9,7 +9,9 @@ normative: true
 
 > **Status: explanatory / demo foundation for optional ZK proofs**
 >
-> This document describes the minimum proof spine for proof-backed offer opening. It is not required for core Spend Token validity, does not define campaign settlement, and does not make wallet-secret rollout proofs production-ready.
+> This document describes the minimum proof spine for proof-backed offer
+> opening. It is not required for core Spend Token validity, does not define
+> campaign settlement, and does not make private rollout proofs production-ready.
 
 This document captures the **minimum ZK foundation** needed to support a simple brand promo use case in v1.0.
 
@@ -24,13 +26,16 @@ For the normative offer-delivery wire formats (campaign message, eligibility cla
 
 ## Goal
 
-Enable a user (or platform) to prove **eligibility** for a promo using a verified spend, without revealing the underlying receipt or the total amount.
-This implements the **selective disclosure** pattern from verifiable credentials: the holder (wallet owner) can prove specific predicates about a credential (spend attestation) without revealing the full claim contents.
+Enable an approved prover boundary to prove **eligibility** for a promo using a
+verified spend, without revealing the underlying receipt or the total amount to
+the external verifier. This implements the **selective disclosure** pattern from
+verifiable credentials: a holder-authorized proof can show specific predicates
+about a credential (spend attestation) without revealing the full claim contents.
 
 | VC Pattern | Crinkl ZK Realization |
 |------------|----------------------|
 | **Credential** | Spend Attestation Token with `zk.commitments` |
-| **Holder** | Wallet owner with decrypted witness material |
+| **Holder / prover boundary** | Holder-authorized prover with private witness material |
 | **Selective Disclosure** | ZK statement proof (e.g., "total ≥ threshold") |
 | **Verifier** | Brand verifying proof without learning receipt details |
 | **Anti-Replay** | `scopeId` + `nullifier` for redemption scoping |
@@ -51,8 +56,9 @@ This implements the **selective disclosure** pattern from verifiable credentials
    - omits wallet by default for external portable verification
    - **portable token omits the committed field** (selective disclosure via ZK proof)
 4) **Campaign arrives**: brand publishes a campaign referencing a `statementId` for the eligibility rule and provides a brand public key + endpoints
-5) **Local check + proof** (client-side option): PWA decrypts wallet-only witness and generates `SpendZkStatementProofV1`
-6) **Blind send**: PWA encrypts the proof to the brand’s public key; sends via relay (platform can’t read it)
+5) **Separated proof**: an approved prover boundary, such as an attested TEE,
+   receives private witness material and generates `SpendZkStatementProofV1`
+6) **Proof send**: proof delivery uses the deployment-approved encrypted path
 7) **Verify + grant**: brand verifies token + statementId + proof; returns an encrypted promo artifact
 8) **Display**: PWA decrypts and displays promo
 
@@ -61,7 +67,7 @@ This implements the **selective disclosure** pattern from verifiable credentials
 The demo profile can illustrate the proof spine without making every transport or settlement surface normative:
 
 - demo/implementation surfaces: PWA UX, campaign delivery, relay, and brand offer issuance
-- normative proof spine: commitments, wallet witness, proof binding rules, and verifier behavior
+- normative proof spine: commitments, private witness envelope, proof binding rules, and verifier behavior
 
 The demo can use scripts to act as PWA and verifier simulators. Those scripts are not the protocol.
 
@@ -76,14 +82,17 @@ Already defined in `../03-portability/spend-attestation-token.md`:
 For the foundation flow, portable spend tokens SHOULD omit any spend fields that are being selectively disclosed via ZK (e.g., omit `canonical.totalCents` and/or `canonical.timestamp`) and rely on:
 - `zk.commitments` and a proof artifact for eligibility
 
-### 2) Wallet witness envelope (new, non-portable)
+### 2) Private witness envelope (new, non-portable)
 
-To support **client-side proving**, the user needs “opening material” for the commitment(s) required by the statement (e.g., `C_total` and/or `C_dayIndex`).
+To support **separated proving**, the prover boundary needs “opening material”
+for the commitment(s) required by the statement (e.g., `C_total` and/or
+`C_dayIndex`).
 
-This must be **wallet-only** and **not** part of the portable token.
+This must stay inside the approved private prover boundary and **not** be part of
+the portable token.
 
-Minimum requirements (see `../03-portability/spend-attestation-token.md#optional-wallet-witness-non-portable-normative`):
-- encrypted to a wallet-controlled public key
+Minimum requirements (see `zk-proof-extension.md#optional-private-witness-envelope-non-portable-normative`):
+- encrypted to an approved prover-boundary key
 - bound to (`spendTokenHash`, `headEventHash`) so corrections naturally invalidate old witness
 - includes only the minimum opening material needed to generate proofs (no receipt/OCR ingestion artifacts)
 
@@ -122,9 +131,13 @@ SpendStoreHashInSetAndDayIndexGteStatementV1 {
 }
 ```
 
-**Private store + time + total (realistic promo):** for a single proof that hides store, timestamp, and total while proving all three predicates, see the composite statement type in `zk-circuit-catalog.md` (`SPEND_STOREHASH_IN_ROOT_AND_DAYINDEX_GTE_AND_TOTAL_GTE`).
+**Future private-store profiles:** a single proof that hides broader store
+membership while proving time and total predicates requires a separate release
+profile in `zk-circuit-catalog.md`.
 
-**Demo profile (advanced):** the current demo uses `HALO2_IPA` / `H2_PROMO_V1` to combine store membership + time window + total in a single proof. This is the scalable path beyond Bulletproof-only range proofs for real promo campaigns.
+**Current public beta profile:** the current public beta verifier surface is the
+direct-store `HALO2_IPA` profile documented in `zk-circuit-catalog.md` and the
+published verifier registry manifest.
 
 **Canonicalization (normative):** verifiers MUST compute `statementId` over the RFC 8785 canonical JSON of the statement object, and MUST reject unknown `domain` or unsupported `schemaVersion`.
 
@@ -199,17 +212,23 @@ There are two useful anti-replay semantics (both compatible with this protocol s
 - **Spend-scoped nullifier (demo-supported, per-spend anti-replay):**
   - `nullifier = sha256(RFC8785({ v: 1, scopeId, spendTokenHash }))`
   - Enforces: “only once per *(scopeId, spendTokenHash)*”.
-  - Note: this is not wallet-secret; a verifier can compute it from public context. It prevents double redemption of the same spend within a scope, but does not prove wallet possession.
+  - Note: this is not holder-secret-derived; a verifier can compute it from
+    public context. It prevents double redemption of the same spend within a
+    scope, but does not prove private holder/prover possession.
 
-- **Wallet-secret nullifier (normative, privacy-preserving):**
-  - Inputs: `walletSecrets` (array of 32-byte hex secrets, lowercase, no prefix) and `scopeId`.
+- **Private holder/prover nullifier (normative, privacy-preserving):**
+  - Inputs: private holder/prover secret material (array of 32-byte hex
+    secrets, lowercase, no prefix) and `scopeId`.
   - Normalize each secret to lowercase hex (no prefix) and sort lexicographically.
-  - `masterSecret = sha256(RFC8785({ v: 1, walletSecrets }))`
+  - `masterSecret = sha256(RFC8785({ v: 1, holderSecrets }))`
   - `nullifier = sha256(RFC8785({ v: 1, scopeId, masterSecret }))`
   - `masterSecret` is represented as lowercase hex (no prefix).
   - `nullifier` is represented as `"sha256:" + Hash`.
-  - For a single wallet, `walletSecrets` has one entry. For cross-wallet proofs, all participating wallet secrets MUST be included; sorting makes the derivation order-independent.
-  - Enforces: “only once per wallet (or wallet group) per scope” without revealing wallet identity and without allowing verifier precomputation.
+  - For a single holder, `holderSecrets` has one entry. For grouped-holder
+    proofs, all participating holder secrets MUST be included; sorting makes the
+    derivation order-independent.
+  - Enforces: “only once per holder (or holder group) per scope” without
+    revealing holder identity and without allowing verifier precomputation.
 
 High-level requirements (normative):
 - `nullifier` MUST be scope-specific (changes when `scopeId` changes).
@@ -226,7 +245,10 @@ Brands often want a controlled rollout (A/B testing): “for this `scopeId`, det
 This protocol can support that without introducing a user/identity layer, but there is an important sequencing:
 
 - **Near-term (recommended, non-ZK):** keep brands blind to the wallet by using an **issuer-signed rollout assignment** that carries a scope-bound bucket + nullifier, plus a per-scope delivery key. This uses the same audit-friendly primitives as the rest of the protocol (RFC8785 + SHA-256 + Ed25519) and does not require a SNARK/STARK circuit.
-- **Target (privacy-preserving ZK):** move the same bucketing/nullifier computation **inside the proof system** so the verifier does not need (or receive) any issuer-signed assignment and does not learn a stable wallet key.
+- **Target (privacy-preserving ZK):** move the same bucketing/nullifier
+  computation **inside a separated proof system** so the verifier does not need
+  (or receive) any issuer-signed assignment and does not learn a stable wallet
+  key.
 
 **A practical v0.5 construction (non-normative, recommended until a circuit exists):**
 
@@ -302,8 +324,8 @@ This keeps “promo” out of the protocol surface area while still standardizin
 ## Atomic implementation plan (non-normative)
 
 1) Confirm minimal scope (only `TOTAL_GTE`)
-2) Define wallet witness envelope format
-3) Choose encryption + keying for wallet witness
+2) Define private witness envelope format
+3) Choose encryption + keying for the approved prover boundary
 4) Add endpoint(s) to retrieve `{token, witness}` for a spend
 5) Bind proofs to `spendTokenHash`
 6) Add mock PWA → brand verifier scripts

@@ -11,7 +11,9 @@ normative: true
 >
 > This section defines the interface for ZK extensions. Concrete statement types and the circuits that implement them are captured in `zk-circuit-catalog.md`.
 >
-> Implementation status: the minimal promo-open proof lane is demo-supported. Wallet-secret rollout proofs and general commitment-scheme standardization are target architecture, not required core protocol behavior.
+> Implementation status: the minimal promo-open proof lane is beta-supported.
+> Additional private-witness proof profiles and general commitment-scheme
+> standardization are target architecture, not required core protocol behavior.
 
 ## Purpose
 
@@ -21,7 +23,8 @@ ZK statements attest only to the truth of the stated rule under protocol semanti
 
 ZK statements do not strengthen or supersede the verification tier of the underlying Spend; they only enable selective disclosure about already-verified fields.
 
-For the minimum viable promo use case and the associated “wallet witness” foundation concepts, see `zk-foundation.md`.
+For the minimum viable promo use case and the associated private witness /
+prover-boundary foundation concepts, see `zk-foundation.md`.
 
 ## Public beta publication model
 
@@ -78,7 +81,13 @@ Regardless of scheme choice, commitments MUST be:
 - **Binding** (a prover cannot open the same commitment to two different values), and
 - **Hiding against feasible enumeration** of the committed field domains (schemes MUST incorporate adequate blinding/salting where domains are small, and that blinding MUST NOT be derivable from public protocol data).
 
-**Determinism note (normative):** the protocol does not require commitments to be publicly recomputable or deterministic across issuers. If a commitment scheme uses blinding/randomness, the required opening material MUST be delivered only via wallet-only witness material (see `../03-portability/spend-attestation-token.md#optional-wallet-witness-non-portable-normative`). If a scheme uses deterministic blinding, the determinism MUST be keyed by secret witness material (e.g., wallet secret) such that third parties cannot enumerate small domains.
+**Determinism note (normative):** the protocol does not require commitments to
+be publicly recomputable or deterministic across issuers. If a commitment scheme
+uses blinding/randomness, the required opening material MUST be delivered only
+inside an approved private prover boundary (see
+`#optional-private-witness-envelope-non-portable-normative`). If a scheme uses
+deterministic blinding, the determinism MUST be keyed by secret witness material
+such that third parties cannot enumerate small domains.
 
 ## ZK Statements
 
@@ -277,9 +286,11 @@ Verifier behavior:
 
 **Redemption note:** redemption anti-replay requirements (e.g., `scopeId`/`nullifier`) are defined separately in `../06-extensions/zk-foundation.md`. This proof type is an eligibility proof; redemption introduces additional binding requirements.
 
-### Optional: Wallet witness (non-portable, normative)
+### Optional: Private witness envelope (non-portable, normative)
 
-To enable **client-side proving**, implementations MAY issue a wallet-only “witness envelope” that contains the commitment openings required to prove ZK statements without revealing underlying receipt data.
+To enable **separated proving**, implementations MAY issue a private witness
+envelope that contains the commitment openings required to prove ZK statements
+without revealing underlying receipt data outside the approved prover boundary.
 
 This witness material is **not portable** and MUST be treated as sensitive private data. It MUST NOT be embedded in portable tokens.
 
@@ -303,7 +314,8 @@ SpendZkWitnessV1 {
 
 #### Distribution (normative)
 
-`SpendZkWitnessV1` MUST be distributed only inside a trusted boundary, typically by encrypting it to a wallet-controlled public key and delivering it to the wallet (e.g., via authenticated API).
+`SpendZkWitnessV1` MUST be distributed only inside a trusted boundary, such as
+an attested TEE prover or another deployment-approved private prover boundary.
 
 #### Constraints (normative)
 

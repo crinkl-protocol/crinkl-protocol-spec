@@ -5,13 +5,13 @@ version: v1
 normative: true
 ---
 
-# Encryption Envelopes (Wallet / Brand Confidential Messages)
+# Encryption Envelopes (Prover / Brand Confidential Messages)
 
-> **Status: v1 (optional extension) — wallet/brand encrypted envelopes**
+> **Status: v1 (optional extension) — prover/brand encrypted envelopes**
 >
 > This document standardizes a minimal encrypted “envelope” used to transport:
-> - wallet-only witness material (non-portable), and
-> - wallet ↔ brand offer-delivery messages
+> - private witness material (non-portable), and
+> - holder/prover ↔ brand offer-delivery messages
 >
 > The relay (e.g., Crinkl infrastructure) is assumed to be **untrusted for secrecy** and MUST NOT be required to decrypt these envelopes.
 
@@ -88,9 +88,9 @@ Implementations MUST:
 
 **AAD derivation (normative):** for protocol messages, the sender MUST derive `aad` from the plaintext fields listed below (not from an independent caller-supplied object). The receiver MUST recompute the expected `aad` from the decrypted plaintext and reject if mismatched.
 
-### 2.1 Spend witness delivery (wallet-only, non-portable)
+### 2.1 Spend witness delivery (private, non-portable)
 
-When encrypting a `SpendZkWitnessV1` to a wallet, AAD MUST include:
+When encrypting a `SpendZkWitnessV1` to an approved prover boundary, AAD MUST include:
 
 ```text
 { spendId, headEventHash, spendTokenHash }
