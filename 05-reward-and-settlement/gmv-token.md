@@ -48,13 +48,23 @@ GMV commitments preserve user privacy by committing only to aggregate totals and
 
 ### How a Receipt Becomes Verified GMV
 
-A receipt contributes to Verified GMV only after **Hard Verification** (or subsequent **Correction**) produces a finalized spend (see ../01-core/verification-state.md)—a canonical spend record with total amount, currency, and timestamp. Rewards and economic backing (e.g., BTC moving) are separate: they may happen around the same time, but they do not define Verified GMV.
+A receipt contributes to Verified GMV only after **Hard Verification** (or subsequent **Correction**) produces a finalized spend (see ../01-core/verification-state.md)—a canonical spend record with total amount, currency, and timestamp—and the spend satisfies the GMV inclusion guardrails below. Rewards and economic backing (e.g., BTC moving) are separate: they may happen around the same time, but they do not define Verified GMV.
 
-Verified GMV is included when an issuer **publishes a Verified GMV Token** for a specific UTC day. To compute it, the issuer picks an “as-of” time (`asOf.computedAt`), selects all finalized spends whose finalized timestamp falls in that UTC day and are not `INVALIDATED`, and sums their totals into `verifiedGMV`.
+Verified GMV is included when an issuer **publishes a Verified GMV Token** for a specific UTC day. To compute it, the issuer picks an “as-of” time (`asOf.computedAt`), selects all finalized spends whose finalized timestamp falls in that UTC day, are not `INVALIDATED`, and satisfy the GMV inclusion guardrails, then sums their totals into `verifiedGMV`.
 
 The token contains no receipt images/text; instead it includes a single hash (`asOf.spendHeadSetRoot`) that acts like a fingerprint of “the set of spends that were counted”, so the issuer can later give a user a small proof that their spend was included without publishing every spend or sharing receipts (see per-spend inclusion proofs below).
 
 If later corrections change a spend’s finalized timestamp or total, the issuer publishes a newer token for that same day rather than revising history.
+
+### GMV inclusion guardrails (normative)
+
+GMV inclusion guardrails protect aggregate claims from anomalous receipt data, OCR errors, and adversarial submissions without changing Spend Attestation Token validity.
+
+For the Crinkl v1 GMV profile:
+
+- A finalized spend with `totalCents > 50_000` MUST NOT be counted in `verifiedGMV` until an explicit high-total review approval is recorded in the canonical spend stream or attached audit material.
+- High-total exclusion is not spend invalidation. The spend MAY still have a valid Spend Attestation Token, but it is not counted in Verified GMV until the high-total review approves the total or a correction produces a GMV-includable canonical head.
+- The $500 threshold is an aggregate-safety guard for ordinary consumption receipts. It limits the impact of a single bad OCR read, malicious submission, or anomalous receipt on public GMV while preserving a review path for legitimate high-value purchases.
 
 ### Claim
 
@@ -137,6 +147,14 @@ Auditors can compute deltas between two snapshots for the same window as:
 - `verifiedGMV.spendCountDelta = verifiedGMV.spendCount(new) - verifiedGMV.spendCount(old)`
 
 > Optional extension: an issuer MAY also publish an explicit delta token type (e.g., `VERIFIED_GMV_DELTA`) for audit-friendly “GMV went down because spends were invalidated” narratives. This is non-normative and not required for verifiers.
+
+#### GMV finality window
+
+The Crinkl v1 GMV profile treats the most recent 14 UTC days as the active GMV correction window for cumulative aggregation. This window reflects ordinary physical-world receipt, return, and dispute timing, and allows recent Verified GMV snapshots to change as receipt evidence settles.
+
+- During the active 14-day window, issuers SHOULD expect newer Verified GMV Tokens to supersede earlier tokens for the same UTC day when new eligible spends, corrections, invalidations, or high-total approvals arrive.
+- For cumulative GMV, issuers MAY treat days older than the active 14-day window as frozen by aggregating the latest trusted daily Verified GMV Tokens for those days.
+- Freezing a day for cumulative aggregation is a platform finality policy. It does not make older signed daily tokens invalid, and it does not change the cryptographic verification procedure for any `VERIFIED_GMV` token.
 
 ### spendHeadSetRoot construction (normative)
 

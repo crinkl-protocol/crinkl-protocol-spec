@@ -2,6 +2,12 @@
 
 This repository is being prepared for its **first public release**. Earlier internal iterations existed, but version numbers have been reset for the public SemVer track.
 
+## v1.0.0-rc.2 GMV policy clarification (2026-06-08)
+
+- Clarifies the Crinkl v1 Verified GMV inclusion guardrail for high-total spends: finalized spends over $500 are excluded from `verifiedGMV` until explicit high-total review approval is recorded.
+- Documents the 14-day active GMV correction window used for cumulative aggregation, reflecting ordinary receipt, return, and dispute timing.
+- Does not change `protocolVersion`, `tokenType`, `schemaVersion`, token hashing, Merkle construction, or signature verification rules.
+
 ## v1.0.0-rc.2 extension update (2026-06-01)
 
 - Adds rc.2-compatible merchant authority extension artifacts for `MerchantClaimAttestationV1`, `MerchantClaimEventV1`, and `CampaignAuthorityV1`.
