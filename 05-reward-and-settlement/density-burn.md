@@ -53,41 +53,51 @@ A = QG + λ · SR
 
 `A` is monotonically non-decreasing. Corrections to historical spends roll forward into later epochs (see Lifecycle); they never restate a consumed epoch.
 
-### Density curve `B(A)`
+### Depletion schedule `D(A)`
 
-The cumulative burn entitlement, in token base units (CRINKL has 6 decimals):
+The cumulative TOTAL depletion of the pool — burn plus reward emission together — in token base units (CRINKL has 6 decimals):
 
 ```text
-B(A) = floor( c · ln(1 + A / K) )
+D(A) = floor( c · ln(1 + A / K) )
 ```
 
-Provisional parameters (frozen as deployment constants after recalibration; see Parameters):
+`D` is a schedule, not a burn amount: it fixes how much has left the pool once
+cumulative qualified input reaches `A`, independent of token price. Each
+epoch's tranche `D(A_new) − D(A_old)` is split atomically between the reward
+emission ask (USD-denominated, converted at the posted price, capped by the
+tranche) and the burn (the residual). Price moves the split; it can never move
+the depletion path. This is what makes the calibration targets meaningful
+while the token has no market price.
 
-| Parameter | Provisional value | Meaning |
+Calibrated parameters (closed form from the depletion targets; frozen as deployment constants):
+
+| Parameter | Value | Meaning |
 |---|---|---|
-| `c` | 5,460,000 CRINKL | curve scale |
-| `K` | $52,500,000 (in cents) | density half-scale: input at which marginal burn has decayed to half its initial rate is reached near `K` |
+| `c` | 5,633,706,605,995 base units (≈5.6337M CRINKL) | schedule scale = 70M / ln(1 + $500B/K) |
+| `K` | 200,803,213 cents ($2,008,032.13) | = 10^18/(5·10^11 − 2·10^9) dollars, the unique K with D($1B) = ½·D($500B) |
 | `λ` | 33 | revenue weight inside `A` |
 
-Required properties (normative — any recalibrated curve MUST preserve all four):
+Calibration targets (normative): `D($1B) = 50%` of the funded pool;
+`D($500B) = 100%`. The closed form follows from requiring
+`(1 + 10^9/K)² = 1 + 5·10^11/K`.
 
-1. **Monotone:** `B` is non-decreasing in `A`.
-2. **Concave:** marginal burn per dollar strictly decreases as `A` grows — early density is weighted most ("density" is the design intent, not decoration).
-3. **Bounded:** cumulative burn can never exceed the SRBP balance; entitlement beyond the balance is forfeited, not deferred (see Pool semantics). The curve's slow growth additionally bounds the damage of any input inflation: even unbounded fake input asymptotically burns only what the pool holds.
-4. **Deterministic:** computed in fixed-point integer arithmetic with floor-only rounding on the *cumulative* value. Per-epoch burns are differences of cumulative values, never independently rounded.
+Required properties (normative — any recalibrated schedule MUST preserve all four):
 
-Reference magnitudes under provisional parameters (illustrative; bit-exact golden vectors are produced by the reference implementation before freeze):
+1. **Monotone:** `D` is non-decreasing in `A`.
+2. **Concave:** marginal depletion per dollar strictly decreases as `A` grows — early density is weighted most ("density" is the design intent, not decoration).
+3. **Bounded:** cumulative depletion can never exceed the SRBP balance; schedule beyond the balance is forfeited, not deferred (see Pool semantics). The slow growth additionally bounds the damage of any input inflation: even unbounded fake input asymptotically depletes only what the pool holds.
+4. **Deterministic:** computed in fixed-point integer arithmetic with floor-only rounding on the *cumulative* value. Per-epoch tranches are differences of cumulative values, never independently rounded.
 
-| `A` | `B(A)` approx | Marginal burn (tokens per $1 GMV) |
+Reference magnitudes under calibrated parameters (verified on-chain in the localnet sweep):
+
+| `A` | `D(A)` | Depleted |
 |---|---|---|
-| $0 | 0 | 0.104 |
-| $250M | 9.56M | 0.018 |
-| $290M | 10.24M | 0.016 |
-| $1B | 16.37M | 0.0052 |
-| $5B | 24.93M | 0.0011 |
-| $500B | ~50.0M | ~0.00001 |
-
-At `A = 0`, $1 of settled revenue burns `λ · c / K ≈ 3.43` tokens.
+| $1.95M (live 2026-06-12) | 3.83M | 5.46% |
+| $100M | 22.13M | 31.6% |
+| $1B | 35.00M | **50.00%** |
+| $10B | 47.96M | 68.5% |
+| $100B | 60.93M | 87.0% |
+| $500B | 70.00M | **100.00%** |
 
 ### QualifiedGmvRuleSetV1
 
@@ -159,9 +169,21 @@ QualifiedGmvBurnEpochV1 {
 
 ## Pool semantics (normative)
 
-- **Burn precedence:** for a given epoch window, the burn executes before reward-emission claims attributable to that window are processed. The burn is senior to emission — emissions may not drain the pool ahead of an already-finalized burn entitlement.
-- **Exhaustion:** executed burn = `min(burnDeltaBaseUnits, poolBalance)`. When the pool reaches zero, both exits halt permanently. Unexecuted entitlement is forfeited, never owed.
-- **On-chain state:** the program maintains `A_cum`, `B_cum`, last consumed window, and last epoch hash. All four are publicly readable; `B_cum` is the canonical density index.
+- **Atomic tranche split:** each consumed epoch computes the tranche
+  `D(A_new) − (burned_cum + emitted_cum)` and splits it in one instruction:
+  the reward ask (USD at the posted price) up to the tranche goes to the
+  rewards escrow; the residual burns. There is no separate emission
+  instruction — rewards can never outrun the schedule, and the burn can never
+  be front-run by emissions.
+- **Depletion identity:** after every consumed epoch,
+  `poolBalance = fundedAmount − min(D(A_cum), fundedAmount)` exactly.
+- **Exhaustion:** the tranche is capped at the pool balance (relevant only
+  beyond the $500B calibration point). When the pool reaches zero, both flows
+  halt permanently. Schedule beyond the balance is forfeited, never owed.
+- **On-chain state:** the program maintains `A_cum`, `D_cum`, `burned_cum`,
+  `emitted_cum`, last consumed window, and last epoch hash. All publicly
+  readable; `D_cum` (equivalently the pool balance) is the canonical density
+  index, and the burned/emitted split is the price record.
 
 ## Parameters and recalibration (normative once frozen)
 
