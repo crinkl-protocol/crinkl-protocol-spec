@@ -147,9 +147,32 @@ QualifiedGmvBurnEpochV1 {
 
   prevEpochHash: "sha256:" + Hash,    // hash chain; genesis epoch uses the zero hash
 
-  signatures: { issuedBy: AuthorityId, publicKey: Base64, tokenHash: Hash, signature: Base64 }
+  signatures: { issuedBy: AuthorityId, publicKey: Base64, tokenHash: Hash, signature: Base64 },
+
+  finality: {                         // ProofFinalizationCertificateV1 over the epoch commitment
+    validatorSetSeq: Integer,         // pinned-set rotation sequence the quorum was formed under
+    threshold: Integer,               // M required of the pinned set
+    signatures: [ { publicKey: Base64, signature: Base64 } ]  // ed25519 over the commitment hash
+  }
 }
 ```
+
+## GMV finality trust root (normative)
+
+**Decision 2026-06-12 (Alvin):** GMV finality for burn consumption is **joint** — a platform root AND a proof-oracle root. Neither alone may move the pool.
+
+1. **Platform root.** The consumption transaction MUST be signed by the issuer key pinned in on-chain program config (the attestation-gateway authority).
+2. **Oracle root.** The transaction MUST carry at least `threshold` distinct ed25519 signatures from the pinned proof-oracle validator set over the **epoch commitment hash** — the on-chain form of `ProofFinalizationCertificateV1`.
+
+Rules, each load-bearing:
+
+- **The commitment hash MUST be recomputed on-chain** from the posted instruction fields (domain tag `CRINKL_DENSITY_BURN_EPOCH_V1`, then `windowDay`, `gmvCents`, `settledRevenueCents`, `spendHeadSetRoot`, `ruleSetHash`, `prevEpochHash`, `inputBeforeCents`, `burnBeforeBaseUnits`; SHA-256; little-endian integers). A signature over any hash the program did not recompute MUST NOT count — the quorum vouches for the GMV figure itself, never for an opaque hash.
+- **Validator-set pinning.** The trusted validator set lives in program state, rotated only by a distinct validator-set authority. The certificate carries no information about its own validator set; embedded-key / self-referential certificate trust is non-conformant (proof-oracle security audit, trust-model reconciliation 2026-06-10).
+- **Root separation.** The issuer key MUST NOT be a member of the validator set, so the joint root can never collapse to one key. The validator-set authority SHOULD be operationally distinct from the issuer.
+- **Initialization gating.** Program initialization MUST be restricted to the program upgrade authority (PDAs are mint-deterministic; an unrestricted initialize is front-runnable).
+- **Reward-split inputs are platform-only.** `rewardUsdCents` and the posted token price are signed by the issuer transaction but are NOT part of the oracle-certified commitment: the oracle vouches for GMV finality, not pricing. The depletion schedule is price-invariant by construction, so a corrupted price can only shift the burn/emission split within an already-fixed tranche.
+
+**Maturity caveat (normative for external claims).** The proof-oracle committee is today permissioned and pre-token-security; its economic weight is points-modeled, not bonded stake. The certificate therefore expresses an identity/threshold quorum until token staking/slashing ships (Phase 5), at which point economic weight upgrades **with no change to this interface**. Public surfaces MUST NOT describe the quorum as economically bonded before Phase 5.
 
 ### Consumed-state semantics (normative)
 
@@ -164,8 +187,8 @@ QualifiedGmvBurnEpochV1 {
 2. **Observation period** of `T_final` (provisional: 14 days) elapses. Corrections, revocations, and enforcement actions during this period are observable per correction-and-revocation semantics.
 3. **Derivation:** the issuer derives qualified totals from the canonical protocol stream — NEVER from public aggregate GET endpoints — applying the pinned `QualifiedGmvRuleSetV1`.
 4. **Reconciliation gate:** derived totals are reconciled against (a) the day's latest `VerifiedGmvTokenV1` and (b) the cumulative public GMV projection. Unexplained drift between sources BLOCKS posting.
-5. **Sign and post** the epoch (PENDING).
-6. **Execute burn:** the on-chain program verifies the issuer signature, chain linkage, cumulative-state match, and window uniqueness, then burns exactly `burnDeltaBaseUnits` from the SRBP, capped at the pool balance. Epoch becomes CONSUMED.
+5. **Sign and post** the epoch (PENDING). The issuer signature and the proof-oracle finality certificate (GMV finality trust root, above) are both attached.
+6. **Execute burn:** the on-chain program verifies the issuer signature, the finality-certificate quorum against the pinned validator set, chain linkage, cumulative-state match, and window uniqueness, then burns exactly `burnDeltaBaseUnits` from the SRBP, capped at the pool balance. Epoch becomes CONSUMED.
 
 ## Pool semantics (normative)
 
@@ -215,3 +238,4 @@ Density Burn supersedes the GMV-indexed supply release model (80M escrow, rate-b
 - Rule-set vectors: duplicate leaf, enforcement hold, pre-finality spend, high-total policy, rolled-forward correction.
 - Pool vectors: burn precedence over same-window emission, exhaustion capping, post-exhaustion halt.
 - Non-zero `settledRevenueCents` MUST be rejected while the paid-settlement artifact remains undefined.
+- Trust-root vectors: missing certificate, below-threshold certificate, duplicate signatures from one validator counted once, signatures from unpinned keys, quorum over a non-recomputed hash, post-rotation rejection of the previous committee, issuer-in-validator-set rejection, non-upgrade-authority initialization rejection.
