@@ -125,10 +125,21 @@ blob. **The reference impl is canonical** and this spec is kept byte-identical t
 
 **Validity (normative):** a CRINKL or ALTERNATE leaf is accepted iff a stored
 authorization (a) verifies against `wallet`, (b) matches the leaf's `election`,
-`issuer`, `mint`, `policy_hash`, and `epoch`, (c) is within `[issued_at, expiry]`,
-and (d) either `spend_ref_hash` equals the leaf's `spend_ref_hash` **or** is the
-32-zero sentinel (window-standing). The signed message is the canonical body —
-never an opaque hash the verifier did not recompute.
+`issuer`, `mint`, `chain`, `cluster`, and `policy_hash`, (c) is within
+`[issued_at, expiry]`, and (d) covers the leaf's `spend_ref_hash` **and** `epoch`
+per its mode:
+- **single-spend** — auth `spend_ref_hash` equals the leaf's `spend_ref_hash`: the
+  auth's `epoch` MUST equal the leaf's `epoch` (exact).
+- **window-standing** — auth `spend_ref_hash` is the 32-zero sentinel: the auth
+  covers every epoch in `[auth.epoch, floor(expiry / 86400)]`, i.e. one signature
+  authorizes the wallet's CRINKL/ALTERNATE leaves of this `election` + `policy_hash`
+  across that whole window (the "future rewards" UX). The leaf is accepted iff its
+  `epoch` falls in that range (and `policy_hash` still matches — a policy change
+  mid-window yields a different `policy_hash`, so leaves under the new policy are
+  NOT covered and require a fresh authorization).
+
+The signed message is the canonical body — never an opaque hash the verifier did not
+recompute.
 
 > **Granularity note:** a single-spend authorization (binds the leaf's
 > `spend_ref_hash`) is the strongest evidence; a window-standing authorization
