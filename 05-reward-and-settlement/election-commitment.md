@@ -68,9 +68,14 @@ AlternateElectionAuthorizationV1 {
   issued_at:             TimestampISO,
   expiry:                TimestampISO,           // hard validity bound
 }
-authorization_hash = blake3(canonical(body))
-signature = ed25519(wallet, authorization_hash)
+signed_message  = canonical(body)            // the UTF-8 bytes the wallet signs
+authorization_id = blake3(utf8(signed_message))   // identifier / dedup key (not the sign target)
+signature        = ed25519(wallet, utf8(signed_message))
 ```
+
+The wallet signs the **canonical message bytes directly** (transparent — the user
+can see the fields), never a pre-hash. The verifier recomputes `canonical(body)`
+from the stored fields and checks the ed25519 signature over those exact bytes.
 
 **Validity (normative):** an ALTERNATE leaf is accepted iff a stored
 authorization (a) verifies against `wallet`, (b) matches `issuer`, `mint`,
