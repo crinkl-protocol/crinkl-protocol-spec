@@ -41,29 +41,30 @@ signed authorization, the committed leaf, and the validator recomputation agree:
 - **Canonical encoding** for signed/hashed JSON objects below: sorted keys,
   fixed-decimal numerics, `[u8;32]` as lowercase hex, matching the IPC convention.
 
-## AlternateElectionAuthorizationV1 (normative)
-A user-signed authorization required for any `election == ALTERNATE` leaf. The
-issuer/validator MUST reject an ALTERNATE leaf not covered by a valid, in-window
-authorization. Signed by the user's `wallet` (ed25519 for Solana; verified via the
-ed25519 introspection helper).
+## ClaimElectionAuthorizationV1 (normative)
+A user-signed authorization required for any **claim** election leaf — i.e.
+`election == CRINKL` or `election == ALTERNATE` (the two claim commitments; btc/none
+are non-claim and need no signature). The issuer/validator MUST reject a CRINKL or
+ALTERNATE leaf not covered by a valid, in-window authorization. Signed by the
+user's `wallet` (ed25519 for Solana; verified via the ed25519 introspection helper).
 
 ```text
-AlternateElectionAuthorizationV1 {
-  schema:                "crinkl-alternate-election-auth/v1",  // domain separation + version
+ClaimElectionAuthorizationV1 {
+  schema:                "crinkl-claim-election-auth/v1",  // domain separation + version
   chain:                 String,   // e.g. "solana"
   cluster:               String,   // e.g. "mainnet-beta" / "devnet"
   wallet:                Pubkey,   // the signer; MUST equal the elector wallet
   issuer:                Pubkey,
   mint:                  Pubkey,
-  election:              "ALTERNATE",            // fixed
-  alternate_destination: Pubkey,   // where the alternate reward is claimable
+  election:              "CRINKL" | "ALTERNATE",  // the claim election being authorized
+  claim_destination:     Pubkey,   // where the claimed reward is claimable
   policy_hash:           Hash,     // the IPC policy_hash in force
   policy_version:        String,   // bound alongside policy_hash (defense in depth)
   epoch:                 u64,      // the epoch/window covered
   spend_ref_hash:        [u8;32],  // the spend covered; the 32-ZERO sentinel = a
                                    //   window-standing auth (covers all of the
-                                   //   wallet's ALTERNATE spends in [issued_at,expiry]
-                                   //   under policy_hash + epoch)
+                                   //   wallet's leaves of this election in
+                                   //   [issued_at,expiry] under policy_hash + epoch)
   nullifier_domain:      "crinkl-election-nullifier/v1",  // must match the leaf derivation
   issued_at:             TimestampISO,
   expiry:                TimestampISO,           // hard validity bound
@@ -77,18 +78,18 @@ The wallet signs the **canonical message bytes directly** (transparent — the u
 can see the fields), never a pre-hash. The verifier recomputes `canonical(body)`
 from the stored fields and checks the ed25519 signature over those exact bytes.
 
-**Validity (normative):** an ALTERNATE leaf is accepted iff a stored
-authorization (a) verifies against `wallet`, (b) matches `issuer`, `mint`,
-`policy_hash`, and the leaf's `epoch`, (c) is within `[issued_at, expiry]`, and
-(d) either `spend_ref_hash` equals the leaf's `spend_ref_hash` **or** is the
+**Validity (normative):** a CRINKL or ALTERNATE leaf is accepted iff a stored
+authorization (a) verifies against `wallet`, (b) matches the leaf's `election`,
+`issuer`, `mint`, `policy_hash`, and `epoch`, (c) is within `[issued_at, expiry]`,
+and (d) either `spend_ref_hash` equals the leaf's `spend_ref_hash` **or** is the
 32-zero sentinel (window-standing). The signed message is the canonical body —
 never an opaque hash the verifier did not recompute.
 
 > **Granularity note:** a single-spend authorization (binds the leaf's
 > `spend_ref_hash`) is the strongest evidence; a window-standing authorization
 > (zero sentinel) trades per-spend granularity for one signature per
-> policy/epoch window — better UX, weaker per-spend non-repudiation. The PWA
-> SHOULD default to window-standing for the alternate *preference*; the
+> election/policy/epoch window — better UX, weaker per-spend non-repudiation. The
+> PWA SHOULD default to window-standing when the user sets the *preference*; the
 > consume-path MAY require single-spend for high-value spends (policy decision).
 
 ## ElectionRootConsumeInputV1 (normative)
@@ -119,9 +120,10 @@ ElectionRowV1 {
 - `nullifier`       = `blake3("crinkl-election-nullifier/v1" ‖ issuer ‖ mint ‖ spend_id ‖ epoch_le8)`.
 
 **Rules (normative):**
-- An `election == ALTERNATE` row MUST have a valid `AlternateElectionAuthorizationV1`
-  (above) covering it, else it is excluded and surfaced as an exception (never
-  silently dropped or downgraded).
+- A claim row (`election == CRINKL` or `ALTERNATE`) MUST have a valid
+  `ClaimElectionAuthorizationV1` (above) covering it, else it is excluded and
+  surfaced as an exception (never silently dropped or downgraded). btc/none rows
+  need no authorization.
 - **Replay tracking:** each consumed row is marked posted (an onchain-tracking
   column on the snapshots, mirroring `points_canonical_v2.onchain_status`); a spend
   appears in at most one epoch's election root. The claim RPC leases rows
