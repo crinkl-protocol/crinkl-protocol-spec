@@ -8,7 +8,7 @@
 ## Purpose
 The IPC is the **single signed, hash-addressed object** that holds **every
 token-affecting parameter**. Its hash is the `policy_hash` referenced in the
-`qualified-gmv-burn-epoch-v0` statement (Phase 2) and committed in the density-burn
+`QualifiedGmvBurnEpochV1` statement (Phase 2, [density-burn.md](density-burn.md)) and committed in the density-burn
 epoch (Phase 5). Tracing the hash **proves the exact policy** a reward/burn was
 computed under — values are bound into the hash (not references), so the proof
 needs **no trusted DB read**.
@@ -91,8 +91,10 @@ policy_hash = SHA-256(canonical({
 - Group A (protocol) fields change only via the **timelocked** path; Group B
   (issuer) fields via the issuer authority root.
 - A verifier accepts an IPC **iff** the signature verifies against the issuer's
-  current key in the **authorized-issuer registry** (a public trust root,
-  `../TOKENS.md`).
+  current key in the **authorized-issuer registry** — the public trust root
+  pinned in on-chain program config (the registry doc is forthcoming; until it
+  exists, the single issuer key in density-burn program config is authoritative,
+  per density-burn.md "GMV finality trust root").
 
 ## How settlement uses it
 - The `QualifiedGmvBurnEpochV1` statement (Phase 2, density-burn.md) carries the
