@@ -145,11 +145,19 @@ QualifiedGmvBurnEpochV1 {
   claimRoot: "sha256:" + Hash | null,         // Phase 4 — root of CRINKL/alternate claim commitments funded from this epoch's emission
 
   cumulative: {
-    inputBeforeCents: Amount,         // A before this epoch
-    inputAfterCents: Amount,          // A after this epoch
-    burnBeforeBaseUnits: Amount,      // B(A_before)
-    burnAfterBaseUnits: Amount,       // B(A_after)
-    burnDeltaBaseUnits: Amount        // burnAfter − burnBefore
+    inputBeforeCents: Amount,             // A before this epoch
+    inputAfterCents: Amount,              // A after this epoch
+    depletionBeforeBaseUnits: Amount,     // D(A_before) — TOTAL pool depletion (burn + emission)
+    depletionAfterBaseUnits: Amount,      // D(A_after)
+    depletionDeltaBaseUnits: Amount       // tranche = D(A_after) − D(A_before); split atomically into emission + burn at execute
+  },
+
+  // Atomic split of this epoch's tranche (depletionDeltaBaseUnits), recorded for
+  // auditability. emission + burn == depletionDeltaBaseUnits, always.
+  split: {
+    rewardAskUsdCents: Amount,            // issuer-policy reward ask in USD cents, resolved from policyHash
+    rewardEmissionBaseUnits: Amount,      // emission = min( rewardAsk ÷ posted_price, depletionDelta )
+    burnBaseUnits: Amount                 // burn = depletionDelta − emission (the residual)
   },
 
   prevEpochHash: "sha256:" + Hash,    // hash chain; genesis epoch uses the zero hash
@@ -173,7 +181,9 @@ QualifiedGmvBurnEpochV1 {
 
 Rules, each load-bearing:
 
-- **The commitment hash MUST be recomputed on-chain** from the posted instruction fields (domain tag `CRINKL_DENSITY_BURN_EPOCH_V1`, then `windowDay`, `gmvCents`, `settledRevenueCents`, `spendHeadSetRoot`, `spendElectionRoot`, `ruleSetHash`, `policyHash`, `claimRoot`, `prevEpochHash`, `inputBeforeCents`, `burnBeforeBaseUnits`; SHA-256; little-endian integers). The reserved roots `spendElectionRoot` and `claimRoot` are part of the preimage from V1 — encoded as 32 zero bytes while null (Phases 3/4) — so they transition from sentinel to real hash with no preimage-version change. A signature over any hash the program did not recompute MUST NOT count — the quorum vouches for the GMV figure itself, never for an opaque hash.
+- **The commitment hash MUST be recomputed on-chain** from the posted instruction fields (domain tag `CRINKL_DENSITY_BURN_EPOCH_V1`, then `windowDay`, `finalityCutoff`, `correctionCutoff`, `gmvCents`, `settledRevenueCents`, `spendCount`, `spendHeadSetRoot`, `spendElectionRoot`, `ruleSetHash`, `policyHash`, `claimRoot`, `prevEpochHash`, `inputBeforeCents`, `depletionBeforeBaseUnits`; SHA-256; little-endian integers). Every certified CLAIM is in the preimage — including `spendCount` and the two cutoffs — so displayed metadata cannot diverge from the certified hash. The reserved roots `spendElectionRoot` and `claimRoot` are part of the preimage from V1 — encoded as 32 zero bytes while null (Phases 3/4) — so they transition from sentinel to real hash with no preimage-version change. A signature over any hash the program did not recompute MUST NOT count — the quorum vouches for the GMV figure itself, never for an opaque hash.
+- **Output cumulative fields are recomputed, not bound.** `inputAfterCents`, `depletionAfterBaseUnits`, `depletionDeltaBaseUnits`, and the `split` (emission/burn) are NOT in the preimage: the program derives them deterministically from the bound `inputBeforeCents` + `depletionBeforeBaseUnits` + the bound inputs (`gmvCents`, `settledRevenueCents`) + the schedule + the posted price. Binding `before` anchors the chain; binding outputs too would be redundant and could only introduce a divergence the program would have to reject anyway.
+- **Finality metadata is not in the preimage, by design.** `validatorSetSeq`, `threshold`, and `finality.signatures` describe the signature envelope, not the claim. The program enforces them against the pinned validator-set in program state (a stronger check than self-attested values would be); they cannot be bound in the very commitment they sign.
 - **Validator-set pinning.** The trusted validator set lives in program state, rotated only by a distinct validator-set authority. The certificate carries no information about its own validator set; embedded-key / self-referential certificate trust is non-conformant (proof-oracle security audit, trust-model reconciliation 2026-06-10).
 - **Root separation.** The issuer key MUST NOT be a member of the validator set, so the joint root can never collapse to one key. The validator-set authority SHOULD be operationally distinct from the issuer.
 - **Initialization gating.** Program initialization MUST be restricted to the program upgrade authority (PDAs are mint-deterministic; an unrestricted initialize is front-runnable).
@@ -183,12 +193,20 @@ Rules, each load-bearing:
 
 ### Policy binding (Phase 1 ↔ Phase 2) (normative)
 
-Every epoch carries `policyHash` — the hash of the `IssuerPolicyCommitment`
+Every epoch carries `policyHash` — the **composite** `IssuerPolicyCommitment` hash
 ([issuer-policy-commitment.md](issuer-policy-commitment.md)) in force for the
-window. The reward per qualified spend is derived from the **hashed** policy, not
-from trusted inputs: `reward_crinkl = policy.usd_per_receipt ÷ policy.crinkl_price`.
-Tracing `policyHash` to the IPC yields the exact values, so the emission figure is
-provable with no trusted DB read.
+window: `SHA-256(canonical({ group_a_config_hash (on-chain c/K/λ/pool/revenue),
+issuer_application_policy_hash (platform usd_per_receipt/crinkl_price/…), identity }))`.
+The reward per qualified spend is derived from the **hashed** policy, not from
+trusted inputs: `reward_crinkl = policy.usd_per_receipt ÷ policy.crinkl_price`.
+Tracing `policyHash` to its component hashes yields the exact values, so the
+emission figure is provable with no trusted DB read.
+
+> **NON-LIVE (2026-06-16):** the platform currently emits only the Group-B
+> component (`issuer_application_policy_hash`, `crinkl-policy-hash/v2`). The
+> composite wrapper binding `group_a_config_hash` + identity is unbuilt, so
+> `policyHash` here is NOT yet the full IPC and MUST NOT gate any token movement
+> until the composite + on-chain Group A binding ship (Phase 1 completion / Phase 5).
 
 Two trust roots meet in the one commitment and attest different things:
 
@@ -211,7 +229,7 @@ committed policy is non-conformant.
 
 - An epoch is **PENDING** from posting until its burn executes on-chain, and **CONSUMED** thereafter.
 - A PENDING epoch MAY be superseded by a corrected epoch for the same `window.date` (greater signing time wins, mirroring gmv-token.md supersession). A CONSUMED epoch MUST NOT be superseded, revised, or re-posted — burning is irreversible, so its input must be too.
-- Each `window.date` is consumed at most once. The on-chain program MUST reject a second consumption for the same window and MUST verify `inputBeforeCents` / `burnBeforeBaseUnits` against its own cumulative state, so epochs can only chain, never fork.
+- Each `window.date` is consumed at most once. The on-chain program MUST reject a second consumption for the same window and MUST verify `inputBeforeCents` / `depletionBeforeBaseUnits` against its own cumulative state, so epochs can only chain, never fork.
 - Post-consumption corrections to underlying spends are expressed only as adjustments inside later epochs' qualified totals (downward adjustments floor at zero for the affected window's contribution; `A` never decreases).
 
 ## Epoch lifecycle (normative)
@@ -221,7 +239,7 @@ committed policy is non-conformant.
 3. **Derivation:** the issuer derives qualified totals from the canonical protocol stream — NEVER from public aggregate GET endpoints — applying the pinned `QualifiedGmvRuleSetV1`.
 4. **Reconciliation gate:** derived totals are reconciled against (a) the day's latest `VerifiedGmvTokenV1` and (b) the cumulative public GMV projection. Unexplained drift between sources BLOCKS posting.
 5. **Sign and post** the epoch (PENDING). The issuer signature and the proof-oracle finality certificate (GMV finality trust root, above) are both attached.
-6. **Execute burn:** the on-chain program verifies the issuer signature, the finality-certificate quorum against the pinned validator set, chain linkage, cumulative-state match, and window uniqueness, then burns exactly `burnDeltaBaseUnits` from the SRBP, capped at the pool balance. Epoch becomes CONSUMED.
+6. **Execute tranche:** the on-chain program verifies the issuer signature, the finality-certificate quorum against the pinned validator set, chain linkage, cumulative-state match, and window uniqueness, then recomputes the tranche `depletionDeltaBaseUnits = D(A_after) − D(A_before)` (capped at the pool balance) and splits it atomically: it routes `rewardEmissionBaseUnits = min(rewardAsk ÷ posted_price, tranche)` to the rewards escrow and BURNS the residual `burnBaseUnits = tranche − emission` from the SRBP. Total pool depletion this epoch equals the tranche regardless of the split. Epoch becomes CONSUMED.
 
 ## Pool semantics (normative)
 

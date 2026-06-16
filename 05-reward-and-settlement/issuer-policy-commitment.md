@@ -52,6 +52,39 @@ needs **no trusted DB read**.
 `policy_hash = SHA-256(canonical(IPC body))`. Pure content-addressing; identical
 bytes → identical hash; any value change → new hash.
 
+### Composition — where each group is actually committed (normative)
+The three groups live in **different systems of record**, so `policy_hash` is a
+**composite** over their component hashes, not a single platform object:
+
+```text
+policy_hash = SHA-256(canonical({
+  group_a_config_hash,              // Group A — committed ON-CHAIN
+  issuer_application_policy_hash,   // Group B — committed by the platform
+  identity                          // Group C — issuer, mint, policy_version, effective_from, prev_policy_hash
+}))
+```
+
+- **Group A (`group_a_config_hash`)** — `c`/`K`/`λ`/`revenue_enabled`/`pool_fund_units`/`bounds`
+  are **on-chain density-burn program config**, governed by the timelock
+  (density-burn.md). Their hash is the on-chain config-state hash. They are NOT,
+  and MUST NOT be, sourced from the platform DB — the platform has no authority
+  over protocol knobs.
+- **Group B (`issuer_application_policy_hash`)** — `usd_per_receipt`, `crinkl_price`,
+  referral/caps points, and ruleset hashes are the **platform reward policy**.
+  This is exactly the artifact `crinkl-platform` produces as `crinkl_policy_hash`
+  (`services/admin-ui/src/utils/policyHash.ts` + the policy-admin mirror). The
+  `crinkl-policy-hash/v2` scheme binds the reserve-checkpoint economic VALUES,
+  parameters, reward-policy config, and coin-tier ruleset by value.
+- **Group C (`identity`)** — issuer, mint, and the version chain.
+
+> **Implementation status (2026-06-16):** the platform today produces the
+> **Group-B component only** (`issuer_application_policy_hash`, v2 value-bound).
+> The composite wrapper (`group_a_config_hash` + identity binding) is the
+> remaining Phase 1/Phase 5 work: the burn epoch's `policyHash` MUST be the
+> composite above, computed where Group A (on-chain) and Group B (platform) meet
+> — not the bare platform hash. Until then, `policyHash` in `QualifiedGmvBurnEpochV1`
+> is NON-LIVE and MUST NOT be treated as the full IPC.
+
 ## Signature envelope (normative)
 - The IPC is **signed by the issuer authority root** over `policy_hash` — single
   key now, Squads multisig later, **no schema change**.
@@ -62,11 +95,12 @@ bytes → identical hash; any value change → new hash.
   `../TOKENS.md`).
 
 ## How settlement uses it
-- The `qualified-gmv-burn-epoch-v0` statement (Phase 2) carries `policy_hash`.
-- `reward = policy.usd_per_receipt ÷ policy.crinkl_price` (from the hashed policy);
-  the burn uses Group A (`c`/`K`/`λ`/`pool`).
-- Tracing `policy_hash` → the IPC → the exact values **proves** the reward/burn —
-  no value is trusted, all are committed.
+- The `QualifiedGmvBurnEpochV1` statement (Phase 2, density-burn.md) carries the
+  composite `policy_hash`.
+- `reward = policy.usd_per_receipt ÷ policy.crinkl_price` (from the hashed Group-B
+  policy); the burn uses Group A (`c`/`K`/`λ`/`pool`), committed on-chain.
+- Tracing `policy_hash` → the component hashes → the exact values **proves** the
+  reward/burn — no value is trusted, all are committed.
 
 ## Consumed by later phases
 - Phase 2: `policy_hash` enters the statement descriptor + the per-leaf eligibility check.
