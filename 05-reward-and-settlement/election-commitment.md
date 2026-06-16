@@ -128,8 +128,13 @@ authorization (a) verifies against `wallet`, (b) matches the leaf's `election`,
 `issuer`, `mint`, `chain`, `cluster`, and `policy_hash`, (c) is within
 `[issued_at, expiry]`, and (d) covers the leaf's `spend_ref_hash` **and** `epoch`
 per its mode:
-- **single-spend** — auth `spend_ref_hash` equals the leaf's `spend_ref_hash`: the
-  auth's `epoch` MUST equal the leaf's `epoch` (exact).
+- **single-spend** *(RESERVED — not yet consumable)* — auth `spend_ref_hash` equals
+  the leaf's `spend_ref_hash`; the auth's `epoch` MUST equal the leaf's `epoch`
+  (exact). NOTE: the consume path cannot recompute the per-spend `blake3` leaf hash
+  in SQL, so this mode is **not yet accepted**: the reference gateway REJECTS a
+  non-zero `spend_ref_hash` and the consume RPC matches only the zero sentinel.
+  Single-spend semantics are defined here for a future per-spend consume path; until
+  then every authorization MUST be window-standing.
 - **window-standing** — auth `spend_ref_hash` is the 32-zero sentinel: the auth
   covers every epoch in `[auth.epoch, floor(expiry / 86400)]`, i.e. one signature
   authorizes the wallet's CRINKL/ALTERNATE leaves of this `election` + `policy_hash`
