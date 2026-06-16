@@ -60,17 +60,23 @@ ClaimElectionAuthorizationV1 {
   claim_destination:     Pubkey,   // where the claimed reward is claimable
   policy_hash:           Hash,     // the IPC policy_hash in force
   policy_version:        String,   // bound alongside policy_hash (defense in depth)
-  epoch:                 u64,      // the epoch/window covered
+  epoch:                 u64,      // the ISSUED epoch — lower bound of the validity
+                                   //   window; the auth covers epochs
+                                   //   [epoch, floor(expiry/86400)] (see matching rule)
   spend_ref_hash:        [u8;32],  // the spend covered; the 32-ZERO sentinel = a
                                    //   window-standing auth (covers all of the
-                                   //   wallet's leaves of this election in
-                                   //   [issued_at,expiry] under policy_hash + epoch)
+                                   //   wallet's leaves of this election across the
+                                   //   epoch window [issued_epoch, expiry_epoch])
   nullifier_domain:      "crinkl-election-nullifier/v1",  // must match the leaf derivation
   issued_at:             TimestampISO,
   expiry:                TimestampISO,           // hard validity bound
 }
 signed_message  = the human-readable template (below) — the UTF-8 bytes the wallet signs
-authorization_id = blake3(utf8(signed_message))   // identifier / dedup key (not the sign target)
+authorization_id = sha256(utf8(signed_message))   // INTERNAL dedup/replay key only — NOT
+                                                  //   a protocol commitment (the on-chain leaf
+                                                  //   binds spend_ref_hash + nullifier, both
+                                                  //   blake3, derived independently). sha256
+                                                  //   because the gateway has no blake3.
 signature        = ed25519(wallet, utf8(signed_message))
 ```
 
@@ -154,11 +160,17 @@ ElectionRowV1 {
 - A claim row (`election == CRINKL` or `ALTERNATE`) MUST have a valid
   `ClaimElectionAuthorizationV1` (above) covering it, else it is excluded and
   surfaced as an exception (never silently dropped or downgraded). btc/none rows
-  need no authorization.
-- **Replay tracking:** each consumed row is marked posted (an onchain-tracking
-  column on the snapshots, mirroring `points_canonical_v2.onchain_status`); a spend
-  appears in at most one epoch's election root. The claim RPC leases rows
-  atomically (mirror `claim_points_for_batch_json`).
+  need no authorization. **Matching rule:** a verified window-standing auth covers
+  a row when `wallet_ref`, `election` match AND the row's `p_epoch` falls in the
+  auth's window `[auth.epoch, floor(auth.expiry/86400)]` (so one ~30-day signature
+  covers future epochs — matches the PWA "future rewards" UX). Per-spend auths
+  (non-zero `spend_ref_hash`) are matched by the batcher (blake3 not in SQL).
+- **Replay tracking:** each consumed row is marked posted in a SEPARATE tracking
+  table `platform.election_root_consume_tracking` (keyed by `spend_id`, mirroring
+  `points_canonical_v2.onchain_status` — kept off the hot snapshots write path); a
+  spend appears in at most one epoch's election root. The claim RPC
+  (`claim_elections_for_epoch_json`) leases rows atomically (mirror
+  `claim_points_for_batch_json`).
 - The root is `merkleRoot(rows.map(leaf_hash))` over **all** rows in the epoch
   (btc/none included); posted once via `init_election_root` with
   `total_gmv_cents = Σ amount_cents` and `eligible_spend_count = rows.length`.
