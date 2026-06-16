@@ -70,44 +70,58 @@ ClaimElectionAuthorizationV1 {
   expiry:                TimestampISO,           // hard validity bound
 }
 signed_message  = the human-readable template (below) — the UTF-8 bytes the wallet signs
-authorization_id = blake3(utf8(signed_message))   // identifier / dedup key (not the sign target)
+authorization_id = sha256(utf8(signed_message))   // INTERNAL dedup/replay key only — NOT a protocol
+                                                   //   identifier (the on-chain leaf binds blake3
+                                                   //   spend_ref_hash + nullifier, derived separately
+                                                   //   by the batcher). sha256 because the gateway has
+                                                   //   no blake3; if ever protocol-exposed, switch to blake3.
 signature        = ed25519(wallet, utf8(signed_message))
 ```
 
 **Signed message format (normative).** A fixed, human-readable, DETERMINISTIC
 template (SIWE-style): a plain-language intro, then every field labeled — friendly
 to sign, yet the verifier recomputes it byte-for-byte. Lines joined by `\n`, no
-trailing spaces. `<label>` = `"CRINKL (Stack tier)"` for CRINKL,
-`"Bitcoin + CRINKL (Mix)"` for ALTERNATE:
+trailing spaces. Each top section is separated by ONE blank line. `<label>` =
+`"CRINKL"` for CRINKL, `"Bitcoin and CRINKL (Mix)"` for ALTERNATE. `<valid_from>` /
+`<valid_to>` are the friendly UTC dates of `issued_at` / `expiry` (`"<Mon> <D>, <YYYY>"`,
+e.g. `"Jun 16, 2026"`, derived deterministically from the ISO timestamps — display
+only; the binding `issued_at` / `expiry` are the raw ISO strings in the verification
+block):
 
 ```text
 Crinkl — authorize your reward
 
-I authorize Crinkl to pay my verified-receipt rewards as <label>, claimable to my wallet. Signature only — no fees, no transaction, no tokens move now.
+I authorize Crinkl to reward my verified spend as <label>, claimable to my wallet.
 
-Wallet: <wallet>
 Claim to: <claim_destination>
-Valid: <issued_at> to <expiry>
+
+Valid: <valid_from> to <valid_to>
+
 Network: <chain>:<cluster>
 
 — verification (do not edit) —
 schema: <schema>
 election: <election>
+wallet: <wallet>
 issuer: <issuer>
 mint: <mint>
 policy_hash: <policy_hash>
 policy_version: <policy_version>
 epoch: <epoch>
+issued_at: <issued_at>
+expiry: <expiry>
 nullifier_domain: <nullifier_domain>
 spend_ref_hash: <spend_ref_hash>
 ```
 
-Every field is present (bound): the intro is display, the labeled `— verification —`
-block is the binding (raw `election` bound there, not just the friendly `<label>`).
-The verifier reconstructs this exact string from the stored fields and checks the
-ed25519 signature over its UTF-8 bytes — never a pre-hash, never an opaque blob.
-Reference impl: `crinkl-pwa-next` `lib/rewardElectionSignature.ts`
-`canonicalClaimElectionMessage`.
+Every field is present (bound): the intro + friendly `Valid:` line are display, the
+labeled `— verification —` block is the binding (raw `election`, `wallet`, and the
+raw-ISO `issued_at` / `expiry` are bound there, not just the friendly `<label>` /
+date line). The verifier reconstructs this exact string from the stored fields and
+checks the ed25519 signature over its UTF-8 bytes — never a pre-hash, never an opaque
+blob. **The reference impl is canonical** and this spec is kept byte-identical to it:
+`crinkl-pwa-next` `lib/rewardElectionSignature.ts` `canonicalClaimElectionMessage`
+(and gateway `attestation-gateway/.../electionAuthRoutes.ts`, byte-for-byte equal).
 
 **Validity (normative):** a CRINKL or ALTERNATE leaf is accepted iff a stored
 authorization (a) verifies against `wallet`, (b) matches the leaf's `election`,
