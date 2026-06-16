@@ -69,14 +69,45 @@ ClaimElectionAuthorizationV1 {
   issued_at:             TimestampISO,
   expiry:                TimestampISO,           // hard validity bound
 }
-signed_message  = canonical(body)            // the UTF-8 bytes the wallet signs
+signed_message  = the human-readable template (below) — the UTF-8 bytes the wallet signs
 authorization_id = blake3(utf8(signed_message))   // identifier / dedup key (not the sign target)
 signature        = ed25519(wallet, utf8(signed_message))
 ```
 
-The wallet signs the **canonical message bytes directly** (transparent — the user
-can see the fields), never a pre-hash. The verifier recomputes `canonical(body)`
-from the stored fields and checks the ed25519 signature over those exact bytes.
+**Signed message format (normative).** A fixed, human-readable, DETERMINISTIC
+template (SIWE-style): a plain-language intro, then every field labeled — friendly
+to sign, yet the verifier recomputes it byte-for-byte. Lines joined by `\n`, no
+trailing spaces. `<label>` = `"CRINKL (Stack tier)"` for CRINKL,
+`"Bitcoin + CRINKL (Mix)"` for ALTERNATE:
+
+```text
+Crinkl — authorize your reward
+
+I authorize Crinkl to pay my verified-receipt rewards as <label>, claimable to my wallet. Signature only — no fees, no transaction, no tokens move now.
+
+Wallet: <wallet>
+Claim to: <claim_destination>
+Valid: <issued_at> to <expiry>
+Network: <chain>:<cluster>
+
+— verification (do not edit) —
+schema: <schema>
+election: <election>
+issuer: <issuer>
+mint: <mint>
+policy_hash: <policy_hash>
+policy_version: <policy_version>
+epoch: <epoch>
+nullifier_domain: <nullifier_domain>
+spend_ref_hash: <spend_ref_hash>
+```
+
+Every field is present (bound): the intro is display, the labeled `— verification —`
+block is the binding (raw `election` bound there, not just the friendly `<label>`).
+The verifier reconstructs this exact string from the stored fields and checks the
+ed25519 signature over its UTF-8 bytes — never a pre-hash, never an opaque blob.
+Reference impl: `crinkl-pwa-next` `lib/rewardElectionSignature.ts`
+`canonicalClaimElectionMessage`.
 
 **Validity (normative):** a CRINKL or ALTERNATE leaf is accepted iff a stored
 authorization (a) verifies against `wallet`, (b) matches the leaf's `election`,
