@@ -126,7 +126,8 @@ QualifiedGmvBurnEpochV1 {
   finalityCutoff: TimestampISO,       // >= window end + T_final
   correctionCutoff: TimestampISO,     // last instant corrections were observable
 
-  ruleSetHash: "sha256:" + Hash,      // QualifiedGmvRuleSetV1 pin
+  ruleSetHash: "sha256:" + Hash,      // QualifiedGmvRuleSetV1 pin (GMV qualification rules)
+  policyHash: "sha256:" + Hash,       // IssuerPolicyCommitment hash (Phase 1) — binds usd_per_receipt + crinkl_price BY VALUE; proves the reward without a trusted read
 
   qualified: {
     currency: "USD",
@@ -136,6 +137,12 @@ QualifiedGmvBurnEpochV1 {
   },
 
   spendHeadSetRoot: "sha256:" + Hash, // Merkle root of counted spend heads
+
+  // Reserved forward fields — present in the shape and the commitment preimage
+  // from V1 so layout stays stable as later phases land; NON-LIVE until then,
+  // encoded as 32 zero bytes (the zero hash) while null.
+  spendElectionRoot: "sha256:" + Hash | null, // Phase 3 — per-spend reward election (btc/crinkl/alternate/none); enables GMV cross-check + claim derivation
+  claimRoot: "sha256:" + Hash | null,         // Phase 4 — root of CRINKL/alternate claim commitments funded from this epoch's emission
 
   cumulative: {
     inputBeforeCents: Amount,         // A before this epoch
@@ -166,13 +173,39 @@ QualifiedGmvBurnEpochV1 {
 
 Rules, each load-bearing:
 
-- **The commitment hash MUST be recomputed on-chain** from the posted instruction fields (domain tag `CRINKL_DENSITY_BURN_EPOCH_V1`, then `windowDay`, `gmvCents`, `settledRevenueCents`, `spendHeadSetRoot`, `ruleSetHash`, `prevEpochHash`, `inputBeforeCents`, `burnBeforeBaseUnits`; SHA-256; little-endian integers). A signature over any hash the program did not recompute MUST NOT count — the quorum vouches for the GMV figure itself, never for an opaque hash.
+- **The commitment hash MUST be recomputed on-chain** from the posted instruction fields (domain tag `CRINKL_DENSITY_BURN_EPOCH_V1`, then `windowDay`, `gmvCents`, `settledRevenueCents`, `spendHeadSetRoot`, `spendElectionRoot`, `ruleSetHash`, `policyHash`, `claimRoot`, `prevEpochHash`, `inputBeforeCents`, `burnBeforeBaseUnits`; SHA-256; little-endian integers). The reserved roots `spendElectionRoot` and `claimRoot` are part of the preimage from V1 — encoded as 32 zero bytes while null (Phases 3/4) — so they transition from sentinel to real hash with no preimage-version change. A signature over any hash the program did not recompute MUST NOT count — the quorum vouches for the GMV figure itself, never for an opaque hash.
 - **Validator-set pinning.** The trusted validator set lives in program state, rotated only by a distinct validator-set authority. The certificate carries no information about its own validator set; embedded-key / self-referential certificate trust is non-conformant (proof-oracle security audit, trust-model reconciliation 2026-06-10).
 - **Root separation.** The issuer key MUST NOT be a member of the validator set, so the joint root can never collapse to one key. The validator-set authority SHOULD be operationally distinct from the issuer.
 - **Initialization gating.** Program initialization MUST be restricted to the program upgrade authority (PDAs are mint-deterministic; an unrestricted initialize is front-runnable).
 - **Reward-split inputs are platform-only.** `rewardUsdCents` and the posted token price are signed by the issuer transaction but are NOT part of the oracle-certified commitment: the oracle vouches for GMV finality, not pricing. The depletion schedule is price-invariant by construction, so a corrupted price can only shift the burn/emission split within an already-fixed tranche.
 
 **Maturity caveat (normative for external claims).** The proof-oracle committee is today permissioned and pre-token-security; its economic weight is points-modeled, not bonded stake. The certificate therefore expresses an identity/threshold quorum until token staking/slashing ships (Phase 5), at which point economic weight upgrades **with no change to this interface**. Public surfaces MUST NOT describe the quorum as economically bonded before Phase 5.
+
+### Policy binding (Phase 1 ↔ Phase 2) (normative)
+
+Every epoch carries `policyHash` — the hash of the `IssuerPolicyCommitment`
+([issuer-policy-commitment.md](issuer-policy-commitment.md)) in force for the
+window. The reward per qualified spend is derived from the **hashed** policy, not
+from trusted inputs: `reward_crinkl = policy.usd_per_receipt ÷ policy.crinkl_price`.
+Tracing `policyHash` to the IPC yields the exact values, so the emission figure is
+provable with no trusted DB read.
+
+Two trust roots meet in the one commitment and attest different things:
+
+- The **issuer (policy) root** signs the IPC and makes `policyHash` authoritative —
+  the reward/price policy is the issuer's to set, and may be a multisig (Phase 6).
+- The **proof-oracle (finality) root** co-signs the epoch commitment but vouches
+  only for GMV finality (`gmvCents`, `spendCount`, `spendHeadSetRoot`), never for
+  pricing. It signs over `policyHash` as an opaque member of the bundle; it does
+  not certify the policy's values.
+
+This keeps the existing invariant — reward-split inputs are issuer-attested, not
+oracle-certified — while making them **provable**: a corrupted price can still
+only shift the burn/emission split inside an already-fixed tranche (the depletion
+schedule is price-invariant), and now any such shift is detectable by tracing the
+committed `policyHash`. `rewardUsdCents` and the posted token price MUST equal the
+values resolved from `policyHash`; an epoch whose split inputs disagree with its
+committed policy is non-conformant.
 
 ### Consumed-state semantics (normative)
 
@@ -208,9 +241,49 @@ Rules, each load-bearing:
   readable; `D_cum` (equivalently the pool balance) is the canonical density
   index, and the burned/emitted split is the price record.
 
-## Parameters and recalibration (normative once frozen)
+## Parameter governance and the change-gatekeeper (normative)
 
-`c`, `K`, `λ`, and `T_final` are deployment constants, immutable after freeze. Before freeze, `c` and `K` MUST be recalibrated jointly against the reward emission schedule so that the **deflation crossover** — the input level at which the marginal burn rate exceeds the marginal emission rate — occurs at an explicitly chosen and documented adoption level. The provisional values above were calibrated for a standalone 50M reserve and are expected to change for the shared pool.
+The economic parameters `c`, `K`, `λ`, and the `revenue_enabled` gate are **mutable
+on-chain configuration**, not frozen constants — but only through a two-step
+**timelocked gatekeeper** whose purpose is to make any change that could move
+mass tokens publicly visible long enough for honest participants to assess and
+thwart an attack. The same gate governs the governance roles themselves.
+
+- **Three-role separation of powers.** The `issuer` posts epochs; a
+  `governance_authority` proposes and executes parameter changes; a separate
+  `guardian` may ONLY veto a pending change and pause epoch consumption. The
+  guardian MUST be a distinct key from the governance authority — its veto is
+  worthless if a single compromised key can both propose an attack and suppress
+  the veto. Each role is a single key today and MAY become a multisig with no
+  protocol change.
+- **Two-step timelock.** A change is `propose`d as a full snapshot of the mutable
+  config; it becomes executable only after `eta = proposed_at + timelock_delay`.
+  The full proposed snapshot and `eta` are emitted on-chain so the entire delay
+  window is a public warning. The default delay is **48h**; the program enforces
+  a hard floor (provisional **24h**) below which the delay can never be set —
+  so the gate cannot be timelocked away to near-zero in one proposal. At most
+  one change may be pending at a time.
+- **Veto.** The guardian or the governance authority MAY cancel a pending change
+  at any point before execution. The delay is the warning; the veto is the
+  defense.
+- **Pause.** Either the guardian or governance MAY pause `consume_epoch`
+  immediately (break-glass freeze of all token movement); only the governance
+  authority may unpause. Absent a per-epoch rate cap, the pause is the primary
+  control that lets honest participants stop the pool while assessing a
+  suspected attack.
+- **Validation at propose time.** Proposed values are validated when queued
+  (`c,K > 0`, delay ≥ floor, roles distinct and non-default), so an invalid
+  change can neither sit queued nor execute.
+- `T_final` and the validator set are governed separately (`T_final` is an
+  off-chain observation constant; the validator set has its own authority and
+  rotation path).
+
+Before the SRBP is funded, `c` and `K` MUST be calibrated jointly against the
+reward emission schedule so the **deflation crossover** — the input level at
+which marginal burn exceeds marginal emission — occurs at an explicitly chosen,
+documented adoption level. Canonical v5 calibration: `c = 5,633,706.605995`,
+`K = $2,008,032.13`, pinned by `D($1B) = 50%` and `D($500B) = 100%` of the 70M
+pool. Any later recalibration travels through the gatekeeper above.
 
 Golden vectors at `A ∈ {0, $250M, $290M, $1B, $5B, $500B}` plus both crossover-adjacent points MUST be generated from the reference fixed-point implementation and added to ../07-conformance/vectors.md before any on-chain consumption.
 
@@ -238,4 +311,5 @@ Density Burn supersedes the GMV-indexed supply release model (80M escrow, rate-b
 - Rule-set vectors: duplicate leaf, enforcement hold, pre-finality spend, high-total policy, rolled-forward correction.
 - Pool vectors: burn precedence over same-window emission, exhaustion capping, post-exhaustion halt.
 - Non-zero `settledRevenueCents` MUST be rejected while the paid-settlement artifact remains undefined.
+- Gatekeeper vectors: propose by non-governance rejected; sub-floor delay rejected; non-distinct roles rejected; execute-before-`eta` rejected; second concurrent proposal rejected; guardian veto and governance self-cancel clear the queue; `consume_epoch` rejected while paused; guardian-unpause rejected (governance only); revenue enablement reaches `A` only after a consumed epoch following a successfully executed enable.
 - Trust-root vectors: missing certificate, below-threshold certificate, duplicate signatures from one validator counted once, signatures from unpinned keys, quorum over a non-recomputed hash, post-rotation rejection of the previous committee, issuer-in-validator-set rejection, non-upgrade-authority initialization rejection.
