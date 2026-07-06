@@ -19,9 +19,10 @@ Crinkl proves that commerce evidence advanced through a defined proof lifecycle:
 3. The Spend Event receives a verification state.
 4. A hard-verified Spend Event may produce a Spend Attestation.
 5. The Spend Attestation may be packaged as a Spend Attestation Token.
-6. External systems may verify the attestation.
-7. Conditions and CampaignEpochs may evaluate one or more attestations.
-8. Valid ProofOfMatch results may trigger rewards, settlement, campaigns, analytics, or agent responses.
+6. Selected proof validators may admit attestations to the shared record by finalizing statements over committed attestation sets.
+7. External systems may verify the attestation.
+8. Conditions and CampaignEpochs may evaluate one or more attestations.
+9. Valid ProofOfMatch results may trigger rewards, settlement, campaigns, analytics, or agent responses.
 
 ## What Crinkl Does Not Prove
 
@@ -57,6 +58,7 @@ Core protocol validity does not depend on campaigns, rewards, Solana, ZK, MCP, R
 | CampaignEpoch | Condition Layer | Immutable, append-only funded rule window for campaign eligibility. |
 | Proof of Match | Condition Layer | Result of evaluating attestations against a condition. |
 | Reward Commitment | Reward/Settlement | Downstream accounting or promise based on valid proof of match. |
+| Finality Certificate | Lifecycle | Quorum evidence that selected proof validators independently re-verified and co-signed a deterministic statement, admitting the covered attestations to the shared record. |
 | Merchant Claim Attestation | Extension | Optional authority proof over store identity for official merchant actions. |
 
 ## Privacy Boundary

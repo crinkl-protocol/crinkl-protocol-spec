@@ -48,6 +48,35 @@ A tamper-evident, machine-verifiable claim about a subject, digitally signed by 
 
 Unlike W3C VCs, Crinkl tokens are specialized for correction-aware commerce claims with optional ZK selective disclosure rather than general-purpose identity assertions.
 
+## Verification Service
+
+The party that receives commerce evidence, evaluates it under protocol rules inside the privacy boundary, and signs Spend Attestations and Spend Attestation Tokens. The role names the operator of the spend-stream and token-issuer trust roots; it is not a new trust root category (see `../00-purpose/threat-model.md`, `../02-proof-lifecycle/admission.md`).
+
+**Verification Service is:** the reader of evidence and signer of claims; the origination trust root for spend truth.
+**Verification Service is not:** an admission authority; its signature is a proposal toward the record, never network acceptance.
+
+## Proof Validator
+
+A party that independently re-verifies deterministic public protocol statements from committed material and co-signs the exact result it checked, so that claims can be admitted to the shared record (see `../02-proof-lifecycle/admission.md`).
+
+**Proof Validator is:** a public-plane checker of correctness — schema, signatures, key authorization, commitments, roots, totals, nullifier replay scope.
+**Proof Validator is not:** a reader of receipts, a prover of ground truth, or a payout authority.
+
+## Selected Committee
+
+The bounded subset of registered proof validators assigned to one statement by an authority-signed assignment artifact. Only selected validators verify, sign, and count toward quorum for that statement; non-selected validators observe and replay certificates asynchronously. Eligibility is not duty.
+
+## Finality Certificate
+
+Quorum evidence of network acceptance: an aggregation of valid selected-validator signatures over the identical deterministic result, under a named registry snapshot, assignment, and quorum rule (`floor(2N/3) + 1` over the selected committee in v1).
+
+**Finality Certificate is:** the only artifact that represents network acceptance of a statement.
+**Finality Certificate is not:** payout authority, production chain finality, or proof that covered purchases occurred in the world.
+
+## Admission
+
+The lifecycle stage where a signed claim becomes part of the shared record. A Spend Attestation is **Attested** when the Verification Service signs it and **Admitted** when a validator-finalized statement covers its canonical head (statement-coverage granularity in v1; see `../02-proof-lifecycle/admission.md`).
+
 ## Attestation Ledger
 
 The append-only, per-`spendId` event stream that records verification state transitions (Soft/Hard verification, invalidation, correction). It is the protocol’s authoritative history for spend state.
