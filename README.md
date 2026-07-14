@@ -85,7 +85,7 @@ Downstream layers consume spend proof; they do not define it.
 | Conformance | [`07-conformance/`](07-conformance/) |
 | ZK beta release checklist | [`08-governance/zk-beta-release-checklist.md`](08-governance/zk-beta-release-checklist.md) |
 | ZK beta audit package | [`08-governance/zk-beta-audit-package.md`](08-governance/zk-beta-audit-package.md) |
-| Governance | [`08-governance/`](08-governance/) |
+| Governance | [`08-governance/`](08-governance/), including the required [`protocol/business/onchain boundary`](08-governance/protocol-business-boundary.md) for spec and requirements changes |
 
 ## Repository Structure
 

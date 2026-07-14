@@ -2,6 +2,14 @@
 
 This repository is being prepared for its **first public release**. Earlier internal iterations existed, but version numbers have been reset for the public SemVer track.
 
+## Unreleased governance update
+
+- Requires every spec or requirements change to classify business policy,
+  protocol artifacts, offchain state and computation, optional onchain
+  commitment or execution, verification/dispute handling, and maturity.
+- Adds a pull-request template and CI boundary check. This governance update
+  does not change protocol object semantics or the global `protocolVersion`.
+
 ## v1.0.0-rc.2 admission update (2026-07-06)
 
 - Defines the Verification Service and Proof Validator roles and the division of power between private verification and public admission: the party that reads evidence cannot unilaterally create network acceptance, and the parties that create acceptance never read evidence.
