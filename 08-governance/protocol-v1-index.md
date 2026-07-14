@@ -27,7 +27,9 @@ Canonical entrypoint for version 1 of the Crinkl Protocol specification. Each se
 - [../06-extensions/encryption-envelopes.md](../06-extensions/encryption-envelopes.md) — encrypted envelope formats for wallet/brand messages (optional extension)
 - [../06-extensions/token-extensions.md](../06-extensions/token-extensions.md) — privacy-first credentials + agent delegation (optional extension)
 - [../00-purpose/threat-model.md](../00-purpose/threat-model.md) — protocol security properties and invariants
-- [versioning.md](versioning.md) — governance and upgrade processes (placeholder)
+- [protocol-business-boundary.md](protocol-business-boundary.md) — required protocol/business/offchain/onchain classification for spec and requirements changes
+- [change-process.md](change-process.md) — authority, change-control, and CI requirements
+- [versioning.md](versioning.md) — governance and upgrade processes
 
 ## Protocol Requirements
 

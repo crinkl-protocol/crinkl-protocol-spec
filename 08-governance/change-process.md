@@ -68,6 +68,23 @@ When two artifacts disagree, the higher authority wins and the lower one is cons
 
 ## Versioning and Change Control
 
+### Required boundary classification
+
+Every change to protocol prose, requirements, schemas, bindings, conformance
+artifacts, formal models, or maturity declarations MUST complete the
+**Boundary impact** record in
+[`protocol-business-boundary.md`](protocol-business-boundary.md). This record
+separates:
+
+- deployment-specific business policy;
+- interoperable protocol artifacts and verifier rules;
+- private or implementation-specific offchain state and computation; and
+- the minimum optional onchain commitment or execution surface.
+
+Protocol level does not mean onchain, and business layer does not mean
+uncommitted. The classification and its stated verification/dispute contract
+determine the correct boundary.
+
 ### Versioning
 
 Protocol versions use `MAJOR.MINOR.PATCH` (see `versioning.md`).
@@ -80,11 +97,12 @@ Protocol versions use `MAJOR.MINOR.PATCH` (see `versioning.md`).
 
 For any change that affects semantics, bytes, schemas, or wire contracts:
 
-1. Update the normative spec in the appropriate lifecycle layer.
-2. Update or add JSON Schemas in `bindings/**/schemas` if wire shape changes.
-3. Update `versions/CHANGELOG.md`.
-4. Update any impacted formal invariants in `formal/` (or explicitly justify why not).
-5. Regenerate derived artifacts (codegen outputs) and ensure CI reports no drift.
+1. Complete the required Boundary impact record.
+2. Update the normative spec in the appropriate lifecycle layer.
+3. Update or add JSON Schemas in `bindings/**/schemas` if wire shape changes.
+4. Update `versions/CHANGELOG.md`.
+5. Update any impacted formal invariants in `formal/` (or explicitly justify why not).
+6. Regenerate derived artifacts (codegen outputs) and ensure CI reports no drift.
 
 ## CI Enforcement Points
 
@@ -93,6 +111,7 @@ CI is part of the protocol. If CI doesn’t enforce it, it’s not real.
 ### Required checks (must be green to merge)
 
 1. **Governance consistency**
+   - Pull requests that change spec or requirements surfaces include a complete Boundary impact record.
    - No contradictory versions between `README.md` and `versions/CHANGELOG.md`.
    - Commitment Layer event payloads in `../01-core/spend-event.md` match `../05-reward-and-settlement/settlement-bindings.md`.
    - Reference “test vectors” do not contradict the normative event envelope; if they are illustrative, they must be labeled non-normative.
