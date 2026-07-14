@@ -22,6 +22,7 @@ Canonical entrypoint for version 1 of the Crinkl Protocol specification. Each se
 - [../06-extensions/zk-foundation.md](../06-extensions/zk-foundation.md) — minimum viable promo flow (ZK spine)
 - [../06-extensions/zk-circuit-catalog.md](../06-extensions/zk-circuit-catalog.md) — mapping from statement types to proof circuits (optional extension)
 - [../04-condition-layer/campaign-commitment.md](../04-condition-layer/campaign-commitment.md) — campaign rule composition from finite spend proof primitives (optional extension)
+- [../06-extensions/campaign-experiment-profile.md](../06-extensions/campaign-experiment-profile.md) — public publication draft for the adopted engineering cross-vertical experiment profile; not released `v1.0.0-rc.2` conformance and runtime unavailable
 - [../06-extensions/merchant-authority.md](../06-extensions/merchant-authority.md) — optional merchant claim authority for official merchant actions
 - [../06-extensions/offer-delivery-profile.md](../06-extensions/offer-delivery-profile.md) — offer delivery profile + verifier rules (optional extension)
 - [../06-extensions/encryption-envelopes.md](../06-extensions/encryption-envelopes.md) — encrypted envelope formats for wallet/brand messages (optional extension)

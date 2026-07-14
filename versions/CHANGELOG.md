@@ -10,6 +10,13 @@ This repository is being prepared for its **first public release**. Earlier inte
 - Adds a pull-request template and CI boundary check. This governance update
   does not change protocol object semantics or the global `protocolVersion`.
 
+## Unreleased Campaign Experiment publication draft
+
+- Publishes the cross-vertical Campaign Experiment Profile at explicit `publication-draft` maturity, anchored to the adopted engineering source at `crinkl-protocol` commit `40dc0e8c23826a48d579cae1c30ca0dbefba13ef`.
+- Defines the protocol/business split, exact artifact relationships, pre-exposure exclusive assignment contract, assignment/exposure/outcome/incrementality boundaries, CPG/restaurant acceptance matrix, runtime gate, and public release gate.
+- Disambiguates the earlier public experimental `CampaignEpochV1` candidate from the exact signed adopted engineering object and states that legacy `claimLevel = "INCREMENTAL"` does not make an individual receipt or conversion causal.
+- Adds no schema bytes or public conformance vectors, does not change the global `protocolVersion`, is not released `v1.0.0-rc.2` conformance, and declares no runtime or production availability.
+
 ## v1.0.0-rc.2 admission update (2026-07-06)
 
 - Defines the Verification Service and Proof Validator roles and the division of power between private verification and public admission: the party that reads evidence cannot unilaterally create network acceptance, and the parties that create acceptance never read evidence.

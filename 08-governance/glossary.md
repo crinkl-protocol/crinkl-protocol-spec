@@ -216,6 +216,8 @@ The reviewed set of EligibleMerchant entries bound to a CampaignEpoch by `target
 
 An immutable, append-only, funded rule window. A CampaignEpoch binds `campaignId`, `epochId`, `epochVersion`, effective window, timing rule, condition hash, RuleSetHash, TargetMerchantSet reference, reward rule hash, FundingTranche, claim level, previous epoch reference when present, issuer authority, and creation time.
 
+**Publication boundary:** this is the earlier public `v1.0.0-rc.2` conceptual/experimental CampaignEpoch candidate. It is not wire-compatible with the exact signed adopted engineering `CampaignEpochV1` used by the Campaign Experiment Profile. See `../06-extensions/campaign-experiment-profile.md`.
+
 ## CampaignAmendment
 
 A forward-only event that closes or supersedes a prior CampaignEpoch and appends a new CampaignEpoch. A CampaignAmendment MUST NOT mutate prior epochs.
@@ -237,6 +239,12 @@ The campaign claim strength asserted by a CampaignEpoch. Allowed values are:
 - `OBSERVED` — verified spend occurred under the epoch rule.
 - `ATTRIBUTED` — spend matched attribution conditions defined by the epoch.
 - `INCREMENTAL` — requires a baseline, holdout, or incrementality method specified by the epoch.
+
+The `INCREMENTAL` value above belongs to the earlier experimental public candidate. It does not make an individual receipt, conversion, or Epoch a causal result. In the Campaign Experiment Profile, incrementality is a cohort- or market-level derived result under the frozen measurement method.
+
+## Campaign Experiment Policy
+
+The signed, immutable optional policy that binds one exact adopted Campaign Epoch and pre-state evaluation context to deterministic exclusive pre-exposure assignment, one intervention-policy reference per arm, an exposure-coverage policy, and a measurement-method reference. The public profile is a publication draft and is not released `v1.0.0-rc.2` conformance.
 
 ## ProofOfMatch
 

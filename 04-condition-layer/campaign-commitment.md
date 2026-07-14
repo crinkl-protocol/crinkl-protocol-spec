@@ -14,6 +14,8 @@ normative: true
 > Implementation status: terminology and primitive families are proposed for v1; public campaign settlement anchoring is frozen by `../05-reward-and-settlement/campaign-settlement-gcd.md`.
 >
 > Experimental schemas: candidate machine-readable schemas for CampaignEpoch, CampaignAmendment, and FundingTranche live in `../schemas/experimental/`. They are non-core condition/campaign extension schemas and are not required for Core Spend Attestation validity.
+>
+> **Publication boundary:** the CampaignEpoch shape and schema on this page are the earlier `v1.0.0-rc.2` experimental candidate, not the exact signed adopted engineering `CampaignEpochV1`. Implementations of the Campaign Experiment Profile MUST use the exact adopted engineering artifacts described by [`../06-extensions/campaign-experiment-profile.md`](../06-extensions/campaign-experiment-profile.md). Similar names do not imply wire compatibility.
 
 ## 1) Scope and Boundary
 
@@ -197,6 +199,7 @@ Normative rules:
 - Earned rewards are immutable once committed.
 - Campaign history remains auditable as a sequence of epochs.
 - `claimLevel = "INCREMENTAL"` is invalid unless the epoch rule material specifies a baseline, holdout, or incrementality method.
+- The experimental `claimLevel = "INCREMENTAL"` candidate does not make any individual receipt, Spend Attestation, conversion, or Epoch intrinsically incremental. Under the Campaign Experiment Profile, incrementality is a cohort- or market-level result under a frozen method; the exact adopted Epoch supplies only its maximum conversion-claim ceiling.
 - A campaign that presents itself as merchant-official MUST bind `CampaignAuthorityV1` into the immutable rule material for the epoch.
 - A verifier MUST reject a merchant-official campaign when the referenced merchant claim is missing, expired, revoked, not `VERIFIED`, or does not cover the campaign target merchant set.
 
