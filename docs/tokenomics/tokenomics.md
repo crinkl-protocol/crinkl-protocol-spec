@@ -98,17 +98,20 @@ cumulative value).
 
 ### Parameter governance — stated plainly
 
-`c`, `K`, `λ`, and the `revenue_enabled` gate are **mutable on-chain configuration**,
-changeable only through the spec's two-step timelocked gatekeeper (density-burn.md
-§ Parameter governance): propose → 48h public timelock (hard floor 24h) → execute,
-with a distinct **guardian** key holding veto and pause powers, three-role separation
-(issuer / governance authority / guardian), and at most one pending change at a time.
+`c` and `K` are **frozen deployment constants**: calibrated once before the SRBP is
+funded, immutable thereafter — the curve itself admits no governance path. The only
+governable parameters sit on the **revenue side of the input**: the revenue weight
+`λ` and the `revenue_enabled` gate, changeable only through the spec's two-step
+timelocked gatekeeper (density-burn.md § Parameter governance): propose → 48h public
+timelock (hard floor 24h) → execute, with a distinct **guardian** key holding veto
+and pause powers, three-role separation (issuer / governance authority / guardian),
+and at most one pending change at a time. A proposal touching `c` or `K` is rejected
+at propose time.
 
 Earlier standalone editions of this paper said "no one holds a lever over the
-schedule." The accurate statement is: **the shape of the machine is fixed — its
-calibration is mutable only through a public, delayed, vetoable process.** The pool
-size, the two-exit rule, the rewards-first split, and the required curve properties
-are structural invariants outside the gatekeeper's reach.
+schedule." The accurate statement is: **the curve, the pool, and the split are
+fixed; only how revenue counts toward the input is governable — through a public,
+delayed, vetoable process.**
 
 ## 4. One pool, two exits
 
@@ -207,8 +210,9 @@ construction, not policy.
    verification service — largest in downturns, invisible on pool charts.
 3. **Burn is a residual** and is only legible alongside total depletion, election mix,
    emitted CRINKL, and BTC-paid rewards. Never a standalone health signal.
-4. **Sensitivity to λ.** Once revenue is live, λ dominates `A`; λ is also inside the
-   gatekeeper's mutable set. Small revisions materially reshape the deflation path.
+4. **Sensitivity to λ.** Once revenue is live, λ dominates `A`; λ is also the single
+   governable weight in the system. Small revisions materially reshape the deflation
+   path — which is exactly why it, and only it, sits behind the gatekeeper.
 5. **Input-inflation bound.** The concave, bounded schedule caps the damage of any
    fake-input attack: even unbounded fraudulent input asymptotically depletes only
    what the pool holds (density-burn.md, required property 3).
@@ -221,9 +225,9 @@ construction, not policy.
 | Shared pool (SRBP) | 70,000,000 | Structural invariant (two exits only) |
 | Split rule | Emission-first; burn = residual | Structural invariant |
 | Curve properties | Monotone · concave · bounded · deterministic | Structural invariant |
-| `c` | ≈ 5,633,706.6 CRINKL | Mutable via timelocked gatekeeper |
-| `K` | $2,008,032.13 | Mutable via timelocked gatekeeper |
-| `λ` | 33 | Mutable via timelocked gatekeeper |
+| `c` | ≈ 5,633,706.6 CRINKL | Frozen deployment constant (immutable after SRBP funding) |
+| `K` | $2,008,032.13 | Frozen deployment constant (immutable after SRBP funding) |
+| `λ` | 33 | Mutable via timelocked gatekeeper (the only governable weight) |
 | `revenue_enabled` | off (SR must equal 0) | Mutable via timelocked gatekeeper |
 | Reward per receipt | $0.10 (current) | Verification-service policy (IPC-bound) |
 | Posted token price | per IPC | Verification-service policy (IPC-bound) |

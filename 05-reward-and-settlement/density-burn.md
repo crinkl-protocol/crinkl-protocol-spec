@@ -81,7 +81,7 @@ Calibration targets (normative): `D($1B) = 50%` of the funded pool;
 `D($500B) = 100%`. The closed form follows from requiring
 `(1 + 10^9/K)² = 1 + 5·10^11/K`.
 
-Required properties (normative — any recalibrated schedule MUST preserve all four):
+Required properties (normative — any pre-funding calibration of the schedule MUST preserve all four):
 
 1. **Monotone:** `D` is non-decreasing in `A`.
 2. **Concave:** marginal depletion per dollar strictly decreases as `A` grows — early density is weighted most ("density" is the design intent, not decoration).
@@ -261,11 +261,16 @@ committed policy is non-conformant.
 
 ## Parameter governance and the change-gatekeeper (normative)
 
-The economic parameters `c`, `K`, `λ`, and the `revenue_enabled` gate are **mutable
-on-chain configuration**, not frozen constants — but only through a two-step
-**timelocked gatekeeper** whose purpose is to make any change that could move
-mass tokens publicly visible long enough for honest participants to assess and
-thwart an attack. The same gate governs the governance roles themselves.
+The depletion-curve constants `c` and `K` are **frozen deployment constants**:
+calibrated once, before the SRBP is funded, with no governance path thereafter
+(consistent with their declaration in the calibrated-parameters table above).
+The only governable economic parameters are on the **revenue side of the burn
+input**: the revenue weight `λ` and the `revenue_enabled` gate. These are
+mutable on-chain configuration — but only through a two-step **timelocked
+gatekeeper** whose purpose is to make any change that could move mass tokens
+publicly visible long enough for honest participants to assess and thwart an
+attack. The same gate governs the governance roles themselves. A proposal that
+would modify `c` or `K` is invalid and MUST be rejected at propose time.
 
 - **Three-role separation of powers.** The `issuer` posts epochs; a
   `governance_authority` proposes and executes parameter changes; a separate
@@ -290,8 +295,9 @@ thwart an attack. The same gate governs the governance roles themselves.
   control that lets honest participants stop the pool while assessing a
   suspected attack.
 - **Validation at propose time.** Proposed values are validated when queued
-  (`c,K > 0`, delay ≥ floor, roles distinct and non-default), so an invalid
-  change can neither sit queued nor execute.
+  (`λ > 0`, delay ≥ floor, roles distinct and non-default; any proposal
+  touching `c` or `K` is rejected), so an invalid change can neither sit
+  queued nor execute.
 - `T_final` and the validator set are governed separately (`T_final` is an
   off-chain observation constant; the validator set has its own authority and
   rotation path).
@@ -301,7 +307,8 @@ reward emission schedule so the **deflation crossover** — the input level at
 which marginal burn exceeds marginal emission — occurs at an explicitly chosen,
 documented adoption level. Canonical v5 calibration: `c = 5,633,706.605995`,
 `K = $2,008,032.13`, pinned by `D($1B) = 50%` and `D($500B) = 100%` of the 70M
-pool. Any later recalibration travels through the gatekeeper above.
+pool. After SRBP funding, `c` and `K` are immutable; no recalibration path
+exists, through the gatekeeper or otherwise.
 
 Golden vectors at `A ∈ {0, $250M, $290M, $1B, $5B, $500B}` plus both crossover-adjacent points MUST be generated from the reference fixed-point implementation and added to ../07-conformance/vectors.md before any on-chain consumption.
 
@@ -329,5 +336,5 @@ Density Burn supersedes the GMV-indexed supply release model (80M escrow, rate-b
 - Rule-set vectors: duplicate leaf, enforcement hold, pre-finality spend, high-total policy, rolled-forward correction.
 - Pool vectors: burn precedence over same-window emission, exhaustion capping, post-exhaustion halt.
 - Non-zero `settledRevenueCents` MUST be rejected while the paid-settlement artifact remains undefined.
-- Gatekeeper vectors: propose by non-governance rejected; sub-floor delay rejected; non-distinct roles rejected; execute-before-`eta` rejected; second concurrent proposal rejected; guardian veto and governance self-cancel clear the queue; `consume_epoch` rejected while paused; guardian-unpause rejected (governance only); revenue enablement reaches `A` only after a consumed epoch following a successfully executed enable.
+- Gatekeeper vectors: propose by non-governance rejected; proposal touching `c` or `K` rejected; sub-floor delay rejected; non-distinct roles rejected; execute-before-`eta` rejected; second concurrent proposal rejected; guardian veto and governance self-cancel clear the queue; `consume_epoch` rejected while paused; guardian-unpause rejected (governance only); revenue enablement reaches `A` only after a consumed epoch following a successfully executed enable.
 - Trust-root vectors: missing certificate, below-threshold certificate, duplicate signatures from one validator counted once, signatures from unpinned keys, quorum over a non-recomputed hash, post-rotation rejection of the previous committee, issuer-in-validator-set rejection, non-upgrade-authority initialization rejection.

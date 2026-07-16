@@ -2,6 +2,19 @@
 
 This repository is being prepared for its **first public release**. Earlier internal iterations existed, but version numbers have been reset for the public SemVer track.
 
+## Unreleased parameter-governance narrowing
+
+- Freezes the depletion-curve constants `c` and `K` as immutable deployment
+  constants after SRBP funding, removing them from the timelocked gatekeeper's
+  mutable set; proposals touching `c` or `K` are rejected at propose time.
+- The gatekeeper now governs only the revenue side of the burn input: the revenue
+  weight `λ` and the `revenue_enabled` gate. Resolves the internal inconsistency
+  with density-burn.md's calibrated-parameters table, which already declared `c`
+  and `K` "frozen as deployment constants."
+- Adds a gatekeeper conformance vector (c/K proposal rejection). No schema bytes
+  change; does not change the global `protocolVersion`. On-chain programs
+  implementing the gatekeeper MUST enforce the narrowed proposal validation.
+
 ## Unreleased tokenomics reference publication
 
 - Adds `docs/tokenomics/tokenomics.md`, a non-normative reference narrative of the
@@ -10,8 +23,9 @@ This repository is being prepared for its **first public release**. Earlier inte
   now archived.
 - The document defers to `05-reward-and-settlement/` on all normative semantics and
   restates no constants as independent truth; it corrects three standalone-era claims
-  to match the spec: parameter governance is the timelocked gatekeeper over
-  `c`/`K`/`λ`/`revenue_enabled` (not "no levers"), the density burn is not a buyback,
+  to match the spec: parameter governance is the timelocked gatekeeper over the
+  revenue side (`λ`, `revenue_enabled`) with `c`/`K` frozen (not "no levers"), the
+  density burn is not a buyback,
   and the reward rate is verification-service policy bound by the
   IssuerPolicyCommitment.
 - Discloses business-policy commitments (issuer treasury 3-year vest by beta) and
