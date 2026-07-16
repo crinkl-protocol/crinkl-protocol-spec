@@ -2,6 +2,24 @@
 
 This repository is being prepared for its **first public release**. Earlier internal iterations existed, but version numbers have been reset for the public SemVer track.
 
+## Unreleased tokenomics reference publication
+
+- Adds `docs/tokenomics/tokenomics.md`, a non-normative reference narrative of the
+  token economy, versioned against the protocol (`protocol: 1.0.0-rc.2 · revision:
+  2026-07-16`) and superseding the standalone Tokenomics White Paper series (v1–v8),
+  now archived.
+- The document defers to `05-reward-and-settlement/` on all normative semantics and
+  restates no constants as independent truth; it corrects three standalone-era claims
+  to match the spec: parameter governance is the timelocked gatekeeper over
+  `c`/`K`/`λ`/`revenue_enabled` (not "no levers"), the density burn is not a buyback,
+  and the reward rate is verification-service policy bound by the
+  IssuerPolicyCommitment.
+- Discloses business-policy commitments (issuer treasury 3-year vest by beta) and
+  records forward-looking items (earner reward vesting, verification-service staking,
+  CBSA population-gated rewards) at explicit non-commitment maturity.
+- Adds no schema bytes, changes no protocol object semantics, and does not change the
+  global `protocolVersion`.
+
 ## Unreleased governance update
 
 - Requires every spec or requirements change to classify business policy,
