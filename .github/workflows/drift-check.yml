@@ -30,12 +30,26 @@ jobs:
       - name: Direct buyer-reward release profile
         run: |
           python3 scripts/check_campaign_direct_reward_release_profile.py
-          python3 scripts/check_rc3_release_finalization.py
           python3 07-conformance/profiles/campaign-direct-buyer-reward-v1/scripts/check_campaign_direct_reward_profile_vectors.py
           python3 07-conformance/profiles/campaign-direct-buyer-reward-v1/scripts/generate_campaign_direct_reward_profile_vectors.py --check
           node scripts/verify_conformance.mjs --require-kind campaign.directBuyerReward.profileV1
-          set +e
-          node scripts/verify_conformance.mjs --require-released --require-kind campaign.directBuyerReward.profileV1
-          status=$?
-          set -e
-          test "$status" -eq 4
+
+          release_status="$(python3 -c 'import json; print(json.load(open("versions/release.json", encoding="utf-8"))["status"])')"
+          case "$release_status" in
+            RELEASE_CANDIDATE_NOT_PUBLISHED)
+              python3 scripts/check_rc3_release_finalization.py --mode candidate
+              set +e
+              node scripts/verify_conformance.mjs --require-released --require-kind campaign.directBuyerReward.profileV1
+              status=$?
+              set -e
+              test "$status" -eq 4
+              ;;
+            RELEASED)
+              python3 scripts/check_rc3_release_finalization.py --mode released
+              node scripts/verify_conformance.mjs --require-released --require-kind campaign.directBuyerReward.profileV1
+              ;;
+            *)
+              echo "unsupported release status: $release_status" >&2
+              exit 1
+              ;;
+          esac
