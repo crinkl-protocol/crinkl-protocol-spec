@@ -1,11 +1,11 @@
 ---
-status: release-candidate
+status: released
 layer: conformance
 version: v1
 normative: true
 ---
 
-# Crinkl Protocol Conformance Suite (v1, suite version 2 candidate)
+# Crinkl Protocol Conformance Suite (v1, suite version 2)
 
 This folder contains **versioned, data-only conformance vectors** for the Crinkl Protocol.
 
@@ -57,8 +57,8 @@ Executable verifier:
 
 - `campaign.directBuyerReward.profileV1` — manifest-bound external verification of
   the exact byte-pinned sponsor-neutral direct buyer-reward
-  package. The package remains unavailable to release consumers while
-  `versions/release.json.status` is not `RELEASED`.
+  package. Release consumers must authenticate the accepted tag and exact
+  `versions/release.json` digest before relying on it.
 
 ## Contract
 

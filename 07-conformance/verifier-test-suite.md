@@ -1,5 +1,5 @@
 ---
-status: release-candidate
+status: released
 layer: conformance
 version: v1
 normative: true
@@ -24,9 +24,8 @@ node scripts/verify_conformance.mjs \
   --require-kind campaign.directBuyerReward.profileV1
 ```
 
-Release consumers additionally use `--require-released`. The `v1.0.0-rc.3` source
-candidate deliberately exits nonzero because `versions/release.json` is not yet
-`RELEASED`.
+Release consumers additionally use `--require-released`. The `v1.0.0-rc.3`
+released manifest must pass that gate.
 
 ## What Is Checked
 

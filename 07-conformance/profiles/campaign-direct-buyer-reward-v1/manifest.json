@@ -1,12 +1,12 @@
 {
   "bundle": "campaign-direct-buyer-reward-v1",
   "bundleVersion": 1,
-  "maturity": "release-candidate",
-  "releasedConformance": false,
+  "maturity": "released",
+  "releasedConformance": true,
   "engineeringSource": {
     "repository": "crinkl-protocol",
     "commit": "8c641f57201c75bac12819a0f903ae6105c7f3c3",
-    "maturity": "engineering-candidate-not-merged-or-released"
+    "maturity": "engineering-adopted-on-protected-main"
   },
   "protocolObjectVersion": "1.0.0-rc.1",
   "publicRepositoryVersion": "1.0.0-rc.3",
@@ -17,7 +17,7 @@
       "type": "python3",
       "file": "../../profiles/campaign-direct-buyer-reward-v1/scripts/check_campaign_direct_reward_profile_vectors.py"
     },
-    "status": "PRESENT_IN_RC3_SUITE_2_SOURCE_CANDIDATE"
+    "status": "PRESENT_IN_RELEASED_RC3_SUITE_2"
   },
   "artifacts": [
     {
@@ -51,11 +51,7 @@
       "sha256": "e17562fc7955d55ebde315cf42c0b7d887c824c2872de14685216383925fe5fa"
     }
   ],
-  "publicationBlockers": [
-    "ENGINEERING_CANDIDATE_NOT_MERGED_OR_RELEASED",
-    "PUBLIC_RC3_SOURCE_CANDIDATE_NOT_PUBLISHED",
-    "RELEASE_MANIFEST_STATUS_NOT_RELEASED"
-  ],
+  "publicationBlockers": [],
   "launchBlockers": [
     "RUNTIME_AND_DISTRIBUTED_VALIDATOR_PROFILE_UNAVAILABLE"
   ]

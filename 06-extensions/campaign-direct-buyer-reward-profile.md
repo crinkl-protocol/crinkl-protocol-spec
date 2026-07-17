@@ -1,20 +1,20 @@
 ---
 title: Campaign Direct Buyer Reward Profile
-status: release-candidate
+status: released
 release: 1.0.0-rc.3
 conformance-suite: 2
 ---
 
 # Campaign Direct Buyer Reward Profile
 
-This release candidate publishes the same sponsor-neutral direct buyer-reward
+This released profile publishes the same sponsor-neutral direct buyer-reward
 profile adopted in the internal Crinkl Protocol workbench. Its exact engineering
 source is `crinkl-protocol` commit
 `8c641f57201c75bac12819a0f903ae6105c7f3c3`.
 
-The public package is not yet released. It cannot authorize a Campaign compiler,
-validator admission, funding, launch, or settlement until the authenticated
-`v1.0.0-rc.3` release and its conformance manifest exist.
+The public package is authenticated by the authority-accepted `v1.0.0-rc.3` tag
+and release-manifest digest. Publication does not itself authorize a Campaign
+compiler, validator admission, funding, launch, or settlement.
 
 ## Profile composition
 
@@ -115,7 +115,8 @@ The package pins six exact artifacts: the reward-policy schema, canonical Epoch
 schema dependency, conformance vector, deterministic generator, verifier, and
 release-reconciliation contract. The source candidate remains unavailable to a
 compiler until an authority-accepted `v1.0.0-rc.3` tag and release-manifest
-digest identify a `RELEASED` manifest.
+digest identify this `RELEASED` manifest. The release still provides no compiler
+or runtime implementation.
 
 Publication and launch remain separate. Even after publication, a Campaign
 cannot launch until its runtime, evidence sources, distributed Proof Validator

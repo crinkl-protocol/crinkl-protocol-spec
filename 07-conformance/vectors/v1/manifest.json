@@ -2,7 +2,7 @@
   "suite": "crinkl-protocol-conformance",
   "suiteVersion": 2,
   "releaseVersion": "1.0.0-rc.3",
-  "releaseStatus": "RELEASE_CANDIDATE_NOT_PUBLISHED",
+  "releaseStatus": "RELEASED",
   "protocolVersion": "1.0.0-rc.2",
   "supportedWireProtocolVersions": [
     "1.0.0-rc.1",
