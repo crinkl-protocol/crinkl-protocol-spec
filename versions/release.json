@@ -1,6 +1,6 @@
 {
   "releaseVersion": "1.0.0-rc.3",
-  "status": "RELEASE_CANDIDATE_NOT_PUBLISHED",
+  "status": "RELEASED",
   "requiredTag": "v1.0.0-rc.3",
   "defaultBindingProtocolVersion": "1.0.0-rc.2",
   "supportedWireProtocolVersions": [
@@ -19,7 +19,7 @@
   "profiles": [
     {
       "kind": "campaign.directBuyerReward.profileV1",
-      "maturity": "RELEASE_CANDIDATE",
+      "maturity": "RELEASED",
       "runtimeAvailability": "UNAVAILABLE"
     }
   ]
