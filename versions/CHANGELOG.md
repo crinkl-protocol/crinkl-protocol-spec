@@ -17,6 +17,18 @@ This repository is being prepared for its **first public release**. Earlier inte
 - Disambiguates the earlier public experimental `CampaignEpochV1` candidate from the exact signed adopted engineering object and states that legacy `claimLevel = "INCREMENTAL"` does not make an individual receipt or conversion causal.
 - Adds no schema bytes or public conformance vectors, does not change the global `protocolVersion`, is not released `v1.0.0-rc.2` conformance, and declares no runtime or production availability.
 
+## v1.0.0-rc.3 release candidate (not published)
+
+- Promotes sponsor-neutral direct buyer-reward semantics to explicit `release-candidate` maturity, anchored to engineering candidate `crinkl-protocol` commit `8c641f57201c75bac12819a0f903ae6105c7f3c3`.
+- Publishes a self-contained six-artifact byte-pinned profile package containing the strict direct buyer-reward schema, adopted-engineering Epoch dependency, vector, generator, checker and release-reconciliation contract.
+- Adds `campaign.directBuyerReward.profileV1` to conformance suite version `2` with an executable manifest-bound verifier while leaving the default Crinkl Platform binding `protocolVersion` at `1.0.0-rc.2` and preserving the profile objects' signed `1.0.0-rc.1` bytes.
+- Keeps affiliate link/coupon use and commission separate from buyer reward qualification, and keeps target merchant, payer/funder, sponsor and representation as separate roles.
+- Keeps Campaign product lifecycle and immutable Epoch validity separate; this reward profile does not add a bundled lifecycle-stop artifact.
+- Makes repository release, conformance-suite and embedded wire versions independently machine-readable in `versions/release.json`; source branches are explicitly prohibited as release authority.
+- Preserves both incompatible Campaign Epoch schema byte sets, requires the adopted schema by exact ID and SHA-256, excludes the legacy experimental schema from the profile, and prohibits title-only resolution. It does not cut the target release or change the current global `protocolVersion`, released conformance manifest, runtime, validator-network, funding, escrow, settlement, chain, deployment or production availability.
+- Separates protocol publication from Campaign launch: runtime and distributed validator admission remain later launch requirements rather than circular prerequisites for publishing the profile.
+- The candidate status is `RELEASE_CANDIDATE_NOT_PUBLISHED`; no `v1.0.0-rc.3` tag or authenticated release-manifest digest exists yet.
+
 ## v1.0.0-rc.2 admission update (2026-07-06)
 
 - Defines the Verification Service and Proof Validator roles and the division of power between private verification and public admission: the party that reads evidence cannot unilaterally create network acceptance, and the parties that create acceptance never read evidence.

@@ -288,6 +288,8 @@ Note: Reward Ledger is immutable. Fraud does not modify or claw back rewards.
 
 These are normative conformance expectations for campaign implementations. They are examples until a machine-readable CampaignEpoch vector format is added.
 
+**Publication boundary:** this section describes the earlier public `v1.0.0-rc.2` conceptual/experimental CampaignEpoch candidate. It is not wire-compatible with the signed adopted-engineering `CampaignEpochV1`. It MUST NOT be used for the Campaign Experiment publication draft or the Direct Buyer Reward release candidate. The latter's byte-pinned machine-readable package is at [`profiles/campaign-direct-buyer-reward-v1/`](profiles/campaign-direct-buyer-reward-v1/) and is included in the unpublished `v1.0.0-rc.3` / suite-2 source candidate.
+
 | # | Scenario | Expected Behavior |
 |---|----------|-------------------|
 | 1 | Append Epoch 2 with `previousEpochId = Epoch 1`, new `epochId`, new `ruleSetHash`, and prospective `effectiveFrom` | ✓ Accept valid epoch append |

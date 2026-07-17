@@ -1,0 +1,61 @@
+{
+  "kind": "campaign.directBuyerReward.releaseReconciliationV1",
+  "decisionVersion": 1,
+  "decisionStatus": "FINAL_RECONCILIATION_DECISION",
+  "currentPublicRelease": {
+    "repositoryVersion": "1.0.0-rc.2",
+    "conformanceSuiteVersion": 1
+  },
+  "targetPublicRelease": {
+    "repositoryVersion": "1.0.0-rc.3",
+    "conformanceSuiteVersion": 2,
+    "profileKind": "campaign.directBuyerReward.profileV1"
+  },
+  "wireVersionDecision": {
+    "protocolVersion": "1.0.0-rc.1",
+    "treatment": "PRESERVE_EXACT_SIGNED_OBJECT_BYTES",
+    "publicReleaseVersionIsNotWireProtocolVersion": true
+  },
+  "campaignEpochResolution": {
+    "resolutionRule": "EXACT_SCHEMA_ID_AND_SHA256",
+    "titleOnlyResolution": "PROHIBITED",
+    "requiredAdoptedEngineeringSchema": {
+      "schemaId": "crinkl://protocol/schemas/campaign_epoch_v1",
+      "title": "CampaignEpochV1",
+      "sha256": "019628fcb7d2b218cf0104cffa393d41f418047598e6b2e35afb0d239f46e033",
+      "profileUse": "REQUIRED"
+    },
+    "legacyPublicExperimentalSchema": {
+      "schemaId": "crinkl://protocol/schemas/experimental/campaign-epoch.v1",
+      "title": "CampaignEpochV1",
+      "sha256": "603c6828d90e0e0d4e8f1c1bb5fdb7d24ff580ada7dcea3e052836ea00884a3d",
+      "disposition": "PRESERVE_IMMUTABLE_EXPERIMENTAL_BYTES_EXCLUDE_FROM_PROFILE"
+    }
+  },
+  "promotionRequirements": [
+    "ENGINEERING_CANDIDATE_MERGED_AND_RELEASED",
+    "BYTE_IDENTICAL_PUBLIC_ARTIFACTS",
+    "PUBLIC_RELEASE_VERSION_1_0_0_RC_3",
+    "RELEASED_CONFORMANCE_SUITE_VERSION_2",
+    "PROFILE_PRESENT_IN_RELEASED_MANIFEST_AND_VERIFIER",
+    "LEGACY_EPOCH_RESOLUTION_ENFORCED_BY_SCHEMA_ID_AND_SHA256"
+  ],
+  "launchRequirements": [
+    "EXACT_RELEASED_PROFILE_ACCEPTED",
+    "CAMPAIGN_RUNTIME_PROFILE_AVAILABLE",
+    "DISTRIBUTED_VALIDATOR_ADMISSION_PROFILE_AVAILABLE"
+  ],
+  "compilerGate": {
+    "status": "BLOCKED_UNTIL_EXACT_RELEASED_PROFILE",
+    "requiredPublicRelease": "1.0.0-rc.3",
+    "requiredConformanceSuiteVersion": 2,
+    "requiredProfileKind": "campaign.directBuyerReward.profileV1",
+    "publicationDraftAccepted": false
+  },
+  "releaseAuthentication": {
+    "requiredTag": "v1.0.0-rc.3",
+    "requiredReleaseManifestStatus": "RELEASED",
+    "acceptedReleaseIdentity": "AUTHORITY_ACCEPTED_TAG_AND_RELEASE_MANIFEST_DIGEST",
+    "sourceBranchAuthority": "PROHIBITED"
+  }
+}

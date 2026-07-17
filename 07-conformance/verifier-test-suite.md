@@ -1,5 +1,5 @@
 ---
-status: draft
+status: release-candidate
 layer: conformance
 version: v1
 normative: true
@@ -17,6 +17,17 @@ From repo root:
 node scripts/verify_conformance.mjs
 ```
 
+To require the direct buyer-reward profile to execute rather than be skipped:
+
+```bash
+node scripts/verify_conformance.mjs \
+  --require-kind campaign.directBuyerReward.profileV1
+```
+
+Release consumers additionally use `--require-released`. The `v1.0.0-rc.3` source
+candidate deliberately exits nonzero because `versions/release.json` is not yet
+`RELEASED`.
+
 ## What Is Checked
 
 `scripts/verify_conformance.mjs` currently validates these kinds end-to-end:
@@ -30,6 +41,8 @@ node scripts/verify_conformance.mjs
 - `token.verifiedSpendDistribution.v1`
 - `nullifier.crossWallet`
 - `recipient.blinded.schemaV1b` (recipient-id + canonical leaf construction checks)
+- `campaign.directBuyerReward.profileV1` through its manifest-bound, byte-pinned
+  Python verifier
 
 Checks include:
 
@@ -39,6 +52,15 @@ Checks include:
 - Portable spend-attestation token hash/signature consistency.
 - Verified spend distribution token hash/signature consistency.
 - Nullifier derivation determinism and scope isolation.
+- Exact Campaign profile schemas, canonical bytes, hashes, Ed25519 signatures, Epoch
+  composition, protected-term exclusions,
+  malformed-composition rejection and same-position equivocation rejection.
+
+Manifest-bound external verifiers are restricted to files under
+`07-conformance/profiles/`, receive no shell interpolation or manifest-supplied arguments,
+have a bounded execution time and output buffer, and fail the parent verifier on any
+nonzero exit. A vector and verifier path outside the accepted conformance roots is
+rejected.
 
 ## Current Data-Only Kinds
 

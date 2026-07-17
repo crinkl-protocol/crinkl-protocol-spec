@@ -1,0 +1,125 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "crinkl://protocol/schemas/campaign_direct_buyer_reward_policy_v1",
+  "title": "CampaignDirectBuyerRewardPolicyV1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "tokenType",
+    "schemaVersion",
+    "protocol",
+    "policyId",
+    "issuedAt",
+    "mechanic",
+    "rewardTermsRef",
+    "outcomeEvidenceProfileRef",
+    "allocationBoundary",
+    "attributionBoundary",
+    "claimBoundary",
+    "privacyBoundary",
+    "rewardPolicyAuthorityRef",
+    "signatures"
+  ],
+  "properties": {
+    "tokenType": { "const": "CAMPAIGN_DIRECT_BUYER_REWARD_POLICY" },
+    "schemaVersion": { "const": 1 },
+    "protocol": { "$ref": "#/$defs/protocol" },
+    "policyId": { "$ref": "#/$defs/identifier" },
+    "issuedAt": { "$ref": "#/$defs/timestamp" },
+    "mechanic": { "const": "DIRECT_BUYER_REWARD" },
+    "rewardTermsRef": { "$ref": "#/$defs/hashId" },
+    "outcomeEvidenceProfileRef": { "$ref": "#/$defs/hashId" },
+    "allocationBoundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "buyerRewardLegCount",
+        "promoterRewardLeg",
+        "referrerRewardLeg",
+        "splitRule"
+      ],
+      "properties": {
+        "buyerRewardLegCount": { "const": 1 },
+        "promoterRewardLeg": { "const": "NONE" },
+        "referrerRewardLeg": { "const": "NONE" },
+        "splitRule": { "const": "NO_PROMOTER_OR_REFERRER_SPLIT" }
+      }
+    },
+    "attributionBoundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "qualifyingOutcomeSource",
+        "campaignAttributionSource",
+        "affiliateLinkOrCouponUseRequired",
+        "affiliateCommissionAffectsBuyerReward"
+      ],
+      "properties": {
+        "qualifyingOutcomeSource": { "const": "CAMPAIGN_EPOCH_CONVERSION_DEFINITION" },
+        "campaignAttributionSource": { "const": "CAMPAIGN_EPOCH_ATTRIBUTION_POLICY" },
+        "affiliateLinkOrCouponUseRequired": { "const": false },
+        "affiliateCommissionAffectsBuyerReward": { "const": false }
+      }
+    },
+    "claimBoundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rewardRecipientRule",
+        "rewardClaimCeilingSource",
+        "perConversionIncrementalityClaim",
+        "rewardEstablishesAffiliateCommission",
+        "rewardEstablishesSettlement"
+      ],
+      "properties": {
+        "rewardRecipientRule": { "const": "EXACT_OUTCOME_BOUND_BUYER_RECIPIENT" },
+        "rewardClaimCeilingSource": { "const": "CAMPAIGN_EPOCH_MAXIMUM_CLAIM_LEVEL" },
+        "perConversionIncrementalityClaim": { "const": "PROHIBITED" },
+        "rewardEstablishesAffiliateCommission": { "const": false },
+        "rewardEstablishesSettlement": { "const": false }
+      }
+    },
+    "privacyBoundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "protectedCommercialMetadata",
+        "targetIdentityRule",
+        "stableBuyerIdentifier"
+      ],
+      "properties": {
+        "protectedCommercialMetadata": { "const": "NOT_REQUIRED_IN_PUBLIC_ARTIFACT" },
+        "targetIdentityRule": { "const": "RESOLVE_EXACT_COMMITTED_REFERENCES" },
+        "stableBuyerIdentifier": { "const": "PROHIBITED" }
+      }
+    },
+    "rewardPolicyAuthorityRef": { "$ref": "#/$defs/hashId" },
+    "signatures": { "$ref": "#/$defs/signatures" }
+  },
+  "$defs": {
+    "protocol": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["protocolVersion"],
+      "properties": { "protocolVersion": { "const": "1.0.0-rc.1" } }
+    },
+    "hash": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "hashId": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "identifier": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$" },
+    "timestamp": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$" },
+    "publicKey": { "type": "string", "pattern": "^[A-Za-z0-9+/]{43}=$" },
+    "signature": { "type": "string", "pattern": "^[A-Za-z0-9+/]{86}==$" },
+    "signatures": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["issuedBy", "keyId", "publicKey", "tokenHash", "signature"],
+      "properties": {
+        "issuedBy": { "$ref": "#/$defs/identifier" },
+        "keyId": { "$ref": "#/$defs/identifier" },
+        "publicKey": { "$ref": "#/$defs/publicKey" },
+        "tokenHash": { "$ref": "#/$defs/hash" },
+        "signature": { "$ref": "#/$defs/signature" }
+      }
+    }
+  }
+}

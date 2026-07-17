@@ -216,7 +216,7 @@ The reviewed set of EligibleMerchant entries bound to a CampaignEpoch by `target
 
 An immutable, append-only, funded rule window. A CampaignEpoch binds `campaignId`, `epochId`, `epochVersion`, effective window, timing rule, condition hash, RuleSetHash, TargetMerchantSet reference, reward rule hash, FundingTranche, claim level, previous epoch reference when present, issuer authority, and creation time.
 
-**Publication boundary:** this is the earlier public `v1.0.0-rc.2` conceptual/experimental CampaignEpoch candidate. It is not wire-compatible with the exact signed adopted engineering `CampaignEpochV1` used by the Campaign Experiment Profile. See `../06-extensions/campaign-experiment-profile.md`.
+**Publication boundary:** this is the earlier public `v1.0.0-rc.2` conceptual/experimental CampaignEpoch candidate. It is not wire-compatible with the exact signed adopted engineering `CampaignEpochV1` used by the Campaign Experiment Profile or the adopted-engineering dependency in the Direct Buyer Reward release-candidate package. See `../06-extensions/campaign-experiment-profile.md` and `../06-extensions/campaign-direct-buyer-reward-profile.md`.
 
 ## CampaignAmendment
 
@@ -245,6 +245,12 @@ The `INCREMENTAL` value above belongs to the earlier experimental public candida
 ## Campaign Experiment Policy
 
 The signed, immutable optional policy that binds one exact adopted Campaign Epoch and pre-state evaluation context to deterministic exclusive pre-exposure assignment, one intervention-policy reference per arm, an exposure-coverage policy, and a measurement-method reference. The public profile is a publication draft and is not released `v1.0.0-rc.2` conformance.
+
+## Campaign Direct Buyer Reward Policy
+
+The engineering-candidate signed policy resolved by one exact adopted-engineering `CampaignEpochV1.rewardPolicyRef`. It fixes one buyer reward leg, no promoter/referrer split, exact reward terms and outcome-evidence references, and an explicit boundary that affiliate link/coupon use and commission do not determine the buyer reward.
+
+**Publication boundary:** the public profile and byte-pinned package are an unpublished `v1.0.0-rc.3` / conformance suite-2 release candidate. Source-candidate conformance does not establish product-purchase evidence, funding, escrow, settlement, validator finality, runtime, deployment, or production availability.
 
 ## ProofOfMatch
 

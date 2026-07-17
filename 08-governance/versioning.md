@@ -7,7 +7,9 @@ normative: true
 
 # Protocol Evolution
 
-Current version: **1.0.0-rc.2**
+Current public repository release: **1.0.0-rc.3** (`RELEASE_CANDIDATE_NOT_PUBLISHED`)
+
+Current default Crinkl Platform binding `protocolVersion`: **1.0.0-rc.2**
 
 This document describes how the Crinkl Protocol evolves without creating forked implementations. It is normative only where it constrains verifier behavior; governance and rollout timelines are non-normative.
 
@@ -18,6 +20,35 @@ The protocol has multiple version “surfaces” with different compatibility ex
 - **`protocolVersion`** (events, tokens): gates semantic interpretation of envelopes and required rules. Unknown `protocolVersion` MUST be rejected (see `../01-core/canonicalization.md#schema-evolution`).
 - **`schemaVersion`** (token schemas, event payload schemas, commitment leaf schemas, statement schemas): gates structure and verification procedure. Unknown `schemaVersion` MUST be rejected for portable verification surfaces.
 - **ZK metadata** (`proofSystem`, `circuitId`, `verifyingKeyId`): gates proof verification. Unknown circuits/keys MUST be rejected.
+
+The public repository release and conformance `suiteVersion` describe a published package;
+they are not aliases for an embedded wire `protocolVersion`. A later public package may
+publish byte-identical objects carrying an already supported wire version. Such a release
+MUST state the version effect explicitly, preserve signed bytes, and require the released
+manifest/verifier to name the exact profile. Relabeling or rewriting an embedded version
+to match the repository release is prohibited.
+
+[`../versions/release.json`](../versions/release.json) is the machine-readable authority
+for these version surfaces. A source branch, README marker, directory name, or candidate
+manifest is not a released identity. Portable consumers require the authority-accepted
+tag and exact release-manifest digest, and must reject a manifest whose status is not
+`RELEASED`.
+
+Release finalization is an explicit state transition:
+
+1. review the exact source candidate and byte-parity evidence;
+2. merge the corresponding adopted engineering source;
+3. change both release-status fields to `RELEASED` in one final public release commit;
+4. tag that exact commit with the `requiredTag`; and
+5. publish and accept the exact `versions/release.json` digest through the configured
+   release authority.
+
+Changing a README, creating a branch, or adding a conformance-manifest entry satisfies
+none of these steps by itself.
+
+Schema display titles and filenames are non-authoritative. When two schemas share a title,
+a portable verifier MUST resolve the intended schema by its exact schema identifier and,
+where a profile pins bytes, its content hash. Title-only resolution is prohibited.
 
 ## Version numbering
 

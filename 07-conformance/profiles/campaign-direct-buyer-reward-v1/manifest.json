@@ -1,0 +1,62 @@
+{
+  "bundle": "campaign-direct-buyer-reward-v1",
+  "bundleVersion": 1,
+  "maturity": "release-candidate",
+  "releasedConformance": false,
+  "engineeringSource": {
+    "repository": "crinkl-protocol",
+    "commit": "8c641f57201c75bac12819a0f903ae6105c7f3c3",
+    "maturity": "engineering-candidate-not-merged-or-released"
+  },
+  "protocolObjectVersion": "1.0.0-rc.1",
+  "publicRepositoryVersion": "1.0.0-rc.3",
+  "conformanceManifestEntry": {
+    "kind": "campaign.directBuyerReward.profileV1",
+    "file": "../../profiles/campaign-direct-buyer-reward-v1/conformance/v1/vectors/campaign.directBuyerReward.profileV1.json",
+    "externalVerifier": {
+      "type": "python3",
+      "file": "../../profiles/campaign-direct-buyer-reward-v1/scripts/check_campaign_direct_reward_profile_vectors.py"
+    },
+    "status": "PRESENT_IN_RC3_SUITE_2_SOURCE_CANDIDATE"
+  },
+  "artifacts": [
+    {
+      "sourcePath": "protocol/schemas/campaign_direct_buyer_reward_policy_v1.schema.json",
+      "file": "protocol/schemas/campaign_direct_buyer_reward_policy_v1.schema.json",
+      "sha256": "0193402bee9a444777ca9e6114a6d77e44400cb333023ee0b9ffe8101740b0e3"
+    },
+    {
+      "sourcePath": "protocol/schemas/campaign_epoch_v1.schema.json",
+      "file": "protocol/schemas/campaign_epoch_v1.schema.json",
+      "sha256": "019628fcb7d2b218cf0104cffa393d41f418047598e6b2e35afb0d239f46e033"
+    },
+    {
+      "sourcePath": "conformance/v1/vectors/campaign.directBuyerReward.profileV1.json",
+      "file": "conformance/v1/vectors/campaign.directBuyerReward.profileV1.json",
+      "sha256": "4971bee09d7c85a0cc7d09d41049c4c10dc119537c9f9bef8a5b61f4177fe984"
+    },
+    {
+      "sourcePath": "scripts/check_campaign_direct_reward_profile_vectors.py",
+      "file": "scripts/check_campaign_direct_reward_profile_vectors.py",
+      "sha256": "97d5e07eee43f08fd1cf22a37e1f289076d2e3a1258bb5a1956e60a45a544486"
+    },
+    {
+      "sourcePath": "scripts/generate_campaign_direct_reward_profile_vectors.py",
+      "file": "scripts/generate_campaign_direct_reward_profile_vectors.py",
+      "sha256": "6ae7d65774a1285fa6de1dda955c7b1a5e02b41e7f39e3c13c39a7a74f085b8f"
+    },
+    {
+      "sourcePath": "conformance/v1/campaign.directBuyerReward.releaseReconciliationV1.json",
+      "file": "conformance/v1/campaign.directBuyerReward.releaseReconciliationV1.json",
+      "sha256": "e17562fc7955d55ebde315cf42c0b7d887c824c2872de14685216383925fe5fa"
+    }
+  ],
+  "publicationBlockers": [
+    "ENGINEERING_CANDIDATE_NOT_MERGED_OR_RELEASED",
+    "PUBLIC_RC3_SOURCE_CANDIDATE_NOT_PUBLISHED",
+    "RELEASE_MANIFEST_STATUS_NOT_RELEASED"
+  ],
+  "launchBlockers": [
+    "RUNTIME_AND_DISTRIBUTED_VALIDATOR_PROFILE_UNAVAILABLE"
+  ]
+}

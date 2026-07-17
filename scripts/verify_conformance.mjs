@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import crypto from "node:crypto";
+import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
@@ -11,6 +12,17 @@ const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..");
 const conformanceRoot = path.join(repoRoot, "07-conformance", "vectors", "v1");
 const strictCoverage = process.argv.includes("--strict-coverage");
+const requireReleased = process.argv.includes("--require-released");
+const requiredKinds = new Set();
+for (let index = 2; index < process.argv.length; index += 1) {
+  if (process.argv[index] !== "--require-kind") continue;
+  const kind = process.argv[index + 1];
+  if (!kind || kind.startsWith("--")) {
+    throw new Error("--require-kind requires one manifest kind");
+  }
+  requiredKinds.add(kind);
+  index += 1;
+}
 
 function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
@@ -103,22 +115,86 @@ function fail(failures, kind, caseId, message) {
   failures.push(`[${kind}] ${caseId}: ${message}`);
 }
 
+function isWithin(root, candidate) {
+  return candidate === root || candidate.startsWith(`${root}${path.sep}`);
+}
+
+function runExternalVerifier(vectorMeta) {
+  const verifier = vectorMeta.externalVerifier || {};
+  if (verifier.type !== "python3" || typeof verifier.file !== "string") {
+    throw new Error(`unsupported external verifier descriptor for ${vectorMeta.kind}`);
+  }
+
+  const profilesRoot = path.resolve(repoRoot, "07-conformance", "profiles");
+  const verifierPath = path.resolve(conformanceRoot, verifier.file);
+  if (!isWithin(profilesRoot, verifierPath)) {
+    throw new Error(`external verifier escapes released profile root: ${verifier.file}`);
+  }
+  if (!fs.statSync(verifierPath).isFile()) {
+    throw new Error(`external verifier is not a file: ${verifier.file}`);
+  }
+
+  return spawnSync("python3", [verifierPath], {
+    cwd: repoRoot,
+    encoding: "utf8",
+    stdio: ["ignore", "pipe", "pipe"],
+    timeout: 60_000,
+    maxBuffer: 1024 * 1024
+  });
+}
+
 function main() {
   const failures = [];
   const skippedKinds = [];
   const executedKinds = [];
   let checks = 0;
 
+  const releaseManifest = readJson(path.join(repoRoot, "versions", "release.json"));
+  if (requireReleased && releaseManifest.status !== "RELEASED") {
+    console.error(
+      `[conformance] release required but status=${releaseManifest.status || "MISSING"}`
+    );
+    process.exit(4);
+  }
+
   const manifestPath = path.join(conformanceRoot, "manifest.json");
   const manifest = readJson(manifestPath);
 
   for (const vectorMeta of manifest.vectors) {
     const kind = vectorMeta.kind;
-    const vectorPath = path.join(conformanceRoot, vectorMeta.file);
+    const vectorPath = path.resolve(conformanceRoot, vectorMeta.file);
+    const profilesRoot = path.resolve(repoRoot, "07-conformance", "profiles");
+    if (!isWithin(conformanceRoot, vectorPath) && !isWithin(profilesRoot, vectorPath)) {
+      fail(failures, kind, "manifest", `vector escapes conformance roots: ${vectorMeta.file}`);
+      continue;
+    }
     const vector = readJson(vectorPath);
 
     if (vector.kind !== kind) {
       fail(failures, kind, "manifest", `kind mismatch: manifest=${kind}, file=${vector.kind}`);
+      continue;
+    }
+
+    if (vectorMeta.externalVerifier) {
+      let result;
+      try {
+        result = runExternalVerifier(vectorMeta);
+      } catch (error) {
+        fail(failures, kind, "external-verifier", error.message);
+        continue;
+      }
+      checks += 1;
+      if (result.status !== 0) {
+        const detail = `${result.stderr || ""}\n${result.stdout || ""}`.trim();
+        fail(
+          failures,
+          kind,
+          "external-verifier",
+          `exit=${result.status} ${detail}`.trim()
+        );
+        continue;
+      }
+      executedKinds.push(kind);
       continue;
     }
 
@@ -450,7 +526,20 @@ function main() {
     process.exit(1);
   }
 
+  const missingRequiredKinds = [...requiredKinds].filter(
+    (kind) => !executedKinds.includes(kind)
+  );
+  if (missingRequiredKinds.length > 0) {
+    console.error(
+      `[conformance] required kind(s) not executed: ${missingRequiredKinds.join(", ")}`
+    );
+    process.exit(3);
+  }
+
   console.log("[conformance] OK");
+  console.log(
+    ` - release: ${releaseManifest.releaseVersion}/${releaseManifest.status}`
+  );
   console.log(` - checks: ${checks}`);
   console.log(` - executed kinds: ${executedKinds.sort().join(", ")}`);
   if (skippedKinds.length > 0) {
