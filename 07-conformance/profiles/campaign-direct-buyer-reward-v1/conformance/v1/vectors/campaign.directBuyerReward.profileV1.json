@@ -1,0 +1,764 @@
+{
+  "kind": "campaign.directBuyerReward.profileV1",
+  "vectorVersion": 1,
+  "protocolVersion": "1.0.0-rc.1",
+  "rewardPolicySchema": "../../../protocol/schemas/campaign_direct_buyer_reward_policy_v1.schema.json",
+  "campaignEpochSchema": "../../../protocol/schemas/campaign_epoch_v1.schema.json",
+  "status": "NORMATIVE_PROTOCOL_CONFORMANCE_RUNTIME_UNAVAILABLE",
+  "wireNonClaims": [
+    "NO_SPONSOR_OR_BRAND_ROLE_ASSUMPTION",
+    "NO_AFFILIATE_COMMISSION_OR_LINK_USE_PREREQUISITE",
+    "NO_PRODUCT_OR_LINE_ITEM_PURCHASE_PROOF",
+    "NO_PER_CONVERSION_INCREMENTALITY",
+    "NO_FUNDING_DEPOSIT_ESCROW_SETTLEMENT_OR_REFUND_EFFECT",
+    "NO_VALIDATOR_NETWORK_FINALITY",
+    "NO_RUNTIME_OR_DEPLOYMENT_CLAIM"
+  ],
+  "primaryCases": [
+    {
+      "id": "operator_product_target",
+      "businessCase": {
+        "kind": "AFFILIATE_OPERATOR_PRODUCT_TARGET",
+        "note": "Conformance metadata only; this value is not present in wire artifacts."
+      },
+      "rewardPolicy": {
+        "tokenType": "CAMPAIGN_DIRECT_BUYER_REWARD_POLICY",
+        "schemaVersion": 1,
+        "protocol": {
+          "protocolVersion": "1.0.0-rc.1"
+        },
+        "policyId": "direct-buyer-reward-alpha",
+        "issuedAt": "2026-08-01T05:00:00.000Z",
+        "mechanic": "DIRECT_BUYER_REWARD",
+        "rewardTermsRef": "sha256:ea03ff8fcc72ace20ddc9485d1f3164e7e62c7c86c55a7ce7f0997400441bf00",
+        "outcomeEvidenceProfileRef": "sha256:4c85e38beba734b3ecde882aa06ebff9621eea21e6c6db15ca46fee6fedfd51d",
+        "allocationBoundary": {
+          "buyerRewardLegCount": 1,
+          "promoterRewardLeg": "NONE",
+          "referrerRewardLeg": "NONE",
+          "splitRule": "NO_PROMOTER_OR_REFERRER_SPLIT"
+        },
+        "attributionBoundary": {
+          "qualifyingOutcomeSource": "CAMPAIGN_EPOCH_CONVERSION_DEFINITION",
+          "campaignAttributionSource": "CAMPAIGN_EPOCH_ATTRIBUTION_POLICY",
+          "affiliateLinkOrCouponUseRequired": false,
+          "affiliateCommissionAffectsBuyerReward": false
+        },
+        "claimBoundary": {
+          "rewardRecipientRule": "EXACT_OUTCOME_BOUND_BUYER_RECIPIENT",
+          "rewardClaimCeilingSource": "CAMPAIGN_EPOCH_MAXIMUM_CLAIM_LEVEL",
+          "perConversionIncrementalityClaim": "PROHIBITED",
+          "rewardEstablishesAffiliateCommission": false,
+          "rewardEstablishesSettlement": false
+        },
+        "privacyBoundary": {
+          "protectedCommercialMetadata": "NOT_REQUIRED_IN_PUBLIC_ARTIFACT",
+          "targetIdentityRule": "RESOLVE_EXACT_COMMITTED_REFERENCES",
+          "stableBuyerIdentifier": "PROHIBITED"
+        },
+        "rewardPolicyAuthorityRef": "sha256:f7a3e6415a0ecd69de908fd1c6ab8e924607d441c1ed8be36534e8757b4219d5",
+        "signatures": {
+          "issuedBy": "reward-policy-authority-alpha",
+          "keyId": "reward-policy-key-alpha",
+          "publicKey": "wFDFY3pE+oYp//PMzOIwDLNipj2Z2V/FQUUmb0MyRFo=",
+          "tokenHash": "ea2d02b0833d781723ef7eee5b24a88afef127a3f88c4ef54fc9e2911f7a93bb",
+          "signature": "4Q+zKE9Zr/UR6nvH2PQ8n5DFtA1Jk6xuEt2rlHAjTrcC3enMTV4/lrFWn8GCgyVr4NNVmPM988TsE++gypJIAg=="
+        }
+      },
+      "expectedRewardPolicyRef": "sha256:ea2d02b0833d781723ef7eee5b24a88afef127a3f88c4ef54fc9e2911f7a93bb",
+      "expectedUnsignedRewardPolicyCanonical": "{\"allocationBoundary\":{\"buyerRewardLegCount\":1,\"promoterRewardLeg\":\"NONE\",\"referrerRewardLeg\":\"NONE\",\"splitRule\":\"NO_PROMOTER_OR_REFERRER_SPLIT\"},\"attributionBoundary\":{\"affiliateCommissionAffectsBuyerReward\":false,\"affiliateLinkOrCouponUseRequired\":false,\"campaignAttributionSource\":\"CAMPAIGN_EPOCH_ATTRIBUTION_POLICY\",\"qualifyingOutcomeSource\":\"CAMPAIGN_EPOCH_CONVERSION_DEFINITION\"},\"claimBoundary\":{\"perConversionIncrementalityClaim\":\"PROHIBITED\",\"rewardClaimCeilingSource\":\"CAMPAIGN_EPOCH_MAXIMUM_CLAIM_LEVEL\",\"rewardEstablishesAffiliateCommission\":false,\"rewardEstablishesSettlement\":false,\"rewardRecipientRule\":\"EXACT_OUTCOME_BOUND_BUYER_RECIPIENT\"},\"issuedAt\":\"2026-08-01T05:00:00.000Z\",\"mechanic\":\"DIRECT_BUYER_REWARD\",\"outcomeEvidenceProfileRef\":\"sha256:4c85e38beba734b3ecde882aa06ebff9621eea21e6c6db15ca46fee6fedfd51d\",\"policyId\":\"direct-buyer-reward-alpha\",\"privacyBoundary\":{\"protectedCommercialMetadata\":\"NOT_REQUIRED_IN_PUBLIC_ARTIFACT\",\"stableBuyerIdentifier\":\"PROHIBITED\",\"targetIdentityRule\":\"RESOLVE_EXACT_COMMITTED_REFERENCES\"},\"protocol\":{\"protocolVersion\":\"1.0.0-rc.1\"},\"rewardPolicyAuthorityRef\":\"sha256:f7a3e6415a0ecd69de908fd1c6ab8e924607d441c1ed8be36534e8757b4219d5\",\"rewardTermsRef\":\"sha256:ea03ff8fcc72ace20ddc9485d1f3164e7e62c7c86c55a7ce7f0997400441bf00\",\"schemaVersion\":1,\"tokenType\":\"CAMPAIGN_DIRECT_BUYER_REWARD_POLICY\"}",
+      "campaignEpoch": {
+        "tokenType": "CAMPAIGN_EPOCH",
+        "schemaVersion": 1,
+        "protocol": {
+          "protocolVersion": "1.0.0-rc.1"
+        },
+        "epochSeriesId": "epoch-campaign-alpha",
+        "epochVersion": 1,
+        "previousEpochRef": null,
+        "campaignNamespaceRef": "sha256:71fcb0690fa3ea8884a94ce7ec7fba4a23d7e8f7bd64390efa26434f9aa8b321",
+        "campaignId": "campaign-alpha",
+        "lockedAt": "2026-08-01T06:00:00.000Z",
+        "effectiveFrom": "2026-08-02T00:00:00.000Z",
+        "effectiveTo": "2026-09-01T00:00:00.000Z",
+        "issuedAt": "2026-08-01T06:00:00.000Z",
+        "preStateConditionRef": "sha256:8f951ce81ec3e73de674a783959c8e7218b629fed4f51e9a12ee17d363df709e",
+        "targetMerchantSetRef": "sha256:6276b797fc71d147252a6440947faf055cf6b8fb3769f15f1c6041c54eacfa4d",
+        "timingPolicyRef": "sha256:e064f25d7611e01049d9cb360b4136318cd5fa17dfebe559cb9e976c0c5b271f",
+        "eventPolicyRef": "sha256:6121a698ac9f3ce44de3d274c85885c66878616a257b0efb2325801bffb6074f",
+        "attributionPolicyRef": "sha256:e7653e02378aecfe85d61f1fa776469515a973d1e4c6e887a37bce71d9dd2f46",
+        "conversionDefinitionRef": "sha256:9ebd620475d40930d3258683d639f89d3a8f939ef5bc5938108136c4dc844b27",
+        "rewardPolicyRef": "sha256:ea2d02b0833d781723ef7eee5b24a88afef127a3f88c4ef54fc9e2911f7a93bb",
+        "fundingTermsRef": "sha256:bffd474d102ffa598e83c98cc14a27d29936c34f1a356ad580e90f650b94c3fb",
+        "settlementPolicyRef": "sha256:16b93814e522b5687f08101a88659263d464683733dc65621373e172009fc1aa",
+        "allowedEventTypes": [
+          "ENGAGEMENT"
+        ],
+        "allowedExposureSurfaceRefs": [
+          "sha256:de0926e90de64af4559db62a2116ca3628427d692884412a8ef07c4597ab69ce"
+        ],
+        "eventPublisherAuthorityRefs": [
+          "sha256:9883bfd359c157afd465218878fa631db0c93f65b33530067e72fea7d5882319"
+        ],
+        "statusPublisherAuthorityRefs": [
+          "sha256:d1159a78eb83e9c73392799b523bd3583c0de078fa9c208f3c7d06ed07939c76"
+        ],
+        "maximumClaimLevel": "ATTRIBUTED",
+        "fundingEvidenceRule": "SEPARATELY_RESOLVED_IF_REQUIRED",
+        "epochAuthorityRef": "sha256:8e909dd5c303cd950ff04fcbf07823842027e17fa6c6dc1ca079d5dfd9e69123",
+        "signatures": {
+          "issuedBy": "epoch-authority-alpha",
+          "keyId": "epoch-key-alpha",
+          "publicKey": "rwaj4ykXFOTzVsGcmxXNGVHsbmZiqne+B1R/KJODNB0=",
+          "tokenHash": "129ea068da51dde02959f49f47f8d0ff0d8922b438953dc97aac35747bb948e5",
+          "signature": "TlF2SHL2hcJsJ6daB5Uop9xlIlQ2rw0LTu4CBMYKWKaB7LIP91GMhBuTYUcscGHUHg72Iaw2TLtP88Oine9nAA=="
+        }
+      },
+      "expectedCampaignEpochRef": "sha256:129ea068da51dde02959f49f47f8d0ff0d8922b438953dc97aac35747bb948e5"
+    },
+    {
+      "id": "operator_restaurant_target",
+      "businessCase": {
+        "kind": "OPERATOR_RESTAURANT_TARGET",
+        "note": "Conformance metadata only; this value is not present in wire artifacts."
+      },
+      "rewardPolicy": {
+        "tokenType": "CAMPAIGN_DIRECT_BUYER_REWARD_POLICY",
+        "schemaVersion": 1,
+        "protocol": {
+          "protocolVersion": "1.0.0-rc.1"
+        },
+        "policyId": "direct-buyer-reward-beta",
+        "issuedAt": "2026-08-01T05:00:00.000Z",
+        "mechanic": "DIRECT_BUYER_REWARD",
+        "rewardTermsRef": "sha256:982e4abff99da755949c508df258610ce299f546bd43c1a127114f5db1d4a0a2",
+        "outcomeEvidenceProfileRef": "sha256:f146a05affd091a1dbee6e4690793622162f065574947bf008072956eebd241f",
+        "allocationBoundary": {
+          "buyerRewardLegCount": 1,
+          "promoterRewardLeg": "NONE",
+          "referrerRewardLeg": "NONE",
+          "splitRule": "NO_PROMOTER_OR_REFERRER_SPLIT"
+        },
+        "attributionBoundary": {
+          "qualifyingOutcomeSource": "CAMPAIGN_EPOCH_CONVERSION_DEFINITION",
+          "campaignAttributionSource": "CAMPAIGN_EPOCH_ATTRIBUTION_POLICY",
+          "affiliateLinkOrCouponUseRequired": false,
+          "affiliateCommissionAffectsBuyerReward": false
+        },
+        "claimBoundary": {
+          "rewardRecipientRule": "EXACT_OUTCOME_BOUND_BUYER_RECIPIENT",
+          "rewardClaimCeilingSource": "CAMPAIGN_EPOCH_MAXIMUM_CLAIM_LEVEL",
+          "perConversionIncrementalityClaim": "PROHIBITED",
+          "rewardEstablishesAffiliateCommission": false,
+          "rewardEstablishesSettlement": false
+        },
+        "privacyBoundary": {
+          "protectedCommercialMetadata": "NOT_REQUIRED_IN_PUBLIC_ARTIFACT",
+          "targetIdentityRule": "RESOLVE_EXACT_COMMITTED_REFERENCES",
+          "stableBuyerIdentifier": "PROHIBITED"
+        },
+        "rewardPolicyAuthorityRef": "sha256:5ddc8c7684b8ccb2e74741203f7e02b2501759d3cc33569c4fc64fe5cf4fdb9e",
+        "signatures": {
+          "issuedBy": "reward-policy-authority-beta",
+          "keyId": "reward-policy-key-beta",
+          "publicKey": "IBLLkMpg6OXY2vZuInLSIz4EhtVX6MZhQe2JIBd9frc=",
+          "tokenHash": "2067f0bdba3006dadc50b8dd8853071e02957f5610b3bfbd176580c89194bbb5",
+          "signature": "oXa72hJnQaQmGTbICutiABCLV5Vp00NI/nxcOWVf6vhxyjdLcaHWZQrB1fpjDDvB6w/6CrXDv8hIBgdVpatbAw=="
+        }
+      },
+      "expectedRewardPolicyRef": "sha256:2067f0bdba3006dadc50b8dd8853071e02957f5610b3bfbd176580c89194bbb5",
+      "expectedUnsignedRewardPolicyCanonical": "{\"allocationBoundary\":{\"buyerRewardLegCount\":1,\"promoterRewardLeg\":\"NONE\",\"referrerRewardLeg\":\"NONE\",\"splitRule\":\"NO_PROMOTER_OR_REFERRER_SPLIT\"},\"attributionBoundary\":{\"affiliateCommissionAffectsBuyerReward\":false,\"affiliateLinkOrCouponUseRequired\":false,\"campaignAttributionSource\":\"CAMPAIGN_EPOCH_ATTRIBUTION_POLICY\",\"qualifyingOutcomeSource\":\"CAMPAIGN_EPOCH_CONVERSION_DEFINITION\"},\"claimBoundary\":{\"perConversionIncrementalityClaim\":\"PROHIBITED\",\"rewardClaimCeilingSource\":\"CAMPAIGN_EPOCH_MAXIMUM_CLAIM_LEVEL\",\"rewardEstablishesAffiliateCommission\":false,\"rewardEstablishesSettlement\":false,\"rewardRecipientRule\":\"EXACT_OUTCOME_BOUND_BUYER_RECIPIENT\"},\"issuedAt\":\"2026-08-01T05:00:00.000Z\",\"mechanic\":\"DIRECT_BUYER_REWARD\",\"outcomeEvidenceProfileRef\":\"sha256:f146a05affd091a1dbee6e4690793622162f065574947bf008072956eebd241f\",\"policyId\":\"direct-buyer-reward-beta\",\"privacyBoundary\":{\"protectedCommercialMetadata\":\"NOT_REQUIRED_IN_PUBLIC_ARTIFACT\",\"stableBuyerIdentifier\":\"PROHIBITED\",\"targetIdentityRule\":\"RESOLVE_EXACT_COMMITTED_REFERENCES\"},\"protocol\":{\"protocolVersion\":\"1.0.0-rc.1\"},\"rewardPolicyAuthorityRef\":\"sha256:5ddc8c7684b8ccb2e74741203f7e02b2501759d3cc33569c4fc64fe5cf4fdb9e\",\"rewardTermsRef\":\"sha256:982e4abff99da755949c508df258610ce299f546bd43c1a127114f5db1d4a0a2\",\"schemaVersion\":1,\"tokenType\":\"CAMPAIGN_DIRECT_BUYER_REWARD_POLICY\"}",
+      "campaignEpoch": {
+        "tokenType": "CAMPAIGN_EPOCH",
+        "schemaVersion": 1,
+        "protocol": {
+          "protocolVersion": "1.0.0-rc.1"
+        },
+        "epochSeriesId": "epoch-campaign-beta",
+        "epochVersion": 1,
+        "previousEpochRef": null,
+        "campaignNamespaceRef": "sha256:71fcb0690fa3ea8884a94ce7ec7fba4a23d7e8f7bd64390efa26434f9aa8b321",
+        "campaignId": "campaign-beta",
+        "lockedAt": "2026-08-01T06:00:00.000Z",
+        "effectiveFrom": "2026-08-02T00:00:00.000Z",
+        "effectiveTo": "2026-09-01T00:00:00.000Z",
+        "issuedAt": "2026-08-01T06:00:00.000Z",
+        "preStateConditionRef": "sha256:a51278f140bc5a192d3611c528a819e2c0e2b30fc1e7c221acfd5d7d4c0f0d69",
+        "targetMerchantSetRef": "sha256:44746bf5da92f6bd18a909860291d9df86057cbe12179eb7db5f6a8d75a04c8f",
+        "timingPolicyRef": "sha256:76c72d30fc02ede95617e41bdcb8a7c595a8b0c6e79b682023053d6ff77b19ef",
+        "eventPolicyRef": "sha256:da0bb59852573f305f4521c4074c622e058ed13609e3549a8fa73c74b2b560f8",
+        "attributionPolicyRef": "sha256:d44ae0ca66799ea3ccfcbef6105caaf9cad9c9cfd75bf7a12b2cc12397441157",
+        "conversionDefinitionRef": "sha256:0b0bce19913fbbfdd74b2e850d121b4916a62c2cf9f78b8c9eaec4bd006e6425",
+        "rewardPolicyRef": "sha256:2067f0bdba3006dadc50b8dd8853071e02957f5610b3bfbd176580c89194bbb5",
+        "fundingTermsRef": "sha256:febc0f82d739b4b0af843a31209ca9153e2c5b1227efd98529e922ed7806beb0",
+        "settlementPolicyRef": "sha256:b95732b6fb8fbd86d34c931acbdf71df3ffd7b284e2e3332609c35013b8faf9b",
+        "allowedEventTypes": [
+          "ENGAGEMENT"
+        ],
+        "allowedExposureSurfaceRefs": [
+          "sha256:1fafc00ab67f2e6de38f378a2801c23036f1a29bb28eff09b0726fb487e23bd7"
+        ],
+        "eventPublisherAuthorityRefs": [
+          "sha256:b9f5637078b878c7b60bb950dfd00a84f2438cdb56f5073578ae6c537348755b"
+        ],
+        "statusPublisherAuthorityRefs": [
+          "sha256:b39a0910238f282d0148f582de9813cd5f74f91aac3a0c8c549885b9c7f382a2"
+        ],
+        "maximumClaimLevel": "ATTRIBUTED",
+        "fundingEvidenceRule": "SEPARATELY_RESOLVED_IF_REQUIRED",
+        "epochAuthorityRef": "sha256:f2f136f4123a074ebacc029115d9217924a417ecada0a274395744bace786e40",
+        "signatures": {
+          "issuedBy": "epoch-authority-beta",
+          "keyId": "epoch-key-beta",
+          "publicKey": "LfBBJfABWvtHzoU674dyCU/5SYwUyxueEpc8KSfaD6Y=",
+          "tokenHash": "d7a7354c33cdb980f56b3a81b75f7e4da549d8ec14d7f7c4809fdcf6060ac79a",
+          "signature": "VSAssOi7+totprCiEzQdkh6tCvGnxgQMHbuNAByMIy89qSaq4f/h3f+uKQB6qHHqunv4S5gPcYVuzOaVhXKRCQ=="
+        }
+      },
+      "expectedCampaignEpochRef": "sha256:d7a7354c33cdb980f56b3a81b75f7e4da549d8ec14d7f7c4809fdcf6060ac79a"
+    }
+  ],
+  "rejectCases": [
+    {
+      "id": "sponsor_field_not_part_of_direct_policy",
+      "baseCaseId": "operator_product_target",
+      "artifact": "REWARD_POLICY",
+      "input": {
+        "tokenType": "CAMPAIGN_DIRECT_BUYER_REWARD_POLICY",
+        "schemaVersion": 1,
+        "protocol": {
+          "protocolVersion": "1.0.0-rc.1"
+        },
+        "policyId": "direct-buyer-reward-alpha",
+        "issuedAt": "2026-08-01T05:00:00.000Z",
+        "mechanic": "DIRECT_BUYER_REWARD",
+        "rewardTermsRef": "sha256:ea03ff8fcc72ace20ddc9485d1f3164e7e62c7c86c55a7ce7f0997400441bf00",
+        "outcomeEvidenceProfileRef": "sha256:4c85e38beba734b3ecde882aa06ebff9621eea21e6c6db15ca46fee6fedfd51d",
+        "allocationBoundary": {
+          "buyerRewardLegCount": 1,
+          "promoterRewardLeg": "NONE",
+          "referrerRewardLeg": "NONE",
+          "splitRule": "NO_PROMOTER_OR_REFERRER_SPLIT"
+        },
+        "attributionBoundary": {
+          "qualifyingOutcomeSource": "CAMPAIGN_EPOCH_CONVERSION_DEFINITION",
+          "campaignAttributionSource": "CAMPAIGN_EPOCH_ATTRIBUTION_POLICY",
+          "affiliateLinkOrCouponUseRequired": false,
+          "affiliateCommissionAffectsBuyerReward": false
+        },
+        "claimBoundary": {
+          "rewardRecipientRule": "EXACT_OUTCOME_BOUND_BUYER_RECIPIENT",
+          "rewardClaimCeilingSource": "CAMPAIGN_EPOCH_MAXIMUM_CLAIM_LEVEL",
+          "perConversionIncrementalityClaim": "PROHIBITED",
+          "rewardEstablishesAffiliateCommission": false,
+          "rewardEstablishesSettlement": false
+        },
+        "privacyBoundary": {
+          "protectedCommercialMetadata": "NOT_REQUIRED_IN_PUBLIC_ARTIFACT",
+          "targetIdentityRule": "RESOLVE_EXACT_COMMITTED_REFERENCES",
+          "stableBuyerIdentifier": "PROHIBITED"
+        },
+        "rewardPolicyAuthorityRef": "sha256:f7a3e6415a0ecd69de908fd1c6ab8e924607d441c1ed8be36534e8757b4219d5",
+        "sponsorId": "party-1",
+        "signatures": {
+          "issuedBy": "reward-policy-authority-alpha",
+          "keyId": "reward-policy-key-alpha",
+          "publicKey": "wFDFY3pE+oYp//PMzOIwDLNipj2Z2V/FQUUmb0MyRFo=",
+          "tokenHash": "f064d423d360c76dbf5939684504e79f05d55dcd99af65dcf9629d0013893319",
+          "signature": "DCzsuIT7YYGcWqTfovrNWPXtXVPh4rcX7xKfu4JngWgBAGWxuH5Fjf2nhU5kJ4tlTxav9qXVyhBS7HREBVnpDg=="
+        }
+      },
+      "expectedRejectCode": "REWARD_POLICY_SCHEMA_REJECT"
+    },
+    {
+      "id": "affiliate_link_use_cannot_gate_reward",
+      "baseCaseId": "operator_product_target",
+      "artifact": "REWARD_POLICY",
+      "input": {
+        "tokenType": "CAMPAIGN_DIRECT_BUYER_REWARD_POLICY",
+        "schemaVersion": 1,
+        "protocol": {
+          "protocolVersion": "1.0.0-rc.1"
+        },
+        "policyId": "direct-buyer-reward-alpha",
+        "issuedAt": "2026-08-01T05:00:00.000Z",
+        "mechanic": "DIRECT_BUYER_REWARD",
+        "rewardTermsRef": "sha256:ea03ff8fcc72ace20ddc9485d1f3164e7e62c7c86c55a7ce7f0997400441bf00",
+        "outcomeEvidenceProfileRef": "sha256:4c85e38beba734b3ecde882aa06ebff9621eea21e6c6db15ca46fee6fedfd51d",
+        "allocationBoundary": {
+          "buyerRewardLegCount": 1,
+          "promoterRewardLeg": "NONE",
+          "referrerRewardLeg": "NONE",
+          "splitRule": "NO_PROMOTER_OR_REFERRER_SPLIT"
+        },
+        "attributionBoundary": {
+          "qualifyingOutcomeSource": "CAMPAIGN_EPOCH_CONVERSION_DEFINITION",
+          "campaignAttributionSource": "CAMPAIGN_EPOCH_ATTRIBUTION_POLICY",
+          "affiliateLinkOrCouponUseRequired": true,
+          "affiliateCommissionAffectsBuyerReward": false
+        },
+        "claimBoundary": {
+          "rewardRecipientRule": "EXACT_OUTCOME_BOUND_BUYER_RECIPIENT",
+          "rewardClaimCeilingSource": "CAMPAIGN_EPOCH_MAXIMUM_CLAIM_LEVEL",
+          "perConversionIncrementalityClaim": "PROHIBITED",
+          "rewardEstablishesAffiliateCommission": false,
+          "rewardEstablishesSettlement": false
+        },
+        "privacyBoundary": {
+          "protectedCommercialMetadata": "NOT_REQUIRED_IN_PUBLIC_ARTIFACT",
+          "targetIdentityRule": "RESOLVE_EXACT_COMMITTED_REFERENCES",
+          "stableBuyerIdentifier": "PROHIBITED"
+        },
+        "rewardPolicyAuthorityRef": "sha256:f7a3e6415a0ecd69de908fd1c6ab8e924607d441c1ed8be36534e8757b4219d5",
+        "signatures": {
+          "issuedBy": "reward-policy-authority-alpha",
+          "keyId": "reward-policy-key-alpha",
+          "publicKey": "wFDFY3pE+oYp//PMzOIwDLNipj2Z2V/FQUUmb0MyRFo=",
+          "tokenHash": "6c92052327c8682578c4fcf69d3504050c11199d9a27d91e091784e5cb9bcc8a",
+          "signature": "16OznmE6V3N82cl8ozQRbrbcGwyRHWX+3zwNSrZBtL39Y9+6alujHHLnFah81iYbLEczhKDveo0yl3KPlJdmAw=="
+        }
+      },
+      "expectedRejectCode": "REWARD_POLICY_SCHEMA_REJECT"
+    },
+    {
+      "id": "promoter_leg_not_direct_reward",
+      "baseCaseId": "operator_product_target",
+      "artifact": "REWARD_POLICY",
+      "input": {
+        "tokenType": "CAMPAIGN_DIRECT_BUYER_REWARD_POLICY",
+        "schemaVersion": 1,
+        "protocol": {
+          "protocolVersion": "1.0.0-rc.1"
+        },
+        "policyId": "direct-buyer-reward-alpha",
+        "issuedAt": "2026-08-01T05:00:00.000Z",
+        "mechanic": "DIRECT_BUYER_REWARD",
+        "rewardTermsRef": "sha256:ea03ff8fcc72ace20ddc9485d1f3164e7e62c7c86c55a7ce7f0997400441bf00",
+        "outcomeEvidenceProfileRef": "sha256:4c85e38beba734b3ecde882aa06ebff9621eea21e6c6db15ca46fee6fedfd51d",
+        "allocationBoundary": {
+          "buyerRewardLegCount": 1,
+          "promoterRewardLeg": "PRESENT",
+          "referrerRewardLeg": "NONE",
+          "splitRule": "NO_PROMOTER_OR_REFERRER_SPLIT"
+        },
+        "attributionBoundary": {
+          "qualifyingOutcomeSource": "CAMPAIGN_EPOCH_CONVERSION_DEFINITION",
+          "campaignAttributionSource": "CAMPAIGN_EPOCH_ATTRIBUTION_POLICY",
+          "affiliateLinkOrCouponUseRequired": false,
+          "affiliateCommissionAffectsBuyerReward": false
+        },
+        "claimBoundary": {
+          "rewardRecipientRule": "EXACT_OUTCOME_BOUND_BUYER_RECIPIENT",
+          "rewardClaimCeilingSource": "CAMPAIGN_EPOCH_MAXIMUM_CLAIM_LEVEL",
+          "perConversionIncrementalityClaim": "PROHIBITED",
+          "rewardEstablishesAffiliateCommission": false,
+          "rewardEstablishesSettlement": false
+        },
+        "privacyBoundary": {
+          "protectedCommercialMetadata": "NOT_REQUIRED_IN_PUBLIC_ARTIFACT",
+          "targetIdentityRule": "RESOLVE_EXACT_COMMITTED_REFERENCES",
+          "stableBuyerIdentifier": "PROHIBITED"
+        },
+        "rewardPolicyAuthorityRef": "sha256:f7a3e6415a0ecd69de908fd1c6ab8e924607d441c1ed8be36534e8757b4219d5",
+        "signatures": {
+          "issuedBy": "reward-policy-authority-alpha",
+          "keyId": "reward-policy-key-alpha",
+          "publicKey": "wFDFY3pE+oYp//PMzOIwDLNipj2Z2V/FQUUmb0MyRFo=",
+          "tokenHash": "8da077bd450099de0aa28a9e5190b270c36317cad1477df06e7bdfe609b90160",
+          "signature": "dgx06XBW/5RgzOhckkac+JxkbW/ywEhaTG6aTUm2GvA9cuomOgTtXGgFWFBUo//KN2PaiuhLV9Du3xmIx862DQ=="
+        }
+      },
+      "expectedRejectCode": "REWARD_POLICY_SCHEMA_REJECT"
+    },
+    {
+      "id": "policy_change_invalidates_hash",
+      "baseCaseId": "operator_product_target",
+      "artifact": "REWARD_POLICY",
+      "input": {
+        "tokenType": "CAMPAIGN_DIRECT_BUYER_REWARD_POLICY",
+        "schemaVersion": 1,
+        "protocol": {
+          "protocolVersion": "1.0.0-rc.1"
+        },
+        "policyId": "direct-buyer-reward-alpha",
+        "issuedAt": "2026-08-01T05:00:00.000Z",
+        "mechanic": "DIRECT_BUYER_REWARD",
+        "rewardTermsRef": "sha256:b6e7bf6571205fbd2d65fa9d0392ffb96ef2fefd6aa63db8d934dc0d6cd8d42a",
+        "outcomeEvidenceProfileRef": "sha256:4c85e38beba734b3ecde882aa06ebff9621eea21e6c6db15ca46fee6fedfd51d",
+        "allocationBoundary": {
+          "buyerRewardLegCount": 1,
+          "promoterRewardLeg": "NONE",
+          "referrerRewardLeg": "NONE",
+          "splitRule": "NO_PROMOTER_OR_REFERRER_SPLIT"
+        },
+        "attributionBoundary": {
+          "qualifyingOutcomeSource": "CAMPAIGN_EPOCH_CONVERSION_DEFINITION",
+          "campaignAttributionSource": "CAMPAIGN_EPOCH_ATTRIBUTION_POLICY",
+          "affiliateLinkOrCouponUseRequired": false,
+          "affiliateCommissionAffectsBuyerReward": false
+        },
+        "claimBoundary": {
+          "rewardRecipientRule": "EXACT_OUTCOME_BOUND_BUYER_RECIPIENT",
+          "rewardClaimCeilingSource": "CAMPAIGN_EPOCH_MAXIMUM_CLAIM_LEVEL",
+          "perConversionIncrementalityClaim": "PROHIBITED",
+          "rewardEstablishesAffiliateCommission": false,
+          "rewardEstablishesSettlement": false
+        },
+        "privacyBoundary": {
+          "protectedCommercialMetadata": "NOT_REQUIRED_IN_PUBLIC_ARTIFACT",
+          "targetIdentityRule": "RESOLVE_EXACT_COMMITTED_REFERENCES",
+          "stableBuyerIdentifier": "PROHIBITED"
+        },
+        "rewardPolicyAuthorityRef": "sha256:f7a3e6415a0ecd69de908fd1c6ab8e924607d441c1ed8be36534e8757b4219d5",
+        "signatures": {
+          "issuedBy": "reward-policy-authority-alpha",
+          "keyId": "reward-policy-key-alpha",
+          "publicKey": "wFDFY3pE+oYp//PMzOIwDLNipj2Z2V/FQUUmb0MyRFo=",
+          "tokenHash": "ea2d02b0833d781723ef7eee5b24a88afef127a3f88c4ef54fc9e2911f7a93bb",
+          "signature": "4Q+zKE9Zr/UR6nvH2PQ8n5DFtA1Jk6xuEt2rlHAjTrcC3enMTV4/lrFWn8GCgyVr4NNVmPM988TsE++gypJIAg=="
+        }
+      },
+      "expectedRejectCode": "REWARD_POLICY_TOKEN_HASH_MISMATCH"
+    },
+    {
+      "id": "policy_signature_invalid",
+      "baseCaseId": "operator_product_target",
+      "artifact": "REWARD_POLICY",
+      "input": {
+        "tokenType": "CAMPAIGN_DIRECT_BUYER_REWARD_POLICY",
+        "schemaVersion": 1,
+        "protocol": {
+          "protocolVersion": "1.0.0-rc.1"
+        },
+        "policyId": "direct-buyer-reward-alpha",
+        "issuedAt": "2026-08-01T05:00:00.000Z",
+        "mechanic": "DIRECT_BUYER_REWARD",
+        "rewardTermsRef": "sha256:ea03ff8fcc72ace20ddc9485d1f3164e7e62c7c86c55a7ce7f0997400441bf00",
+        "outcomeEvidenceProfileRef": "sha256:4c85e38beba734b3ecde882aa06ebff9621eea21e6c6db15ca46fee6fedfd51d",
+        "allocationBoundary": {
+          "buyerRewardLegCount": 1,
+          "promoterRewardLeg": "NONE",
+          "referrerRewardLeg": "NONE",
+          "splitRule": "NO_PROMOTER_OR_REFERRER_SPLIT"
+        },
+        "attributionBoundary": {
+          "qualifyingOutcomeSource": "CAMPAIGN_EPOCH_CONVERSION_DEFINITION",
+          "campaignAttributionSource": "CAMPAIGN_EPOCH_ATTRIBUTION_POLICY",
+          "affiliateLinkOrCouponUseRequired": false,
+          "affiliateCommissionAffectsBuyerReward": false
+        },
+        "claimBoundary": {
+          "rewardRecipientRule": "EXACT_OUTCOME_BOUND_BUYER_RECIPIENT",
+          "rewardClaimCeilingSource": "CAMPAIGN_EPOCH_MAXIMUM_CLAIM_LEVEL",
+          "perConversionIncrementalityClaim": "PROHIBITED",
+          "rewardEstablishesAffiliateCommission": false,
+          "rewardEstablishesSettlement": false
+        },
+        "privacyBoundary": {
+          "protectedCommercialMetadata": "NOT_REQUIRED_IN_PUBLIC_ARTIFACT",
+          "targetIdentityRule": "RESOLVE_EXACT_COMMITTED_REFERENCES",
+          "stableBuyerIdentifier": "PROHIBITED"
+        },
+        "rewardPolicyAuthorityRef": "sha256:f7a3e6415a0ecd69de908fd1c6ab8e924607d441c1ed8be36534e8757b4219d5",
+        "signatures": {
+          "issuedBy": "reward-policy-authority-alpha",
+          "keyId": "reward-policy-key-alpha",
+          "publicKey": "wFDFY3pE+oYp//PMzOIwDLNipj2Z2V/FQUUmb0MyRFo=",
+          "tokenHash": "ea2d02b0833d781723ef7eee5b24a88afef127a3f88c4ef54fc9e2911f7a93bb",
+          "signature": "AQ+zKE9Zr/UR6nvH2PQ8n5DFtA1Jk6xuEt2rlHAjTrcC3enMTV4/lrFWn8GCgyVr4NNVmPM988TsE++gypJIAg=="
+        }
+      },
+      "expectedRejectCode": "REWARD_POLICY_SIGNATURE_INVALID"
+    },
+    {
+      "id": "policy_must_precede_epoch_issuance",
+      "baseCaseId": "operator_product_target",
+      "artifact": "REWARD_POLICY",
+      "input": {
+        "tokenType": "CAMPAIGN_DIRECT_BUYER_REWARD_POLICY",
+        "schemaVersion": 1,
+        "protocol": {
+          "protocolVersion": "1.0.0-rc.1"
+        },
+        "policyId": "direct-buyer-reward-alpha",
+        "issuedAt": "2026-08-01T06:00:00.001Z",
+        "mechanic": "DIRECT_BUYER_REWARD",
+        "rewardTermsRef": "sha256:ea03ff8fcc72ace20ddc9485d1f3164e7e62c7c86c55a7ce7f0997400441bf00",
+        "outcomeEvidenceProfileRef": "sha256:4c85e38beba734b3ecde882aa06ebff9621eea21e6c6db15ca46fee6fedfd51d",
+        "allocationBoundary": {
+          "buyerRewardLegCount": 1,
+          "promoterRewardLeg": "NONE",
+          "referrerRewardLeg": "NONE",
+          "splitRule": "NO_PROMOTER_OR_REFERRER_SPLIT"
+        },
+        "attributionBoundary": {
+          "qualifyingOutcomeSource": "CAMPAIGN_EPOCH_CONVERSION_DEFINITION",
+          "campaignAttributionSource": "CAMPAIGN_EPOCH_ATTRIBUTION_POLICY",
+          "affiliateLinkOrCouponUseRequired": false,
+          "affiliateCommissionAffectsBuyerReward": false
+        },
+        "claimBoundary": {
+          "rewardRecipientRule": "EXACT_OUTCOME_BOUND_BUYER_RECIPIENT",
+          "rewardClaimCeilingSource": "CAMPAIGN_EPOCH_MAXIMUM_CLAIM_LEVEL",
+          "perConversionIncrementalityClaim": "PROHIBITED",
+          "rewardEstablishesAffiliateCommission": false,
+          "rewardEstablishesSettlement": false
+        },
+        "privacyBoundary": {
+          "protectedCommercialMetadata": "NOT_REQUIRED_IN_PUBLIC_ARTIFACT",
+          "targetIdentityRule": "RESOLVE_EXACT_COMMITTED_REFERENCES",
+          "stableBuyerIdentifier": "PROHIBITED"
+        },
+        "rewardPolicyAuthorityRef": "sha256:f7a3e6415a0ecd69de908fd1c6ab8e924607d441c1ed8be36534e8757b4219d5",
+        "signatures": {
+          "issuedBy": "reward-policy-authority-alpha",
+          "keyId": "reward-policy-key-alpha",
+          "publicKey": "wFDFY3pE+oYp//PMzOIwDLNipj2Z2V/FQUUmb0MyRFo=",
+          "tokenHash": "7a2a5eb48c4f6ef66c81c3356f654e1427afa4030932d35bbcd154440dbf85e3",
+          "signature": "oXcGU6unB3l92u6sz6EVMT4cbul6V35l1nCaXLQrW+acOZMQlq85aTn5iJeC/5KlZB2d1rlRQF3JZQpYvfXNDA=="
+        }
+      },
+      "campaignEpoch": {
+        "tokenType": "CAMPAIGN_EPOCH",
+        "schemaVersion": 1,
+        "protocol": {
+          "protocolVersion": "1.0.0-rc.1"
+        },
+        "epochSeriesId": "epoch-campaign-alpha",
+        "epochVersion": 1,
+        "previousEpochRef": null,
+        "campaignNamespaceRef": "sha256:71fcb0690fa3ea8884a94ce7ec7fba4a23d7e8f7bd64390efa26434f9aa8b321",
+        "campaignId": "campaign-alpha",
+        "lockedAt": "2026-08-01T06:00:00.000Z",
+        "effectiveFrom": "2026-08-02T00:00:00.000Z",
+        "effectiveTo": "2026-09-01T00:00:00.000Z",
+        "issuedAt": "2026-08-01T06:00:00.000Z",
+        "preStateConditionRef": "sha256:8f951ce81ec3e73de674a783959c8e7218b629fed4f51e9a12ee17d363df709e",
+        "targetMerchantSetRef": "sha256:6276b797fc71d147252a6440947faf055cf6b8fb3769f15f1c6041c54eacfa4d",
+        "timingPolicyRef": "sha256:e064f25d7611e01049d9cb360b4136318cd5fa17dfebe559cb9e976c0c5b271f",
+        "eventPolicyRef": "sha256:6121a698ac9f3ce44de3d274c85885c66878616a257b0efb2325801bffb6074f",
+        "attributionPolicyRef": "sha256:e7653e02378aecfe85d61f1fa776469515a973d1e4c6e887a37bce71d9dd2f46",
+        "conversionDefinitionRef": "sha256:9ebd620475d40930d3258683d639f89d3a8f939ef5bc5938108136c4dc844b27",
+        "rewardPolicyRef": "sha256:7a2a5eb48c4f6ef66c81c3356f654e1427afa4030932d35bbcd154440dbf85e3",
+        "fundingTermsRef": "sha256:bffd474d102ffa598e83c98cc14a27d29936c34f1a356ad580e90f650b94c3fb",
+        "settlementPolicyRef": "sha256:16b93814e522b5687f08101a88659263d464683733dc65621373e172009fc1aa",
+        "allowedEventTypes": [
+          "ENGAGEMENT"
+        ],
+        "allowedExposureSurfaceRefs": [
+          "sha256:de0926e90de64af4559db62a2116ca3628427d692884412a8ef07c4597ab69ce"
+        ],
+        "eventPublisherAuthorityRefs": [
+          "sha256:9883bfd359c157afd465218878fa631db0c93f65b33530067e72fea7d5882319"
+        ],
+        "statusPublisherAuthorityRefs": [
+          "sha256:d1159a78eb83e9c73392799b523bd3583c0de078fa9c208f3c7d06ed07939c76"
+        ],
+        "maximumClaimLevel": "ATTRIBUTED",
+        "fundingEvidenceRule": "SEPARATELY_RESOLVED_IF_REQUIRED",
+        "epochAuthorityRef": "sha256:8e909dd5c303cd950ff04fcbf07823842027e17fa6c6dc1ca079d5dfd9e69123",
+        "signatures": {
+          "issuedBy": "epoch-authority-alpha",
+          "keyId": "epoch-key-alpha",
+          "publicKey": "rwaj4ykXFOTzVsGcmxXNGVHsbmZiqne+B1R/KJODNB0=",
+          "tokenHash": "5cd4a41833a005882bf3086fd94a519fb756d63a7be5777a5b37e627abd9dae0",
+          "signature": "MaDolat/TS14HV7h4BMT6sf/Top+iYuj2AIwT9mgkuuSClBxOiXiqNPeUdVvIK75fc89aN3Qfh/A4R469U18Bg=="
+        }
+      },
+      "expectedRejectCode": "REWARD_POLICY_TIME_ORDER"
+    },
+    {
+      "id": "epoch_must_bind_exact_direct_policy",
+      "baseCaseId": "operator_product_target",
+      "artifact": "COMPOSITION",
+      "campaignEpoch": {
+        "tokenType": "CAMPAIGN_EPOCH",
+        "schemaVersion": 1,
+        "protocol": {
+          "protocolVersion": "1.0.0-rc.1"
+        },
+        "epochSeriesId": "epoch-campaign-alpha",
+        "epochVersion": 1,
+        "previousEpochRef": null,
+        "campaignNamespaceRef": "sha256:71fcb0690fa3ea8884a94ce7ec7fba4a23d7e8f7bd64390efa26434f9aa8b321",
+        "campaignId": "campaign-alpha",
+        "lockedAt": "2026-08-01T06:00:00.000Z",
+        "effectiveFrom": "2026-08-02T00:00:00.000Z",
+        "effectiveTo": "2026-09-01T00:00:00.000Z",
+        "issuedAt": "2026-08-01T06:00:00.000Z",
+        "preStateConditionRef": "sha256:8f951ce81ec3e73de674a783959c8e7218b629fed4f51e9a12ee17d363df709e",
+        "targetMerchantSetRef": "sha256:6276b797fc71d147252a6440947faf055cf6b8fb3769f15f1c6041c54eacfa4d",
+        "timingPolicyRef": "sha256:e064f25d7611e01049d9cb360b4136318cd5fa17dfebe559cb9e976c0c5b271f",
+        "eventPolicyRef": "sha256:6121a698ac9f3ce44de3d274c85885c66878616a257b0efb2325801bffb6074f",
+        "attributionPolicyRef": "sha256:e7653e02378aecfe85d61f1fa776469515a973d1e4c6e887a37bce71d9dd2f46",
+        "conversionDefinitionRef": "sha256:9ebd620475d40930d3258683d639f89d3a8f939ef5bc5938108136c4dc844b27",
+        "rewardPolicyRef": "sha256:8863cd47420190bb2323e140d988a7c86edc7f2964d4725cf185bfe0fed7d6dc",
+        "fundingTermsRef": "sha256:bffd474d102ffa598e83c98cc14a27d29936c34f1a356ad580e90f650b94c3fb",
+        "settlementPolicyRef": "sha256:16b93814e522b5687f08101a88659263d464683733dc65621373e172009fc1aa",
+        "allowedEventTypes": [
+          "ENGAGEMENT"
+        ],
+        "allowedExposureSurfaceRefs": [
+          "sha256:de0926e90de64af4559db62a2116ca3628427d692884412a8ef07c4597ab69ce"
+        ],
+        "eventPublisherAuthorityRefs": [
+          "sha256:9883bfd359c157afd465218878fa631db0c93f65b33530067e72fea7d5882319"
+        ],
+        "statusPublisherAuthorityRefs": [
+          "sha256:d1159a78eb83e9c73392799b523bd3583c0de078fa9c208f3c7d06ed07939c76"
+        ],
+        "maximumClaimLevel": "ATTRIBUTED",
+        "fundingEvidenceRule": "SEPARATELY_RESOLVED_IF_REQUIRED",
+        "epochAuthorityRef": "sha256:8e909dd5c303cd950ff04fcbf07823842027e17fa6c6dc1ca079d5dfd9e69123",
+        "signatures": {
+          "issuedBy": "epoch-authority-alpha",
+          "keyId": "epoch-key-alpha",
+          "publicKey": "rwaj4ykXFOTzVsGcmxXNGVHsbmZiqne+B1R/KJODNB0=",
+          "tokenHash": "74e4e710438765d96dbf1b626dac699384df18b35b1c4694737d8e96a4d3cb1b",
+          "signature": "uuo9HP5BalfjJEmcDo9W36bHxVPAPIYmmOu0YL9DIXKTBEFh7WLfAwfTmxOXc4tOgD3xj629ITJ8GfDCGl+iBg=="
+        }
+      },
+      "input": {
+        "tokenType": "CAMPAIGN_DIRECT_BUYER_REWARD_POLICY",
+        "schemaVersion": 1,
+        "protocol": {
+          "protocolVersion": "1.0.0-rc.1"
+        },
+        "policyId": "direct-buyer-reward-alpha",
+        "issuedAt": "2026-08-01T05:00:00.000Z",
+        "mechanic": "DIRECT_BUYER_REWARD",
+        "rewardTermsRef": "sha256:ea03ff8fcc72ace20ddc9485d1f3164e7e62c7c86c55a7ce7f0997400441bf00",
+        "outcomeEvidenceProfileRef": "sha256:4c85e38beba734b3ecde882aa06ebff9621eea21e6c6db15ca46fee6fedfd51d",
+        "allocationBoundary": {
+          "buyerRewardLegCount": 1,
+          "promoterRewardLeg": "NONE",
+          "referrerRewardLeg": "NONE",
+          "splitRule": "NO_PROMOTER_OR_REFERRER_SPLIT"
+        },
+        "attributionBoundary": {
+          "qualifyingOutcomeSource": "CAMPAIGN_EPOCH_CONVERSION_DEFINITION",
+          "campaignAttributionSource": "CAMPAIGN_EPOCH_ATTRIBUTION_POLICY",
+          "affiliateLinkOrCouponUseRequired": false,
+          "affiliateCommissionAffectsBuyerReward": false
+        },
+        "claimBoundary": {
+          "rewardRecipientRule": "EXACT_OUTCOME_BOUND_BUYER_RECIPIENT",
+          "rewardClaimCeilingSource": "CAMPAIGN_EPOCH_MAXIMUM_CLAIM_LEVEL",
+          "perConversionIncrementalityClaim": "PROHIBITED",
+          "rewardEstablishesAffiliateCommission": false,
+          "rewardEstablishesSettlement": false
+        },
+        "privacyBoundary": {
+          "protectedCommercialMetadata": "NOT_REQUIRED_IN_PUBLIC_ARTIFACT",
+          "targetIdentityRule": "RESOLVE_EXACT_COMMITTED_REFERENCES",
+          "stableBuyerIdentifier": "PROHIBITED"
+        },
+        "rewardPolicyAuthorityRef": "sha256:f7a3e6415a0ecd69de908fd1c6ab8e924607d441c1ed8be36534e8757b4219d5",
+        "signatures": {
+          "issuedBy": "reward-policy-authority-alpha",
+          "keyId": "reward-policy-key-alpha",
+          "publicKey": "wFDFY3pE+oYp//PMzOIwDLNipj2Z2V/FQUUmb0MyRFo=",
+          "tokenHash": "ea2d02b0833d781723ef7eee5b24a88afef127a3f88c4ef54fc9e2911f7a93bb",
+          "signature": "4Q+zKE9Zr/UR6nvH2PQ8n5DFtA1Jk6xuEt2rlHAjTrcC3enMTV4/lrFWn8GCgyVr4NNVmPM988TsE++gypJIAg=="
+        }
+      },
+      "expectedRejectCode": "CAMPAIGN_EPOCH_REWARD_POLICY_REF_MISMATCH"
+    }
+  ],
+  "equivocationCases": [
+    {
+      "id": "same_reward_authority_and_policy_id_different_policy",
+      "kind": "REWARD_POLICY",
+      "baseCaseId": "operator_product_target",
+      "firstInput": {
+        "tokenType": "CAMPAIGN_DIRECT_BUYER_REWARD_POLICY",
+        "schemaVersion": 1,
+        "protocol": {
+          "protocolVersion": "1.0.0-rc.1"
+        },
+        "policyId": "direct-buyer-reward-alpha",
+        "issuedAt": "2026-08-01T05:00:00.000Z",
+        "mechanic": "DIRECT_BUYER_REWARD",
+        "rewardTermsRef": "sha256:ea03ff8fcc72ace20ddc9485d1f3164e7e62c7c86c55a7ce7f0997400441bf00",
+        "outcomeEvidenceProfileRef": "sha256:4c85e38beba734b3ecde882aa06ebff9621eea21e6c6db15ca46fee6fedfd51d",
+        "allocationBoundary": {
+          "buyerRewardLegCount": 1,
+          "promoterRewardLeg": "NONE",
+          "referrerRewardLeg": "NONE",
+          "splitRule": "NO_PROMOTER_OR_REFERRER_SPLIT"
+        },
+        "attributionBoundary": {
+          "qualifyingOutcomeSource": "CAMPAIGN_EPOCH_CONVERSION_DEFINITION",
+          "campaignAttributionSource": "CAMPAIGN_EPOCH_ATTRIBUTION_POLICY",
+          "affiliateLinkOrCouponUseRequired": false,
+          "affiliateCommissionAffectsBuyerReward": false
+        },
+        "claimBoundary": {
+          "rewardRecipientRule": "EXACT_OUTCOME_BOUND_BUYER_RECIPIENT",
+          "rewardClaimCeilingSource": "CAMPAIGN_EPOCH_MAXIMUM_CLAIM_LEVEL",
+          "perConversionIncrementalityClaim": "PROHIBITED",
+          "rewardEstablishesAffiliateCommission": false,
+          "rewardEstablishesSettlement": false
+        },
+        "privacyBoundary": {
+          "protectedCommercialMetadata": "NOT_REQUIRED_IN_PUBLIC_ARTIFACT",
+          "targetIdentityRule": "RESOLVE_EXACT_COMMITTED_REFERENCES",
+          "stableBuyerIdentifier": "PROHIBITED"
+        },
+        "rewardPolicyAuthorityRef": "sha256:f7a3e6415a0ecd69de908fd1c6ab8e924607d441c1ed8be36534e8757b4219d5",
+        "signatures": {
+          "issuedBy": "reward-policy-authority-alpha",
+          "keyId": "reward-policy-key-alpha",
+          "publicKey": "wFDFY3pE+oYp//PMzOIwDLNipj2Z2V/FQUUmb0MyRFo=",
+          "tokenHash": "ea2d02b0833d781723ef7eee5b24a88afef127a3f88c4ef54fc9e2911f7a93bb",
+          "signature": "4Q+zKE9Zr/UR6nvH2PQ8n5DFtA1Jk6xuEt2rlHAjTrcC3enMTV4/lrFWn8GCgyVr4NNVmPM988TsE++gypJIAg=="
+        }
+      },
+      "secondInput": {
+        "tokenType": "CAMPAIGN_DIRECT_BUYER_REWARD_POLICY",
+        "schemaVersion": 1,
+        "protocol": {
+          "protocolVersion": "1.0.0-rc.1"
+        },
+        "policyId": "direct-buyer-reward-alpha",
+        "issuedAt": "2026-08-01T05:00:00.000Z",
+        "mechanic": "DIRECT_BUYER_REWARD",
+        "rewardTermsRef": "sha256:f62005cde32b6b195626eedb28e2dec6369ac1df284df1d5281d6f574e317373",
+        "outcomeEvidenceProfileRef": "sha256:4c85e38beba734b3ecde882aa06ebff9621eea21e6c6db15ca46fee6fedfd51d",
+        "allocationBoundary": {
+          "buyerRewardLegCount": 1,
+          "promoterRewardLeg": "NONE",
+          "referrerRewardLeg": "NONE",
+          "splitRule": "NO_PROMOTER_OR_REFERRER_SPLIT"
+        },
+        "attributionBoundary": {
+          "qualifyingOutcomeSource": "CAMPAIGN_EPOCH_CONVERSION_DEFINITION",
+          "campaignAttributionSource": "CAMPAIGN_EPOCH_ATTRIBUTION_POLICY",
+          "affiliateLinkOrCouponUseRequired": false,
+          "affiliateCommissionAffectsBuyerReward": false
+        },
+        "claimBoundary": {
+          "rewardRecipientRule": "EXACT_OUTCOME_BOUND_BUYER_RECIPIENT",
+          "rewardClaimCeilingSource": "CAMPAIGN_EPOCH_MAXIMUM_CLAIM_LEVEL",
+          "perConversionIncrementalityClaim": "PROHIBITED",
+          "rewardEstablishesAffiliateCommission": false,
+          "rewardEstablishesSettlement": false
+        },
+        "privacyBoundary": {
+          "protectedCommercialMetadata": "NOT_REQUIRED_IN_PUBLIC_ARTIFACT",
+          "targetIdentityRule": "RESOLVE_EXACT_COMMITTED_REFERENCES",
+          "stableBuyerIdentifier": "PROHIBITED"
+        },
+        "rewardPolicyAuthorityRef": "sha256:f7a3e6415a0ecd69de908fd1c6ab8e924607d441c1ed8be36534e8757b4219d5",
+        "signatures": {
+          "issuedBy": "reward-policy-authority-alpha",
+          "keyId": "reward-policy-key-alpha",
+          "publicKey": "wFDFY3pE+oYp//PMzOIwDLNipj2Z2V/FQUUmb0MyRFo=",
+          "tokenHash": "db69a329b1ef005a43248f98577251d14322a7a598eb14488ef9901dd31ed3bb",
+          "signature": "37I44512WMPI8quwlDsWFjU8OzpTVc26vRMTZy2OGsI3PU2gxZZc6DTlRUUORs8maWKiaVMwLIGIpoirY9BeDA=="
+        }
+      },
+      "expectedRejectCode": "REWARD_POLICY_EQUIVOCATION"
+    }
+  ]
+}

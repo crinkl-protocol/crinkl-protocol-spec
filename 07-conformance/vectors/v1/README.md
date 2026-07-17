@@ -1,11 +1,11 @@
 ---
-status: draft
+status: release-candidate
 layer: conformance
 version: v1
 normative: true
 ---
 
-# Crinkl Protocol Conformance Suite (v1)
+# Crinkl Protocol Conformance Suite (v1, suite version 2 candidate)
 
 This folder contains **versioned, data-only conformance vectors** for the Crinkl Protocol.
 
@@ -21,6 +21,8 @@ Goal: any implementation (server, platform, third-party verifier) can run the sa
 Executable verifier:
 - See [`../../verifier-test-suite.md`](../../verifier-test-suite.md)
 - Run `node scripts/verify_conformance.mjs` from repo root.
+- Require the Campaign profile explicitly with
+  `node scripts/verify_conformance.mjs --require-kind campaign.directBuyerReward.profileV1`.
 
 ## Layout
 
@@ -50,6 +52,13 @@ Executable verifier:
 ### ZK Proofs
 - `zk.h2PromoOpenMin.v1.json` — Descriptor for the `H2_PROMO_OPEN_MIN_V1` public beta fixture set.
 - `zk/h2-promo-open-min-v1/` — Proof artifact, spend token binding fixture, verifier registry manifest, and fixture metadata.
+
+### Campaign Profiles
+
+- `campaign.directBuyerReward.profileV1` — manifest-bound external verification of
+  the exact byte-pinned sponsor-neutral direct buyer-reward
+  package. The package remains unavailable to release consumers while
+  `versions/release.json.status` is not `RELEASED`.
 
 ## Contract
 

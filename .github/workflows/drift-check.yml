@@ -16,7 +16,7 @@ jobs:
         with:
           python-version: "3.11"
       - name: Install Python deps
-        run: python3 -m pip install --upgrade pip pyyaml
+        run: python3 -m pip install --upgrade pip pyyaml jsonschema cryptography
       - name: Boundary classification
         if: github.event_name == 'pull_request'
         env:
@@ -27,3 +27,15 @@ jobs:
           --head "${{ github.event.pull_request.head.sha }}"
       - name: Drift check
         run: python3 scripts/check_drift.py
+      - name: Direct buyer-reward release profile
+        run: |
+          python3 scripts/check_campaign_direct_reward_release_profile.py
+          python3 scripts/check_rc3_release_finalization.py
+          python3 07-conformance/profiles/campaign-direct-buyer-reward-v1/scripts/check_campaign_direct_reward_profile_vectors.py
+          python3 07-conformance/profiles/campaign-direct-buyer-reward-v1/scripts/generate_campaign_direct_reward_profile_vectors.py --check
+          node scripts/verify_conformance.mjs --require-kind campaign.directBuyerReward.profileV1
+          set +e
+          node scripts/verify_conformance.mjs --require-released --require-kind campaign.directBuyerReward.profileV1
+          status=$?
+          set -e
+          test "$status" -eq 4

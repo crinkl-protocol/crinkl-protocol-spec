@@ -1,7 +1,13 @@
 {
   "suite": "crinkl-protocol-conformance",
-  "suiteVersion": 1,
+  "suiteVersion": 2,
+  "releaseVersion": "1.0.0-rc.3",
+  "releaseStatus": "RELEASE_CANDIDATE_NOT_PUBLISHED",
   "protocolVersion": "1.0.0-rc.2",
+  "supportedWireProtocolVersions": [
+    "1.0.0-rc.1",
+    "1.0.0-rc.2"
+  ],
   "vectors": [
     {
       "kind": "canonicalization",
@@ -50,6 +56,14 @@
     {
       "kind": "zk.h2PromoOpenMin.v1",
       "file": "vectors/zk.h2PromoOpenMin.v1.json"
+    },
+    {
+      "kind": "campaign.directBuyerReward.profileV1",
+      "file": "../../profiles/campaign-direct-buyer-reward-v1/conformance/v1/vectors/campaign.directBuyerReward.profileV1.json",
+      "externalVerifier": {
+        "type": "python3",
+        "file": "../../profiles/campaign-direct-buyer-reward-v1/scripts/check_campaign_direct_reward_profile_vectors.py"
+      }
     }
   ]
 }

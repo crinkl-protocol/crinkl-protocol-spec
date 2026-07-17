@@ -1,0 +1,26 @@
+{
+  "releaseVersion": "1.0.0-rc.3",
+  "status": "RELEASE_CANDIDATE_NOT_PUBLISHED",
+  "requiredTag": "v1.0.0-rc.3",
+  "defaultBindingProtocolVersion": "1.0.0-rc.2",
+  "supportedWireProtocolVersions": [
+    "1.0.0-rc.1",
+    "1.0.0-rc.2"
+  ],
+  "conformance": {
+    "suite": "crinkl-protocol-conformance",
+    "suiteVersion": 2,
+    "manifest": "07-conformance/vectors/v1/manifest.json"
+  },
+  "releaseAuthority": {
+    "acceptedReleaseIdentity": "AUTHORITY_ACCEPTED_TAG_AND_RELEASE_MANIFEST_DIGEST",
+    "sourceBranchAuthority": "PROHIBITED"
+  },
+  "profiles": [
+    {
+      "kind": "campaign.directBuyerReward.profileV1",
+      "maturity": "RELEASE_CANDIDATE",
+      "runtimeAvailability": "UNAVAILABLE"
+    }
+  ]
+}

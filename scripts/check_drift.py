@@ -123,20 +123,53 @@ def main() -> int:
             if spec.get("type") != "string":
                 return die(f"{fname} payload.{field} must be type=string")
 
-    # Spec/docs version consistency.
+    # Repository release and wire protocol versions are separate surfaces.
+    release = read_json(repo_root / "versions" / "release.json")
+    release_version = str(release.get("releaseVersion") or "")
+    release_status = str(release.get("status") or "")
+    if not release_version:
+        return die("versions/release.json missing releaseVersion")
+    if release_status not in {"RELEASE_CANDIDATE_NOT_PUBLISHED", "RELEASED"}:
+        return die(f"versions/release.json invalid status: {release_status}")
+    if release.get("requiredTag") != f"v{release_version}":
+        return die("versions/release.json requiredTag must equal v + releaseVersion")
+    if release.get("defaultBindingProtocolVersion") != protocol_version:
+        return die(
+            "release/default binding mismatch: "
+            f"release={release.get('defaultBindingProtocolVersion')} binding={protocol_version}"
+        )
+    supported_wire_versions = list(release.get("supportedWireProtocolVersions") or [])
+    if len(supported_wire_versions) != len(set(supported_wire_versions)):
+        return die("versions/release.json supportedWireProtocolVersions contains duplicates")
+    if protocol_version not in supported_wire_versions:
+        return die("default binding protocolVersion is not in supportedWireProtocolVersions")
+    release_snapshot = repo_root / "versions" / f"v{release_version}" / "snapshot.md"
+    if not release_snapshot.is_file():
+        return die(f"missing release snapshot: {release_snapshot}")
+    if release_status not in read_text(release_snapshot):
+        return die("release snapshot does not declare the release manifest status")
+
+    # Spec/docs release-version consistency.
     readme = read_text(repo_root / "README.md")
     m = re.search(r"\*\*v(\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?)\*\*", readme)
     if not m:
         return die("README.md missing version marker '**vX.Y.Z**'")
-    if m.group(1) != protocol_version:
-        return die(f"README.md version mismatch: README={m.group(1)} binding={protocol_version}")
+    if m.group(1) != release_version:
+        return die(
+            f"README.md release mismatch: README={m.group(1)} release={release_version}"
+        )
 
     evolution = read_text(repo_root / "08-governance" / "versioning.md")
-    m2 = re.search(r"Current version:\s+\*\*(\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?)\*\*", evolution)
+    m2 = re.search(r"Current public repository release:\s+\*\*(\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?)\*\*", evolution)
     if not m2:
-        return die("08-governance/versioning.md missing 'Current version: **X.Y.Z**'")
-    if m2.group(1) != protocol_version:
-        return die(f"versioning.md version mismatch: versioning={m2.group(1)} binding={protocol_version}")
+        return die(
+            "08-governance/versioning.md missing "
+            "'Current public repository release: **X.Y.Z**'"
+        )
+    if m2.group(1) != release_version:
+        return die(
+            f"versioning.md release mismatch: versioning={m2.group(1)} release={release_version}"
+        )
 
     # spend-event.md must mention every bound protocol/system event name.
     events_md = read_text(repo_root / "01-core" / "spend-event.md")
@@ -163,6 +196,17 @@ def main() -> int:
     mver = manifest.get("protocolVersion")
     if mver != protocol_version:
         return die(f"07-conformance manifest version mismatch: manifest={mver} binding={protocol_version}")
+    if manifest.get("releaseVersion") != release_version:
+        return die("07-conformance manifest releaseVersion mismatch")
+    if manifest.get("releaseStatus") != release_status:
+        return die("07-conformance manifest releaseStatus mismatch")
+    if manifest.get("supportedWireProtocolVersions") != supported_wire_versions:
+        return die("07-conformance manifest supportedWireProtocolVersions mismatch")
+    release_conformance = dict(release.get("conformance") or {})
+    if manifest.get("suite") != release_conformance.get("suite"):
+        return die("07-conformance manifest suite mismatch with release manifest")
+    if manifest.get("suiteVersion") != release_conformance.get("suiteVersion"):
+        return die("07-conformance manifest suiteVersion mismatch with release manifest")
 
     # Leak guard: this PUBLIC repo must not contain internal/private-tagged content.
     leaked = [
@@ -173,7 +217,11 @@ def main() -> int:
     if leaked:
         return die(f"leak guard: internal/private content present in PUBLIC spec: {', '.join(leaked[:8])}")
 
-    print(f"[drift-check] OK (protocolVersion={protocol_version}, manifest+leak-guard clean)")
+    print(
+        "[drift-check] OK "
+        f"(release={release_version}/{release_status}, "
+        f"defaultProtocolVersion={protocol_version}, manifest+leak-guard clean)"
+    )
     return 0
 
 
