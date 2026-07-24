@@ -5,18 +5,18 @@ version: v1
 normative: false
 ---
 
-# Density Burn Rationale — Why One Pool, Not Two
+# Density Burn Rationale — Why One Reserve, Not Two Buckets
 
-This document records why the Density Burn design merged the Data Density Burn Reserve (50M) and the User Rewards pool (20M) into a single Shared Reward–Burn Pool (70M), replacing the original two-bucket allocation. It is non-normative; the mechanism itself is defined in density-burn.md.
+This document records why the Density Burn design merged the former 50M Data Density Reserve and the 20M User Rewards pool into the current 70M **Data Density Reserve**, replacing the original two-bucket allocation. It is non-normative; the mechanism itself is defined in density-burn.md.
 
 ## The original design
 
 ```text
-50,000,000 — Data Density Burn Reserve   (sealed; only exit: burn)
+50,000,000 — Data Density Reserve        (sealed; only exit: burn)
 20,000,000 — User Rewards                (sealed; only exit: emission)
 ```
 
-Each bucket immutable, single-exit, independent. The burn reserve consumes along the density curve; the reward pool emits per reward policy. Neither touches the other.
+Each bucket immutable, single-exit, independent. The density reserve consumes along the density curve; the reward pool emits per reward policy. Neither touches the other.
 
 ## The flaw, found by removal test
 
@@ -40,10 +40,10 @@ So the sealed design's problem was not that the Schelling-point theory was wrong
 
 ## The fix: make the signal costly
 
-Merge the buckets. One pool, two exits:
+Merge the buckets. One reserve, two exits:
 
 ```text
-70,000,000 — Shared Reward–Burn Pool
+70,000,000 — Data Density Reserve
               exit 1: reward emission (per reward policy)
               exit 2: density burn   (per density curve)
               no third exit, ever
@@ -54,14 +54,14 @@ Now every burned token is a token that would otherwise have remained available f
 1. **The index is unchanged.** Same curve, same concavity, same daily heartbeat, same single on-chain number (`B_cum`). Nothing about the Schelling point is lost.
 2. **The signal becomes costly.** The issuer provably forfeits emission capacity with every epoch. That is a real, measurable cost — the property that makes signals believable.
 3. **The refutation dies.** "The burn is fake" is now simply false: every burn measurably reduces the maximum tokens that can ever be emitted.
-4. **The belief loop gains a mechanical backstop.** Rewards are denominated in USD, so token-denominated emission varies inversely with price; pool longevity is endogenous to the same index the burn publishes. Under the sealed design that loop ran on belief alone. Under the shared pool, if belief wavers, mechanics remain: fast growth still permanently shrinks eventual float.
+4. **The belief loop gains a mechanical backstop.** Rewards are denominated in USD, so token-denominated emission varies inversely with price; reserve longevity is endogenous to the same index the burn publishes. Under the sealed design that loop ran on belief alone. Under the Data Density Reserve, if belief wavers, mechanics remain: fast growth still permanently shrinks eventual float.
 
 ## What the race means
 
-The merged pool turns a static allocation into a contest the protocol cannot rig:
+The Data Density Reserve turns a static allocation into a contest the protocol cannot rig:
 
 - **Fast verified growth** → the burn front-runs emissions; substantially more than 50M may never reach circulation; rewards become scarcer per token while the index that scarcified them is the same one telling the market why.
-- **Slow growth** → emissions draw the pool down over years and the burn consumes what remains.
+- **Slow growth** → emissions draw the reserve down over years and the burn consumes what remains.
 
 Either path is honest. The split between burned and emitted is determined by verified spend, not by the issuer — which is also the only claim the published tokenomics needs to make.
 
@@ -69,7 +69,7 @@ Either path is honest. The split between burned and emitted is determined by ver
 
 **Preserved:** the 50/20 split survives as a *calibration target*. Curve constants are chosen so that at target adoption cumulative burn approaches ~50M, leaving ~20M for emission. The published allocation remains truthful as expected values.
 
-**Given up:** the enforced boundary between the buckets — deliberately, because the boundary was the thing that made the burn vacuous. Also given up: the comfort of a fixed reward budget. The reward pool can be eaten from above by its own success. That is the cost of the signal, and the cost is the point.
+**Given up:** the enforced boundary between the buckets — deliberately, because the boundary was the thing that made the burn vacuous. Also given up: the comfort of a fixed reward budget. The Data Density Reserve can be eaten from above by its own success. That is the cost of the signal, and the cost is the point.
 
 ## Consequences that bind the implementation
 
@@ -82,4 +82,4 @@ Making the burn economically real re-arms the attacks that vacuousness used to a
 
 ## One-line summary
 
-A burn from a sealed reserve is a free signal with a true refutation; a burn from the emission budget is a costly signal with none — same index, same curve, one pool.
+A burn from a sealed reserve is a free signal with a true refutation; a burn from the emission budget is a costly signal with none — same index, same curve, one Data Density Reserve.
