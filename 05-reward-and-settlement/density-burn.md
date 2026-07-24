@@ -9,9 +9,9 @@ normative: true
 
 > "Verified spend density must be provable on-chain as a single monotonic figure — and publishing that figure must cost the issuer future emissions."
 
-Density Burn is a supply-accounting mechanism that consumes CRINKL tokens from the **Shared Reward–Burn Pool** as a deterministic function of cumulative qualified network activity. It replaces the prior GMV-indexed supply *release* model: where the old model emitted escrowed tokens in proportion to GMV, Density Burn destroys pool tokens in proportion to qualified GMV — from the **same pool that funds user reward emissions**. Every burned token is a token that would otherwise have remained available for future reward emission.
+Density Burn is a supply-accounting mechanism that consumes CRINKL tokens from the **Data Density Reserve** as a deterministic function of cumulative qualified network activity. It replaces the prior GMV-indexed supply *release* model: where the old model emitted escrowed tokens in proportion to GMV, Density Burn destroys reserve tokens in proportion to qualified GMV — from the **same reserve that funds user reward emissions**. Every burned token is a token that would otherwise have remained available for future reward emission.
 
-This shared-pool property is load-bearing and MUST NOT be weakened: a burn drawn from a reserve with no alternative fate carries no economic information. The burn is credible precisely because it consumes the protocol's own emission budget.
+This shared-reserve property is load-bearing and MUST NOT be weakened: a burn drawn from a reserve with no alternative fate carries no economic information. The burn is credible precisely because it consumes the protocol's own emission budget.
 
 **Identity prohibition:** Per the Identity Minimization Invariant (../00-purpose/what-crinkl-proves.md), Density Burn artifacts MUST NOT include wallet identifiers, recipient references, or any data enabling reconstruction of per-user spend patterns. Spends are referenced only via the committed `spendHeadSetRoot` inherited from Verified GMV Token semantics (gmv-token.md).
 
@@ -29,7 +29,7 @@ The burn is an index of verified spend density and a forfeiture of future emissi
 
 ## Definitions
 
-### Shared Reward–Burn Pool (SRBP)
+### Data Density Reserve (DDR)
 
 A single program-owned (PDA) token account holding the protocol's reward emission budget.
 
@@ -37,7 +37,7 @@ A single program-owned (PDA) token account holding the protocol's reward emissio
 - Exactly **two** exits, both protocol-defined:
   1. **Reward emission** — transfers governed by the reward policy layer (reward-layer.md, policy-layer.md).
   2. **Density burn** — irreversible burns governed by this document.
-- NO withdrawal instruction, NO emergency-withdraw path, NO upgrade authority after parameter freeze. Any program exposing a third exit from the SRBP is non-conformant.
+- NO withdrawal instruction, NO emergency-withdraw path, NO upgrade authority after parameter freeze. Any program exposing a third exit from the DDR is non-conformant.
 
 ### Burn Input `A`
 
@@ -55,13 +55,13 @@ A = QG + λ · SR
 
 ### Depletion schedule `D(A)`
 
-The cumulative TOTAL depletion of the pool — burn plus reward emission together — in token base units (CRINKL has 6 decimals):
+The cumulative TOTAL depletion of the reserve — burn plus reward emission together — in token base units (CRINKL has 6 decimals):
 
 ```text
 D(A) = floor( c · ln(1 + A / K) )
 ```
 
-`D` is a schedule, not a burn amount: it fixes how much has left the pool once
+`D` is a schedule, not a burn amount: it fixes how much has left the reserve once
 cumulative qualified input reaches `A`, independent of token price. Each
 epoch's tranche `D(A_new) − D(A_old)` is split atomically between the reward
 emission ask (USD-denominated, converted at the posted price, capped by the
@@ -77,7 +77,7 @@ Calibrated parameters (closed form from the depletion targets; frozen as deploym
 | `K` | 200,803,213 cents ($2,008,032.13) | = 10^18/(5·10^11 − 2·10^9) dollars, the unique K with D($1B) = ½·D($500B) |
 | `λ` | 33 | revenue weight inside `A` |
 
-Calibration targets (normative): `D($1B) = 50%` of the funded pool;
+Calibration targets (normative): `D($1B) = 50%` of the funded reserve;
 `D($500B) = 100%`. The closed form follows from requiring
 `(1 + 10^9/K)² = 1 + 5·10^11/K`.
 
@@ -85,7 +85,7 @@ Required properties (normative — any recalibrated schedule MUST preserve all f
 
 1. **Monotone:** `D` is non-decreasing in `A`.
 2. **Concave:** marginal depletion per dollar strictly decreases as `A` grows — early density is weighted most ("density" is the design intent, not decoration).
-3. **Bounded:** cumulative depletion can never exceed the SRBP balance; schedule beyond the balance is forfeited, not deferred (see Pool semantics). The slow growth additionally bounds the damage of any input inflation: even unbounded fake input asymptotically depletes only what the pool holds.
+3. **Bounded:** cumulative depletion can never exceed the DDR balance; schedule beyond the balance is forfeited, not deferred (see Data Density Reserve semantics). The slow growth additionally bounds the damage of any input inflation: even unbounded fake input asymptotically depletes only what the reserve holds.
 4. **Deterministic:** computed in fixed-point integer arithmetic with floor-only rounding on the *cumulative* value. Per-epoch tranches are differences of cumulative values, never independently rounded.
 
 Reference magnitudes under calibrated parameters (verified on-chain in the localnet sweep):
@@ -174,22 +174,22 @@ QualifiedGmvBurnEpochV1 {
 
 ## GMV finality trust root (normative)
 
-**Decision 2026-06-12 (Alvin):** GMV finality for burn consumption is **joint** — a platform root AND a proof-oracle root. Neither alone may move the pool.
+**Decision 2026-06-12 (Alvin):** GMV finality for burn consumption is **joint** — a platform root AND a proof-validator root. Neither alone may move the reserve.
 
 1. **Platform root.** The consumption transaction MUST be signed by the issuer key pinned in on-chain program config (the attestation-gateway authority).
-2. **Oracle root.** The transaction MUST carry at least `threshold` distinct ed25519 signatures from the pinned proof-oracle validator set over the **epoch commitment hash** — the on-chain form of `ProofFinalizationCertificateV1`.
+2. **Proof-validator root.** The transaction MUST carry at least `threshold` distinct ed25519 signatures from the pinned proof-validator set over the **epoch commitment hash** — the on-chain form of `ProofFinalizationCertificateV1`.
 
 Rules, each load-bearing:
 
 - **The commitment hash MUST be recomputed on-chain** from the posted instruction fields (domain tag `CRINKL_DENSITY_BURN_EPOCH_V1`, then `windowDay`, `finalityCutoff`, `correctionCutoff`, `gmvCents`, `settledRevenueCents`, `spendCount`, `spendHeadSetRoot`, `spendElectionRoot`, `ruleSetHash`, `policyHash`, `claimRoot`, `prevEpochHash`, `inputBeforeCents`, `depletionBeforeBaseUnits`; SHA-256; little-endian integers). Every certified CLAIM is in the preimage — including `spendCount` and the two cutoffs — so displayed metadata cannot diverge from the certified hash. The reserved roots `spendElectionRoot` and `claimRoot` are part of the preimage from V1 — encoded as 32 zero bytes while null (Phases 3/4) — so they transition from sentinel to real hash with no preimage-version change. A signature over any hash the program did not recompute MUST NOT count — the quorum vouches for the GMV figure itself, never for an opaque hash.
 - **Output cumulative fields are recomputed, not bound.** `inputAfterCents`, `depletionAfterBaseUnits`, `depletionDeltaBaseUnits`, and the `split` (emission/burn) are NOT in the preimage: the program derives them deterministically from the bound `inputBeforeCents` + `depletionBeforeBaseUnits` + the bound inputs (`gmvCents`, `settledRevenueCents`) + the schedule + the posted price. Binding `before` anchors the chain; binding outputs too would be redundant and could only introduce a divergence the program would have to reject anyway.
 - **Finality metadata is not in the preimage, by design.** `validatorSetSeq`, `threshold`, and `finality.signatures` describe the signature envelope, not the claim. The program enforces them against the pinned validator-set in program state (a stronger check than self-attested values would be); they cannot be bound in the very commitment they sign.
-- **Validator-set pinning.** The trusted validator set lives in program state, rotated only by a distinct validator-set authority. The certificate carries no information about its own validator set; embedded-key / self-referential certificate trust is non-conformant (proof-oracle security audit, trust-model reconciliation 2026-06-10).
+- **Validator-set pinning.** The trusted validator set lives in program state, rotated only by a distinct validator-set authority. The certificate carries no information about its own validator set; embedded-key / self-referential certificate trust is non-conformant (proof-validator security audit, trust-model reconciliation 2026-06-10).
 - **Root separation.** The issuer key MUST NOT be a member of the validator set, so the joint root can never collapse to one key. The validator-set authority SHOULD be operationally distinct from the issuer.
 - **Initialization gating.** Program initialization MUST be restricted to the program upgrade authority (PDAs are mint-deterministic; an unrestricted initialize is front-runnable).
 - **Reward-split inputs are platform-only.** `rewardUsdCents` and the posted token price are signed by the issuer transaction but are NOT part of the oracle-certified commitment: the oracle vouches for GMV finality, not pricing. The depletion schedule is price-invariant by construction, so a corrupted price can only shift the burn/emission split within an already-fixed tranche.
 
-**Maturity caveat (normative for external claims).** The proof-oracle committee is today permissioned and pre-token-security; its economic weight is points-modeled, not bonded stake. The certificate therefore expresses an identity/threshold quorum until token staking/slashing ships (Phase 5), at which point economic weight upgrades **with no change to this interface**. Public surfaces MUST NOT describe the quorum as economically bonded before Phase 5.
+**Maturity caveat (normative for external claims).** The proof-validator role is open by conformance and economic exposure through the authority registry, and PriceChain Labs is currently the sole reference operator on the alpha network. The certificate expresses an identity/threshold quorum; the quorum is not economically bonded or staked. Economic bonding, staking, and slashing are deferred to Phase 5 and are not live. Public surfaces MUST NOT describe the quorum as economically bonded or staked before Phase 5.
 
 ### Policy binding (Phase 1 ↔ Phase 2) (normative)
 
@@ -212,7 +212,7 @@ Two trust roots meet in the one commitment and attest different things:
 
 - The **issuer (policy) root** signs the IPC and makes `policyHash` authoritative —
   the reward/price policy is the issuer's to set, and may be a multisig (Phase 6).
-- The **proof-oracle (finality) root** co-signs the epoch commitment but vouches
+- The **proof-validator (finality) root** co-signs the epoch commitment but vouches
   only for GMV finality (`gmvCents`, `spendCount`, `spendHeadSetRoot`), never for
   pricing. It signs over `policyHash` as an opaque member of the bundle; it does
   not certify the policy's values.
@@ -238,10 +238,10 @@ committed policy is non-conformant.
 2. **Observation period** of `T_final` (provisional: 14 days) elapses. Corrections, revocations, and enforcement actions during this period are observable per correction-and-revocation semantics.
 3. **Derivation:** the issuer derives qualified totals from the canonical protocol stream — NEVER from public aggregate GET endpoints — applying the pinned `QualifiedGmvRuleSetV1`.
 4. **Reconciliation gate:** derived totals are reconciled against (a) the day's latest `VerifiedGmvTokenV1` and (b) the cumulative public GMV projection. Unexplained drift between sources BLOCKS posting.
-5. **Sign and post** the epoch (PENDING). The issuer signature and the proof-oracle finality certificate (GMV finality trust root, above) are both attached.
-6. **Execute tranche:** the on-chain program verifies the issuer signature, the finality-certificate quorum against the pinned validator set, chain linkage, cumulative-state match, and window uniqueness, then recomputes the tranche `depletionDeltaBaseUnits = D(A_after) − D(A_before)` (capped at the pool balance) and splits it atomically: it routes `rewardEmissionBaseUnits = min(rewardAsk ÷ posted_price, tranche)` to the rewards escrow and BURNS the residual `burnBaseUnits = tranche − emission` from the SRBP. Total pool depletion this epoch equals the tranche regardless of the split. Epoch becomes CONSUMED.
+5. **Sign and post** the epoch (PENDING). The issuer signature and the proof-validator finality certificate (GMV finality trust root, above) are both attached.
+6. **Execute tranche:** the on-chain program verifies the issuer signature, the finality-certificate quorum against the pinned validator set, chain linkage, cumulative-state match, and window uniqueness, then recomputes the tranche `depletionDeltaBaseUnits = D(A_after) − D(A_before)` (capped at the reserve balance) and splits it atomically: it routes `rewardEmissionBaseUnits = min(rewardAsk ÷ posted_price, tranche)` to the rewards escrow and BURNS the residual `burnBaseUnits = tranche − emission` from the DDR. Total reserve depletion this epoch equals the tranche regardless of the split. Epoch becomes CONSUMED.
 
-## Pool semantics (normative)
+## Data Density Reserve semantics (normative)
 
 - **Atomic tranche split:** each consumed epoch computes the tranche
   `D(A_new) − (burned_cum + emitted_cum)` and splits it in one instruction:
@@ -251,12 +251,12 @@ committed policy is non-conformant.
   be front-run by emissions.
 - **Depletion identity:** after every consumed epoch,
   `poolBalance = fundedAmount − min(D(A_cum), fundedAmount)` exactly.
-- **Exhaustion:** the tranche is capped at the pool balance (relevant only
-  beyond the $500B calibration point). When the pool reaches zero, both flows
+- **Exhaustion:** the tranche is capped at the reserve balance (relevant only
+  beyond the $500B calibration point). When the reserve reaches zero, both flows
   halt permanently. Schedule beyond the balance is forfeited, never owed.
 - **On-chain state:** the program maintains `A_cum`, `D_cum`, `burned_cum`,
   `emitted_cum`, last consumed window, and last epoch hash. All publicly
-  readable; `D_cum` (equivalently the pool balance) is the canonical density
+  readable; `D_cum` (equivalently the reserve balance) is the canonical density
   index, and the burned/emitted split is the price record.
 
 ## Parameter governance and the change-gatekeeper (normative)
@@ -287,7 +287,7 @@ thwart an attack. The same gate governs the governance roles themselves.
 - **Pause.** Either the guardian or governance MAY pause `consume_epoch`
   immediately (break-glass freeze of all token movement); only the governance
   authority may unpause. Absent a per-epoch rate cap, the pause is the primary
-  control that lets honest participants stop the pool while assessing a
+  control that lets honest participants stop the reserve while assessing a
   suspected attack.
 - **Validation at propose time.** Proposed values are validated when queued
   (`c,K > 0`, delay ≥ floor, roles distinct and non-default), so an invalid
@@ -296,18 +296,18 @@ thwart an attack. The same gate governs the governance roles themselves.
   off-chain observation constant; the validator set has its own authority and
   rotation path).
 
-Before the SRBP is funded, `c` and `K` MUST be calibrated jointly against the
+Before the DDR is funded, `c` and `K` MUST be calibrated jointly against the
 reward emission schedule so the **deflation crossover** — the input level at
 which marginal burn exceeds marginal emission — occurs at an explicitly chosen,
 documented adoption level. Canonical v5 calibration: `c = 5,633,706.605995`,
 `K = $2,008,032.13`, pinned by `D($1B) = 50%` and `D($500B) = 100%` of the 70M
-pool. Any later recalibration travels through the gatekeeper above.
+reserve. Any later recalibration travels through the gatekeeper above.
 
 Golden vectors at `A ∈ {0, $250M, $290M, $1B, $5B, $500B}` plus both crossover-adjacent points MUST be generated from the reference fixed-point implementation and added to ../07-conformance/vectors.md before any on-chain consumption.
 
 ## Interaction with reward emission (non-normative)
 
-Reward policy denominates rewards in USD. Token-denominated emission per receipt therefore varies inversely with token price, and pool longevity is endogenous: the same density index that consumes the pool also informs the market that prices the emission. The shared pool makes the two flows compete for one balance — fast verified growth permanently reduces the maximum tokens that can ever be emitted. This race is the designed behavior, not a hazard to be engineered away.
+Reward policy denominates rewards in USD. Token-denominated emission per receipt therefore varies inversely with token price, and reserve longevity is endogenous: the same density index that consumes the reserve also informs the market that prices the emission. The Data Density Reserve makes the two flows compete for one balance — fast verified growth permanently reduces the maximum tokens that can ever be emitted. This race is the designed behavior, not a hazard to be engineered away.
 
 ## Per-spend burn attribution (non-normative)
 
@@ -318,8 +318,8 @@ Because each epoch commits to `spendHeadSetRoot`, an issuer can furnish a per-sp
 Density Burn supersedes the GMV-indexed supply release model (80M escrow, rate-based release). Migration requirements:
 
 - The historical off-chain "released" ledger is archived and its balance assigned to an explicit legacy bucket; no retroactive on-chain movement is implied (the old escrow shows no outbound movement to reverse).
-- The validator allocation (provisionally 10M) is carved out before SRBP funding.
-- The SRBP is funded only after the program is audited and golden vectors pass.
+- The validator allocation (provisionally 10M) is carved out before DDR funding.
+- The DDR is funded only after the program is audited and golden vectors pass.
 - Public tokenomics surfaces describing the release model MUST be replaced before the first epoch is consumed.
 
 ## Conformance (to be added to 07-conformance)
@@ -327,7 +327,7 @@ Density Burn supersedes the GMV-indexed supply release model (80M escrow, rate-b
 - Curve vectors: `B(A)` at the golden inputs, bit-exact.
 - Epoch chain vectors: valid chain, forked-chain rejection, duplicate-window rejection, cumulative-state mismatch rejection.
 - Rule-set vectors: duplicate leaf, enforcement hold, pre-finality spend, high-total policy, rolled-forward correction.
-- Pool vectors: burn precedence over same-window emission, exhaustion capping, post-exhaustion halt.
+- Data Density Reserve vectors: burn precedence over same-window emission, exhaustion capping, post-exhaustion halt.
 - Non-zero `settledRevenueCents` MUST be rejected while the paid-settlement artifact remains undefined.
 - Gatekeeper vectors: propose by non-governance rejected; sub-floor delay rejected; non-distinct roles rejected; execute-before-`eta` rejected; second concurrent proposal rejected; guardian veto and governance self-cancel clear the queue; `consume_epoch` rejected while paused; guardian-unpause rejected (governance only); revenue enablement reaches `A` only after a consumed epoch following a successfully executed enable.
 - Trust-root vectors: missing certificate, below-threshold certificate, duplicate signatures from one validator counted once, signatures from unpinned keys, quorum over a non-recomputed hash, post-rotation rejection of the previous committee, issuer-in-validator-set rejection, non-upgrade-authority initialization rejection.

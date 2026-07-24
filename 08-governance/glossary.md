@@ -57,10 +57,14 @@ The party that receives commerce evidence, evaluates it under protocol rules ins
 
 ## Proof Validator
 
+Proof validator: a Crinkl protocol role that checks attestation admissibility, proof integrity, uniqueness, and settlement, and finalizes verified GMV. Unrelated to Solana consensus validators.
+
 A party that independently re-verifies deterministic public protocol statements from committed material and co-signs the exact result it checked, so that claims can be admitted to the shared record (see `../02-proof-lifecycle/admission.md`).
 
 **Proof Validator is:** a public-plane checker of correctness — schema, signatures, key authorization, commitments, roots, totals, nullifier replay scope.
 **Proof Validator is not:** a reader of receipts, a prover of ground truth, or a payout authority.
+
+The role is open by conformance and economic exposure through the authority registry. PriceChain Labs is currently the sole reference operator on the alpha network. The alpha quorum is identity/threshold based, not economically bonded or staked; economic bonding, staking, and slashing are deferred to Phase 5 and are not live.
 
 ## Selected Committee
 

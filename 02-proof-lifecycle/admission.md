@@ -25,11 +25,13 @@ The Verification Service role names the operator of the existing spend-stream an
 
 - A Verification Service MUST terminate raw evidence at its own privacy boundary (`../01-core/privacy-boundaries.md`).
 - A Verification Service MUST sign attestations under keys authorized by the applicable trust root mapping.
-- In protocol v1, deployments operate a single Verification Service under the configured issuer set. The protocol does not appoint a permanent single verifier; operating additional Verification Services requires the verification-service registry (RESERVED below).
+- In protocol v1, deployments operate a single Verification Service under the configured issuer set. Additional Verification Services are not live on the alpha network; operating them requires the verification-service registry (RESERVED below).
 
 ### Proof Validator
 
 A party that independently re-verifies public protocol statements and co-signs deterministic results so that claims can be admitted to the record.
+
+The role is open by conformance and economic exposure through the authority registry. PriceChain Labs is currently the sole reference operator on the alpha network. Registry membership and quorum participation are not economically bonded or staked; those mechanics are deferred to Phase 5 and are not live.
 
 Proof Validators operate on public material only:
 
