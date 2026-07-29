@@ -15,6 +15,8 @@ Canonical entrypoint for version 1 of the Crinkl Protocol specification. Each se
 - [../03-portability/spend-attestation-token.md](../03-portability/spend-attestation-token.md) — token outputs (attestation + commitments)
 - [../01-core/canonicalization.md](../01-core/canonicalization.md) — canonical schema definitions
 - [../02-proof-lifecycle/ingestion.md](../02-proof-lifecycle/ingestion.md) — soft and hard verification flows
+- [../02-proof-lifecycle/gmv-price-aggregate-v1.md](../02-proof-lifecycle/gmv-price-aggregate-v1.md) — GmvPriceAggregateV1 artifact format, canonicalization, and registry/committee binding
+- [../07-conformance/gmv-price-aggregate-verification.md](../07-conformance/gmv-price-aggregate-verification.md) — normative verifier check order and failure-code vocabulary for GmvPriceAggregateV1
 - [../01-core/verification-state.md](../01-core/verification-state.md) — attestation and reward lifecycle transitions
 - [../01-core/spend-event.md](../01-core/spend-event.md) — event schemas and ordering requirements
 - [../05-reward-and-settlement/reward-layer.md](../05-reward-and-settlement/reward-layer.md) — application-layer reward interface (non-protocol)
