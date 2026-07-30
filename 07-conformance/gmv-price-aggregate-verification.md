@@ -28,6 +28,11 @@ select the weaker behavior.
 
 The registry view MUST be derived only from a registry snapshot whose authority signature was verified, and whose paired committee assignment was verified, before aggregate verification begins. Authenticating that evidence is the caller's responsibility; this page specifies verification of the aggregate against an already-authenticated view.
 
+The registry view and counted signature set MUST also satisfy
+[`validator-signing-key-independence.md`](../02-proof-lifecycle/validator-signing-key-independence.md).
+The ordered checks below specialize that global invariant for
+`GmvPriceAggregateV1`.
+
 ## Error Model
 
 A verification failure carries a semantic code and a reason. Semantic codes:

@@ -133,7 +133,10 @@ From the authenticated registry snapshot, the verifier derives a **registry key 
 - No two ACTIVE rows may share the same `publicKey`. Historical INACTIVE rows may retain a previously used public key because they do not participate in signature quorum.
 
 The active-public-key rule binds quorum membership to distinct cryptographic
-signing identities, rather than to the number of registry rows or aliases.
+signing identities, rather than to the number of registry rows or aliases. It
+is the price-evidence application of the global
+[`validator-signing-key-independence.md`](./validator-signing-key-independence.md)
+rule.
 
 ### `authorityBoundary`
 

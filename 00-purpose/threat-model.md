@@ -71,6 +71,11 @@ The protocol assumes trust in the following categories of roots. Each has a boun
 | Merchant-claim verifier authorization (optional extension) | That a merchant claim verifier issued a signed claim attestation for a bounded store identity scope | Spend truth; payment settlement; merchant intent for any spend; correctness of private evidence beyond the attestation semantics | `../06-extensions/merchant-authority.md` + deployment authorization mapping |
 | Proof-validator finality certificates | That a quorum of selected, registered proof validators independently recomputed a deterministic public statement from committed material and co-signed the identical result | Ground truth of receipts; honesty of the verification service beyond its committed output; payout authority; production chain finality | `../02-proof-lifecycle/admission.md` + authority-signed registry/assignment artifacts |
 
+Proof-validator registry and quorum consumers MUST enforce
+[`validator-signing-key-independence.md`](../02-proof-lifecycle/validator-signing-key-independence.md).
+An authority signature authenticates registry bytes but does not turn two
+active rows sharing one Ed25519 public key into two independent actors.
+
 **Signer-role isolation (normative):**
 - Keys authorized for system-stream signing MUST NOT be accepted for spend-stream event signing, and vice versa.
 - Verifiers MUST reject signatures from unknown, expired, or revoked authorities under the applicable root.
