@@ -130,8 +130,13 @@ From the authenticated registry snapshot, the verifier derives a **registry key 
 
 - No two rows may share the same `(validatorId, keyId)` identity.
 - No two rows may share the same `(keyId, publicKey)` pair.
+- No two ACTIVE rows may share the same `publicKey`. Historical INACTIVE rows may retain a previously used public key because they do not participate in signature quorum.
 
-Two ACTIVE rows that share a `publicKey` under different `keyId`s are currently accepted (see the open hardening question in `../07-conformance/gmv-price-aggregate-verification.md`).
+The active-public-key rule binds quorum membership to distinct cryptographic
+signing identities, rather than to the number of registry rows or aliases. It
+is the price-evidence application of the global
+[`validator-signing-key-independence.md`](./validator-signing-key-independence.md)
+rule.
 
 ### `authorityBoundary`
 
@@ -160,6 +165,7 @@ Signature-list rules:
 
 - Entries MUST be strictly increasing by `validatorId` under UTF-8 byte order; the list therefore contains at most one signature per validator.
 - The `(keyId, publicKey)` pair of each signature MUST be distinct across the list.
+- The `publicKey` of each signature MUST be distinct across the list.
 - Each signature's `(validatorId, keyId)` MUST resolve to an active registry-view row whose `publicKey` equals the signature's `publicKey`.
 - The signed message is the raw 32-byte digest decoded from `aggregateHash` (not the `sha256:`-prefixed string, and not a re-hash of it).
 - Quorum: the list MUST contain at least `requiredSignatures` valid signatures.

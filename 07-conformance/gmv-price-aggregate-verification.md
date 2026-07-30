@@ -9,7 +9,12 @@ normative: true
 
 Normative verifier behavior for `GmvPriceAggregateV1` (format: `../02-proof-lifecycle/gmv-price-aggregate-v1.md`).
 
-Two independent verifier implementations exist: the producer-side verifier run by proof validators, and a platform-side seal-admission verifier. **The producer-side (validator) semantics are normative.** Where the implementations are known to diverge, conformance is judged against the behavior specified here, which follows the producer side.
+Two independent verifier implementations exist: the producer-side verifier run
+by proof validators and a platform-side seal-admission verifier. Neither
+implementation is protocol authority merely because it shipped first.
+Conformance is judged against the rules and vectors adopted for this protocol
+version; an implementation divergence is a defect to reconcile, not a reason to
+select the weaker behavior.
 
 ## Inputs
 
@@ -22,6 +27,11 @@ Two independent verifier implementations exist: the producer-side verifier run b
 | `expectedCanonicalArtifactByteLength` | OPTIONAL expected canonical byte length (present when a candidate binds one). |
 
 The registry view MUST be derived only from a registry snapshot whose authority signature was verified, and whose paired committee assignment was verified, before aggregate verification begins. Authenticating that evidence is the caller's responsibility; this page specifies verification of the aggregate against an already-authenticated view.
+
+The registry view and counted signature set MUST also satisfy
+[`validator-signing-key-independence.md`](../02-proof-lifecycle/validator-signing-key-independence.md).
+The ordered checks below specialize that global invariant for
+`GmvPriceAggregateV1`.
 
 ## Error Model
 
@@ -56,10 +66,10 @@ A conforming verifier MUST evaluate the checks in this order and fail closed at 
 11. **Artifact byte length.** When `expectedCanonicalArtifactByteLength` is provided, it MUST be a positive safe integer equal to the canonical byte length → else `ARTIFACT_BYTE_LENGTH_MISMATCH`.
 12. **Registry binding.** `registry.registrySequence == committee.registrySequence` and `registry.registryHash == committee.registryHash` → else `REGISTRY_BINDING_MISMATCH`.
 13. **Signature-list order.** Signature `validatorId`s strictly increasing under UTF-8 byte order. If out of order with all ids distinct → `SIGNATURE_ORDER_INVALID`; if any id repeats → `DUPLICATE_SIGNER`.
-14. **Registry-view integrity.** For each registry row: `validatorId`/`keyId` MUST be identifiers and `publicKey` canonical 32-byte base64 → else `REGISTRY_BINDING_MISMATCH`. Rows MUST be unique on `(validatorId, keyId)` and unique on `(keyId, publicKey)` → else `DUPLICATE_SIGNING_KEY`.
+14. **Registry-view integrity.** For each registry row: `validatorId`/`keyId` MUST be identifiers and `publicKey` canonical 32-byte base64 → else `REGISTRY_BINDING_MISMATCH`. Rows MUST be unique on `(validatorId, keyId)` and unique on `(keyId, publicKey)`. ACTIVE rows MUST additionally be unique on `publicKey`; INACTIVE historical rows do not participate in this active-key check. Any uniqueness violation → `DUPLICATE_SIGNING_KEY`.
 15. **Per-signature checks**, in list order, each signature evaluated fully before the next:
     1. `validatorId` MUST be in `selectedValidatorIds` → else `UNSELECTED_SIGNER`.
-    2. The signature's `(keyId, publicKey)` pair MUST NOT repeat within the signature list → else `DUPLICATE_SIGNING_KEY`.
+    2. Neither the signature's `(keyId, publicKey)` pair nor its `publicKey` alone may repeat within the signature list → else `DUPLICATE_SIGNING_KEY`.
     3. `(validatorId, keyId)` MUST resolve to a registry-view row that is active and whose `publicKey` equals the signature's `publicKey` → else `SIGNING_KEY_NOT_ACTIVE`.
     4. The Ed25519 signature MUST verify over the raw 32-byte digest decoded from the recomputed aggregate hash → else `SIGNATURE_INVALID`.
 16. **Quorum.** The signature count MUST be at least `requiredSignatures` → else `SIGNATURE_QUORUM_UNSATISFIED`.
@@ -112,13 +122,10 @@ Candidate/attempt binding (code `GMV_PRICE_AGGREGATE_BINDING_MISMATCH` unless no
 
 ## Known Verifier Divergences
 
-The producer-side semantics above are normative. Known platform-side deviations, listed so an implementer comparing verdicts does not mistake them for spec ambiguity:
+Known implementation deviations are listed so an implementer comparing
+verdicts does not mistake them for spec ambiguity. This list does not confer
+protocol authority on either implementation:
 
 - **Quorum-gate position.** The platform verifier evaluates the signature-count gate before the per-signature checks; the normative order verifies every signature first and applies `SIGNATURE_QUORUM_UNSATISFIED` last.
 - **Contributor-count bound.** The platform verifier additionally rejects `contributingValidatorCount > selectedValidatorIds.length` (a reason outside this vocabulary). The normative verifier imposes no such bound.
 - **Attempt-freshness reasons.** The platform collapses the two attempt-freshness failures into a single reason; the normative vocabulary distinguishes `CANDIDATE_PRICE_AFTER_ATTEMPT_START` from `CANDIDATE_PRICE_STALE_FOR_ATTEMPT`.
-- **Registry `publicKey` sharing.** See the open hardening question below.
-
-## Open Hardening Questions
-
-1. **Shared `publicKey` across ACTIVE registry rows.** Should a registry view containing two ACTIVE rows that share a `publicKey` under different `keyId`s be rejected as `DUPLICATE_SIGNING_KEY`? The platform verifier currently rejects this shape; the producer-side verifier accepts it (it deduplicates only on `(validatorId, keyId)` and `(keyId, publicKey)`). The normative behavior is **accept**, pending an explicit rule decision. Rejecting would close a key-aliasing avenue (one physical key counted under multiple registrations) at the cost of forbidding legitimate key sharing across registrations.
