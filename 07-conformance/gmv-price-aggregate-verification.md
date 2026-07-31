@@ -9,12 +9,13 @@ normative: true
 
 Normative verifier behavior for `GmvPriceAggregateV1` (format: `../02-proof-lifecycle/gmv-price-aggregate-v1.md`).
 
-Two independent verifier implementations exist: the producer-side verifier run
-by proof validators and a platform-side seal-admission verifier. Neither
-implementation is protocol authority merely because it shipped first.
-Conformance is judged against the rules and vectors adopted for this protocol
-version; an implementation divergence is a defect to reconcile, not a reason to
-select the weaker behavior.
+The proof-validator producer path and the Platform seal-admission path consume
+the same shared aggregate verifier. Shared implementation does not confer
+protocol authority: conformance is judged against the rules and vectors adopted
+for this protocol version. Platform authenticates the signed registry and
+committee assignment before deriving the registry view supplied to the shared
+verifier; that caller-side authority check is a precondition, not an alternate
+aggregate-verification rule set.
 
 ## Inputs
 
@@ -59,20 +60,21 @@ A conforming verifier MUST evaluate the checks in this order and fail closed at 
 4. **Observation window.** `windowStart <= firstObservedAt <= lastObservedAt < windowEndExclusive` → else `OBSERVATION_WINDOW_INVALID`.
 5. **Slot bounds.** `firstFinalizedSlot <= lastFinalizedSlot` → else `FINALIZED_SLOT_BOUNDS_INVALID`.
 6. **Publication window.** `windowEndExclusive <= publishedAt <= windowEndExclusive + maximumPublicationDelaySeconds` (millisecond arithmetic MUST stay within safe-integer range) → else `PUBLICATION_WINDOW_INVALID`.
-7. **Sample floor.** `validSampleCount >= contributingValidatorCount * minimumSamplesPerContributor` (product MUST be a safe integer) → else `SAMPLE_FLOOR_UNSATISFIED`.
-8. **Sample root.** `sampleCommitment.sampleSetRoot == resolvedSampleSetRoot` → else `SAMPLE_ROOT_MISMATCH`.
-9. **Aggregate hash.** Recompute the domain-separated hash of the unsigned aggregate; MUST equal the stored `aggregateHash` → else `AGGREGATE_HASH_MISMATCH`.
-10. **Artifact content hash.** Recompute the content hash of the full canonical artifact; MUST equal `resolvedArtifactContentHash` → else `ARTIFACT_CONTENT_HASH_MISMATCH`.
-11. **Artifact byte length.** When `expectedCanonicalArtifactByteLength` is provided, it MUST be a positive safe integer equal to the canonical byte length → else `ARTIFACT_BYTE_LENGTH_MISMATCH`.
-12. **Registry binding.** `registry.registrySequence == committee.registrySequence` and `registry.registryHash == committee.registryHash` → else `REGISTRY_BINDING_MISMATCH`.
-13. **Signature-list order.** Signature `validatorId`s strictly increasing under UTF-8 byte order. If out of order with all ids distinct → `SIGNATURE_ORDER_INVALID`; if any id repeats → `DUPLICATE_SIGNER`.
-14. **Registry-view integrity.** For each registry row: `validatorId`/`keyId` MUST be identifiers and `publicKey` canonical 32-byte base64 → else `REGISTRY_BINDING_MISMATCH`. Rows MUST be unique on `(validatorId, keyId)` and unique on `(keyId, publicKey)`. ACTIVE rows MUST additionally be unique on `publicKey`; INACTIVE historical rows do not participate in this active-key check. Any uniqueness violation → `DUPLICATE_SIGNING_KEY`.
-15. **Per-signature checks**, in list order, each signature evaluated fully before the next:
+7. **Sample contributor bound.** `sampleCommitment.contributingValidatorCount <= n` for committee size `n`, the number of entries in `committee.selectedValidatorIds`; equality is valid → else `SAMPLE_CONTRIBUTORS_EXCEED_COMMITTEE`.
+8. **Sample floor.** `validSampleCount >= contributingValidatorCount * minimumSamplesPerContributor` (product MUST be a safe integer) → else `SAMPLE_FLOOR_UNSATISFIED`.
+9. **Sample root.** `sampleCommitment.sampleSetRoot == resolvedSampleSetRoot` → else `SAMPLE_ROOT_MISMATCH`.
+10. **Aggregate hash.** Recompute the domain-separated hash of the unsigned aggregate; MUST equal the stored `aggregateHash` → else `AGGREGATE_HASH_MISMATCH`.
+11. **Artifact content hash.** Recompute the content hash of the full canonical artifact; MUST equal `resolvedArtifactContentHash` → else `ARTIFACT_CONTENT_HASH_MISMATCH`.
+12. **Artifact byte length.** When `expectedCanonicalArtifactByteLength` is provided, it MUST be a positive safe integer equal to the canonical byte length → else `ARTIFACT_BYTE_LENGTH_MISMATCH`.
+13. **Registry binding.** `registry.registrySequence == committee.registrySequence` and `registry.registryHash == committee.registryHash` → else `REGISTRY_BINDING_MISMATCH`.
+14. **Signature-list order.** Signature `validatorId`s strictly increasing under UTF-8 byte order. If out of order with all ids distinct → `SIGNATURE_ORDER_INVALID`; if any id repeats → `DUPLICATE_SIGNER`.
+15. **Registry-view integrity.** For each registry row: `validatorId`/`keyId` MUST be identifiers and `publicKey` canonical 32-byte base64 → else `REGISTRY_BINDING_MISMATCH`. Rows MUST be unique on `(validatorId, keyId)` and unique on `(keyId, publicKey)`. ACTIVE rows MUST additionally be unique on `publicKey`; INACTIVE historical rows do not participate in this active-key check. Any uniqueness violation → `DUPLICATE_SIGNING_KEY`.
+16. **Per-signature checks**, in list order, each signature evaluated fully before the next:
     1. `validatorId` MUST be in `selectedValidatorIds` → else `UNSELECTED_SIGNER`.
     2. Neither the signature's `(keyId, publicKey)` pair nor its `publicKey` alone may repeat within the signature list → else `DUPLICATE_SIGNING_KEY`.
     3. `(validatorId, keyId)` MUST resolve to a registry-view row that is active and whose `publicKey` equals the signature's `publicKey` → else `SIGNING_KEY_NOT_ACTIVE`.
     4. The Ed25519 signature MUST verify over the raw 32-byte digest decoded from the recomputed aggregate hash → else `SIGNATURE_INVALID`.
-16. **Quorum.** The signature count MUST be at least `requiredSignatures` → else `SIGNATURE_QUORUM_UNSATISFIED`.
+17. **Quorum.** The signature count MUST be at least `requiredSignatures` → else `SIGNATURE_QUORUM_UNSATISFIED`.
 
 Signature verification precedes the quorum gate: a verifier MUST NOT report `SIGNATURE_QUORUM_UNSATISFIED` for a list containing an invalid signature — the invalid signature's own reason wins. `SIGNATURE_QUORUM_UNSATISFIED` means every present signature verified and there were too few of them.
 
@@ -114,18 +116,16 @@ The complete normative reason vocabulary. A conforming verifier MUST NOT invent 
 
 Aggregate verification (code `GMV_PRICE_AGGREGATE_INVALID`):
 
-`AGGREGATE_SCHEMA_INVALID` · `SELECTED_VALIDATORS_NON_CANONICAL` · `STRICT_BFT_THRESHOLD_MISMATCH` · `OBSERVATION_WINDOW_INVALID` · `FINALIZED_SLOT_BOUNDS_INVALID` · `PUBLICATION_WINDOW_INVALID` · `SAMPLE_FLOOR_UNSATISFIED` · `SAMPLE_ROOT_MISMATCH` · `AGGREGATE_HASH_MISMATCH` · `ARTIFACT_CONTENT_HASH_MISMATCH` · `ARTIFACT_BYTE_LENGTH_MISMATCH` · `REGISTRY_BINDING_MISMATCH` · `SIGNATURE_ORDER_INVALID` · `DUPLICATE_SIGNER` · `UNSELECTED_SIGNER` · `DUPLICATE_SIGNING_KEY` · `SIGNING_KEY_NOT_ACTIVE` · `SIGNATURE_INVALID` · `SIGNATURE_QUORUM_UNSATISFIED`
+`AGGREGATE_SCHEMA_INVALID` · `SELECTED_VALIDATORS_NON_CANONICAL` · `STRICT_BFT_THRESHOLD_MISMATCH` · `OBSERVATION_WINDOW_INVALID` · `FINALIZED_SLOT_BOUNDS_INVALID` · `PUBLICATION_WINDOW_INVALID` · `SAMPLE_CONTRIBUTORS_EXCEED_COMMITTEE` · `SAMPLE_FLOOR_UNSATISFIED` · `SAMPLE_ROOT_MISMATCH` · `AGGREGATE_HASH_MISMATCH` · `ARTIFACT_CONTENT_HASH_MISMATCH` · `ARTIFACT_BYTE_LENGTH_MISMATCH` · `REGISTRY_BINDING_MISMATCH` · `SIGNATURE_ORDER_INVALID` · `DUPLICATE_SIGNER` · `UNSELECTED_SIGNER` · `DUPLICATE_SIGNING_KEY` · `SIGNING_KEY_NOT_ACTIVE` · `SIGNATURE_INVALID` · `SIGNATURE_QUORUM_UNSATISFIED`
 
 Candidate/attempt binding (code `GMV_PRICE_AGGREGATE_BINDING_MISMATCH` unless noted):
 
 `CANDIDATE_V4_PROJECTION_INVALID` · `CANDIDATE_ARTIFACT_BINDING_MISMATCH` · `CANDIDATE_AGGREGATE_HASH_MISMATCH` · `CANDIDATE_NETWORK_MISMATCH` · `CANDIDATE_SOURCE_PROFILE_MISMATCH` · `CANDIDATE_AGGREGATION_POLICY_MISMATCH` · `CANDIDATE_SAMPLE_ROOT_MISMATCH` · `CANDIDATE_REGISTRY_MISMATCH` · `CANDIDATE_ASSIGNMENT_MISMATCH` · `CANDIDATE_WINDOW_MISMATCH` · `CANDIDATE_PUBLICATION_MISMATCH` · `CANDIDATE_PRICE_VALUE_MISMATCH` (code `GMV_PRICE_VALUE_MISMATCH`) · `CANDIDATE_PRICE_WINDOW_ORDER_MISMATCH` · `ATTEMPT_PRICE_CAPABILITY_MISSING` · `CANDIDATE_PRICE_AFTER_ATTEMPT_START` · `CANDIDATE_PRICE_STALE_FOR_ATTEMPT`
 
-## Known Verifier Divergences
+## Implementation Status
 
-Known implementation deviations are listed so an implementer comparing
-verdicts does not mistake them for spec ambiguity. This list does not confer
-protocol authority on either implementation:
-
-- **Quorum-gate position.** The platform verifier evaluates the signature-count gate before the per-signature checks; the normative order verifies every signature first and applies `SIGNATURE_QUORUM_UNSATISFIED` last.
-- **Contributor-count bound.** The platform verifier additionally rejects `contributingValidatorCount > selectedValidatorIds.length` (a reason outside this vocabulary). The normative verifier imposes no such bound.
-- **Attempt-freshness reasons.** The platform collapses the two attempt-freshness failures into a single reason; the normative vocabulary distinguishes `CANDIDATE_PRICE_AFTER_ATTEMPT_START` from `CANDIDATE_PRICE_STALE_FOR_ATTEMPT`.
+The proof-validator and Platform aggregate-verification paths consume the same
+shared verifier and therefore use the ordered reasons above. No implementation
+divergence from this aggregate-verification sequence is accepted. Platform's
+authority authentication remains caller-owned and runs before the shared
+verifier; it does not alter the aggregate-verification order or vocabulary.
