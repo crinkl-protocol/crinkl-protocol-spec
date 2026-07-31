@@ -7,7 +7,7 @@ normative: true
 
 # Protocol Evolution
 
-Current public repository release: **1.0.0-rc.4** (`RELEASE_CANDIDATE_NOT_PUBLISHED`)
+Current public repository release: **1.0.0-rc.4** (`RELEASED`)
 
 Current default Crinkl Platform binding `protocolVersion`: **1.0.0-rc.2**
 

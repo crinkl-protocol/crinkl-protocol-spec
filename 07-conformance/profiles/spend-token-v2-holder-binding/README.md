@@ -7,7 +7,7 @@ normative: true
 
 # Spend Attestation Token V2 Holder Binding Profile
 
-Maturity: `release-candidate`.
+Maturity: `released`.
 
 This profile publishes the optional, identity-excluded holder-control mechanism
 for `SpendAttestationTokenV2`. The token remains a valid portable Spend

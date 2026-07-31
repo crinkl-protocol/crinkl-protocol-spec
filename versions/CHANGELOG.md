@@ -10,7 +10,7 @@ This repository is being prepared for its **first public release**. Earlier inte
 - Adds a pull-request template and CI boundary check. This governance update
   does not change protocol object semantics or the global `protocolVersion`.
 
-## v1.0.0-rc.4 release candidate (not published)
+## v1.0.0-rc.4 (2026-07-31)
 
 - Publishes `SpendAttestationTokenV2` with an optional signed
   `holderBinding` commitment and identity-excluded fresh challenge-response
