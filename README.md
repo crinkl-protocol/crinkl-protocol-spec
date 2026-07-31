@@ -104,7 +104,7 @@ Downstream layers consume spend proof; they do not define it.
 
 ## Current Version
 
-**v1.0.0-rc.4** release candidate source — not yet published. See
+**v1.0.0-rc.4** — released. See
 [`versions/release.json`](versions/release.json) and
 [`versions/CHANGELOG.md`](versions/CHANGELOG.md). The exact, machine-checkable
 release transition and rollback rules are in

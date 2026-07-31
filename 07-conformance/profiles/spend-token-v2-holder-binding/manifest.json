@@ -1,8 +1,8 @@
 {
   "bundle": "spend-token-v2-holder-binding",
   "bundleVersion": 1,
-  "maturity": "release-candidate",
-  "releasedConformance": false,
+  "maturity": "released",
+  "releasedConformance": true,
   "engineeringSource": {
     "repository": "crinkl-protocol",
     "commit": "5019e41bdeb924449363aa3b538eaa5b3b6ee4dc",
@@ -17,7 +17,7 @@
       "type": "node",
       "file": "../../profiles/spend-token-v2-holder-binding/scripts/check_holder_binding_vectors.mjs"
     },
-    "status": "PRESENT_IN_RC4_SUITE_2_SOURCE_CANDIDATE"
+    "status": "PRESENT_IN_RELEASED_RC4_SUITE_2"
   },
   "artifacts": [
     {
@@ -31,10 +31,7 @@
       "sha256": "b1ad39e44db14195f3e4ad57d3fce43c3e1a86ba1f09f4af3e6a1fe3e117c759"
     }
   ],
-  "publicationBlockers": [
-    "PUBLIC_RC4_SOURCE_CANDIDATE_NOT_PUBLISHED",
-    "RELEASE_MANIFEST_STATUS_NOT_RELEASED"
-  ],
+  "publicationBlockers": [],
   "launchBlockers": [
     "RUNTIME_ADOPTION_AND_DEPLOYMENT_ARE_SEPARATE"
   ]

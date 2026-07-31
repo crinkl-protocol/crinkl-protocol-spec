@@ -1,6 +1,6 @@
 # Crinkl Protocol v1.0.0-rc.4 Release Snapshot
 
-Status: `RELEASE_CANDIDATE_NOT_PUBLISHED`
+Status: `RELEASED`
 
 The exact finalization transitions, authorization, pre-tag gates, post-tag
 gates, and rollback rules are machine-readable in

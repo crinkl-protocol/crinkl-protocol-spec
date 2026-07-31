@@ -1,6 +1,6 @@
 {
   "releaseVersion": "1.0.0-rc.4",
-  "status": "RELEASE_CANDIDATE_NOT_PUBLISHED",
+  "status": "RELEASED",
   "requiredTag": "v1.0.0-rc.4",
   "defaultBindingProtocolVersion": "1.0.0-rc.2",
   "supportedWireProtocolVersions": [
@@ -24,7 +24,7 @@
     },
     {
       "kind": "token.spendAttestation.holderBinding.v2",
-      "maturity": "RELEASE_CANDIDATE",
+      "maturity": "RELEASED",
       "runtimeAvailability": "SEPARATELY_GOVERNED"
     }
   ]
