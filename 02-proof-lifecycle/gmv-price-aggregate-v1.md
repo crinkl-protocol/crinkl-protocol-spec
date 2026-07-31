@@ -85,9 +85,14 @@ Ordering rule: `windowStart <= firstObservedAt <= lastObservedAt < windowEndExcl
 | `sampleSetRoot` | sha256 | Root over the valid samples. |
 | `sampleSetRootRule` | string | MUST be `GMV_PRICE_SAMPLE_SET_ROOT_V1`. |
 | `validSampleCount` | integer | Positive. |
-| `contributingValidatorCount` | integer | Positive. |
+| `contributingValidatorCount` | integer | Positive and no greater than `committee.selectedValidatorIds.length`; equality is valid. |
 
 Sample floor: `validSampleCount >= contributingValidatorCount * minimumSamplesPerContributor`.
+
+Contributor bound:
+`contributingValidatorCount <= committee.selectedValidatorIds.length`.
+The count names selected committee validators represented in the committed
+sample set; a larger count is not a valid claim about that committee.
 
 ### `aggregation`
 
