@@ -1,0 +1,114 @@
+{
+  "kind": "crinkl.protocol.releaseFinalizationPlanV1",
+  "planVersion": 1,
+  "releaseVersion": "1.0.0-rc.4",
+  "requiredTag": "v1.0.0-rc.4",
+  "requiredProductionAuthorization": "PRODUCTION-OPS OK",
+  "engineeringSource": {
+    "repository": "crinkl-protocol",
+    "commit": "5019e41bdeb924449363aa3b538eaa5b3b6ee4dc",
+    "adoptionRule": "PROTECTED_MAIN_MUST_CONTAIN_EXACT_COMMIT"
+  },
+  "machineTransitions": [
+    {
+      "path": "versions/release.json",
+      "pointer": "/status",
+      "candidate": "RELEASE_CANDIDATE_NOT_PUBLISHED",
+      "released": "RELEASED"
+    },
+    {
+      "path": "versions/release.json",
+      "pointer": "/profiles/1/maturity",
+      "candidate": "RELEASE_CANDIDATE",
+      "released": "RELEASED"
+    },
+    {
+      "path": "07-conformance/vectors/v1/manifest.json",
+      "pointer": "/releaseStatus",
+      "candidate": "RELEASE_CANDIDATE_NOT_PUBLISHED",
+      "released": "RELEASED"
+    },
+    {
+      "path": "07-conformance/profiles/spend-token-v2-holder-binding/manifest.json",
+      "pointer": "/maturity",
+      "candidate": "release-candidate",
+      "released": "released"
+    },
+    {
+      "path": "07-conformance/profiles/spend-token-v2-holder-binding/manifest.json",
+      "pointer": "/releasedConformance",
+      "candidate": false,
+      "released": true
+    },
+    {
+      "path": "07-conformance/profiles/spend-token-v2-holder-binding/manifest.json",
+      "pointer": "/conformanceManifestEntry/status",
+      "candidate": "PRESENT_IN_RC4_SUITE_2_SOURCE_CANDIDATE",
+      "released": "PRESENT_IN_RELEASED_RC4_SUITE_2"
+    },
+    {
+      "path": "07-conformance/profiles/spend-token-v2-holder-binding/manifest.json",
+      "pointer": "/publicationBlockers",
+      "candidate": [
+        "PUBLIC_RC4_SOURCE_CANDIDATE_NOT_PUBLISHED",
+        "RELEASE_MANIFEST_STATUS_NOT_RELEASED"
+      ],
+      "released": []
+    }
+  ],
+  "documentationTransitions": [
+    {
+      "path": "README.md",
+      "candidateMarker": "**v1.0.0-rc.4** release candidate source — not yet published.",
+      "releasedMarker": "**v1.0.0-rc.4** — released."
+    },
+    {
+      "path": "08-governance/versioning.md",
+      "candidateMarker": "Current public repository release: **1.0.0-rc.4** (`RELEASE_CANDIDATE_NOT_PUBLISHED`)",
+      "releasedMarker": "Current public repository release: **1.0.0-rc.4** (`RELEASED`)"
+    },
+    {
+      "path": "versions/v1.0.0-rc.4/snapshot.md",
+      "candidateMarker": "Status: `RELEASE_CANDIDATE_NOT_PUBLISHED`",
+      "releasedMarker": "Status: `RELEASED`"
+    },
+    {
+      "path": "07-conformance/profiles/spend-token-v2-holder-binding/README.md",
+      "candidateMarker": "Maturity: `release-candidate`.",
+      "releasedMarker": "Maturity: `released`."
+    },
+    {
+      "path": "07-conformance/vectors/v1/README.md",
+      "candidateMarker": "status: release-candidate",
+      "releasedMarker": "status: released"
+    },
+    {
+      "path": "07-conformance/verifier-test-suite.md",
+      "candidateMarker": "status: release-candidate",
+      "releasedMarker": "status: released"
+    },
+    {
+      "path": "versions/CHANGELOG.md",
+      "candidateMarker": "## v1.0.0-rc.4 release candidate (not published)",
+      "releasedMarker": "## v1.0.0-rc.4 ("
+    }
+  ],
+  "requiredPreTagGates": [
+    "node 07-conformance/profiles/spend-token-v2-holder-binding/scripts/check_holder_binding_vectors.mjs",
+    "python3 scripts/check_rc4_release_finalization.py --mode released",
+    "python3 scripts/check_drift.py",
+    "node scripts/verify_conformance.mjs --require-kind token.spendAttestation.holderBinding.v2",
+    "CROSS_REPOSITORY_TWO_ARTIFACT_SHA256_PARITY",
+    "ENGINEERING_PROTECTED_MAIN_CONTAINS_EXACT_COMMIT"
+  ],
+  "requiredPostTagGates": [
+    "python3 scripts/check_rc4_release_finalization.py --mode released --require-tag",
+    "node scripts/verify_conformance.mjs --require-released --require-kind token.spendAttestation.holderBinding.v2",
+    "IMMUTABLE_TAG_CHECKOUT_PARITY_RERUN"
+  ],
+  "rollback": {
+    "beforeTag": "DO_NOT_PUBLISH_AND_KEEP_STATUS_CANDIDATE",
+    "afterTag": "NEVER_RETARGET_OR_DELETE_ACCEPTED_TAG_USE_GOVERNED_WITHDRAWAL_OR_SUCCESSOR_RELEASE",
+    "runtimeRollback": "NOT_APPLICABLE_RELEASE_DOES_NOT_ACTIVATE_RUNTIME"
+  }
+}

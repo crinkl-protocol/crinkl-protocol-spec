@@ -1,8 +1,8 @@
 {
   "suite": "crinkl-protocol-conformance",
   "suiteVersion": 2,
-  "releaseVersion": "1.0.0-rc.3",
-  "releaseStatus": "RELEASED",
+  "releaseVersion": "1.0.0-rc.4",
+  "releaseStatus": "RELEASE_CANDIDATE_NOT_PUBLISHED",
   "protocolVersion": "1.0.0-rc.2",
   "supportedWireProtocolVersions": [
     "1.0.0-rc.1",
@@ -63,6 +63,14 @@
       "externalVerifier": {
         "type": "python3",
         "file": "../../profiles/campaign-direct-buyer-reward-v1/scripts/check_campaign_direct_reward_profile_vectors.py"
+      }
+    },
+    {
+      "kind": "token.spendAttestation.holderBinding.v2",
+      "file": "../../profiles/spend-token-v2-holder-binding/conformance/v2/vectors/token.spendAttestation.holderBinding.v2.json",
+      "externalVerifier": {
+        "type": "node",
+        "file": "../../profiles/spend-token-v2-holder-binding/scripts/check_holder_binding_vectors.mjs"
       }
     }
   ]

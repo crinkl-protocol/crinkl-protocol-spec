@@ -1,7 +1,7 @@
 {
-  "releaseVersion": "1.0.0-rc.3",
-  "status": "RELEASED",
-  "requiredTag": "v1.0.0-rc.3",
+  "releaseVersion": "1.0.0-rc.4",
+  "status": "RELEASE_CANDIDATE_NOT_PUBLISHED",
+  "requiredTag": "v1.0.0-rc.4",
   "defaultBindingProtocolVersion": "1.0.0-rc.2",
   "supportedWireProtocolVersions": [
     "1.0.0-rc.1",
@@ -21,6 +21,11 @@
       "kind": "campaign.directBuyerReward.profileV1",
       "maturity": "RELEASED",
       "runtimeAvailability": "UNAVAILABLE"
+    },
+    {
+      "kind": "token.spendAttestation.holderBinding.v2",
+      "maturity": "RELEASE_CANDIDATE",
+      "runtimeAvailability": "SEPARATELY_GOVERNED"
     }
   ]
 }

@@ -121,7 +121,10 @@ function isWithin(root, candidate) {
 
 function runExternalVerifier(vectorMeta) {
   const verifier = vectorMeta.externalVerifier || {};
-  if (verifier.type !== "python3" || typeof verifier.file !== "string") {
+  if (
+    !["python3", "node"].includes(verifier.type) ||
+    typeof verifier.file !== "string"
+  ) {
     throw new Error(`unsupported external verifier descriptor for ${vectorMeta.kind}`);
   }
 
@@ -134,7 +137,7 @@ function runExternalVerifier(vectorMeta) {
     throw new Error(`external verifier is not a file: ${verifier.file}`);
   }
 
-  return spawnSync("python3", [verifierPath], {
+  return spawnSync(verifier.type, [verifierPath], {
     cwd: repoRoot,
     encoding: "utf8",
     stdio: ["ignore", "pipe", "pipe"],

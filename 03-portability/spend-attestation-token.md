@@ -154,7 +154,9 @@ The claim is a **signed issuer attestation** about the canonical spend head for 
 #### Explicit non-claims (normative)
 
 A Spend Attestation Token:
-- does NOT prove user intent, user identity ownership, or wallet control;
+- does NOT prove user intent, legal identity, or wallet control; a schema-v2
+  token with `holderBinding` can establish control of its per-Spend holder key
+  only when accompanied by a valid fresh holder-control proof;
 - does NOT prove absence of fraud, only the protocol-defined verification outcome;
 - does NOT prove merchant authenticity or payment settlement/finality;
 - does NOT prove completeness of “the world” (e.g., that no other events exist elsewhere);
@@ -185,6 +187,156 @@ SpendAttestationTokenV1 {
   signatures: { issuedBy: AuthorityId, publicKey: Base64, tokenHash: Hash, signature: Base64 }
 }
 ```
+
+### Optional holder binding and holder control (v2)
+
+`SpendAttestationTokenV2` retains the complete v1 shape and verification
+procedure, changes `schemaVersion` to `2`, and adds one OPTIONAL signed field:
+
+```text
+SpendAttestationTokenV2 {
+  tokenType: "SPEND_ATTESTATION",
+  schemaVersion: 2,
+  spendId: Identifier,
+  wallet?: WalletRef,
+  canonical: { ...SpendAttestationTokenV1.canonical },
+  lineage: { headEventHash: Hash, eventCount: Integer },
+  protocol: { protocolVersion: Version },
+  zk?: { commitments?: ZKCommitments },
+  holderBinding?: {
+    scheme: "crinkl.holder.v2",
+    commitment: "sha256:" + Hash
+  },
+  signatures: { issuedBy: AuthorityId, publicKey: Base64, tokenHash: Hash, signature: Base64 }
+}
+```
+
+When `holderBinding` is absent it is absent from the unsigned-token hash
+preimage. The token remains a valid schema-v2 Spend attestation, but portable
+holder control is unavailable. A verifier MUST NOT infer holder control from
+token possession, `spendId`, a wallet lookup, a delivery key, a ZK proof, or an
+issuer signature.
+
+#### Holder commitment
+
+For `scheme = "crinkl.holder.v2"`:
+
+```text
+holderCommitmentBytes =
+  SHA-256(
+    UTF8("crinkl.holder.v2:") ||
+    UTF8(spendId) ||
+    holderPublicKeyBytes
+  )
+
+holderBinding.commitment =
+  "sha256:" + lowercaseHex(holderCommitmentBytes)
+```
+
+`holderPublicKeyBytes` MUST be one raw 32-byte Ed25519 public key. The holder
+MUST use a distinct keypair for every `spendId`; the same public key MUST NOT
+be reused across Spend Tokens. Key generation, deterministic vault derivation,
+backup, and hardware custody are holder implementation concerns and do not
+change this portable verification contract.
+
+The issuer MUST validate the field shape and sign the commitment as part of
+the complete unsigned token. The issuer does not need the holder private key.
+Once signed, `holderBinding` is immutable for that token and Spend head.
+Correction follows the normal supersession rule and MUST preserve the same
+holder binding for the same `(issuedBy, spendId)` scope. It MUST NOT rotate
+ownership by substituting another commitment.
+
+#### Holder challenge
+
+A relying verifier that needs proof of holder-key control MUST issue or
+authenticate one exact challenge:
+
+```text
+SpendHolderChallengeV2 {
+  domain: "crinkl.spend-holder-challenge.v2",
+  schemaVersion: 2,
+  nonceBase64: Base64,                 // exactly 32 random bytes
+  spendTokenHash: "sha256:" + Hash,
+  scopeId: "sha256:" + Hash,
+  requestContextHash: "sha256:" + Hash,
+  purpose:
+    "TOKEN_PRESENTATION" |
+    "CAMPAIGN_PROOF_AUTHORIZATION" |
+    "CAMPAIGN_ACTION_AUTHORIZATION",
+  verifierId: Identifier,
+  issuedAt: TimestampISO,
+  expiresAt: TimestampISO
+}
+```
+
+The nonce MUST come from a cryptographically secure random source. The
+challenge lifetime MUST be positive and MUST NOT exceed 300 seconds.
+`requestContextHash` MUST identify the exact relying request under the
+consumer profile. `scopeId`, `requestContextHash`, `purpose`, and `verifierId`
+MUST equal the relying verifier's expected context; accepting caller-selected
+substitutes is forbidden.
+
+```text
+challengeCanonical = RFC8785_canonicalize(SpendHolderChallengeV2)
+challengeDigest = SHA-256(UTF8(challengeCanonical))
+challengeId = "sha256:" + lowercaseHex(challengeDigest)
+```
+
+#### Holder proof
+
+The holder responds:
+
+```text
+SpendHolderControlProofV2 {
+  schemaVersion: 2,
+  scheme: "crinkl.holder.v2",
+  spendTokenHash: "sha256:" + Hash,
+  scopeId: "sha256:" + Hash,
+  challengeId: "sha256:" + Hash,
+  holderPublicKeyBase64: Base64,       // raw 32-byte Ed25519 public key
+  signatureBase64: Base64              // Ed25519 over raw challengeDigest bytes
+}
+```
+
+The signature input is the raw 32-byte `challengeDigest`, not its hexadecimal
+text and not the prefixed `challengeId` string.
+
+To verify holder control, a verifier MUST:
+
+1. verify the referenced `SpendAttestationTokenV2` normally and require a
+   supported `holderBinding`;
+2. require the challenge's `spendTokenHash`, `scopeId`,
+   `requestContextHash`, `purpose`, and `verifierId` to equal the exact
+   expected request context;
+3. require that it issued or cryptographically authenticated the challenge,
+   that `issuedAt <= now < expiresAt`, that the lifetime is at most 300
+   seconds, and that the `(verifierId, nonceBase64)` challenge is outstanding;
+4. decode `holderPublicKeyBase64` as exactly 32 bytes, recompute the holder
+   commitment from the token's `spendId`, and compare it to the signed
+   `holderBinding.commitment`;
+5. recompute `challengeId` from the complete challenge and require exact
+   equality with the proof;
+6. require the proof's `spendTokenHash` and `scopeId` to equal the challenge;
+7. verify `signatureBase64` over the raw `challengeDigest`; and
+8. only after every preceding check succeeds, atomically consume the
+   outstanding challenge. A prior consumption or concurrent consume race MUST
+   fail as replay.
+
+The successful claim is limited to:
+
+> The responder controlled the per-Spend private key committed by this signed
+> Spend Token for this verifier, scope, exact request context, purpose, and
+> fresh challenge.
+
+It does not establish legal identity, a wallet address, a natural person,
+cross-Spend same-holder linkage, complete purchase history, qualification,
+conversion, settlement recipient binding, or authority to use the Spend
+outside the signed scope and purpose.
+
+Repeated presentations of the same token can remain linkable through
+`spendId`, `spendTokenHash`, and the disclosed per-Spend public key. The
+one-key-per-Spend rule prevents that public key from becoming an additional
+cross-Spend identifier; it does not make repeated use of one Spend unlinkable.
 
 **Portability boundary (normative):** verification of this portable token MUST NOT require retrieving the spend-stream from a private operator database. Deep-audit replay against the spend-stream is optional and may be provided via audit bundles.
 
@@ -279,12 +431,19 @@ The verification result MUST reflect the same cryptographic checks described abo
 
 ### Supersession rule (normative)
 
-Spend tokens are snapshots and may be superseded by later spend-stream heads (corrections/invalidations). If presented with multiple valid spend tokens for the same `spendId`, a verifier MUST treat the token with the greatest `lineage.eventCount` as newest. Tokens with equal `lineage.eventCount` but different `headEventHash` MUST be treated as invalid/ambiguous (fork or equivocation).
+Spend tokens are snapshots and may be superseded by later spend-stream heads
+(corrections/invalidations). Supersession is scoped by `(signatures.issuedBy,
+spendId)`. If presented with multiple valid spend tokens for the same scope, a
+verifier MUST treat the token with the greatest `lineage.eventCount` as newest.
+Tokens with equal `lineage.eventCount` but different `headEventHash` MUST be
+treated as invalid/ambiguous (fork or equivocation).
 
 If a spend is corrected/invalidated and the head changes:
 - A new Spend Attestation Token MUST be issued for the new head.
 - Old spend tokens remain cryptographically valid historical artifacts, but may be obsolete per verifier freshness policy.
 - Any ZK proofs or witnesses bound to the old `spendTokenHash` / `headEventHash` MUST NOT be treated as proofs about the new head.
+- A schema-v2 successor for the same `(issuedBy, spendId)` MUST preserve the
+  existing `holderBinding` when one is present.
 
 ## Spend Attestation Bundle (Audit Only)
 

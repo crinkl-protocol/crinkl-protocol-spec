@@ -6,7 +6,7 @@ A spend attestation proves that a purchase event was observed, normalized, verif
 
 The protocol is designed so that campaigns, reward systems, analytics tools, agents, and settlement layers can verify commerce facts without requiring raw receipt access or user identity.
 
-[![Version](https://img.shields.io/badge/version-v1.0.0--rc.2-blue)](versions/CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-v1.0.0--rc.4-blue)](versions/CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-Apache%202.0-green)](LICENSE)
 [![CI](https://github.com/crinkl-protocol/crinkl-protocol-spec/actions/workflows/drift-check.yml/badge.svg)](https://github.com/crinkl-protocol/crinkl-protocol-spec/actions/workflows/drift-check.yml)
 
@@ -104,11 +104,11 @@ Downstream layers consume spend proof; they do not define it.
 
 ## Current Version
 
-**v1.0.0-rc.3** — released. See
+**v1.0.0-rc.4** release candidate source — not yet published. See
 [`versions/release.json`](versions/release.json) and
 [`versions/CHANGELOG.md`](versions/CHANGELOG.md). The exact, machine-checkable
 release transition and rollback rules are in
-[`versions/v1.0.0-rc.3/finalization.json`](versions/v1.0.0-rc.3/finalization.json).
+[`versions/v1.0.0-rc.4/finalization.json`](versions/v1.0.0-rc.4/finalization.json).
 Planned stable release tag: **v1.0.0**.
 
 ## Verification
@@ -117,7 +117,8 @@ Planned stable release tag: **v1.0.0**.
 python3 scripts/check_drift.py
 node scripts/verify_conformance.mjs
 python3 scripts/check_campaign_direct_reward_release_profile.py
-python3 scripts/check_rc3_release_finalization.py
+node 07-conformance/profiles/spend-token-v2-holder-binding/scripts/check_holder_binding_vectors.mjs
+python3 scripts/check_rc4_release_finalization.py
 ```
 
 PDF export:
