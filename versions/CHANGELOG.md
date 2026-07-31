@@ -10,6 +10,22 @@ This repository is being prepared for its **first public release**. Earlier inte
 - Adds a pull-request template and CI boundary check. This governance update
   does not change protocol object semantics or the global `protocolVersion`.
 
+## v1.0.0-rc.4 release candidate (not published)
+
+- Publishes `SpendAttestationTokenV2` with an optional signed
+  `holderBinding` commitment and identity-excluded fresh challenge-response
+  holder-control proof.
+- Publishes byte-identical adopted-engineering test vectors for valid,
+  wrong-key, wrong-signature, changed-context, expired, replayed, and
+  absent-binding cases.
+- Scopes Spend-token supersession by `(issuedBy, spendId)` and requires
+  schema-v2 successors to preserve an existing holder binding within that
+  issuer scope.
+- Keeps the embedded token `protocolVersion` at `1.0.0-rc.1`, the default
+  Platform binding at `1.0.0-rc.2`, and conformance suite version at `2`.
+- Adds no wallet, legal-identity, qualification, reward, settlement, runtime,
+  deployment, Android, or native claim.
+
 ## Unreleased Campaign Experiment publication draft
 
 - Publishes the cross-vertical Campaign Experiment Profile at explicit `publication-draft` maturity, anchored to the adopted engineering source at `crinkl-protocol` commit `40dc0e8c23826a48d579cae1c30ca0dbefba13ef`.

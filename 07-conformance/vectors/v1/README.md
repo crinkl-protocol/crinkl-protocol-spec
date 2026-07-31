@@ -1,5 +1,5 @@
 ---
-status: released
+status: release-candidate
 layer: conformance
 version: v1
 normative: true
@@ -23,6 +23,8 @@ Executable verifier:
 - Run `node scripts/verify_conformance.mjs` from repo root.
 - Require the Campaign profile explicitly with
   `node scripts/verify_conformance.mjs --require-kind campaign.directBuyerReward.profileV1`.
+- Require the Spend Token V2 profile explicitly with
+  `node scripts/verify_conformance.mjs --require-kind token.spendAttestation.holderBinding.v2`.
 
 ## Layout
 
@@ -40,6 +42,9 @@ Executable verifier:
 - `token.spendAttestation.portableV1.fromSpendStream.json` — Spend attestation token derivation
 - `tokenHash.spendAttestation.v1.json` — Spend token hash computation
 - `token.verifiedSpendDistribution.v1.json` — Verified spend distribution token derivation
+- `token.spendAttestation.holderBinding.v2` — manifest-bound external
+  verification of the optional per-Spend holder commitment and fresh
+  challenge-response proof
 
 ### Commitment Layer
 - `merkle.rewardBatch.schemaV1.json` — Merkle tree for aggregated reward leaves (schema 1a/1b)

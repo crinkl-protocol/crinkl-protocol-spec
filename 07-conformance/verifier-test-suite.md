@@ -1,5 +1,5 @@
 ---
-status: released
+status: release-candidate
 layer: conformance
 version: v1
 normative: true
@@ -24,6 +24,13 @@ node scripts/verify_conformance.mjs \
   --require-kind campaign.directBuyerReward.profileV1
 ```
 
+To require the Spend Token V2 holder-binding profile:
+
+```bash
+node scripts/verify_conformance.mjs \
+  --require-kind token.spendAttestation.holderBinding.v2
+```
+
 Release consumers additionally use `--require-released`. The `v1.0.0-rc.3`
 released manifest must pass that gate.
 
@@ -42,6 +49,8 @@ released manifest must pass that gate.
 - `recipient.blinded.schemaV1b` (recipient-id + canonical leaf construction checks)
 - `campaign.directBuyerReward.profileV1` through its manifest-bound, byte-pinned
   Python verifier
+- `token.spendAttestation.holderBinding.v2` through its manifest-bound,
+  byte-pinned Node verifier
 
 Checks include:
 
@@ -53,7 +62,10 @@ Checks include:
 - Nullifier derivation determinism and scope isolation.
 - Exact Campaign profile schemas, canonical bytes, hashes, Ed25519 signatures, Epoch
   composition, protected-term exclusions,
-  malformed-composition rejection and same-position equivocation rejection.
+malformed-composition rejection and same-position equivocation rejection.
+- Spend Token V2 canonicalization, issuer signature, holder commitment,
+  challenge binding, holder signature, expiry, replay, and absent-binding
+  decisions.
 
 Manifest-bound external verifiers are restricted to files under
 `07-conformance/profiles/`, receive no shell interpolation or manifest-supplied arguments,
