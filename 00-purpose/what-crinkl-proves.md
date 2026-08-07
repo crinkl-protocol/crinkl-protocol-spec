@@ -19,10 +19,13 @@ Crinkl defines a spend-centric attestation system that separates truth formation
 
 A **Spend Attestation Token** is a signed claim representing the current canonical head of a spend's event stream at a specific verification tier.
 
-To aid interoperability, Crinkl spend tokens can be understood through the lens of verifiable credentials, while preserving protocol-specific semantics such as correction awareness and tiered verification.
+To aid interoperability, Crinkl spend tokens can be understood through a
+conceptual credential lens while preserving protocol-specific semantics such as
+correction awareness and tiered verification. Native Crinkl tokens are not W3C
+Verifiable Credentials in v1.0.0-rc.4, and no W3C VC conformance is asserted.
 
-| VC Concept | Crinkl Realization |
-|------------|-------------------|
+| Conceptual credential role | Crinkl realization |
+|----------------------------|--------------------|
 | **Credential** | Spend Attestation Token — a signed claim about canonical spend state |
 | **Issuer** | Protocol operator (spend-stream trust root) |
 | **Holder** | Wallet owner (optional binding; spend truth ≠ ownership) |

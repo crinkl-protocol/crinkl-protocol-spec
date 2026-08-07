@@ -26,7 +26,6 @@ RELEVANT_PREFIXES = (
 
 RELEVANT_FILES = {
     "README.md",
-    "REFORM_NOTES.md",
     "versions/CHANGELOG.md",
 }
 

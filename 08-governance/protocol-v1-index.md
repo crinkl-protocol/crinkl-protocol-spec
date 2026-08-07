@@ -34,6 +34,7 @@ Canonical entrypoint for version 1 of the Crinkl Protocol specification. Each se
 - [protocol-business-boundary.md](protocol-business-boundary.md) — required protocol/business/offchain/onchain classification for spec and requirements changes
 - [change-process.md](change-process.md) — authority, change-control, and CI requirements
 - [versioning.md](versioning.md) — governance and upgrade processes
+- [refactor-record.md](refactor-record.md) — non-normative proof-lifecycle refactor history and preserved tensions
 
 ## Protocol Requirements
 

@@ -28,12 +28,13 @@ For the normative offer-delivery wire formats (campaign message, eligibility cla
 
 Enable an approved prover boundary to prove **eligibility** for a promo using a
 verified spend, without revealing the underlying receipt or the total amount to
-the external verifier. This implements the **selective disclosure** pattern from
-verifiable credentials: a holder-authorized proof can show specific predicates
-about a credential (spend attestation) without revealing the full claim contents.
+the external verifier. This implements a **selective-disclosure credential
+pattern**: a holder-authorized proof can show specific predicates about a spend
+attestation without revealing the full claim contents. This conceptual pattern
+does not make the native token a W3C Verifiable Credential in v1.0.0-rc.4.
 
-| VC Pattern | Crinkl ZK Realization |
-|------------|----------------------|
+| Conceptual credential role | Crinkl ZK realization |
+|----------------------------|-----------------------|
 | **Credential** | Spend Attestation Token with `zk.commitments` |
 | **Holder / prover boundary** | Holder-authorized prover with private witness material |
 | **Selective Disclosure** | ZK statement proof (e.g., "total ≥ threshold") |

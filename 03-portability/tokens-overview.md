@@ -13,10 +13,16 @@ Machine-verifiable economic truth, designed for composition.
 
 The Crinkl Protocol defines a small set of primitive, verifiable tokens that transform messy real-world commerce into machine-legible economic facts.
 
-These tokens are **verifiable credentials** representing OCR-derived purchase claims, extended with correction semantics and optional ZK predicates, used to support privacy-preserving promotion and reward settlement. They are not assets, identities, or application objects. They are portable verification artifacts: cryptographically signed claims that downstream systems can verify locally, without replaying event streams or trusting APIs.
+These native tokens are issuer-signed portable verification artifacts
+representing OCR-derived purchase claims, extended with correction semantics and
+optional ZK predicates to support privacy-preserving promotion and reward
+settlement. They are not assets, identities, application objects, or W3C
+Verifiable Credentials in v1.0.0-rc.4. They are cryptographically signed claims
+that downstream systems can verify locally, without replaying event streams or
+trusting APIs.
 
-| VC Concept | Crinkl Realization |
-|------------|-------------------|
+| Conceptual credential role | Crinkl realization |
+|----------------------------|--------------------|
 | **Issuer** | Protocol operator signing spend attestations |
 | **Holder** | Wallet owner who may present tokens or generate ZK proofs |
 | **Verifier** | Brands, agents, or systems validating claims locally |
