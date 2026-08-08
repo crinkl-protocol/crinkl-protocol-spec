@@ -1,0 +1,81 @@
+{
+  "profile": "crinkl-w3c-official-suite-applicability-v1",
+  "protocolBaseCommit": "236b3b258328efb3001af37815f77fcc0c7acc6d",
+  "status": "APPLICABLE_OFFICIAL_SELF_CELL_NOT_PEER_INTEROP",
+  "minimumNodeMajor": 22,
+  "officialRowsExecuted": 32,
+  "officialRowsPending": 8,
+  "applicableOfficialSelfCellClaimed": true,
+  "officialSuiteConformanceClaimed": false,
+  "peerInteroperabilityClaimed": false,
+  "genericVcApiCapabilityClaimed": false,
+  "runtimeBindingAuthorized": false,
+  "selfCellIdentity": {
+    "method": "did:key",
+    "keyMaterial": "RFC_8032_PUBLIC_TEST_VECTOR_1",
+    "productProfileMethod": "did:web+retained-signed-issuer-history",
+    "notExercised": ["did:web resolution", "retained issuer-history authorization", "product status-history resolution", "Crinkl refresh-purpose semantics"]
+  },
+  "executionEnvironment": {
+    "node": "22.23.2",
+    "installNode": "20.19.4",
+    "installNpm": "10.8.2",
+    "lifecycleScriptsRun": false,
+    "mutableSuitePretestRun": false
+  },
+  "implementationCatalog": {
+    "repository": "https://github.com/w3c/vc-test-suite-implementations",
+    "commit": "a084a96092cdde956719a681e2e984364c19a9ab",
+    "packageGitBlob": "7f4f57f1129350a1008ea82fd5ddddfdbe9df540",
+    "lockGitBlob": "4e95259e19270cf4d06bcc4f3e238530db68f55e"
+  },
+  "suites": [
+    {
+      "id": "vc-di-eddsa",
+      "repository": "https://github.com/w3c/vc-di-eddsa-test-suite",
+      "commit": "c022df28036426b8c0218fd01c2b0589dbb36d50",
+      "requiredNode": ">=22",
+      "packageGitBlob": "af35d98c3bc107590e4f7977316fb308ef3e6b0a",
+      "lockGitBlob": "a9e530fd675bdc3f7e7743c3c485568e4e60caae",
+      "lockedImplementationCommit": "802b73a94209d23837cab83c3292cd7bba064931",
+      "mutablePretest": "npm update vc-test-suite-implementations",
+      "applicableFiles": [
+        {"path": "tests/60-jcs-interop.js", "gitBlob": "d41b65966a5b42e70cb03e27288b73733639fbf6", "classification": "SELF_CELL_REQUIRES_ISSUER_AND_VERIFIER_HTTPS"},
+        {"path": "tests/70-data-model.js", "gitBlob": "2dca8dce56534706d6f87105726aff424e82902c", "classification": "REQUIRES_GENERIC_ISSUER_HTTPS"},
+        {"path": "tests/80-algorithms.js", "gitBlob": "24148e968e6c66c0cb0d03eb4d2212b255b6ad69", "classification": "JCS_ROWS_REQUIRE_GENERIC_ISSUER_HTTPS_RDFC_EXCLUDED"}
+      ],
+      "excluded": ["eddsa-rdfc-2022", "deprecated suites", "peer interoperability"]
+    },
+    {
+      "id": "vc-bitstring-status-list",
+      "repository": "https://github.com/w3c/vc-bitstring-status-list-test-suite",
+      "commit": "92ac3e21610eb06558f220eed6f33dec89074f5d",
+      "requiredNode": ">=22",
+      "packageGitBlob": "9cbf9a1cc44f6423c862b476a27d60f566bdb0a1",
+      "lockGitBlob": "a21c52fdbe3df0683e8b9782093071e04ef5b6ad",
+      "lockedImplementationCommit": "802b73a94209d23837cab83c3292cd7bba064931",
+      "mutablePretest": "npm update vc-test-suite-implementations",
+      "applicableFiles": [
+        {"path": "tests/10-data_model.js", "gitBlob": "ac62dddd3d646e9e3810a14ff0ec883cbd7d8e76", "classification": "REQUIRES_GENERIC_ISSUER_AND_STATUS_HTTPS"},
+        {"path": "tests/20-algorithms.js", "gitBlob": "a92e78a10f8fc4eacaf4f2be301ec77f1c80c7aa", "classification": "REQUIRES_GENERIC_ISSUER_VERIFIER_AND_STATUS_HTTPS"},
+        {"path": "tests/30-interop.js", "gitBlob": "84d581f2f38a3b204270cfe7626a609a668eeae3", "classification": "SELF_CELL_REQUIRES_ISSUER_VERIFIER_AND_STATUS_HTTPS"}
+      ],
+      "excluded": ["suspension product semantics", "peer interoperability", "Crinkl refresh purpose because the upstream suite has no refresh row"]
+    }
+  ],
+  "executionRequirements": [
+    "Node.js 22 or newer",
+    "exact suite checkouts at the declared commits",
+    "upstream package-lock files unchanged",
+    "vc-test-suite-implementations replaced at runtime by the declared catalog commit without changing either suite lockfile",
+    "localConfig.cjs containing only the isolated Crinkl test implementation",
+    "isolated localhost HTTPS issuer, verifier, and status-list endpoints",
+    "selected Mocha files invoked directly so npm pretest is never executed"
+  ],
+  "localTraceabilityAssertionCount": 58,
+  "fixtureInputs": [
+    "../vectors/spend-attestation-credential.v1.json",
+    "../vectors/bitstring-status-list-credential.v1.json"
+  ],
+  "executionEvidence": "execution-evidence.json"
+}

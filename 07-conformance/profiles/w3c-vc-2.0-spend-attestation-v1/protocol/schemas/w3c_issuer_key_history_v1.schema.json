@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "crinkl://protocol/schemas/w3c_issuer_key_history_v1",
+  "title": "W3CIssuerKeyHistoryV1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifactType", "schemaVersion", "issuer", "historyId", "sequence", "previousHistoryRef", "publishedAt", "immutable", "refreshServiceBaseUrl", "keys", "signatures"],
+  "properties": {
+    "artifactType": { "const": "W3C_ISSUER_KEY_HISTORY" },
+    "schemaVersion": { "const": 1 },
+    "issuer": { "type": "string", "pattern": "^did:web:[a-z0-9.-]+(?::[a-z0-9._~-]+)*$" },
+    "historyId": { "$ref": "#/$defs/hashId" },
+    "sequence": { "type": "integer", "minimum": 0 },
+    "previousHistoryRef": { "oneOf": [{ "$ref": "#/$defs/hashId" }, { "type": "null" }] },
+    "publishedAt": { "$ref": "#/$defs/timestamp" },
+    "immutable": { "const": true },
+    "refreshServiceBaseUrl": { "type": "string", "pattern": "^https://[A-Za-z0-9.-]+(?::[0-9]+)?(?:/[A-Za-z0-9._~%-]+(?:/[A-Za-z0-9._~%-]+)*)?$" },
+    "keys": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/key" } },
+    "signatures": { "$ref": "#/$defs/signatures" }
+  },
+  "$defs": {
+    "timestamp": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$" },
+    "hash": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "hashId": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "identifier": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$" },
+    "base64": { "type": "string", "pattern": "^[A-Za-z0-9+/]+={0,2}$" },
+    "key": { "type": "object", "additionalProperties": false, "required": ["keyId", "verificationMethod", "publicKeyMultibase", "validFrom", "validUntil", "authorizedArtifactTypes", "authorizedProofPurposes"], "properties": { "keyId": { "type": "string", "pattern": "^[A-Za-z0-9._-]{1,128}$" }, "verificationMethod": { "type": "string", "pattern": "^did:web:[a-z0-9.-]+(?::[a-z0-9._~-]+)*#[A-Za-z0-9._-]+$" }, "publicKeyMultibase": { "type": "string", "pattern": "^z[1-9A-HJ-NP-Za-km-z]+$" }, "validFrom": { "$ref": "#/$defs/timestamp" }, "validUntil": { "oneOf": [{ "$ref": "#/$defs/timestamp" }, { "type": "null" }] }, "authorizedArtifactTypes": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/identifier" } }, "authorizedProofPurposes": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,127}$" } } } },
+    "signatures": { "type": "object", "additionalProperties": false, "required": ["verificationMethod", "historyHash", "signature"], "properties": { "verificationMethod": { "type": "string", "pattern": "^did:web:[a-z0-9.-]+(?::[a-z0-9._~-]+)*#[A-Za-z0-9._-]+$" }, "historyHash": { "$ref": "#/$defs/hash" }, "signature": { "$ref": "#/$defs/base64" } } }
+  }
+}

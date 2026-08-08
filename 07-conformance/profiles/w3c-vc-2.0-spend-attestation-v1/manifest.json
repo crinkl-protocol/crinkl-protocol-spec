@@ -1,0 +1,184 @@
+{
+  "bundle": "w3c-vc-2.0-spend-attestation",
+  "bundleVersion": 1,
+  "maturity": "candidate",
+  "releasedConformance": false,
+  "engineeringSource": {
+    "repository": "crinkl-protocol",
+    "commit": "ae6382f1ed11b88f9bbfdcc4ef12119647cc7698",
+    "maturity": "engineering-adopted-on-protected-main"
+  },
+  "protocolObjectVersion": "1.0.0-rc.1",
+  "publicRepositoryVersion": "unreleased-successor-to-1.0.0-rc.4",
+  "conformanceManifestEntry": {
+    "kind": "credential.spendAttestation.vcdm2.eddsaJcs2022",
+    "file": "../../profiles/w3c-vc-2.0-spend-attestation-v1/conformance/w3c-vc-2.0/v1/vectors/spend-attestation-credential.v1.json",
+    "externalVerifier": {
+      "type": "node",
+      "file": "../../profiles/w3c-vc-2.0-spend-attestation-v1/scripts/check_w3c_spend_attestation_credential_vectors.mjs"
+    },
+    "status": "CANDIDATE_FUTURE_CONFORMANCE_MANIFEST_ENTRY_NOT_IN_RELEASED_RC4"
+  },
+  "artifacts": [
+    {
+      "sourcePath": "protocol/W3C_VC_2_0_BINDING.md",
+      "file": "protocol/W3C_VC_2_0_BINDING.md",
+      "sha256": "17c5cf9d99e9405201fc006aebb7621a77c614a5e3da214cbf786d22effb03db"
+    },
+    {
+      "sourcePath": "protocol/context/spend-v1.jsonld",
+      "file": "protocol/context/spend-v1.jsonld",
+      "sha256": "e8a46e70649d31daa70a6eda573bc7be8146efd37c7c9a5fd0f0873f50223175"
+    },
+    {
+      "sourcePath": "protocol/schemas/spend_attestation_credential_v1.schema.json",
+      "file": "protocol/schemas/spend_attestation_credential_v1.schema.json",
+      "sha256": "d27e124e4b5f9edd06a99eeba52bf2723eb7b6f64058da3119c70fc95ef399de"
+    },
+    {
+      "sourcePath": "protocol/schemas/w3c_bitstring_status_list_credential_v1.schema.json",
+      "file": "protocol/schemas/w3c_bitstring_status_list_credential_v1.schema.json",
+      "sha256": "8529f936c321d69553a47e75d91f9f8c307dae0aa81d51391228135398fdcb2b"
+    },
+    {
+      "sourcePath": "protocol/schemas/w3c_issuer_key_history_v1.schema.json",
+      "file": "protocol/schemas/w3c_issuer_key_history_v1.schema.json",
+      "sha256": "8923985eff65b6ed56f1f70bde3dadd292c9202bda31a3fb94506daf7671607f"
+    },
+    {
+      "sourcePath": "conformance/spend-attestation-portability/v1/vectors/spend-attestation.wallet-omitted.v1.json",
+      "file": "conformance/spend-attestation-portability/v1/vectors/spend-attestation.wallet-omitted.v1.json",
+      "sha256": "0ba18452eb017682dc873a521830257fa5254236b421c154883522441df6be52"
+    },
+    {
+      "sourcePath": "conformance/w3c-vc-2.0/v1/README.md",
+      "file": "conformance/w3c-vc-2.0/v1/README.md",
+      "sha256": "9a490a99d38feedb92e289f6b8666d85daabae535a01eb504c082631b4aafddb"
+    },
+    {
+      "sourcePath": "conformance/w3c-vc-2.0/v1/manifest.json",
+      "file": "conformance/w3c-vc-2.0/v1/manifest.json",
+      "sha256": "9ac2330403089323b7580420155645bae8fecc49298840cc2bd100897bb83974"
+    },
+    {
+      "sourcePath": "conformance/w3c-vc-2.0/v1/validate_draft202012.py",
+      "file": "conformance/w3c-vc-2.0/v1/validate_draft202012.py",
+      "sha256": "9440cab53e00cbb576cc0042e250bcfef49d4553116dee12047d5807ec32949f"
+    },
+    {
+      "sourcePath": "conformance/w3c-vc-2.0/v1/fixtures/bitstring-status-list-refresh-clear.v1.json",
+      "file": "conformance/w3c-vc-2.0/v1/fixtures/bitstring-status-list-refresh-clear.v1.json",
+      "sha256": "30f3ad0bd9ada83eca953e8f5b5af3ac0143931c48d90bf9d43a81c4cd04122b"
+    },
+    {
+      "sourcePath": "conformance/w3c-vc-2.0/v1/fixtures/bitstring-status-list-refresh-set.v1.json",
+      "file": "conformance/w3c-vc-2.0/v1/fixtures/bitstring-status-list-refresh-set.v1.json",
+      "sha256": "bcf51c7cf596e204ff22f99e8854530695172a5e7200f2c25162fadbe137635f"
+    },
+    {
+      "sourcePath": "conformance/w3c-vc-2.0/v1/fixtures/bitstring-status-list-revocation-clear.v1.json",
+      "file": "conformance/w3c-vc-2.0/v1/fixtures/bitstring-status-list-revocation-clear.v1.json",
+      "sha256": "dc60c044ba0abc237cb7b39d50bc8097bd22d64b578abafbd065e392f75773ec"
+    },
+    {
+      "sourcePath": "conformance/w3c-vc-2.0/v1/fixtures/bitstring-status-list-revocation-set.v1.json",
+      "file": "conformance/w3c-vc-2.0/v1/fixtures/bitstring-status-list-revocation-set.v1.json",
+      "sha256": "54f6e1e6d4092abe6ac6452d70f79e54c9f06004d35152f8db0850b03bf8e93f"
+    },
+    {
+      "sourcePath": "conformance/w3c-vc-2.0/v1/fixtures/did-web-vc-test.example.json",
+      "file": "conformance/w3c-vc-2.0/v1/fixtures/did-web-vc-test.example.json",
+      "sha256": "b9e7c289419ffa29ba609f0faadeab9ae75647026f82ad731902ecb5aa389d6f"
+    },
+    {
+      "sourcePath": "conformance/w3c-vc-2.0/v1/fixtures/issuer-history-trust-root.v1.json",
+      "file": "conformance/w3c-vc-2.0/v1/fixtures/issuer-history-trust-root.v1.json",
+      "sha256": "715d68734413cc7e3ed627868828fbdd97f0e71040f187107d6c82e346337e3c"
+    },
+    {
+      "sourcePath": "conformance/w3c-vc-2.0/v1/fixtures/issuer-key-history-bootstrap.v1.json",
+      "file": "conformance/w3c-vc-2.0/v1/fixtures/issuer-key-history-bootstrap.v1.json",
+      "sha256": "06845df4b8e18b34c0a771f404471316104fd0dd73cca50bbbe195a8bf165fc8"
+    },
+    {
+      "sourcePath": "conformance/w3c-vc-2.0/v1/fixtures/issuer-key-history-current.v1.json",
+      "file": "conformance/w3c-vc-2.0/v1/fixtures/issuer-key-history-current.v1.json",
+      "sha256": "e710ef0f97184ef79c496da3ae85cb21314ffe57d6407059a2342b621f6dcad8"
+    },
+    {
+      "sourcePath": "conformance/w3c-vc-2.0/v1/fixtures/issuer-key-history-status-current.v1.json",
+      "file": "conformance/w3c-vc-2.0/v1/fixtures/issuer-key-history-status-current.v1.json",
+      "sha256": "419c9767a88bf4fbcd8e30a144d089cdd8654569b7d354d95eae1215734f18e7"
+    },
+    {
+      "sourcePath": "conformance/w3c-vc-2.0/v1/fixtures/status-list-resolution.v1.json",
+      "file": "conformance/w3c-vc-2.0/v1/fixtures/status-list-resolution.v1.json",
+      "sha256": "05adffbbe62477b98fb340e6348de67b0fc90d50fd0b3d4425f563c9df57c8f3"
+    },
+    {
+      "sourcePath": "conformance/w3c-vc-2.0/v1/vectors/bitstring-status-list-credential.v1.json",
+      "file": "conformance/w3c-vc-2.0/v1/vectors/bitstring-status-list-credential.v1.json",
+      "sha256": "4340ffa7e4a68d5b8d75a9527ba73dbc784c9d93314a850bb6265b208ee195ea"
+    },
+    {
+      "sourcePath": "conformance/w3c-vc-2.0/v1/vectors/spend-attestation-credential.v1.json",
+      "file": "conformance/w3c-vc-2.0/v1/vectors/spend-attestation-credential.v1.json",
+      "sha256": "0d435df45a74e8244f85a05f653a22e9e892f43d9313be0819a881bacbfc9601"
+    },
+    {
+      "sourcePath": "conformance/w3c-vc-2.0/v1/official-suite/execution-evidence.json",
+      "file": "conformance/w3c-vc-2.0/v1/official-suite/execution-evidence.json",
+      "sha256": "a966eabb84dc5d5f741ebca3af3eeab505cfafdf3f5f10c31687d3e9132da7e0"
+    },
+    {
+      "sourcePath": "conformance/w3c-vc-2.0/v1/official-suite/manifest.json",
+      "file": "conformance/w3c-vc-2.0/v1/official-suite/manifest.json",
+      "sha256": "eda178e4018df03d5ed5d7e58602990a0ed23dec095d42cbd81ef642225861c2"
+    },
+    {
+      "sourcePath": "scripts/check_w3c_spend_attestation_credential_vectors.mjs",
+      "file": "scripts/check_w3c_spend_attestation_credential_vectors.mjs",
+      "sha256": "9682ea54a4df14adaf3ecec4211b865b4da81d71653690e499bd6d11e1aa6b52"
+    },
+    {
+      "sourcePath": "scripts/check_w3c_bitstring_status_list_vectors.mjs",
+      "file": "scripts/check_w3c_bitstring_status_list_vectors.mjs",
+      "sha256": "d6d52384a3d031edadbf9ea5f511ad71a3efdffc5ab23fe2a71b975ccc9f2708"
+    },
+    {
+      "sourcePath": "scripts/generate_w3c_bitstring_status_list_vectors.mjs",
+      "file": "scripts/generate_w3c_bitstring_status_list_vectors.mjs",
+      "sha256": "6b290753e989aba2544ee52566f0a3e8b4c81bb96d90f4389bde6255d2dfd05c"
+    }
+  ],
+  "publicationBlockers": [
+    "P4.3_SUCCESSOR_RELEASE_CANDIDATE_MANIFEST",
+    "P4.4_EXACT_PUBLIC_CANDIDATE_REVIEW",
+    "P9_ACCEPTED_PUBLIC_RELEASE"
+  ],
+  "launchBlockers": [
+    "DID_WEB_ENDPOINT_PUBLICATION",
+    "IMMUTABLE_CONTEXT_ENDPOINT_PUBLICATION",
+    "SIGNED_STATUS_LIST_ENDPOINT_PUBLICATION",
+    "SPEND_HEAD_REFRESH_ENDPOINT_PUBLICATION",
+    "RUNTIME_ADOPTION",
+    "QA",
+    "PRODUCTION_AUTHORITY"
+  ],
+  "falseClaims": {
+    "completeOfficialW3CTestSuite": false,
+    "peerInteroperability": false,
+    "genericVcVpApi": false,
+    "runtime": false,
+    "release": false,
+    "production": false
+  },
+  "officialSelfCellEvidence": {
+    "file": "conformance/w3c-vc-2.0/v1/official-suite/execution-evidence.json",
+    "rowsPassed": 32,
+    "rowsPending": 8,
+    "completeOfficialSuiteClaimed": false,
+    "peerInteroperabilityClaimed": false,
+    "runtimeBindingAuthorized": false
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "fixtureClass": "OUT_OF_BAND_PINNED_ISSUER_HISTORY_TRUST_ROOT",
+  "issuer": "did:web:vc-test.example",
+  "verificationMethod": "did:web:vc-test.example#issuer-history-root-2026-01",
+  "publicKeyMultibase": "z6MkwSD8dBdqcXQzKJZQFPy2hh2izzxskndKCjdmC2dBpfME",
+  "pinnedHistoryRef": "sha256:64c7ba25b6ab045b07dde7f98a10b9ae53b4d44b80b8e7b9bebd25e861fdad07",
+  "minimumSequence": 0,
+  "highestAccepted": {
+    "sequence": 2,
+    "historyRef": "sha256:1a7236223af1b49758ee674da32da249e95059219dfdc1589dfc905aa2b7c523"
+  }
+}

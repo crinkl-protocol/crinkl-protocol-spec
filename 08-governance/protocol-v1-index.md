@@ -13,6 +13,7 @@ Canonical entrypoint for version 1 of the Crinkl Protocol specification. Each se
 - [../00-purpose/what-crinkl-proves.md](../00-purpose/what-crinkl-proves.md) — protocol overview and scope
 - [../01-core/spend-attestation.md](../01-core/spend-attestation.md) — core protocol concepts (spend-centric objects, scoped recipients, and ledgers)
 - [../03-portability/spend-attestation-token.md](../03-portability/spend-attestation-token.md) — token outputs (attestation + commitments)
+- [../03-portability/w3c-vc-2.0-binding.md](../03-portability/w3c-vc-2.0-binding.md) — candidate optional W3C VC 2.0 Spend Attestation wire form; source-only, not released rc.4 conformance or runtime
 - [../01-core/canonicalization.md](../01-core/canonicalization.md) — canonical schema definitions
 - [../02-proof-lifecycle/ingestion.md](../02-proof-lifecycle/ingestion.md) — soft and hard verification flows
 - [../02-proof-lifecycle/gmv-price-aggregate-v1.md](../02-proof-lifecycle/gmv-price-aggregate-v1.md) — GmvPriceAggregateV1 artifact format, canonicalization, and registry/committee binding

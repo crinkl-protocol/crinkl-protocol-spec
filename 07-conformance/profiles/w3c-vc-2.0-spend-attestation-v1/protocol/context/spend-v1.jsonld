@@ -1,0 +1,38 @@
+{
+  "@context": {
+    "@protected": true,
+    "SpendAttestationCredential": "https://crinkl.xyz/ns/spend/v1#SpendAttestationCredential",
+    "CrinklSpendHeadRefresh": "https://crinkl.xyz/ns/spend/v1#CrinklSpendHeadRefresh",
+    "issuerHistoryRef": {
+      "@id": "https://crinkl.xyz/ns/spend/v1#issuerHistoryRef",
+      "@type": "@id"
+    },
+    "spendStreamNamespaceRef": "https://crinkl.xyz/ns/spend/v1#spendStreamNamespaceRef",
+    "issuerId": "https://crinkl.xyz/ns/spend/v1#issuerId",
+    "spendId": "https://crinkl.xyz/ns/spend/v1#spendId",
+    "verificationState": "https://crinkl.xyz/ns/spend/v1#verificationState",
+    "storeHash": "https://crinkl.xyz/ns/spend/v1#storeHash",
+    "occurredAt": {
+      "@id": "https://crinkl.xyz/ns/spend/v1#occurredAt",
+      "@type": "http://www.w3.org/2001/XMLSchema#dateTime"
+    },
+    "totalCents": {
+      "@id": "https://crinkl.xyz/ns/spend/v1#totalCents",
+      "@type": "http://www.w3.org/2001/XMLSchema#string"
+    },
+    "currency": "https://crinkl.xyz/ns/spend/v1#currency",
+    "verificationVersion": "https://crinkl.xyz/ns/spend/v1#verificationVersion",
+    "protocolVersion": "https://crinkl.xyz/ns/spend/v1#protocolVersion",
+    "lineage": {
+      "@id": "https://crinkl.xyz/ns/spend/v1#lineage",
+      "@context": {
+        "@protected": true,
+        "headEventHash": "https://crinkl.xyz/ns/spend/v1#headEventHash",
+        "eventCount": {
+          "@id": "https://crinkl.xyz/ns/spend/v1#eventCount",
+          "@type": "http://www.w3.org/2001/XMLSchema#integer"
+        }
+      }
+    }
+  }
+}

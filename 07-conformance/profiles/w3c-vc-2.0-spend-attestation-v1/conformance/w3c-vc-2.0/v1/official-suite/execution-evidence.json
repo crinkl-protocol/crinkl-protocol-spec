@@ -1,0 +1,58 @@
+{
+  "classification": "APPLICABLE_OFFICIAL_SELF_CELL_NOT_PEER_INTEROP",
+  "executedAt": "2026-08-08T09:06:37Z",
+  "protocolBaseCommit": "236b3b258328efb3001af37815f77fcc0c7acc6d",
+  "adapterSourceSnapshot": {
+    "commit": "f8b35316105948a67e52df6470ae585091f2d9e2",
+    "gitBlobs": {
+      "conformance/w3c-vc-2.0/v1/official-suite/manifest.json": "d8770c1856d525534bd593d3f9f46ed21bbee628",
+      "conformance/w3c-vc-2.0/v1/official-suite/localConfig.cjs": "f5fb6929a5546ae0b8ce645c9938805be0c7f76a",
+      "conformance/w3c-vc-2.0/v1/official-suite/run-self-cell.mjs": "06c6381f6155307a284b2f62e87847c1a67f29b6",
+      "conformance/w3c-vc-2.0/v1/official-suite/self-cell-server.mjs": "58d7f0a58b649ec4b647263344159b82c08edc51",
+      "scripts/run_w3c_official_suite_adapters.mjs": "89b9b43dc0df85cb1602db21857fff0f68ecf5a1"
+    }
+  },
+  "node": "22.23.2",
+  "installNode": "20.19.4",
+  "installNpm": "10.8.2",
+  "lifecycleScriptsRun": false,
+  "mutableSuitePretestRun": false,
+  "upstreamLockfilesChanged": false,
+  "implementationCatalogCommit": "a084a96092cdde956719a681e2e984364c19a9ab",
+  "selfCellIssuerMethod": "did:key",
+  "selfCellKeyMaterial": "RFC_8032_PUBLIC_TEST_VECTOR_1",
+  "productProfileIssuerMethod": "did:web+retained-signed-issuer-history",
+  "productIssuerResolutionExercised": false,
+  "productIssuerHistoryExercised": false,
+  "productStatusHistoryExercised": false,
+  "results": {
+    "eddsaJcs2022": {
+      "suiteCommit": "c022df28036426b8c0218fd01c2b0589dbb36d50",
+      "files": ["tests/60-jcs-interop.js", "tests/70-data-model.js", "tests/80-algorithms.js"],
+      "passing": 13,
+      "pending": 0,
+      "failing": 0,
+      "selfCellInteropRows": 1
+    },
+    "bitstringStatusList": {
+      "suiteCommit": "92ac3e21610eb06558f220eed6f33dec89074f5d",
+      "files": ["tests/10-data_model.js", "tests/20-algorithms.js", "tests/30-interop.js"],
+      "passing": 19,
+      "pending": 8,
+      "failing": 0,
+      "selfCellInteropRows": 1,
+      "pendingReason": "Seven optional statusSize/statusMessage/statusReference rows are absent by profile choice; one upstream MAY row is declared it.skip by the suite."
+    }
+  },
+  "officialRowsPassed": 32,
+  "officialRowsPending": 8,
+  "directStatusProbes": {
+    "clearAccepted": true,
+    "setRejected": true,
+    "tamperedStatusProofRejected": true
+  },
+  "peerInteroperabilityClaimed": false,
+  "genericVcApiProductCapabilityClaimed": false,
+  "fullOfficialSuiteConformanceClaimed": false,
+  "runtimeBindingAuthorized": false
+}

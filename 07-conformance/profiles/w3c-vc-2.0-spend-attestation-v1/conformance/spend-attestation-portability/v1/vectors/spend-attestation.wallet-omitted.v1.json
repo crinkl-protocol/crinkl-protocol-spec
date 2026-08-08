@@ -1,0 +1,49 @@
+{
+  "kind": "token.spendAttestation.portableV1.walletOmitted",
+  "constants": {
+    "signatureInput": "RAW_SHA256_UNSIGNED_TOKEN_DIGEST_BYTES"
+  },
+  "issuerKeyMaterial": {
+    "privateKeySeedHex": "9d61b19deffd5a60ba844af492ec2cc44449c5697b326919703bac031cae7f60",
+    "publicKeyBase64": "11qYAYKxCrfVS/7TyWQHOg7hcvPapiMlrwIaaPcHURo="
+  },
+  "valid": {
+    "unsignedToken": {
+      "tokenType": "SPEND_ATTESTATION",
+      "schemaVersion": 1,
+      "spendId": "spend-portable-001",
+      "canonical": {
+        "status": "HARD_VERIFIED",
+        "storeHash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "timestamp": "2026-08-07T12:00:00.000Z",
+        "date": "2026-08-07",
+        "totalCents": "1234",
+        "currency": "USD",
+        "verificationVersion": "1.0.0"
+      },
+      "lineage": {
+        "headEventHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "eventCount": 2
+      },
+      "protocol": {
+        "protocolVersion": "1.0.0-rc.1"
+      }
+    },
+    "expectedTokenCanonical": "{\"canonical\":{\"currency\":\"USD\",\"date\":\"2026-08-07\",\"status\":\"HARD_VERIFIED\",\"storeHash\":\"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"timestamp\":\"2026-08-07T12:00:00.000Z\",\"totalCents\":\"1234\",\"verificationVersion\":\"1.0.0\"},\"lineage\":{\"eventCount\":2,\"headEventHash\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"},\"protocol\":{\"protocolVersion\":\"1.0.0-rc.1\"},\"schemaVersion\":1,\"spendId\":\"spend-portable-001\",\"tokenType\":\"SPEND_ATTESTATION\"}",
+    "expectedTokenHash": "sha256:f90cd33dda832cc3b70ec5e16b1703a9251495dd97bbd8029923e36d411b7116",
+    "expectedSignatureBase64": "yW/iFvkAegC9SoUZBnzMTYMdmm7WldZEpK7YfcioqwCa1NeaOwjOVycphq6ThpAtq/Ck3mZmAmUGfazhjT06DA=="
+  },
+  "rejectCases": [
+    { "id": "wallet-is-not-portable", "mutation": { "op": "add", "path": "/wallet", "value": "wallet-test" }, "expectedCode": "identity_handle_forbidden" },
+    { "id": "recipient-is-not-portable", "mutation": { "op": "add", "path": "/recipientId", "value": "recipient-test" }, "expectedCode": "identity_handle_forbidden" },
+    { "id": "holder-binding-is-not-v1-portable", "mutation": { "op": "add", "path": "/holderBinding", "value": { "scheme": "crinkl.holder.v2", "commitment": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc" } }, "expectedCode": "holder_binding_forbidden" },
+    { "id": "zk-witness-is-not-portable", "mutation": { "op": "add", "path": "/zk", "value": { "witness": "private" } }, "expectedCode": "private_witness_forbidden" }
+  ],
+  "cryptoRejectCases": [
+    { "id": "tampered-token-bytes", "mutation": { "op": "replace", "path": "/canonical/totalCents", "value": "9999" }, "expectedCode": "signature_invalid" },
+    { "id": "tampered-signature", "signatureBase64": "AW/iFvkAegC9SoUZBnzMTYMdmm7WldZEpK7YfcioqwCa1NeaOwjOVycphq6ThpAtq/Ck3mZmAmUGfazhjT06DA==", "expectedCode": "signature_invalid" }
+  ],
+  "jcsRejectCases": [
+    { "id": "lone-surrogate", "value": "\ud800" }
+  ]
+}
