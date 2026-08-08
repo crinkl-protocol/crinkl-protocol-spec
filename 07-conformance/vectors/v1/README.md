@@ -7,7 +7,10 @@ normative: true
 
 # Crinkl Protocol Conformance Suite (v1, suite version 2)
 
-This folder contains **versioned, data-only conformance vectors** for the Crinkl Protocol.
+This folder contains versioned conformance vectors for the Crinkl Protocol. The
+repository runner executes 11 manifest kinds and reports 3 kinds as data-only.
+The data-only kinds are the two reward-batch Merkle kinds and the ZK fixture
+descriptor; the ZK package-specific checks are not executed by this runner.
 
 Goal: any implementation (server, platform, third-party verifier) can run the same vectors and must produce identical:
 

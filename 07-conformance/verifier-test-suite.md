@@ -31,7 +31,7 @@ node scripts/verify_conformance.mjs \
   --require-kind token.spendAttestation.holderBinding.v2
 ```
 
-Release consumers additionally use `--require-released`. The `v1.0.0-rc.3`
+Release consumers additionally use `--require-released`. The `v1.0.0-rc.4`
 released manifest must pass that gate.
 
 ## What Is Checked
@@ -75,11 +75,12 @@ rejected.
 
 ## Current Data-Only Kinds
 
-These kinds are present in `manifest.json` but are not yet machine-checked by this script:
+Three kinds are present in `manifest.json` but are data-only in this runner:
 
 - `merkle.rewardBatch.schemaV1`
 - `merkle.rewardBatch.schemaV2.rewardEventsRoot`
-- `zk.h2PromoOpenMin.v1` (data artifact; machine-checked by `@crnkl/zk-verifier`)
+- `zk.h2PromoOpenMin.v1` (data descriptor; package-specific checks are provided
+  by `@crnkl/zk-verifier`, but this runner does not execute them)
 
 They remain versioned conformance artifacts; executable Merkle verification is tracked separately because chain-binding hashing semantics differ by implementation environment.
 

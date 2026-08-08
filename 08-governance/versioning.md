@@ -11,6 +11,11 @@ Current public repository release: **1.0.0-rc.4** (`RELEASED`)
 
 Current default Crinkl Platform binding `protocolVersion`: **1.0.0-rc.2**
 
+This document's frontmatter maturity is `draft`. Document maturity is separate
+from repository/package maturity: `v1.0.0-rc.4` is a released SemVer prerelease,
+while each document retains its own reviewed status. Neither state promotes or
+demotes the other, and no stable successor release is declared here.
+
 This document describes how the Crinkl Protocol evolves without creating forked implementations. It is normative only where it constrains verifier behavior; governance and rollout timelines are non-normative.
 
 ## Version surfaces

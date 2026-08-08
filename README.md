@@ -10,6 +10,22 @@ The protocol is designed so that campaigns, reward systems, analytics tools, age
 [![License](https://img.shields.io/badge/license-Apache%202.0-green)](LICENSE)
 [![CI](https://github.com/crinkl-protocol/crinkl-protocol-spec/actions/workflows/drift-check.yml/badge.svg)](https://github.com/crinkl-protocol/crinkl-protocol-spec/actions/workflows/drift-check.yml)
 
+## Verify the Released Native V1 Fixture
+
+From a clean checkout, use the repository-shipped verifier and vector:
+
+```bash
+node scripts/verify_conformance.mjs \
+  --require-released \
+  --require-kind token.spendAttestation.portableV1.fromSpendStream
+```
+
+This proves consistency among the repository fixture's native V1 canonical
+bytes, token hash, Ed25519 signature, and declared public key without private
+infrastructure or network access. It does not prove issuer authorization,
+currentness, purchase acceptance, or release-tag authenticity, and it does not
+verify or activate a W3C credential profile.
+
 ## What Crinkl Proves
 
 Crinkl proves that commerce evidence advanced through a defined proof lifecycle:
@@ -109,16 +125,25 @@ Downstream layers consume spend proof; they do not define it.
 [`versions/CHANGELOG.md`](versions/CHANGELOG.md). The exact, machine-checkable
 release transition and rollback rules are in
 [`versions/v1.0.0-rc.4/finalization.json`](versions/v1.0.0-rc.4/finalization.json).
-Planned stable release tag: **v1.0.0**.
+This is a released SemVer prerelease package, not a stable `v1.0.0` release.
+Each document's frontmatter `status` states that document's maturity separately
+and does not change the repository release status. A successor release identity
+has not been selected.
 
 ## Verification
 
 ```bash
 python3 scripts/check_drift.py
 node scripts/verify_conformance.mjs
-python3 scripts/check_campaign_direct_reward_release_profile.py
+python3 07-conformance/profiles/campaign-direct-buyer-reward-v1/scripts/check_campaign_direct_reward_profile_vectors.py
 node 07-conformance/profiles/spend-token-v2-holder-binding/scripts/check_holder_binding_vectors.mjs
-python3 scripts/check_rc4_release_finalization.py
+```
+
+From an exact checkout of the released `v1.0.0-rc.4` tag, verify the immutable
+tag binding:
+
+```bash
+python3 scripts/check_rc4_release_finalization.py --mode released --require-tag
 ```
 
 PDF export:
@@ -127,4 +152,5 @@ PDF export:
 ./scripts/export_protocol_pdf.sh
 ```
 
-Reform notes for this lifecycle refactor are in [`REFORM_NOTES.md`](REFORM_NOTES.md).
+The governed record for this lifecycle refactor is in
+[`08-governance/refactor-record.md`](08-governance/refactor-record.md).

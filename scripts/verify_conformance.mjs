@@ -148,7 +148,7 @@ function runExternalVerifier(vectorMeta) {
 
 function main() {
   const failures = [];
-  const skippedKinds = [];
+  const dataOnlyKinds = [];
   const executedKinds = [];
   let checks = 0;
 
@@ -517,7 +517,7 @@ function main() {
       continue;
     }
 
-    skippedKinds.push({
+    dataOnlyKinds.push({
       kind,
       reason: "no executable verifier in scripts/verify_conformance.mjs yet"
     });
@@ -544,11 +544,15 @@ function main() {
     ` - release: ${releaseManifest.releaseVersion}/${releaseManifest.status}`
   );
   console.log(` - checks: ${checks}`);
-  console.log(` - executed kinds: ${executedKinds.sort().join(", ")}`);
-  if (skippedKinds.length > 0) {
-    console.log(` - skipped kinds: ${skippedKinds.map((x) => x.kind).join(", ")}`);
+  console.log(
+    ` - executed kinds (${executedKinds.length}): ${executedKinds.sort().join(", ")}`
+  );
+  if (dataOnlyKinds.length > 0) {
+    console.log(
+      ` - data-only kinds (${dataOnlyKinds.length}): ${dataOnlyKinds.map((x) => x.kind).join(", ")}`
+    );
     if (strictCoverage) {
-      console.error("[conformance] strict coverage enabled and skipped kinds remain");
+      console.error("[conformance] strict coverage enabled and data-only kinds remain");
       process.exit(2);
     }
   }
