@@ -68,15 +68,27 @@ def main() -> int:
     bundle_root = Path(__file__).resolve().parents[1]
     repo_root = bundle_root.parents[2]
     manifest = load_json(bundle_root / "manifest.json")
-    if manifest.get("maturity") != "candidate" or manifest.get("releasedConformance") is not False:
-        fail("bundle must remain an unreleased candidate")
+    release = load_json(repo_root / "versions/release.json")
+    release_status = release.get("status")
+    if release.get("releaseVersion") != "1.0.0-rc.5" or release_status not in {"RELEASE_CANDIDATE_NOT_PUBLISHED", "RELEASED"}:
+        fail("rc.5 release boundary drift")
+    released = release_status == "RELEASED"
+    expected_bundle_state = {
+        "maturity": "released" if released else "candidate",
+        "releasedConformance": released,
+        "conformanceStatus": "PRESENT_IN_RELEASED_RC5_SUITE_3" if released else "PRESENT_IN_RC5_SUITE_3_SOURCE_CANDIDATE",
+        "publicationBlockers": [] if released else ["P4.4_EXACT_PUBLIC_CANDIDATE_REVIEW", "P9_ACCEPTED_PUBLIC_RELEASE"],
+        "releaseClaim": released,
+    }
+    if manifest.get("maturity") != expected_bundle_state["maturity"] or manifest.get("releasedConformance") is not expected_bundle_state["releasedConformance"]:
+        fail("W3C profile maturity boundary drift")
     if manifest.get("engineeringSource") != {
         "repository": "crinkl-protocol",
         "commit": "ae6382f1ed11b88f9bbfdcc4ef12119647cc7698",
         "maturity": "engineering-adopted-on-protected-main",
     }:
         fail("engineering source anchor drift")
-    if manifest.get("publicRepositoryVersion") != "unreleased-successor-to-1.0.0-rc.4":
+    if manifest.get("publicRepositoryVersion") != "1.0.0-rc.5":
         fail("candidate public-version boundary drift")
     if manifest.get("conformanceManifestEntry") != {
         "kind": W3C_KIND,
@@ -85,15 +97,17 @@ def main() -> int:
             "type": "node",
             "file": "../../profiles/w3c-vc-2.0-spend-attestation-v1/scripts/check_w3c_spend_attestation_credential_vectors.mjs",
         },
-        "status": "CANDIDATE_FUTURE_CONFORMANCE_MANIFEST_ENTRY_NOT_IN_RELEASED_RC4",
+        "status": expected_bundle_state["conformanceStatus"],
     }:
-        fail("candidate future conformance entry drift")
-    if set(manifest.get("publicationBlockers") or []) != {
-        "P4.3_SUCCESSOR_RELEASE_CANDIDATE_MANIFEST",
-        "P4.4_EXACT_PUBLIC_CANDIDATE_REVIEW",
-        "P9_ACCEPTED_PUBLIC_RELEASE",
-    }:
+        fail("W3C conformance entry drift")
+    if manifest.get("publicationBlockers") != expected_bundle_state["publicationBlockers"]:
         fail("publication blockers drift")
+    expected_claims = {
+        "completeOfficialW3CTestSuite": False, "peerInteroperability": False,
+        "genericVcVpApi": False, "runtime": False, "release": expected_bundle_state["releaseClaim"], "production": False,
+    }
+    if manifest.get("claims") != expected_claims:
+        fail("claim boundary drift")
     expected_launch = {
         "DID_WEB_ENDPOINT_PUBLICATION", "IMMUTABLE_CONTEXT_ENDPOINT_PUBLICATION",
         "SIGNED_STATUS_LIST_ENDPOINT_PUBLICATION", "SPEND_HEAD_REFRESH_ENDPOINT_PUBLICATION",
@@ -101,12 +115,6 @@ def main() -> int:
     }
     if set(manifest.get("launchBlockers") or []) != expected_launch:
         fail("launch blockers drift")
-    if manifest.get("falseClaims") != {
-        "completeOfficialW3CTestSuite": False, "peerInteroperability": False,
-        "genericVcVpApi": False, "runtime": False, "release": False, "production": False,
-    }:
-        fail("false-claim boundary drift")
-
     artifacts = manifest.get("artifacts") or []
     artifact_paths = [entry.get("file") for entry in artifacts]
     if len(artifact_paths) != len(set(artifact_paths)) or set(artifact_paths) != EXPECTED_ARTIFACTS:
@@ -140,9 +148,31 @@ def main() -> int:
     if public_binding != PUBLIC_FRONTMATTER + adopted_binding:
         fail("public binding is not the controlled-frontmatter transform of adopted binding")
 
-    released_manifest = load_json(repo_root / "07-conformance/vectors/v1/manifest.json")
-    if W3C_KIND in all_strings(released_manifest):
-        fail("released rc.4 manifest must not contain candidate W3C kind")
+    current_manifest = load_json(repo_root / "07-conformance/vectors/v1/manifest.json")
+    expected_entry = {
+        "kind": W3C_KIND,
+        "file": "../../profiles/w3c-vc-2.0-spend-attestation-v1/conformance/w3c-vc-2.0/v1/vectors/spend-attestation-credential.v1.json",
+        "externalVerifier": {
+            "type": "node",
+            "file": "../../profiles/w3c-vc-2.0-spend-attestation-v1/scripts/check_w3c_spend_attestation_credential_vectors.mjs",
+        },
+    }
+    if current_manifest.get("releaseVersion") != "1.0.0-rc.5" or current_manifest.get("releaseStatus") != release_status or current_manifest.get("suiteVersion") != 3:
+        fail("rc.5 candidate suite boundary drift")
+    if sum(entry == expected_entry for entry in current_manifest.get("vectors") or []) != 1:
+        fail("rc.5 candidate suite must contain exactly one manifest-bound W3C entry")
+    frozen_rc4 = subprocess.run(
+        ["git", "show", "v1.0.0-rc.4:07-conformance/vectors/v1/manifest.json"],
+        cwd=repo_root,
+        check=True,
+        text=True,
+        capture_output=True,
+    ).stdout.encode("utf-8")
+    if hashlib.sha256(frozen_rc4).hexdigest() != "4deb342629d0c85f34b06cedf9c0e006dc2016d14fad53e301507ff2beeb06cd":
+        fail("immutable rc.4 manifest hash drift")
+    released_manifest = json.loads(frozen_rc4)
+    if released_manifest.get("releaseVersion") != "1.0.0-rc.4" or released_manifest.get("releaseStatus") != "RELEASED" or released_manifest.get("suiteVersion") != 2 or W3C_KIND in all_strings(released_manifest):
+        fail("immutable rc.4 suite baseline drift")
 
     official_manifest = load_json(bundle_root / "conformance/w3c-vc-2.0/v1/official-suite/manifest.json")
     evidence = load_json(bundle_root / "conformance/w3c-vc-2.0/v1/official-suite/execution-evidence.json")

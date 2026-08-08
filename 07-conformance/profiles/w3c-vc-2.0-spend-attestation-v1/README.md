@@ -7,10 +7,12 @@ normative: false
 
 # W3C VC 2.0 Spend Attestation candidate bundle
 
+Profile release state: candidate.
+
 This is a source-only candidate bundle for the optional W3C VC 2.0 Spend
-Attestation wire form. It is not part of the released `v1.0.0-rc.4`
-conformance suite and does not change the released manifest, tag, or runtime
-contract.
+Attestation wire form. It is present in the unpublished `v1.0.0-rc.5`
+candidate conformance suite. It does not change the immutable released
+`v1.0.0-rc.4` manifest or tag, and it does not activate runtime behavior.
 
 Issuers can use opt-in dual issuance: issue the native Spend Attestation Token
 and, where this profile is enabled, the matching
@@ -40,6 +42,9 @@ complete official-suite conformance or peer interoperability. It also makes no
 claim of a generic VC/VP API, live `did:web`, immutable context, signed status
 list, or refresh endpoint; runtime adoption, QA, release, and production
 authority remain separate gates.
+
+Publication state: P4.4 exact-candidate review and P9 accepted public-release authority remain blockers.
+The endpoint, runtime, QA, and production blockers above remain unchanged.
 
 The copied official-suite manifest and execution-evidence files are immutable
 publication receipts, not a portable test runner. Reproduce that source-bound

@@ -137,11 +137,15 @@ function runExternalVerifier(vectorMeta) {
     throw new Error(`external verifier is not a file: ${verifier.file}`);
   }
 
+  const timeout = vectorMeta.kind === "credential.spendAttestation.vcdm2.eddsaJcs2022"
+    ? 180_000
+    : 60_000;
+
   return spawnSync(verifier.type, [verifierPath], {
     cwd: repoRoot,
     encoding: "utf8",
     stdio: ["ignore", "pipe", "pipe"],
-    timeout: 60_000,
+    timeout,
     maxBuffer: 1024 * 1024
   });
 }

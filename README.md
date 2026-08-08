@@ -6,17 +6,16 @@ A spend attestation proves that a purchase event was observed, normalized, verif
 
 The protocol is designed so that campaigns, reward systems, analytics tools, agents, and settlement layers can verify commerce facts without requiring raw receipt access or user identity.
 
-[![Version](https://img.shields.io/badge/version-v1.0.0--rc.4-blue)](versions/CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-v1.0.0--rc.5-blue)](versions/CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-Apache%202.0-green)](LICENSE)
 [![CI](https://github.com/crinkl-protocol/crinkl-protocol-spec/actions/workflows/drift-check.yml/badge.svg)](https://github.com/crinkl-protocol/crinkl-protocol-spec/actions/workflows/drift-check.yml)
 
-## Verify the Released Native V1 Fixture
+## Verify the Candidate Native V1 Fixture
 
 From a clean checkout, use the repository-shipped verifier and vector:
 
 ```bash
 node scripts/verify_conformance.mjs \
-  --require-released \
   --require-kind token.spendAttestation.portableV1.fromSpendStream
 ```
 
@@ -120,15 +119,17 @@ Downstream layers consume spend proof; they do not define it.
 
 ## Current Version
 
-**v1.0.0-rc.4** — released. See
+**v1.0.0-rc.5** release candidate source — not yet published. See
 [`versions/release.json`](versions/release.json) and
 [`versions/CHANGELOG.md`](versions/CHANGELOG.md). The exact, machine-checkable
 release transition and rollback rules are in
-[`versions/v1.0.0-rc.4/finalization.json`](versions/v1.0.0-rc.4/finalization.json).
-This is a released SemVer prerelease package, not a stable `v1.0.0` release.
+[`versions/v1.0.0-rc.5/finalization.json`](versions/v1.0.0-rc.5/finalization.json).
+This is an unpublished SemVer prerelease candidate, not a stable `v1.0.0`
+release. The immutable released `v1.0.0-rc.4` tag remains available for
+historical verification.
 Each document's frontmatter `status` states that document's maturity separately
 and does not change the repository release status. A successor release identity
-has not been selected.
+is selected as `v1.0.0-rc.5`. P4.4 and P9 remain blockers.
 
 ## Verification
 
@@ -139,11 +140,10 @@ python3 07-conformance/profiles/campaign-direct-buyer-reward-v1/scripts/check_ca
 node 07-conformance/profiles/spend-token-v2-holder-binding/scripts/check_holder_binding_vectors.mjs
 ```
 
-From an exact checkout of the released `v1.0.0-rc.4` tag, verify the immutable
-tag binding:
+Verify the rc.5 candidate transition locally:
 
 ```bash
-python3 scripts/check_rc4_release_finalization.py --mode released --require-tag
+python3 scripts/check_successor_release_finalization.py --mode candidate
 ```
 
 PDF export:
