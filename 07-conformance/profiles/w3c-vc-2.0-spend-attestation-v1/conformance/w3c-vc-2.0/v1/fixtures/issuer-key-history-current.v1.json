@@ -1,0 +1,36 @@
+{
+  "artifactType": "W3C_ISSUER_KEY_HISTORY",
+  "schemaVersion": 1,
+  "issuer": "did:web:vc-test.example",
+  "historyId": "sha256:c4935930bd4d4071cd16b5a35081f5146762bebca6ea1576e17053cb88954b91",
+  "sequence": 1,
+  "previousHistoryRef": "sha256:64c7ba25b6ab045b07dde7f98a10b9ae53b4d44b80b8e7b9bebd25e861fdad07",
+  "publishedAt": "2026-08-07T13:00:00.000Z",
+  "immutable": true,
+  "refreshServiceBaseUrl": "https://vc-test.example",
+  "keys": [
+    {
+      "keyId": "spend-attestation-2026-01",
+      "verificationMethod": "did:web:vc-test.example#spend-attestation-2026-01",
+      "publicKeyMultibase": "z6MktwupdmLXVVqTzCw4i46r4uGyosGXRnR3XjN4Zq7oMMsw",
+      "validFrom": "2026-01-01T00:00:00.000Z",
+      "validUntil": "2026-08-07T13:00:00.000Z",
+      "authorizedArtifactTypes": ["SPEND_ATTESTATION_CREDENTIAL"],
+      "authorizedProofPurposes": ["assertionMethod"]
+    },
+    {
+      "keyId": "spend-attestation-2026-08",
+      "verificationMethod": "did:web:vc-test.example#spend-attestation-2026-08",
+      "publicKeyMultibase": "z6MkiaMbhXHNA4eJVCCj8dbzKzTgYDKf6crKgHVHid1F1WCT",
+      "validFrom": "2026-08-07T13:00:00.000Z",
+      "validUntil": null,
+      "authorizedArtifactTypes": ["SPEND_ATTESTATION_CREDENTIAL"],
+      "authorizedProofPurposes": ["assertionMethod"]
+    }
+  ],
+  "signatures": {
+    "verificationMethod": "did:web:vc-test.example#issuer-history-root-2026-01",
+    "historyHash": "c4935930bd4d4071cd16b5a35081f5146762bebca6ea1576e17053cb88954b91",
+    "signature": "SzmJ8Arf2E2MDu8xb8XD6gVeD9foqXyhYERRziBKWBxluK/KFRmzOBvjWe2Q1WCTHtH3h+ypEwCKVhNRHzqTDQ=="
+  }
+}

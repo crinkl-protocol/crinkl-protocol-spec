@@ -1,0 +1,33 @@
+{
+  "kind": "w3c.vc.signed-status-list-resolution.v1",
+  "fixtureClass": "OFFLINE_PINNED_SIGNED_BITSTRING_STATUS_LIST_RESOLVER",
+  "networkAccess": false,
+  "verificationTime": "2026-08-07T14:10:00.000Z",
+  "freshnessPolicy": {
+    "maximumAgeSeconds": 3600,
+    "requireRetainedCredential": true,
+    "networkAccess": false
+  },
+  "statusLists": {
+    "revocation": {
+      "statusListCredential": "https://vc-test.example/status/revocation/1",
+      "selectedCredentialHash": "sha256:91eaf129f669b2e9aec374cb1a29ac306b26ed24f46f637064f37d7ef4b01e3f",
+      "retainedVersions": [
+        {
+          "credentialHash": "sha256:91eaf129f669b2e9aec374cb1a29ac306b26ed24f46f637064f37d7ef4b01e3f",
+          "credentialFixture": "bitstring-status-list-revocation-clear.v1.json"
+        }
+      ]
+    },
+    "refresh": {
+      "statusListCredential": "https://vc-test.example/status/refresh/1",
+      "selectedCredentialHash": "sha256:de7fffde936d58a013821d60c15e736fdab8c5dc9830adbd5d25e2ba0c4760fa",
+      "retainedVersions": [
+        {
+          "credentialHash": "sha256:de7fffde936d58a013821d60c15e736fdab8c5dc9830adbd5d25e2ba0c4760fa",
+          "credentialFixture": "bitstring-status-list-refresh-clear.v1.json"
+        }
+      ]
+    }
+  }
+}

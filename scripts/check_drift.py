@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import re
+import subprocess
 import sys
 from pathlib import Path
 from typing import Any, Iterable
@@ -207,6 +208,22 @@ def main() -> int:
         return die("07-conformance manifest suite mismatch with release manifest")
     if manifest.get("suiteVersion") != release_conformance.get("suiteVersion"):
         return die("07-conformance manifest suiteVersion mismatch with release manifest")
+
+    # The optional W3C VC profile is an unreleased source-only bundle. Its
+    # verifier proves its adopted-source bytes, candidate/release boundary,
+    # official self-cell evidence boundary, and executable fixture checks.
+    w3c_bundle_checker = (
+        repo_root
+        / "07-conformance"
+        / "profiles"
+        / "w3c-vc-2.0-spend-attestation-v1"
+        / "scripts"
+        / "check_w3c_vc_2_0_spend_attestation_bundle.py"
+    )
+    if not w3c_bundle_checker.is_file():
+        return die("missing W3C VC candidate bundle verifier")
+    if subprocess.run([sys.executable, str(w3c_bundle_checker)], cwd=repo_root).returncode != 0:
+        return die("W3C VC candidate bundle verifier failed")
 
     # Leak guard: this PUBLIC repo must not contain internal/private-tagged content.
     leaked = [

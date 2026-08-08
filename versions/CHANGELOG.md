@@ -5,6 +5,18 @@ prerelease. Repository release maturity is separate from each document's
 frontmatter maturity; a released package may contain documents whose declared
 status remains draft. No stable successor release is declared.
 
+## Unreleased W3C VC 2.0 Spend Attestation candidate bundle
+
+- Publishes a source-only, byte-pinned candidate bundle for the optional W3C
+  VC 2.0 Spend Attestation wire form, anchored to adopted `crinkl-protocol`
+  commit `ae6382f1ed11b88f9bbfdcc4ef12119647cc7698`.
+- Supports opt-in dual issuance alongside independently verifiable native Spend
+  Attestation Tokens and retains the released `v1.0.0-rc.4` manifest unchanged.
+- Pins applicable official self-cell evidence at 32 passing rows and 8 pending
+  profile-optional or upstream-skipped rows; complete official-suite
+  conformance, peer interoperability, generic VC/VP APIs, endpoint operation,
+  runtime, release, and production remain unclaimed.
+
 ## Unreleased governance update
 
 - Requires every spec or requirements change to classify business policy,
