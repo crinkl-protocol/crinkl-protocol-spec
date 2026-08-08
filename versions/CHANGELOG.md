@@ -1,6 +1,9 @@
 # Changelog
 
-This repository is being prepared for its **first public release**. Earlier internal iterations existed, but version numbers have been reset for the public SemVer track.
+The current public repository release is **v1.0.0-rc.4**, a released SemVer
+prerelease. Repository release maturity is separate from each document's
+frontmatter maturity; a released package may contain documents whose declared
+status remains draft. No stable successor release is declared.
 
 ## Unreleased governance update
 
