@@ -314,7 +314,7 @@ The following types are used in structures above. Enumerations are normative; im
 - **Type:** JSON string
 - **Format:** CBSA numeric code as string (e.g., `"12420"` for Austin-Round Rock-Georgetown, TX) or a non-metro fallback in the format `"non-metro:{RegionCode}"` (e.g., `"non-metro:US-MT"`)
 - **Source:** US Office of Management and Budget (OMB) Core Based Statistical Area definitions. Free public crosswalk: city/county → CBSA. Updated periodically by OMB.
-- **Usage:** optional metro-area-level geographic bucketing for condition evaluation, aggregate outputs, and optional enrichment of per-spend data. Provides local-business-meaningful granularity while preserving reasonable privacy properties for aggregation.
+- **Usage:** optional metro-area-level geographic bucketing for predicate evaluation, aggregate outputs, and optional enrichment of per-spend data. Provides local-business-meaningful granularity while preserving reasonable privacy properties for aggregation.
 
 **Derivation (normative):**
 

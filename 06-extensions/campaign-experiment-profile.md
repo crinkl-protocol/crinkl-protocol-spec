@@ -62,7 +62,7 @@ The legacy candidate remains historical public material until separately depreca
 | Protocol requirement | Business/offchain choice |
 |---|---|
 | exact content references, versions, canonical hashes, signatures, authorities, non-equivocation, correction and cutoff bindings | target product/merchant/category/market/channel and commercial objective |
-| exact pre-state Condition and evaluation context | audience-size feasibility and selected eligibility values |
+| exact pre-state Spend Predicate and evaluation context | audience-size feasibility and selected eligibility values |
 | deterministic exclusive pre-exposure assignment scope and replay/nullifier rule | allocation ratio selected within the adopted policy bounds |
 | one immutable intervention-policy reference per arm | benefit, message, price, creative, and delivery operations |
 | exposure-coverage and measurement-method references | estimator implementation, sample sufficiency, confidence convention, margin model, report, and rerun decision |
@@ -79,7 +79,7 @@ A conforming verifier must resolve and validate:
 1. one exact signed `CampaignExperimentPolicyV1`;
 2. its exact signed adopted `CampaignEpochV1`;
 3. its exact `BuyerStateEvaluationContextV1` or `V2`;
-4. `evaluationContext.conditionId == campaignEpoch.preStateConditionRef`;
+4. `evaluationContext.predicateId == campaignEpoch.preStateConditionRef`;
 5. `campaignEpoch.issuedAt <= experimentPolicy.issuedAt <= campaignEpoch.effectiveFrom`;
 6. the canonical experiment-policy reference and non-circular assignment-scope derivation;
 7. exactly two ordered arms, `CONTROL` then `TREATMENT`, with distinct intervention-policy references;
@@ -127,7 +127,7 @@ Observed conversion, modeled or estimated lift, and controlled incrementality mu
 | Position | Product/CPG value | Restaurant value | Shared representation |
 |---|---|---|---|
 | Target | one product, retailer/channel, market | one merchant/location set, visit channel/daypart, market | Epoch, registry, and entity-set references |
-| Eligibility | recent category buyers plus exclusions | recent category diners plus exclusions | one Condition and exact evaluation context |
+| Eligibility | recent category buyers plus exclusions | recent category diners plus exclusions | one Spend Predicate and exact evaluation context |
 | Arms | control and product intervention | control and visit intervention | one deterministic exclusive assignment scope |
 | Intervention | benefit, message, or no-benefit policy | benefit, message, or no-benefit policy | immutable intervention-policy reference per arm |
 | Outcome | product purchase within window and return/correction boundary | merchant/location purchase within window and correction boundary | common conversion, timing, attribution, evidence, correction, and deduplication policies |
