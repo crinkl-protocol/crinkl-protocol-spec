@@ -5,7 +5,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Do not disclose vulnerabilities, secrets, private keys, raw receipts, personal data, or other sensitive evidence here. Security reports belong in an approved private channel.
+        Do not disclose vulnerabilities, secrets, private keys, raw receipts, personal data, or other sensitive evidence here. For a specification vulnerability, follow SECURITY.md and use its private reporting link.
   - type: textarea
     id: problem
     attributes:

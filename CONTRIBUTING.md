@@ -59,9 +59,7 @@ evidence should state exactly what was run and what was not run.
 
 Do not put vulnerabilities, exploit details, credentials, private keys, raw
 receipts, personal data, or other sensitive evidence in a public issue or pull
-request. Use an approved private reporting channel to request or submit a
-security report. If no private channel is available, do not disclose the
-details publicly.
+request. Follow the private reporting process in [SECURITY.md](SECURITY.md).
 
 ## Conduct
 

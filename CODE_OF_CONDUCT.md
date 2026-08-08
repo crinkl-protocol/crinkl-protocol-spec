@@ -26,7 +26,8 @@ the protocol discussion.
 
 Do not use a public conduct report to disclose a vulnerability, credential,
 receipt, identity data, or other sensitive information. Use an approved private
-channel instead.
+channel instead. For a specification vulnerability, follow
+[SECURITY.md](SECURITY.md).
 
 ## Reporting
 
@@ -37,4 +38,5 @@ concern. Do not publish the report publicly.
 
 This address is for conduct concerns, not vulnerability disclosure. Do not
 send credentials, private keys, raw receipts, personal data, exploit details,
-or other sensitive protocol evidence through this route.
+or other sensitive protocol evidence through this route. For a specification
+vulnerability, follow [SECURITY.md](SECURITY.md).

@@ -5,7 +5,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Do not include vulnerabilities, secrets, private keys, raw receipts, personal data, or other sensitive evidence. Security reports must use an approved private channel.
+        Do not include vulnerabilities, secrets, private keys, raw receipts, personal data, or other sensitive evidence. For a specification vulnerability, follow SECURITY.md and use its private reporting link.
   - type: input
     id: version
     attributes:
