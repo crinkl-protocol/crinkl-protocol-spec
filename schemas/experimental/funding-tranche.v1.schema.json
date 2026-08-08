@@ -16,7 +16,7 @@
   ],
   "properties": {
     "status": { "const": "experimental" },
-    "layer": { "const": "condition/campaign extension" },
+    "layer": { "const": "predicate/campaign extension" },
     "coreSpendAttestationRequired": { "const": false },
 
     "fundingTrancheId": { "$ref": "#/$defs/Identifier" },

@@ -11,7 +11,7 @@
     "epochVersion",
     "effectiveFrom",
     "timingRule",
-    "conditionHash",
+    "predicateHash",
     "ruleSetHash",
     "rewardRuleHash",
     "fundingTrancheId",
@@ -21,7 +21,7 @@
   ],
   "properties": {
     "status": { "const": "experimental" },
-    "layer": { "const": "condition/campaign extension" },
+    "layer": { "const": "predicate/campaign extension" },
     "coreSpendAttestationRequired": { "const": false },
 
     "campaignId": { "$ref": "#/$defs/Identifier" },
@@ -33,8 +33,8 @@
       "type": "string",
       "enum": ["SPEND_TIMESTAMP", "ATTESTATION_TIMESTAMP", "CLAIM_TIMESTAMP"]
     },
-    "conditionId": { "$ref": "#/$defs/Identifier" },
-    "conditionHash": { "$ref": "#/$defs/Sha256Id" },
+    "predicateId": { "$ref": "#/$defs/Identifier" },
+    "predicateHash": { "$ref": "#/$defs/Sha256Id" },
     "ruleSetHash": { "$ref": "#/$defs/Sha256Id" },
     "candidateSetHash": { "$ref": "#/$defs/Sha256Id" },
     "targetMerchantSetRoot": { "$ref": "#/$defs/Hash" },

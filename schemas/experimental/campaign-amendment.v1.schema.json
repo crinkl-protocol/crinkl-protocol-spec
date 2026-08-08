@@ -18,7 +18,7 @@
   ],
   "properties": {
     "status": { "const": "experimental" },
-    "layer": { "const": "condition/campaign extension" },
+    "layer": { "const": "predicate/campaign extension" },
     "coreSpendAttestationRequired": { "const": false },
     "eventName": { "const": "CAMPAIGN_EPOCH_APPENDED" },
 
