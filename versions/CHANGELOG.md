@@ -1,21 +1,24 @@
 # Changelog
 
-The current public repository release is **v1.0.0-rc.4**, a released SemVer
-prerelease. Repository release maturity is separate from each document's
-frontmatter maturity; a released package may contain documents whose declared
-status remains draft. No stable successor release is declared.
+The current public repository release candidate is **v1.0.0-rc.5**, an
+unpublished SemVer prerelease. Repository release maturity is separate from
+each document's frontmatter maturity. The immutable `v1.0.0-rc.4` tag remains
+the prior released package; no stable successor release is declared.
 
-## Unreleased W3C VC 2.0 Spend Attestation candidate bundle
+## v1.0.0-rc.5 release candidate (not published)
 
 - Publishes a source-only, byte-pinned candidate bundle for the optional W3C
   VC 2.0 Spend Attestation wire form, anchored to adopted `crinkl-protocol`
   commit `ae6382f1ed11b88f9bbfdcc4ef12119647cc7698`.
 - Supports opt-in dual issuance alongside independently verifiable native Spend
-  Attestation Tokens and retains the released `v1.0.0-rc.4` manifest unchanged.
+  Attestation Tokens while preserving native token bytes, embedded wire
+  versions, and the immutable released `v1.0.0-rc.4` manifest and tag.
 - Pins applicable official self-cell evidence at 32 passing rows and 8 pending
   profile-optional or upstream-skipped rows; complete official-suite
   conformance, peer interoperability, generic VC/VP APIs, endpoint operation,
-  runtime, release, and production remain unclaimed.
+  runtime, release, and production remain unclaimed. The rc.5 candidate adds
+  the fixture harness as an executable manifest-bound suite-version-3 kind;
+  this does not promote the W3C profile beyond candidate maturity.
 
 ## Unreleased governance update
 

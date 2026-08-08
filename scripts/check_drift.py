@@ -161,15 +161,27 @@ def main() -> int:
         )
 
     evolution = read_text(repo_root / "08-governance" / "versioning.md")
-    m2 = re.search(r"Current public repository release:\s+\*\*(\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?)\*\*", evolution)
+    m2 = re.search(
+        r"Current public repository (source candidate|release):\s+"
+        r"\*\*(\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?)\*\*",
+        evolution,
+    )
     if not m2:
         return die(
             "08-governance/versioning.md missing "
-            "'Current public repository release: **X.Y.Z**'"
+            "'Current public repository source candidate|release: **X.Y.Z**'"
         )
-    if m2.group(1) != release_version:
+    expected_versioning_label = (
+        "release" if release_status == "RELEASED" else "source candidate"
+    )
+    if m2.group(1) != expected_versioning_label:
         return die(
-            f"versioning.md release mismatch: versioning={m2.group(1)} release={release_version}"
+            "versioning.md release-state label mismatch: "
+            f"versioning={m2.group(1)} expected={expected_versioning_label}"
+        )
+    if m2.group(2) != release_version:
+        return die(
+            f"versioning.md release mismatch: versioning={m2.group(2)} release={release_version}"
         )
 
     # spend-event.md must mention every bound protocol/system event name.
@@ -209,9 +221,16 @@ def main() -> int:
     if manifest.get("suiteVersion") != release_conformance.get("suiteVersion"):
         return die("07-conformance manifest suiteVersion mismatch with release manifest")
 
-    # The optional W3C VC profile is an unreleased source-only bundle. Its
-    # verifier proves its adopted-source bytes, candidate/release boundary,
-    # official self-cell evidence boundary, and executable fixture checks.
+    successor_finalizer = repo_root / "scripts" / "check_successor_release_finalization.py"
+    if not successor_finalizer.is_file():
+        return die("missing successor release finalization verifier")
+    finalizer_mode = "released" if release_status == "RELEASED" else "candidate"
+    if subprocess.run([sys.executable, str(successor_finalizer), "--mode", finalizer_mode], cwd=repo_root).returncode != 0:
+        return die("successor release finalization verifier failed")
+
+    # The optional W3C VC profile follows the active candidate/released state.
+    # Its verifier proves adopted-source bytes, the rc.4 immutable baseline,
+    # rc.5 suite inclusion, official self-cell boundaries, and fixture checks.
     w3c_bundle_checker = (
         repo_root
         / "07-conformance"

@@ -1,5 +1,5 @@
 ---
-status: released
+status: release-candidate
 layer: conformance
 version: v1
 normative: true
@@ -31,8 +31,15 @@ node scripts/verify_conformance.mjs \
   --require-kind token.spendAttestation.holderBinding.v2
 ```
 
-Release consumers additionally use `--require-released`. The `v1.0.0-rc.4`
-released manifest must pass that gate.
+To require the candidate W3C Spend Attestation fixture harness:
+
+```bash
+node scripts/verify_conformance.mjs \
+  --require-kind credential.spendAttestation.vcdm2.eddsaJcs2022
+```
+
+Release consumers additionally use `--require-released`. The rc.5 candidate
+intentionally fails that gate until P4.4/P9 complete the governed release.
 
 ## What Is Checked
 
@@ -51,6 +58,8 @@ released manifest must pass that gate.
   Python verifier
 - `token.spendAttestation.holderBinding.v2` through its manifest-bound,
   byte-pinned Node verifier
+- `credential.spendAttestation.vcdm2.eddsaJcs2022` through its manifest-bound
+  Node fixture harness
 
 Checks include:
 
@@ -66,6 +75,11 @@ malformed-composition rejection and same-position equivocation rejection.
 - Spend Token V2 canonicalization, issuer signature, holder commitment,
   challenge binding, holder signature, expiry, replay, and absent-binding
   decisions.
+- W3C Spend Attestation fixture proof, retained issuer-history, signed
+  Bitstring Status List, and closed-schema decisions. This is candidate
+  fixture coverage only; it does not claim complete official-suite conformance,
+  peer interoperability, a generic VC/VP API, endpoint operation, runtime, or
+  production.
 
 Manifest-bound external verifiers are restricted to files under
 `07-conformance/profiles/`, receive no shell interpolation or manifest-supplied arguments,

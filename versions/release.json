@@ -1,7 +1,7 @@
 {
-  "releaseVersion": "1.0.0-rc.4",
-  "status": "RELEASED",
-  "requiredTag": "v1.0.0-rc.4",
+  "releaseVersion": "1.0.0-rc.5",
+  "status": "RELEASE_CANDIDATE_NOT_PUBLISHED",
+  "requiredTag": "v1.0.0-rc.5",
   "defaultBindingProtocolVersion": "1.0.0-rc.2",
   "supportedWireProtocolVersions": [
     "1.0.0-rc.1",
@@ -9,7 +9,7 @@
   ],
   "conformance": {
     "suite": "crinkl-protocol-conformance",
-    "suiteVersion": 2,
+    "suiteVersion": 3,
     "manifest": "07-conformance/vectors/v1/manifest.json"
   },
   "releaseAuthority": {
@@ -26,6 +26,11 @@
       "kind": "token.spendAttestation.holderBinding.v2",
       "maturity": "RELEASED",
       "runtimeAvailability": "SEPARATELY_GOVERNED"
+    },
+    {
+      "kind": "credential.spendAttestation.vcdm2.eddsaJcs2022",
+      "maturity": "CANDIDATE",
+      "runtimeAvailability": "UNAVAILABLE"
     }
   ]
 }
