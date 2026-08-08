@@ -1,0 +1,57 @@
+name: Specification change
+description: Propose a bounded change to protocol or governance material.
+title: "spec change: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not disclose vulnerabilities, secrets, private keys, raw receipts, personal data, or other sensitive evidence here. Security reports belong in an approved private channel.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem and proposed outcome
+      description: Explain the interoperability, correctness, or clarity problem and the bounded outcome.
+    validations:
+      required: true
+  - type: textarea
+    id: authority
+    attributes:
+      label: Authority and classification
+      description: Identify the governing document or standard and say whether the proposal is normative or non-normative.
+    validations:
+      required: true
+  - type: textarea
+    id: versioning
+    attributes:
+      label: Versioning and compatibility
+      description: State the affected protocol/schema/release surface and whether old verifiers remain safe. Explain any version change.
+    validations:
+      required: true
+  - type: textarea
+    id: privacy
+    attributes:
+      label: Privacy, evidence, and security impact
+      description: State what evidence or data is exposed, retained, or excluded, and any security impact. Do not include sensitive details.
+    validations:
+      required: true
+  - type: textarea
+    id: conformance
+    attributes:
+      label: Conformance and validation
+      description: Name the schemas, vectors, verifier behavior, or local checks that must change or explain why none apply.
+    validations:
+      required: true
+  - type: textarea
+    id: maturity
+    attributes:
+      label: Maturity and adoption impact
+      description: State whether this is adopted, optional, experimental, implementation-only, or documentation-only. Do not imply release or runtime availability without evidence.
+    validations:
+      required: true
+  - type: checkboxes
+    id: security
+    attributes:
+      label: Security and privacy check
+      options:
+        - label: This proposal contains no security-sensitive details, credentials, private evidence, or personal data.
+          required: true

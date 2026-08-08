@@ -1,0 +1,50 @@
+name: Specification defect
+description: Report a reproducible defect or contradiction in the public specification.
+title: "spec: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not include vulnerabilities, secrets, private keys, raw receipts, personal data, or other sensitive evidence. Security reports must use an approved private channel.
+  - type: input
+    id: version
+    attributes:
+      label: Affected version or commit
+      description: Give the release version, exact tag, branch, or commit that contains the defect.
+      placeholder: "v1.0.0-rc.4 or abc1234"
+    validations:
+      required: true
+  - type: input
+    id: artifact
+    attributes:
+      label: Affected artifact
+      description: Name the document, schema, vector, binding, or section.
+      placeholder: "03-portability/example.md#section"
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction or verification steps
+      description: Provide the smallest safe steps, inputs, and commands needed to observe the defect.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior or text
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior or text
+    validations:
+      required: true
+  - type: checkboxes
+    id: security
+    attributes:
+      label: Security and privacy check
+      options:
+        - label: This report contains no security-sensitive details, credentials, private evidence, or personal data.
+          required: true
