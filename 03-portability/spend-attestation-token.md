@@ -11,7 +11,12 @@ This document defines the portable representation of a signed Spend Attestation.
 
 Tokens are protocol outputs designed for machine consumption: they encode finalized claims with explicit verification rules so downstream systems can validate spend attestations, reward commitments, and aggregate GMV without replaying event streams or trusting APIs.
 
-Crinkl tokens follow the **verifiable credential** model: issuer-signed claims that holders can present to verifiers for local validation. Unlike static credentials, Crinkl spend tokens are correction-aware—canonical truth may evolve via append-only corrections—and support optional ZK predicates for privacy-preserving selective disclosure.
+Crinkl tokens use a conceptual credential pattern: issuer-signed claims that a
+presenter can provide to a verifier for local validation. Native Crinkl tokens
+are not W3C Verifiable Credentials in v1.0.0-rc.4. Unlike static credentials,
+Crinkl spend tokens are correction-aware—canonical truth may evolve via
+append-only corrections—and support optional ZK predicates for
+privacy-preserving selective disclosure.
 
 Terms are defined in ../08-governance/glossary.md and used normatively throughout this specification.
 
@@ -136,7 +141,10 @@ These token types are intentionally separable:
 
 ## Spend Attestation Token
 
-A Spend Attestation Token is a **verifiable credential** representing an OCR-derived purchase claim with correction semantics. It supports optional ZK predicates for privacy-preserving promotion eligibility.
+A Spend Attestation Token is a native signed issuer attestation representing an
+OCR-derived purchase claim with correction semantics. It is not a W3C
+Verifiable Credential in v1.0.0-rc.4. It supports optional ZK predicates for
+privacy-preserving promotion eligibility.
 
 ### Claim
 
@@ -145,7 +153,7 @@ The claim is a **signed issuer attestation** about the canonical spend head for 
 - `canonical.status` is the spend's canonical head class as of `lineage.headEventHash` under the rules of `protocol.protocolVersion` (and the included `canonical.verificationVersion` when present).
 - `lineage.headEventHash` identifies the specific spend-stream head event the issuer attests to.
 
-**VC Roles:**
+**Conceptual roles:**
 - **Issuer:** the protocol operator (identified by `signatures.issuedBy` + `signatures.publicKey`)
 - **Holder:** the wallet owner (optional `wallet` field; spend truth ≠ ownership)
 - **Verifier:** any party checking signatures and applying acceptance policy

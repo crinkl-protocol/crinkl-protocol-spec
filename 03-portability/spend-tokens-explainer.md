@@ -120,9 +120,10 @@ via a lineage hash (e.g., `headEventHash`).
 
 ### 5.1 Shape: issuer-signed verifiable artifacts
 
-Spend Tokens follow the verifiable credential pattern: a signed claim object that
+Spend Tokens follow a conceptual credential pattern: a signed claim object that
 holders can present to verifiers who validate signatures and apply acceptance
-policies.
+policies. Native Spend Tokens are not W3C Verifiable Credentials in
+v1.0.0-rc.4.
 
 ### 5.2 Deterministic hashing and signing
 

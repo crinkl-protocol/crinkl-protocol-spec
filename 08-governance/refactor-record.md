@@ -5,13 +5,18 @@ version: v1
 normative: false
 ---
 
-# Reform Notes
+# Proof-Lifecycle Refactor Record
 
-This file records semantic tensions found during the proof-lifecycle refactor instead of silently deleting conflicting material.
+This non-normative historical record preserves semantic tensions identified
+during the proof-lifecycle refactor instead of silently deleting conflicting
+material. It does not define protocol behavior or override the normative
+documents indexed in this directory.
 
 ## Preserved Meaning
 
-Existing cryptographic, event, token, commitment, ZK, campaign, and conformance material was moved into lifecycle-oriented layers. The refactor is documentation architecture only.
+Existing cryptographic, event, token, commitment, ZK, campaign, and conformance
+material was moved into lifecycle-oriented layers. The refactor is documentation
+architecture only.
 
 ## Corrected or Flagged Tensions
 
