@@ -111,6 +111,18 @@ def main() -> int:
     artifact_paths = [entry.get("file") for entry in artifacts]
     if len(artifact_paths) != len(set(artifact_paths)) or set(artifact_paths) != EXPECTED_ARTIFACTS:
         fail("artifact inventory is not the exact required adopted set")
+    bundle_files = {
+        path.relative_to(bundle_root).as_posix()
+        for path in bundle_root.rglob("*")
+        if path.is_file()
+    }
+    expected_bundle_files = EXPECTED_ARTIFACTS | {
+        "README.md",
+        "manifest.json",
+        "scripts/check_w3c_vc_2_0_spend_attestation_bundle.py",
+    }
+    if bundle_files != expected_bundle_files:
+        fail(f"unexpected bundle file inventory: {sorted(bundle_files ^ expected_bundle_files)}")
     for entry in artifacts:
         source_path = entry.get("sourcePath")
         file_path = entry.get("file")
