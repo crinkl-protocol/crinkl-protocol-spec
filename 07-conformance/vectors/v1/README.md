@@ -1,5 +1,5 @@
 ---
-status: release-candidate
+status: released
 layer: conformance
 version: v1
 normative: true

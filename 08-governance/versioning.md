@@ -7,7 +7,7 @@ normative: true
 
 # Protocol Evolution
 
-`v1.0.0-rc.4` is the latest released public package. Current public repository source candidate: **1.0.0-rc.7** (`RELEASE_CANDIDATE_NOT_PUBLISHED`), conformance suite 4; it is unreviewed, unpublished, not publishable, and does not inherit rc.5 review.
+`v1.0.0-rc.7` is the latest released public package. Current public repository release: **1.0.0-rc.7** (`RELEASED`), conformance suite 4; it does not promote candidate profiles or activate runtime, validator, authority, or production behavior.
 The following preserved
 rc.5 transition text applies only to public-spec commit
 `81237937833ab32e5ce92d3b5ceed72854baecef` / tree

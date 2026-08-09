@@ -146,10 +146,10 @@ Downstream layers consume spend proof; they do not define it.
 
 ## Release and source state
 
-`v1.0.0-rc.4` is the latest released public package. Current public repository
-source candidate: **v1.0.0-rc.7** (`RELEASE_CANDIDATE_NOT_PUBLISHED`),
-conformance suite 4; it is unreviewed, unpublished, not publishable, and does
-not inherit rc.5 review. Its current machine-readable release manifest is
+`v1.0.0-rc.7` is the latest released public package. Current public repository
+release: **v1.0.0-rc.7** (`RELEASED`), conformance suite 4; it preserves the
+explicit rc.1/rc.2 wire support set and remains independent from runtime,
+validator, authority, and production activation. Its current machine-readable release manifest is
 [`versions/release.json`](versions/release.json), and its candidate controls
 are in [`versions/v1.0.0-rc.7/finalization.json`](versions/v1.0.0-rc.7/finalization.json).
 The following preserved

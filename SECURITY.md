@@ -33,9 +33,9 @@ State which artifact is affected:
 - `v1.0.0-rc.5` is the historical exact reviewed source candidate
   (`REVIEWED_CANDIDATE_NOT_PUBLISHED`), not a tag, GitHub Release, runtime
   activation, or production deployment.
-- `v1.0.0-rc.7` is the current unreviewed source candidate and conformance
-  suite 4 (`RELEASE_CANDIDATE_NOT_PUBLISHED`); it is unpublished and not
-  publishable until separately reviewed.
+- `v1.0.0-rc.7` is the released public package and conformance suite 4;
+  release status does not activate runtime, validator, authority, or
+  production behavior.
 
 The reviewed rc.5 source is exactly commit
 `81237937833ab32e5ce92d3b5ceed72854baecef` / tree

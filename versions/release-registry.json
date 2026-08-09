@@ -2,9 +2,9 @@
   "$schema": "https://protocol.crinkl.xyz/versions/release-ledger.schema.json",
   "ledgerVersion": 1,
   "registryGateState": "SHAPE_VALIDATED_CROSS_REFERENCES_AND_APPEND_ONLY_PENDING",
-  "latestReleasedVersion": "1.0.0-rc.4",
+  "latestReleasedVersion": "1.0.0-rc.7",
   "reviewedCandidateVersion": "1.0.0-rc.5",
-  "candidateState": "SOURCE_CANDIDATE_AWAITING_REVIEW_NOT_PUBLISHABLE",
+  "candidateState": "NO_ACTIVE_OR_PUBLISHABLE_CANDIDATE",
   "releases": {
     "1.0.0-rc.1": {
       "status": "RELEASED",
@@ -212,6 +212,71 @@
         "manifestAuthority": "COMPUTED_NOT_AUTHORITY_ACCEPTED",
         "releaseAuthority": "REVIEWED_SOURCE_NOT_RELEASED",
         "provenanceCompleteness": "INCOMPLETE",
+        "runtimeImplication": "NONE",
+        "productionImplication": "NONE"
+      }
+    },
+    "1.0.0-rc.7": {
+      "status": "RELEASED",
+      "plannedTag": "v1.0.0-rc.7",
+      "actualTag": null,
+      "previousRelease": "1.0.0-rc.4",
+      "source": {
+        "repository": "crinkl-protocol-spec",
+        "tagTarget": {
+          "tag": "v1.0.0-rc.7",
+          "preTagTarget": "CURRENT_HEAD",
+          "postTagTarget": "IMMUTABLE_TAG_MUST_RESOLVE_TO_CURRENT_HEAD"
+        }
+      },
+      "releaseManifestArtifact": {
+        "path": "versions/release.json",
+        "digestAlgorithm": "sha256",
+        "digestBasis": "EXACT_GIT_BLOB_BYTES",
+        "digest": "sha256:70f3dc4cf660f68cafdc505c19498177f0a5259aa9acd15b8ce250a8d1680a1b",
+        "role": "RELEASE_MANIFEST"
+      },
+      "artifactInventory": [
+        {
+          "path": "versions/release.json",
+          "digestAlgorithm": "sha256",
+          "digestBasis": "EXACT_GIT_BLOB_BYTES",
+          "digest": "sha256:70f3dc4cf660f68cafdc505c19498177f0a5259aa9acd15b8ce250a8d1680a1b",
+          "role": "RELEASE_MANIFEST"
+        },
+        {
+          "path": "07-conformance/vectors/v1/manifest.json",
+          "digestAlgorithm": "sha256",
+          "digestBasis": "EXACT_GIT_BLOB_BYTES",
+          "digest": "sha256:71903d5714c5aee55e343651a468e4a84b7f81dfbb4232b08c64a36c9b8a7258",
+          "role": "CONFORMANCE_MANIFEST"
+        }
+      ],
+      "wire": {
+        "defaultBindingProtocolVersion": "1.0.0-rc.2",
+        "supportedWireProtocolVersions": [
+          "1.0.0-rc.1",
+          "1.0.0-rc.2"
+        ]
+      },
+      "conformance": {
+        "suite": "crinkl-protocol-conformance",
+        "suiteVersion": 4,
+        "manifest": "07-conformance/vectors/v1/manifest.json",
+        "manifestDigest": "sha256:71903d5714c5aee55e343651a468e4a84b7f81dfbb4232b08c64a36c9b8a7258"
+      },
+      "adoptedSources": [
+        {
+          "repository": "crinkl-protocol",
+          "commit": "52648bae72a8c3b83883392be1c4ae714e4359c3",
+          "evidenceState": "PINNED_BY_CANDIDATE_PROFILE_MANIFEST"
+        }
+      ],
+      "authority": {
+        "tagState": "TAG_TARGET_MUST_RESOLVE_TO_CURRENT_HEAD",
+        "manifestAuthority": "COMPUTED_NOT_AUTHORITY_ACCEPTED",
+        "releaseAuthority": "RELEASED_PACKAGE_TAG_TARGET_DECLARED",
+        "provenanceCompleteness": "TAG_TARGET_DECLARED",
         "runtimeImplication": "NONE",
         "productionImplication": "NONE"
       }

@@ -13,9 +13,9 @@ normative: false
 
 | Surface | Exact supported or observed state | Compatibility / authority boundary |
 | --- | --- | --- |
-| Public specification releases | `v1.0.0-rc.1`, `v1.0.0-rc.3`, and `v1.0.0-rc.4` are released immutable tags; `v1.0.0-rc.4` is the latest released public package. | Resolve a release by its tag, exact commit/tree, and release-manifest digest. |
+| Public specification releases | `v1.0.0-rc.1`, `v1.0.0-rc.3`, and `v1.0.0-rc.4` are released immutable tags; `v1.0.0-rc.7` is the latest released public package. | Resolve a release by its tag, exact commit/tree, and release-manifest digest. |
 | `v1.0.0-rc.5` source candidate | Reviewed only at `81237937833ab32e5ce92d3b5ceed72854baecef` / tree `9121bdfbfc428f73557e993f1bd6e295ba733a12`; it is not published or released. | Any later tree remains unassigned unless a new exact candidate identity and independent review record it. |
-| `v1.0.0-rc.7` source candidate | Current suite-4 source candidate; unreviewed, unpublished, and not publishable. | It does not inherit the rc.5 review and requires a new exact candidate identity and independent review. |
+| `v1.0.0-rc.7` public release | Latest released suite-4 public package. | It preserves historical rc.5 review boundaries, candidate profile maturity, and separate runtime/production governance. |
 | Embedded wire and binding history | `1.0.0-rc.1` and `1.0.0-rc.2` are supported embedded wire values; `1.0.0-rc.2` is not an observed public tag or public release. | A verifier accepts only its explicitly supported wire values; a wire label does not classify a public release. |
 | Spend Attestation Token schemas | `SpendAttestationTokenV1` and `SpendAttestationTokenV2` remain valid supported sibling schemas. | V2 `holderBinding` is OPTIONAL; a V2 token without it remains valid, but has no portable holder-control proof. |
 | Holder-binding profile | `token.spendAttestation.holderBinding.v2` is released as a profile with separately governed runtime support. | Profile release does not assert runtime, deployment, or a protocol-wide issuance choice. |
