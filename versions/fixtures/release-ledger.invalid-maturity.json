@@ -1,6 +1,7 @@
 {
   "$schema": "https://protocol.crinkl.xyz/versions/release-ledger.schema.json",
   "ledgerVersion": 1,
+  "registryGateState": "SHAPE_VALIDATED_CROSS_REFERENCES_AND_APPEND_ONLY_PENDING",
   "latestReleasedVersion": "1.0.0-rc.4",
   "reviewedCandidateVersion": "1.0.0-rc.5",
   "candidateState": "NO_ACTIVE_OR_PUBLISHABLE_CANDIDATE",
@@ -15,7 +16,7 @@
         "commit": "aebddaf732113603e4434d0266dfa1565e63b922",
         "tree": "7a48fbabcda56b89b8343b3741c1d69a147970cc"
       },
-      "canonicalReleaseManifest": null,
+      "releaseManifestArtifact": null,
       "artifactInventory": [],
       "wire": null,
       "conformance": null,
@@ -39,14 +40,16 @@
         "commit": "a8368577b6331ed5c076105da1536e32be39bdf6",
         "tree": "e0283c322b9af6b246ab2c52a5097ea0bbf6c467"
       },
-      "canonicalReleaseManifest": {
+      "releaseManifestArtifact": {
         "path": "versions/release.json",
+        "digestAlgorithm": "sha256",
+        "digestBasis": "EXACT_GIT_BLOB_BYTES",
         "digest": "sha256:65c621b5e0c64bc0343e24f97aa405de9b4803d68e8a6891c86ab6f892f5508f",
         "role": "RELEASE_MANIFEST"
       },
       "artifactInventory": [
-        { "path": "versions/release.json", "digest": "sha256:65c621b5e0c64bc0343e24f97aa405de9b4803d68e8a6891c86ab6f892f5508f", "role": "RELEASE_MANIFEST" },
-        { "path": "07-conformance/vectors/v1/manifest.json", "digest": "sha256:af656bc6665b38be7808f95e3f98457e1ea87d05bf22c8eed4cda37080b68789", "role": "CONFORMANCE_MANIFEST" }
+        { "path": "versions/release.json", "digestAlgorithm": "sha256", "digestBasis": "EXACT_GIT_BLOB_BYTES", "digest": "sha256:65c621b5e0c64bc0343e24f97aa405de9b4803d68e8a6891c86ab6f892f5508f", "role": "RELEASE_MANIFEST" },
+        { "path": "07-conformance/vectors/v1/manifest.json", "digestAlgorithm": "sha256", "digestBasis": "EXACT_GIT_BLOB_BYTES", "digest": "sha256:af656bc6665b38be7808f95e3f98457e1ea87d05bf22c8eed4cda37080b68789", "role": "CONFORMANCE_MANIFEST" }
       ],
       "wire": {
         "defaultBindingProtocolVersion": "1.0.0-rc.2",
@@ -80,14 +83,16 @@
         "commit": "7ce390fb3f562f589318ea36e9b8200aa4585da0",
         "tree": "66dca0e75d2955b6fd44b34747b3d471adb65515"
       },
-      "canonicalReleaseManifest": {
+      "releaseManifestArtifact": {
         "path": "versions/release.json",
+        "digestAlgorithm": "sha256",
+        "digestBasis": "EXACT_GIT_BLOB_BYTES",
         "digest": "sha256:41839c234ecc143dcf841e19ebd2a26c479ac7de896ae1b3e1b29facc61671f2",
         "role": "RELEASE_MANIFEST"
       },
       "artifactInventory": [
-        { "path": "versions/release.json", "digest": "sha256:41839c234ecc143dcf841e19ebd2a26c479ac7de896ae1b3e1b29facc61671f2", "role": "RELEASE_MANIFEST" },
-        { "path": "07-conformance/vectors/v1/manifest.json", "digest": "sha256:4deb342629d0c85f34b06cedf9c0e006dc2016d14fad53e301507ff2beeb06cd", "role": "CONFORMANCE_MANIFEST" }
+        { "path": "versions/release.json", "digestAlgorithm": "sha256", "digestBasis": "EXACT_GIT_BLOB_BYTES", "digest": "sha256:41839c234ecc143dcf841e19ebd2a26c479ac7de896ae1b3e1b29facc61671f2", "role": "RELEASE_MANIFEST" },
+        { "path": "07-conformance/vectors/v1/manifest.json", "digestAlgorithm": "sha256", "digestBasis": "EXACT_GIT_BLOB_BYTES", "digest": "sha256:4deb342629d0c85f34b06cedf9c0e006dc2016d14fad53e301507ff2beeb06cd", "role": "CONFORMANCE_MANIFEST" }
       ],
       "wire": {
         "defaultBindingProtocolVersion": "1.0.0-rc.2",
@@ -121,14 +126,16 @@
         "commit": "81237937833ab32e5ce92d3b5ceed72854baecef",
         "tree": "9121bdfbfc428f73557e993f1bd6e295ba733a12"
       },
-      "canonicalReleaseManifest": {
+      "releaseManifestArtifact": {
         "path": "versions/release.json",
+        "digestAlgorithm": "sha256",
+        "digestBasis": "EXACT_GIT_BLOB_BYTES",
         "digest": "sha256:c9946a179524bac4fa239d02d68491d30a3c49ef0dc505c385b3a12d47bc26a3",
         "role": "RELEASE_MANIFEST"
       },
       "artifactInventory": [
-        { "path": "versions/release.json", "digest": "sha256:c9946a179524bac4fa239d02d68491d30a3c49ef0dc505c385b3a12d47bc26a3", "role": "RELEASE_MANIFEST" },
-        { "path": "07-conformance/vectors/v1/manifest.json", "digest": "sha256:214c946ef15a6339f9f75afd335c58a3b779fe656339e783e8bf799a1258e48c", "role": "CONFORMANCE_MANIFEST" }
+        { "path": "versions/release.json", "digestAlgorithm": "sha256", "digestBasis": "EXACT_GIT_BLOB_BYTES", "digest": "sha256:c9946a179524bac4fa239d02d68491d30a3c49ef0dc505c385b3a12d47bc26a3", "role": "RELEASE_MANIFEST" },
+        { "path": "07-conformance/vectors/v1/manifest.json", "digestAlgorithm": "sha256", "digestBasis": "EXACT_GIT_BLOB_BYTES", "digest": "sha256:214c946ef15a6339f9f75afd335c58a3b779fe656339e783e8bf799a1258e48c", "role": "CONFORMANCE_MANIFEST" }
       ],
       "wire": {
         "defaultBindingProtocolVersion": "1.0.0-rc.2",

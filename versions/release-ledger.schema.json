@@ -6,6 +6,7 @@
   "additionalProperties": false,
   "required": [
     "ledgerVersion",
+    "registryGateState",
     "latestReleasedVersion",
     "reviewedCandidateVersion",
     "candidateState",
@@ -18,6 +19,7 @@
   "properties": {
     "$schema": { "const": "https://protocol.crinkl.xyz/versions/release-ledger.schema.json" },
     "ledgerVersion": { "const": 1 },
+    "registryGateState": { "const": "SHAPE_VALIDATED_CROSS_REFERENCES_AND_APPEND_ONLY_PENDING" },
     "latestReleasedVersion": { "$ref": "#/$defs/semver" },
     "reviewedCandidateVersion": { "anyOf": [{ "$ref": "#/$defs/semver" }, { "type": "null" }] },
     "candidateState": { "const": "NO_ACTIVE_OR_PUBLISHABLE_CANDIDATE" },
@@ -71,9 +73,11 @@
     "artifact": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["path", "digest", "role"],
+      "required": ["path", "digestAlgorithm", "digestBasis", "digest", "role"],
       "properties": {
         "path": { "type": "string", "pattern": "^(?!/)(?!.*\\.\\.)[^\\s]+$" },
+        "digestAlgorithm": { "const": "sha256" },
+        "digestBasis": { "const": "EXACT_GIT_BLOB_BYTES" },
         "digest": { "$ref": "#/$defs/digest" },
         "role": { "enum": ["RELEASE_MANIFEST", "CONFORMANCE_MANIFEST", "FINALIZATION_PLAN", "RELEASE_SNAPSHOT"] }
       }
@@ -124,39 +128,60 @@
     "releaseRecord": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["status", "plannedTag", "actualTag", "previousRelease", "source", "canonicalReleaseManifest", "artifactInventory", "wire", "conformance", "adoptedSources", "authority"],
+      "required": ["status", "plannedTag", "actualTag", "previousRelease", "source", "releaseManifestArtifact", "artifactInventory", "wire", "conformance", "adoptedSources", "authority"],
       "properties": {
         "status": { "enum": ["RELEASED", "REVIEWED_CANDIDATE_NOT_PUBLISHED"] },
         "plannedTag": { "anyOf": [{ "$ref": "#/$defs/tag" }, { "type": "null" }] },
         "actualTag": { "anyOf": [{ "$ref": "#/$defs/tag" }, { "type": "null" }] },
         "previousRelease": { "anyOf": [{ "$ref": "#/$defs/semver" }, { "type": "null" }] },
         "source": { "$ref": "#/$defs/source" },
-        "canonicalReleaseManifest": { "anyOf": [{ "$ref": "#/$defs/artifact" }, { "type": "null" }] },
+        "releaseManifestArtifact": { "anyOf": [{ "$ref": "#/$defs/artifact" }, { "type": "null" }] },
         "artifactInventory": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/artifact" } },
         "wire": { "anyOf": [{ "$ref": "#/$defs/wire" }, { "type": "null" }] },
         "conformance": { "anyOf": [{ "$ref": "#/$defs/conformance" }, { "type": "null" }] },
         "adoptedSources": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/adoptedSource" } },
         "authority": { "$ref": "#/$defs/authority" }
       },
-      "allOf": [
+      "oneOf": [
         {
-          "if": { "properties": { "status": { "const": "REVIEWED_CANDIDATE_NOT_PUBLISHED" } } },
-          "then": {
-            "properties": {
-              "plannedTag": { "$ref": "#/$defs/tag" },
-              "actualTag": { "type": "null" },
-              "authority": { "properties": { "tagState": { "const": "NOT_CREATED" }, "manifestAuthority": { "const": "COMPUTED_NOT_AUTHORITY_ACCEPTED" }, "releaseAuthority": { "const": "REVIEWED_SOURCE_NOT_RELEASED" }, "provenanceCompleteness": { "const": "INCOMPLETE" } } }
-            }
+          "properties": {
+            "status": { "const": "RELEASED" },
+            "plannedTag": { "$ref": "#/$defs/tag" },
+            "actualTag": { "$ref": "#/$defs/tag" },
+            "releaseManifestArtifact": { "$ref": "#/$defs/artifact" },
+            "conformance": { "$ref": "#/$defs/conformance" },
+            "authority": { "properties": { "tagState": { "const": "PRESENT_IMMUTABLE_TAG" }, "manifestAuthority": { "const": "AUTHORITY_ACCEPTED" }, "releaseAuthority": { "const": "ACCEPTED_TAG_AND_MANIFEST" }, "provenanceCompleteness": { "const": "COMPLETE" } } }
           }
         },
         {
-          "if": { "properties": { "status": { "const": "RELEASED" } } },
-          "then": {
-            "properties": {
-              "plannedTag": { "$ref": "#/$defs/tag" },
-              "actualTag": { "$ref": "#/$defs/tag" },
-              "authority": { "properties": { "tagState": { "const": "PRESENT_IMMUTABLE_TAG" } } }
-            }
+          "properties": {
+            "status": { "const": "RELEASED" },
+            "plannedTag": { "$ref": "#/$defs/tag" },
+            "actualTag": { "$ref": "#/$defs/tag" },
+            "releaseManifestArtifact": { "$ref": "#/$defs/artifact" },
+            "conformance": { "$ref": "#/$defs/conformance" },
+            "authority": { "properties": { "tagState": { "const": "PRESENT_IMMUTABLE_TAG" }, "manifestAuthority": { "const": "COMPUTED_NOT_AUTHORITY_ACCEPTED" }, "releaseAuthority": { "const": "RELEASED_TAG_WITH_UNACCEPTED_MANIFEST" }, "provenanceCompleteness": { "const": "INCOMPLETE" } } }
+          }
+        },
+        {
+          "properties": {
+            "status": { "const": "RELEASED" },
+            "plannedTag": { "$ref": "#/$defs/tag" },
+            "actualTag": { "$ref": "#/$defs/tag" },
+            "releaseManifestArtifact": { "type": "null" },
+            "conformance": { "type": "null" },
+            "artifactInventory": { "maxItems": 0 },
+            "authority": { "properties": { "tagState": { "const": "PRESENT_IMMUTABLE_TAG" }, "manifestAuthority": { "const": "NOT_AVAILABLE_LEGACY" }, "releaseAuthority": { "const": "LEGACY_RELEASED_TAG_PROVENANCE_INCOMPLETE" }, "provenanceCompleteness": { "const": "INCOMPLETE" } } }
+          }
+        },
+        {
+          "properties": {
+            "status": { "const": "REVIEWED_CANDIDATE_NOT_PUBLISHED" },
+            "plannedTag": { "$ref": "#/$defs/tag" },
+            "actualTag": { "type": "null" },
+            "releaseManifestArtifact": { "$ref": "#/$defs/artifact" },
+            "conformance": { "$ref": "#/$defs/conformance" },
+            "authority": { "properties": { "tagState": { "const": "NOT_CREATED" }, "manifestAuthority": { "const": "COMPUTED_NOT_AUTHORITY_ACCEPTED" }, "releaseAuthority": { "const": "REVIEWED_SOURCE_NOT_RELEASED" }, "provenanceCompleteness": { "const": "INCOMPLETE" } } }
           }
         }
       ]
