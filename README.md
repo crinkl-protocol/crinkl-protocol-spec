@@ -11,7 +11,7 @@
 > A successful predicate evaluation produces a **Proof of Match** that
 > campaigns, rewards, analytics and agents consume.
 
-See the [full object inventory](#core-objects) for every artifact.
+See the [full object inventory](#protocol-objects) for every artifact.
 
 [![Version](https://img.shields.io/badge/version-v1.0.0--rc.5-blue)](versions/CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-Apache%202.0-green)](LICENSE)
@@ -67,13 +67,16 @@ Campaigns before agents and markets.
 
 Core protocol validity does not depend on campaigns, rewards, Solana, ZK, MCP, REST, agents, ads, brand budgets, or promotion logic.
 
-## Core Objects
+## Protocol Objects
 
-Complete inventory of thirteen artifacts; anything not on this list is prose
-(defined in the [glossary](08-governance/glossary.md), not a schema or a table
-row). `VerificationPolicy`, `IssuerRegistrySnapshot`, `AttestationStatus`, and
-`SpendPredicate` are unreleased draft schemas (object-model board step OM4):
-they exist below the release candidate line, are not required for Core
+Complete inventory of thirteen protocol-level artifacts, spanning all three
+layers (Core, Portability, Applications); anything not on this list is prose
+at the protocol level (defined in the [glossary](08-governance/glossary.md),
+not a schema or a table row here) — see the note below the table for
+dependent artifacts that profiles and extensions define with their own
+schemas. `VerificationPolicy`, `IssuerRegistrySnapshot`, `AttestationStatus`,
+and `SpendPredicate` are unreleased draft schemas (object-model board step
+OM4): they exist below the release-candidate line, are not required for Core
 validity, and are not yet referenced by `SpendAttestation`,
 `SpendAttestationToken`, or `SpendAttestationCredential`.
 
@@ -92,6 +95,13 @@ validity, and are not yet referenced by `SpendAttestation`,
 | `FinalityCertificate` | Finality/Settlement | Quorum acceptance of a specific statement. |
 | `RewardCommitment` | Finality/Settlement | Recipient-scoped inclusion. |
 | `CampaignSettlementCommitment` | Finality/Settlement | Campaign-scoped settlement. |
+
+These thirteen are the protocol-level artifact inventory. Serialization
+profiles and extensions define dependent artifacts documented in their own
+homes — the W3C representation's `W3CIssuerKeyHistoryV1` and Bitstring
+Status List credential, and extension artifacts such as
+`MerchantClaimAttestationV1` in [`06-extensions/`](06-extensions/) — which do
+not appear in this table.
 
 ## Privacy Boundary
 
