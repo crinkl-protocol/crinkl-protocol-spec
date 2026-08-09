@@ -594,10 +594,14 @@ protocol artifact:
 }
 ```
 
-`approvedBy` MUST equal the governing
-`CampaignRuleV1.verifier.verifierId`, and `approvedAt` is the campaign
-verifier's statement time. `approvalHash` MUST equal
+`approvedBy` identifies the campaign-scope signer, and `approvedAt` is that
+signer's statement time. `approvalHash` MUST equal
 `"sha256:" + lowercaseHex(SHA-256(JCS(projection)))`, using RFC 8785 JCS.
+The governing campaign profile MUST carry or bind the signer's public key and
+signature. The signature MUST verify over `approvalHash`, and verifiers MUST
+reject evidence whose signer is not authorized for the campaign scope or whose
+signature is invalid. This authentication evidence is not a separate protocol
+artifact and is not embedded in `CampaignSettlementLeafV1`.
 The settlement leaf binds this hash. Record-level admission independently
 follows the committed-leaf-set procedure in
 `../02-proof-lifecycle/admission.md`; `approvalHash` is not the Finality
