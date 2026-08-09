@@ -1,0 +1,455 @@
+#!/usr/bin/env python3
+"""Verify the public protocol release registry against immutable Git evidence.
+
+The optional --baseline enforces append-only semantics for the registered
+release, profile, embedded-wire, and collision-receipt entries. It compares
+parsed JSON values, so whitespace and object-member order are not history.
+New entries remain subject to every ordinary registry check.
+"""
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import re
+import subprocess
+import sys
+from pathlib import Path
+from typing import Any
+
+from jsonschema import Draft202012Validator
+
+
+class DuplicateKeyError(ValueError):
+    pass
+
+
+SEMVER = re.compile(
+    r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)"
+    r"(?:-((?:0|[1-9]\d*|\d*[A-Za-z-][0-9A-Za-z-]*)"
+    r"(?:\.(?:0|[1-9]\d*|\d*[A-Za-z-][0-9A-Za-z-]*))*))?"
+    r"(?:\+([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?$"
+)
+
+KNOWN_COLLISION_RECEIPT = {
+    "algorithm": "sha256",
+    "digest": "sha256:0d1c6a393a9be65bbb1d33a36e5e06b92708a352b351790120ceccc3e1ac5ac6",
+    "lineCount": 22,
+    "state": "OBSERVED_UNRESOLVED_RELEASED_IDENTITY_COLLISION",
+    "comparisons": [
+        {
+            "publicTag": "v1.0.0-rc.3",
+            "publicCommit": "a8368577b6331ed5c076105da1536e32be39bdf6",
+            "adoptedCommit": "8c641f57201c75bac12819a0f903ae6105c7f3c3",
+        },
+        {
+            "publicTag": "v1.0.0-rc.4",
+            "publicCommit": "7ce390fb3f562f589318ea36e9b8200aa4585da0",
+            "adoptedCommit": "5019e41bdeb924449363aa3b538eaa5b3b6ee4dc",
+        },
+    ],
+}
+
+
+def reject_duplicate_pairs(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    value: dict[str, Any] = {}
+    for key, item in pairs:
+        if key in value:
+            raise DuplicateKeyError(f"duplicate JSON object key: {key!r}")
+        value[key] = item
+    return value
+
+
+def load_json(path: Path) -> Any:
+    try:
+        return json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=reject_duplicate_pairs)
+    except (OSError, json.JSONDecodeError, DuplicateKeyError) as exc:
+        raise ValueError(f"{path}: {exc}") from exc
+
+
+def resolve(root: Path, value: str | Path) -> Path:
+    path = Path(value)
+    return path if path.is_absolute() else root / path
+
+
+def git(root: Path, *args: str, binary: bool = False) -> bytes | str | None:
+    result = subprocess.run(
+        ["git", "-C", str(root), *args],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=False,
+    )
+    if result.returncode:
+        return None
+    return result.stdout if binary else result.stdout.decode("utf-8").strip()
+
+
+def semver_parts(value: str) -> tuple[tuple[int, int, int], list[str]] | None:
+    match = SEMVER.fullmatch(value)
+    if not match:
+        return None
+    core = tuple(int(match.group(index)) for index in range(1, 4))
+    prerelease = match.group(4).split(".") if match.group(4) else []
+    return core, prerelease
+
+
+def compare_semver(left: str, right: str) -> int:
+    parsed_left = semver_parts(left)
+    parsed_right = semver_parts(right)
+    if parsed_left is None or parsed_right is None:
+        raise ValueError(f"invalid SemVer comparison: {left!r}, {right!r}")
+    left_core, left_pre = parsed_left
+    right_core, right_pre = parsed_right
+    if left_core != right_core:
+        return -1 if left_core < right_core else 1
+    if not left_pre or not right_pre:
+        if left_pre == right_pre:
+            return 0
+        return -1 if left_pre else 1
+    for left_part, right_part in zip(left_pre, right_pre):
+        if left_part == right_part:
+            continue
+        left_numeric = left_part.isdigit()
+        right_numeric = right_part.isdigit()
+        if left_numeric and right_numeric:
+            return -1 if int(left_part) < int(right_part) else 1
+        if left_numeric != right_numeric:
+            return -1 if left_numeric else 1
+        return -1 if left_part < right_part else 1
+    if len(left_pre) == len(right_pre):
+        return 0
+    return -1 if len(left_pre) < len(right_pre) else 1
+
+
+def error(errors: list[str], location: str, message: str) -> None:
+    errors.append(f"{location}: {message}")
+
+
+def validate_schema(schema: dict[str, Any], registry: Any) -> list[str]:
+    errors: list[str] = []
+    try:
+        Draft202012Validator.check_schema(schema)
+    except Exception as exc:  # jsonschema exposes several schema-error types.
+        return [f"schema: {exc}"]
+    validator = Draft202012Validator(schema)
+    for item in sorted(validator.iter_errors(registry), key=lambda entry: (list(entry.path), entry.message)):
+        path = "/".join(str(part) for part in item.path) or "$"
+        error(errors, f"schema:{path}", item.message)
+    return errors
+
+
+def source_matches(root: Path, source: Any, location: str, errors: list[str]) -> None:
+    if not isinstance(source, dict):
+        return
+    commit = source.get("commit")
+    tree = source.get("tree")
+    if not isinstance(commit, str) or not isinstance(tree, str):
+        return
+    if git(root, "cat-file", "-e", f"{commit}^{{commit}}") is None:
+        error(errors, location, f"source commit does not exist: {commit}")
+        return
+    observed = git(root, "rev-parse", f"{commit}^{{tree}}")
+    if observed != tree:
+        error(errors, location, f"source tree mismatch: expected {tree}, observed {observed}")
+
+
+def artifact_key(artifact: Any) -> tuple[Any, Any, Any, Any, Any]:
+    if not isinstance(artifact, dict):
+        return (None, None, None, None, None)
+    return (
+        artifact.get("path"),
+        artifact.get("digestAlgorithm"),
+        artifact.get("digestBasis"),
+        artifact.get("digest"),
+        artifact.get("role"),
+    )
+
+
+def verify_artifact_blob(root: Path, commit: str, artifact: Any, location: str, errors: list[str]) -> None:
+    if not isinstance(artifact, dict):
+        return
+    path = artifact.get("path")
+    digest = artifact.get("digest")
+    if not isinstance(path, str) or not isinstance(digest, str):
+        return
+    blob = git(root, "cat-file", "blob", f"{commit}:{path}", binary=True)
+    if blob is None:
+        error(errors, location, f"artifact is absent from {commit}: {path}")
+        return
+    observed = "sha256:" + hashlib.sha256(blob).hexdigest()
+    if observed != digest:
+        error(errors, location, f"exact Git blob digest mismatch for {path}: expected {digest}, observed {observed}")
+
+
+def expected_release_tuple(record: dict[str, Any]) -> tuple[str, str, str, str] | None:
+    status = record.get("status")
+    manifest = record.get("releaseManifestArtifact")
+    conformance = record.get("conformance")
+    if status == "RELEASED" and manifest is not None and conformance is not None:
+        authority = record.get("authority", {})
+        if authority.get("manifestAuthority") == "AUTHORITY_ACCEPTED":
+            return ("PRESENT_IMMUTABLE_TAG", "AUTHORITY_ACCEPTED", "ACCEPTED_TAG_AND_MANIFEST", "COMPLETE")
+        return ("PRESENT_IMMUTABLE_TAG", "COMPUTED_NOT_AUTHORITY_ACCEPTED", "RELEASED_TAG_WITH_UNACCEPTED_MANIFEST", "INCOMPLETE")
+    if status == "RELEASED" and manifest is None and conformance is None:
+        return ("PRESENT_IMMUTABLE_TAG", "NOT_AVAILABLE_LEGACY", "LEGACY_RELEASED_TAG_PROVENANCE_INCOMPLETE", "INCOMPLETE")
+    if status == "REVIEWED_CANDIDATE_NOT_PUBLISHED":
+        return ("NOT_CREATED", "COMPUTED_NOT_AUTHORITY_ACCEPTED", "REVIEWED_SOURCE_NOT_RELEASED", "INCOMPLETE")
+    return None
+
+
+def validate_release(
+    root: Path,
+    version: str,
+    record: Any,
+    releases: dict[str, Any],
+    errors: list[str],
+) -> None:
+    location = f"releases[{version}]"
+    if not isinstance(record, dict):
+        return
+    source = record.get("source")
+    source_matches(root, source, f"{location}.source", errors)
+    expected_tag = f"v{version}"
+    if record.get("plannedTag") != expected_tag:
+        error(errors, location, f"plannedTag must equal {expected_tag}")
+    status = record.get("status")
+    actual_tag = record.get("actualTag")
+    if status == "RELEASED":
+        if actual_tag != expected_tag:
+            error(errors, location, f"released actualTag must equal {expected_tag}")
+    elif status == "REVIEWED_CANDIDATE_NOT_PUBLISHED":
+        if actual_tag is not None:
+            error(errors, location, "reviewed unpublished candidate must not have an actualTag")
+    previous = record.get("previousRelease")
+    if previous is not None:
+        if previous not in releases:
+            error(errors, location, f"previousRelease does not resolve: {previous}")
+        else:
+            try:
+                if compare_semver(previous, version) >= 0:
+                    error(errors, location, f"previousRelease is not semantically older: {previous}")
+            except ValueError as exc:
+                error(errors, location, str(exc))
+    authority = record.get("authority")
+    tuple_expected = expected_release_tuple(record)
+    if not isinstance(authority, dict) or tuple_expected is None:
+        error(errors, location, "status/manifest authority tuple is not recognized")
+    else:
+        observed = (
+            authority.get("tagState"),
+            authority.get("manifestAuthority"),
+            authority.get("releaseAuthority"),
+            authority.get("provenanceCompleteness"),
+        )
+        if observed != tuple_expected:
+            error(errors, location, f"authority tuple mismatch: expected {tuple_expected}, observed {observed}")
+    if isinstance(actual_tag, str) and isinstance(source, dict):
+        commit = source.get("commit")
+        tree = source.get("tree")
+        tag_commit = git(root, "rev-parse", f"refs/tags/{actual_tag}^{{commit}}")
+        tag_tree = git(root, "rev-parse", f"refs/tags/{actual_tag}^{{tree}}")
+        if tag_commit != commit or tag_tree != tree:
+            error(errors, location, f"actual tag does not resolve to recorded source commit/tree: {actual_tag}")
+    inventory = record.get("artifactInventory")
+    if not isinstance(inventory, list) or not isinstance(source, dict):
+        return
+    manifest = record.get("releaseManifestArtifact")
+    conformance = record.get("conformance")
+    required_artifacts: list[tuple[str, dict[str, Any]]] = []
+    if isinstance(manifest, dict):
+        required_artifacts.append(("releaseManifestArtifact", manifest))
+    if isinstance(conformance, dict):
+        required_artifacts.append((
+            "conformance",
+            {
+                "path": conformance.get("manifest"),
+                "digestAlgorithm": "sha256",
+                "digestBasis": "EXACT_GIT_BLOB_BYTES",
+                "digest": conformance.get("manifestDigest"),
+                "role": "CONFORMANCE_MANIFEST",
+            },
+        ))
+    for name, artifact in required_artifacts:
+        same_path_role = [entry for entry in inventory if isinstance(entry, dict) and entry.get("path") == artifact.get("path") and entry.get("role") == artifact.get("role")]
+        if len(same_path_role) != 1 or artifact_key(same_path_role[0]) != artifact_key(artifact):
+            error(errors, location, f"{name} must appear exactly once in artifactInventory with matching path, digest, role, and basis")
+    commit = source.get("commit")
+    if isinstance(commit, str):
+        for index, artifact in enumerate(inventory):
+            verify_artifact_blob(root, commit, artifact, f"{location}.artifactInventory[{index}]", errors)
+
+
+def validate_predecessors(releases: dict[str, Any], errors: list[str]) -> None:
+    for start in releases:
+        seen: set[str] = set()
+        current = start
+        while current is not None:
+            if current in seen:
+                error(errors, f"releases[{start}]", f"predecessor cycle includes {current}")
+                break
+            seen.add(current)
+            record = releases.get(current)
+            current = record.get("previousRelease") if isinstance(record, dict) else None
+
+
+def validate_profiles(registry: dict[str, Any], release_manifest: Any, errors: list[str]) -> None:
+    profiles = registry.get("profiles")
+    if not isinstance(profiles, dict):
+        return
+    object_ids: set[str] = set()
+    for key, profile in profiles.items():
+        location = f"profiles[{key}]"
+        if not isinstance(profile, dict):
+            continue
+        maturity = profile.get("maturity")
+        document = profile.get("documentMaturity")
+        authority = profile.get("authorityState")
+        source_state = profile.get("adoptedSourceState")
+        source = profile.get("adoptedSource")
+        if maturity == "RELEASED":
+            if (document, authority, source_state) != ("RELEASED", "RELEASED_TAG_ACCEPTED", "PINNED"):
+                error(errors, location, "released maturity requires released document, released-tag authority, and pinned adopted source")
+        elif maturity == "CANDIDATE":
+            if document != "CANDIDATE":
+                error(errors, location, "candidate maturity requires candidate document maturity")
+            if authority == "CANDIDATE_SOURCE_ONLY" and source_state != "PINNED":
+                error(errors, location, "candidate-source authority requires a pinned adopted source")
+            if authority == "PUBLIC_SPEC_CANDIDATE_WITHOUT_ADOPTED_SOURCE" and source_state != "NOT_CLAIMED":
+                error(errors, location, "public-only candidate authority requires no adopted source")
+        if source_state == "PINNED" and not isinstance(source, dict):
+            error(errors, location, "pinned adoptedSourceState requires an adoptedSource")
+        if source_state == "NOT_CLAIMED" and source is not None:
+            error(errors, location, "not-claimed adoptedSourceState requires null adoptedSource")
+        runtime = profile.get("runtimeSupport")
+        if runtime not in {"UNAVAILABLE", "SEPARATELY_GOVERNED"}:
+            error(errors, location, f"runtimeSupport is not a non-activation state: {runtime}")
+        constraints = profile.get("objectConstraints")
+        if not isinstance(constraints, list):
+            continue
+        for index, constraint in enumerate(constraints):
+            if not isinstance(constraint, dict):
+                continue
+            object_id = constraint.get("objectId")
+            if not isinstance(object_id, str):
+                continue
+            if object_id in object_ids:
+                error(errors, f"{location}.objectConstraints[{index}]", f"duplicate objectId across profiles: {object_id}")
+            object_ids.add(object_id)
+            supported = constraint.get("supportedSchemaVersions")
+            required = constraint.get("requiredSchemaVersions")
+            if isinstance(supported, list) and isinstance(required, list) and not set(required).issubset(supported):
+                error(errors, f"{location}.objectConstraints[{index}]", "requiredSchemaVersions must be a subset of supportedSchemaVersions")
+    if not isinstance(release_manifest, dict):
+        return
+    manifest_profiles = release_manifest.get("profiles")
+    if not isinstance(manifest_profiles, list):
+        error(errors, "versions/release.json", "profiles must be an array")
+        return
+    for index, entry in enumerate(manifest_profiles):
+        if not isinstance(entry, dict):
+            error(errors, f"versions/release.json.profiles[{index}]", "profile entry must be an object")
+            continue
+        kind = entry.get("kind")
+        registered = profiles.get(kind)
+        if not isinstance(kind, str) or not isinstance(registered, dict):
+            error(errors, f"versions/release.json.profiles[{index}]", f"unregistered profile kind: {kind}")
+            continue
+        if entry.get("maturity") != registered.get("maturity"):
+            error(errors, f"versions/release.json.profiles[{index}]", "maturity differs from registry")
+        if entry.get("runtimeAvailability") != registered.get("runtimeSupport"):
+            error(errors, f"versions/release.json.profiles[{index}]", "runtime availability differs from registry")
+
+
+def validate_baseline(current: dict[str, Any], baseline: dict[str, Any]) -> list[str]:
+    errors: list[str] = []
+    for section in ("releases", "profiles", "embeddedWireVersionObservations"):
+        prior = baseline.get(section)
+        latest = current.get(section)
+        if not isinstance(prior, dict) or not isinstance(latest, dict):
+            error(errors, f"baseline.{section}", "both baseline and current registries must contain an object")
+            continue
+        for key, prior_value in prior.items():
+            if key not in latest:
+                error(errors, f"baseline.{section}[{key}]", "registered entry was deleted")
+            elif latest[key] != prior_value:
+                error(errors, f"baseline.{section}[{key}]", "registered entry was mutated")
+    if current.get("releasedSchemaIdentityCollisionReceipt") != baseline.get("releasedSchemaIdentityCollisionReceipt"):
+        error(errors, "baseline.releasedSchemaIdentityCollisionReceipt", "known collision receipt was mutated or deleted")
+    return errors
+
+
+def validate_registry(root: Path, schema: dict[str, Any], registry: Any, release_manifest: Any) -> list[str]:
+    errors = validate_schema(schema, registry)
+    if errors or not isinstance(registry, dict):
+        return errors
+    releases = registry.get("releases")
+    if not isinstance(releases, dict):
+        return errors
+    latest = registry.get("latestReleasedVersion")
+    latest_record = releases.get(latest)
+    if not isinstance(latest_record, dict) or latest_record.get("status") != "RELEASED":
+        error(errors, "latestReleasedVersion", "must resolve to a RELEASED entry")
+    reviewed = registry.get("reviewedCandidateVersion")
+    if reviewed is not None:
+        reviewed_record = releases.get(reviewed)
+        if not isinstance(reviewed_record, dict) or reviewed_record.get("status") != "REVIEWED_CANDIDATE_NOT_PUBLISHED":
+            error(errors, "reviewedCandidateVersion", "must resolve to REVIEWED_CANDIDATE_NOT_PUBLISHED or be null")
+    if registry.get("candidateState") == "NO_ACTIVE_OR_PUBLISHABLE_CANDIDATE":
+        for version, record in releases.items():
+            if isinstance(record, dict) and record.get("status") == "REVIEWED_CANDIDATE_NOT_PUBLISHED" and record.get("actualTag") is not None:
+                error(errors, f"releases[{version}]", "no-active candidate state forbids an actual tag")
+    for version, record in releases.items():
+        validate_release(root, version, record, releases, errors)
+    validate_predecessors(releases, errors)
+    for index, head in enumerate(registry.get("unassignedSourceHeads", [])):
+        if isinstance(head, dict):
+            source_matches(root, head.get("source"), f"unassignedSourceHeads[{index}].source", errors)
+    if registry.get("releasedSchemaIdentityCollisionReceipt") != KNOWN_COLLISION_RECEIPT:
+        error(errors, "releasedSchemaIdentityCollisionReceipt", "does not match the immutable known collision receipt")
+    validate_profiles(registry, release_manifest, errors)
+    return errors
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Validate the schema-shaped protocol release registry against local Git evidence.",
+        epilog=(
+            "--baseline permits additions but rejects deletion or parsed-value mutation of existing releases, profiles, "
+            "embedded-wire observations, and the known collision receipt. Cross-field history is otherwise validated "
+            "against the current registry and local Git."
+        ),
+    )
+    parser.add_argument("--repo-root", type=Path, default=Path(__file__).resolve().parents[1])
+    parser.add_argument("--registry", default="versions/release-registry.json")
+    parser.add_argument("--schema", default="versions/release-ledger.schema.json")
+    parser.add_argument("--release-manifest", default="versions/release.json")
+    parser.add_argument("--baseline", type=Path, help="Prior registry whose existing entries must remain unchanged.")
+    return parser.parse_args()
+
+
+def main() -> int:
+    args = parse_args()
+    root = args.repo_root.resolve()
+    try:
+        schema = load_json(resolve(root, args.schema))
+        registry = load_json(resolve(root, args.registry))
+        release_manifest = load_json(resolve(root, args.release_manifest))
+        errors = validate_registry(root, schema, registry, release_manifest)
+        if args.baseline:
+            baseline = load_json(resolve(root, args.baseline))
+            errors.extend(validate_schema(schema, baseline))
+            if isinstance(registry, dict) and isinstance(baseline, dict):
+                errors.extend(validate_baseline(registry, baseline))
+    except ValueError as exc:
+        errors = [str(exc)]
+    if errors:
+        print("[release-registry] FAIL", file=sys.stderr)
+        for item in errors:
+            print(f"- {item}", file=sys.stderr)
+        return 1
+    print("[release-registry] OK (schema, registry, local Git evidence, and profile consistency)")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
