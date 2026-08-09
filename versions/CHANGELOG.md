@@ -20,6 +20,14 @@ the prior released package; no stable successor release is declared.
   the fixture harness as an executable manifest-bound suite-version-3 kind;
   this does not promote the W3C profile beyond candidate maturity.
 
+## Schema identifier erratum candidate (not published)
+
+- Adds a [released schema identifier collision erratum](errata/released-schema-identifier-collisions-v1.md)
+  as a source candidate. It preserves immutable released identities and bytes,
+  pins the corrected 22-row D4 receipt, and names reviewed-source D3.1
+  successors without making any migration, public release, runtime, or
+  deployment claim.
+
 ## Unreleased governance update
 
 - Requires every spec or requirements change to classify business policy,

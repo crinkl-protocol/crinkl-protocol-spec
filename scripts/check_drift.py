@@ -228,6 +228,12 @@ def main() -> int:
     if subprocess.run([sys.executable, str(successor_finalizer), "--mode", finalizer_mode], cwd=repo_root).returncode != 0:
         return die("successor release finalization verifier failed")
 
+    released_identifier_erratum = repo_root / "scripts" / "check_released_identifier_erratum.py"
+    if not released_identifier_erratum.is_file():
+        return die("missing released identifier collision erratum verifier")
+    if subprocess.run([sys.executable, str(released_identifier_erratum), "--local-only"], cwd=repo_root).returncode != 0:
+        return die("released identifier collision erratum local verifier failed")
+
     # The optional W3C VC profile follows the active candidate/released state.
     # Its verifier proves adopted-source bytes, the rc.4 immutable baseline,
     # rc.5 suite inclusion, official self-cell boundaries, and fixture checks.
