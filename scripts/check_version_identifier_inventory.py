@@ -21,6 +21,7 @@ from typing import Any, Iterable
 
 ROOT = Path(__file__).resolve().parents[1]
 INVENTORY_PATH = ROOT / "versions" / "identifier-inventory.json"
+RELEASE_REGISTRY_PATH = ROOT / "versions" / "release-registry.json"
 STRUCTURED_SUFFIXES = (".json", ".yaml", ".yml")
 VERSION_PATH = re.compile(r"(?:^|[._/-])v\d+(?:[._/-]|$)", re.IGNORECASE)
 YAML_KEY = re.compile(r"^\s*([A-Za-z][A-Za-z0-9_-]*)\s*:")
@@ -28,7 +29,7 @@ FILENAME_VERSION = re.compile(r"(?:[_\.-]v)(\d+)(?:\.schema)?\.json$", re.IGNORE
 IDENTIFIER_VERSION = re.compile(r"(?:[_\./-]v)(\d+)(?:\.schema\.json)?$", re.IGNORECASE)
 TITLE_VERSION = re.compile(r"V(\d+)$")
 VERSION_FIELDS = {
-    "artifactVersion", "bindingVersion", "bundleVersion", "conformanceSuiteVersion", "contractVersion", "decisionVersion", "inventoryVersion",
+    "acceptedContextSchemaVersions", "artifactVersion", "artifactVersions", "bindingVersion", "bundleVersion", "conformanceSuiteVersion", "contractVersion", "decisionVersion", "inventoryVersion",
     "defaultBindingProtocolVersion", "epochVersion", "expectedDayProjectionVersion",
     "expectedFrontierProjectionVersion", "latestReleasedVersion", "ledgerVersion",
     "manifestSchemaVersion", "manifestVersion", "originalVerificationVersion",
@@ -36,8 +37,8 @@ VERSION_FIELDS = {
     "producerVersion", "profileVersion", "projectionVersion", "protocolObjectVersion",
     "protocolVersion", "publicReleaseVersionIsNotWireProtocolVersion",
     "publicRepositoryVersion", "registryVersion", "releaseVersion", "repositoryVersion",
-    "requiredConformanceSuiteVersion", "reviewedCandidateVersion", "rootFormulaVersion",
-    "schemaVersion", "storageAdapterVersion", "suiteVersion", "unsupported-required-version",
+    "requiredConformanceSuiteVersion", "requiredSchemaVersions", "reviewedCandidateVersion", "rootFormulaVersion",
+    "retainedVersions", "schemaVersion", "storageAdapterVersion", "suiteVersion", "supportedSchemaVersions", "supportedWireProtocolVersions", "unsupported-required-version",
     "validFromProtocolVersion", "vectorVersion", "verificationVersion", "version",
     "acceptedProtocolVersions",
 }
@@ -137,15 +138,23 @@ def field_role(key: str, path_surface: str) -> tuple[str, str]:
         raise ValueError(f"unclassified version field: {key}")
     if key == "policyVersion":
         return "objectSchema", "instanceRevision"
-    if key in {"protocolVersion", "defaultBindingProtocolVersion", "validFromProtocolVersion", "protocolObjectVersion", "acceptedProtocolVersions"}:
+    if key in {"protocolVersion", "defaultBindingProtocolVersion", "validFromProtocolVersion", "protocolObjectVersion", "acceptedProtocolVersions", "supportedWireProtocolVersions"}:
         return "wireProtocol", "embeddedVersion"
-    if key in {"schemaVersion", "manifestSchemaVersion"}:
+    if key in {"acceptedContextSchemaVersions", "schemaVersion", "manifestSchemaVersion", "requiredSchemaVersions", "supportedSchemaVersions"}:
         return "objectSchema", "embeddedVersion"
     if key in {"profileVersion", "suiteVersion", "conformanceSuiteVersion", "requiredConformanceSuiteVersion", "vectorVersion"}:
         return "profileConformanceSuite", "embeddedVersion"
     if key in {"releaseVersion", "latestReleasedVersion", "reviewedCandidateVersion", "publicReleaseVersionIsNotWireProtocolVersion", "publicRepositoryVersion", "repositoryVersion"}:
         return "specificationRelease", "embeddedVersion"
     return path_surface, "embeddedVersion"
+
+
+def version_field_role(key: str, path_surface: str) -> tuple[str, str] | None:
+    if key in VERSION_FIELDS:
+        return field_role(key, path_surface)
+    if key.lower().endswith(("version", "versions")):
+        raise ValueError(f"unclassified version field: {key}")
+    return None
 
 
 def version_part(pattern: re.Pattern[str], value: Any) -> str | None:
@@ -161,7 +170,7 @@ def validate_artifact_aliases(path: str, surface: str, document: dict[str, Any])
         title = document.get("title")
         identifier_version = version_part(IDENTIFIER_VERSION, identifier)
         title_version = version_part(TITLE_VERSION, title)
-        if filename_version is not None and isinstance(identifier, str) and identifier_version is None:
+        if filename_version is not None and (not isinstance(identifier, str) or not identifier or identifier_version is None):
             raise ValueError(f"object-schema identifier is missing filename version: {path}")
         if filename_version is not None and isinstance(title, str) and title_version is None:
             raise ValueError(f"object-schema title is missing filename version: {path}")
@@ -269,8 +278,21 @@ def schema_ids_at_commit(root: Path, commit: str) -> dict[str, tuple[str, str]]:
     return result
 
 
+def effective_receipt_from_registry(public_root: Path) -> dict[str, Any]:
+    registry = load_json_bytes((public_root / "versions" / "release-registry.json").read_bytes(), str(RELEASE_REGISTRY_PATH))
+    corrections = registry.get("collisionReceiptCorrections") if isinstance(registry, dict) else None
+    if not isinstance(corrections, list) or not corrections or not isinstance(corrections[-1], dict):
+        raise ValueError("D4 registry has no effective collision receipt")
+    receipt = corrections[-1].get("effectiveReceipt")
+    if not isinstance(receipt, dict):
+        raise ValueError("D4 registry effective collision receipt is invalid")
+    return receipt
+
+
 def validate_collision_receipt(inventory: dict[str, Any], public_root: Path, adopted_root: Path) -> dict[str, tuple[str, str, str, str]]:
     receipt = inventory.get("effectiveCollisionReceipt") or {}
+    if receipt != effective_receipt_from_registry(public_root):
+        raise ValueError("effective collision receipt does not equal D4 registry")
     records = inventory.get("collisionRecords") or []
     expected = [(item.get("identifier"), item.get("public", {}).get("path"), item.get("public", {}).get("sha256"), item.get("adopted", {}).get("path"), item.get("adopted", {}).get("sha256")) for item in records]
     if len(expected) != int(receipt.get("lineCount") or -1) or len(set(expected)) != len(expected):
@@ -292,7 +314,7 @@ def validate_current_identifier_collisions(
 ) -> None:
     for identifier, expected in sorted(collision_records.items()):
         if identifier not in public_ids or identifier not in adopted_ids:
-            continue
+            raise ValueError(f"recorded current identifier collision is absent: {identifier}")
         public = public_ids[identifier]
         adopted = adopted_ids[identifier]
         if (public[0], public[2], adopted[0], adopted[2]) != expected:
@@ -339,11 +361,10 @@ def validate_inventory(public_root: Path, adopted_root: Path, inventory: dict[st
                 for _, key, _ in walk_json(document):
                     if key in IDENTIFIER_ROLES:
                         count[f"{surface}:{IDENTIFIER_ROLES[key]}"] += 1
-                    if key in VERSION_FIELDS:
-                        surface_for_field, role = field_role(key, surface)
+                    version_role = version_field_role(key, surface)
+                    if version_role is not None:
+                        surface_for_field, role = version_role
                         count[f"{surface_for_field}:{role}"] += 1
-                    elif key.lower().endswith("version"):
-                        raise ValueError(f"unclassified version field: {name}:{path}:{key}")
             else:
                 for line in bytes_for(name, root, commit, path).decode("utf-8").splitlines():
                     match = YAML_KEY.match(line)
@@ -352,11 +373,10 @@ def validate_inventory(public_root: Path, adopted_root: Path, inventory: dict[st
                     key = match.group(1)
                     if key in IDENTIFIER_ROLES:
                         count[f"{surface}:{IDENTIFIER_ROLES[key]}"] += 1
-                    if key in VERSION_FIELDS:
-                        surface_for_field, role = field_role(key, surface)
+                    version_role = version_field_role(key, surface)
+                    if version_role is not None:
+                        surface_for_field, role = version_role
                         count[f"{surface_for_field}:{role}"] += 1
-                    elif key.lower().endswith(("version", "versions")):
-                        raise ValueError(f"unclassified version field: {name}:{path}:{key}")
         ids[name] = schema_ids(name, root, commit, entries)
         counts[name] = count
     validate_aliases(inventory, public_root)

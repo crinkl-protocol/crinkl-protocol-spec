@@ -46,6 +46,7 @@
     }
   ],
   "effectiveCollisionReceipt": {
+    "algorithm": "sha256",
     "digest": "sha256:d2441f0da9fef029fc8f59b099458c3e7ff22ffd181c3ee3f9fd75525113ccf9",
     "lineCount": 22,
     "state": "OBSERVED_UNRESOLVED_RELEASED_IDENTITY_COLLISION",

@@ -63,6 +63,22 @@ def main() -> int:
     rejected("wrong effective receipt", mutated, adopted_root)
 
     mutated = copy.deepcopy(inventory)
+    mutated["effectiveCollisionReceipt"]["comparisons"] = []
+    rejected("empty receipt comparisons", mutated, adopted_root)
+
+    mutated = copy.deepcopy(inventory)
+    mutated["effectiveCollisionReceipt"]["comparisons"] = mutated["effectiveCollisionReceipt"]["comparisons"][:1]
+    rejected("one receipt comparison", mutated, adopted_root)
+
+    mutated = copy.deepcopy(inventory)
+    mutated["effectiveCollisionReceipt"]["state"] = "MUTATED"
+    rejected("wrong receipt state", mutated, adopted_root)
+
+    mutated = copy.deepcopy(inventory)
+    mutated["effectiveCollisionReceipt"]["algorithm"] = "sha512"
+    rejected("D4 registry receipt mismatch", mutated, adopted_root)
+
+    mutated = copy.deepcopy(inventory)
     mutated["collisionRecords"].pop()
     rejected("missing known collision record", mutated, adopted_root)
 
@@ -87,6 +103,13 @@ def main() -> int:
         raise AssertionError("unknown current identifier collision was accepted")
 
     recorded = {"crinkl://example/id": ("public.json", "sha256:" + "a" * 64, "adopted.json", "sha256:" + "b" * 64)}
+    try:
+        checker.validate_current_identifier_collisions({}, {}, recorded)
+    except ValueError:
+        print("[identifier-inventory-test] rejected: recorded collision absence")
+    else:
+        raise AssertionError("recorded collision absence was accepted")
+
     equal_current_public = {"crinkl://example/id": ("public.json", "objectSchema", "sha256:" + "c" * 64)}
     equal_current_adopted = {"crinkl://example/id": ("adopted.json", "objectSchema", "sha256:" + "c" * 64)}
     try:
@@ -109,6 +132,20 @@ def main() -> int:
         print("[identifier-inventory-test] rejected: object-schema missing identifier version")
     else:
         raise AssertionError("object-schema missing identifier version was accepted")
+
+    try:
+        checker.validate_artifact_aliases("schemas/example_v1.schema.json", "objectSchema", {"title": "ExampleV1"})
+    except ValueError:
+        print("[identifier-inventory-test] rejected: object-schema missing root identifier")
+    else:
+        raise AssertionError("object-schema missing root identifier was accepted")
+
+    try:
+        checker.version_field_role("unknownVersions", "objectSchema")
+    except ValueError:
+        print("[identifier-inventory-test] rejected: unclassified JSON versions field")
+    else:
+        raise AssertionError("unknown JSON versions field was accepted")
 
     try:
         checker.validate_artifact_aliases("bindings/nats/example/v1/schemas/event.schema.json", "bindingContextCryptographicDomain", {"$id": "crinkl://bindings/nats/example/v2/event"})
