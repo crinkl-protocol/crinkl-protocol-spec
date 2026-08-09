@@ -9,11 +9,13 @@ normative: true
 
 Current public repository source candidate: **1.0.0-rc.5** (`RELEASE_CANDIDATE_NOT_PUBLISHED`)
 
-Current default Crinkl Platform binding `protocolVersion`: **1.0.0-rc.2**
+Current candidate-manifest default Crinkl Platform binding `protocolVersion`:
+**1.0.0-rc.2**. This records only the candidate-manifest default, not adopted
+binding emission, runtime support, public release, or production state.
 
 This document's frontmatter maturity is `draft`. Document maturity is separate
 from repository/package maturity: `v1.0.0-rc.5` is an unpublished SemVer prerelease candidate,
-while each document retains its own reviewed status. Neither state promotes or
+while each document retains its own declared maturity. Neither state promotes or
 demotes the other, no stable `v1.0.0` release is declared here, and the prior
 `v1.0.0-rc.4` tag remains immutable.
 
@@ -44,10 +46,12 @@ one state implies another.
 
 ### Artifact-scoped schema versions
 
-`verification_policy_v1.json`, its `$id`, and the `VerificationPolicyV1`
-schema-V1 aliases identify the same schema artifact. Its `policyVersion` field
-instead identifies an instance revision under that schema. These are separate
-axes and must not be compared as competing protocol releases.
+`verification_policy_v1.schema.json`, its `$id`
+`crinkl://protocol/schemas/verification_policy_v1`, and its
+`VerificationPolicyV1` title are artifact-scoped schema-V1 aliases for the
+same schema artifact. Its `policyVersion` field instead identifies an instance
+revision under that schema. These are separate axes and must not be compared as
+competing protocol releases.
 
 `SpendAttestationTokenV1` and `SpendAttestationTokenV2` are supported sibling
 schemas. V2 adds an optional signed `holderBinding`; V1 remains valid, and a
@@ -88,10 +92,9 @@ Release finalization is an explicit state transition:
 Changing a README, creating a branch, or adding a conformance-manifest entry
 satisfies none of these steps by itself.
 
-Schema display titles and filenames are non-authoritative. When two schemas
-share a title, a portable verifier MUST resolve the intended schema by its
-exact schema identifier and, where a profile pins bytes, its content hash.
-Title-only resolution is prohibited.
+Filenames and paths, `$id` values, and titles are artifact-scoped aliases that
+must agree. No alias alone resolves a same-ID, different-byte collision; a
+profile-pinned resolution uses the exact identifier plus content digest.
 
 ## Version numbering
 
