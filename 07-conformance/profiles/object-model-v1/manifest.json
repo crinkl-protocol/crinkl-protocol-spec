@@ -1,0 +1,71 @@
+{
+  "bundle": "object-model-v1",
+  "bundleVersion": 1,
+  "maturity": "candidate",
+  "releasedConformance": false,
+  "note": "No engineeringSource field: unlike the other bundles in 07-conformance/profiles/, this bundle does not publish a previously-adopted internal engineering implementation. See README.md.",
+  "protocolObjectVersion": "1.0.0-rc.2",
+  "publicRepositoryVersion": "1.0.0-rc.5",
+  "conformanceManifestEntries": [
+    {
+      "kind": "schema.objectModel.om4.v1",
+      "file": "../../profiles/object-model-v1/conformance/v1/vectors/schema.objectModel.om4.v1.json",
+      "externalVerifier": {
+        "type": "python3",
+        "file": "../../profiles/object-model-v1/scripts/check_object_model_schema_vectors.py"
+      },
+      "status": "PRESENT_IN_RC5_SUITE_3_OM4_CANDIDATE_DRAFT"
+    },
+    {
+      "kind": "objectModel.collapsedArtifactKind.rejected",
+      "file": "vectors/objectModel.collapsedArtifactKind.rejected.json",
+      "externalVerifier": {
+        "type": "python3",
+        "file": "../../profiles/object-model-v1/scripts/check_object_model_schema_vectors.py"
+      },
+      "status": "PRESENT_IN_RC5_SUITE_3_OM4_CANDIDATE_DRAFT"
+    }
+  ],
+  "artifacts": [
+    {
+      "sourcePath": "conformance/v1/vectors/schema.objectModel.om4.v1.json",
+      "file": "conformance/v1/vectors/schema.objectModel.om4.v1.json",
+      "sha256": "86c24d9242e51211c7288035e25ce81b891548b98ee68ac5f9d2c655b53ecc46"
+    },
+    {
+      "sourcePath": "scripts/check_object_model_schema_vectors.py",
+      "file": "scripts/check_object_model_schema_vectors.py",
+      "sha256": "c52305e58e965ae04c926daac8fb48af89816d6dfaf17c867679bf70c8ff3316"
+    },
+    {
+      "sourcePath": "../../vectors/v1/vectors/objectModel.collapsedArtifactKind.rejected.json",
+      "file": "../../vectors/v1/vectors/objectModel.collapsedArtifactKind.rejected.json",
+      "sha256": "00b2d3c79369cb4fb23fdbf709726564ed52066072e6878edaa7d6eab809c66b"
+    },
+    {
+      "sourcePath": "../../../01-core/schemas/verification_policy_v1.schema.json",
+      "file": "../../../01-core/schemas/verification_policy_v1.schema.json",
+      "sha256": "0151eb789550077c566d98087574bcae15c5ef10c8af68f1bcd5ee8de228901d"
+    },
+    {
+      "sourcePath": "../../../01-core/schemas/issuer_registry_snapshot_v1.schema.json",
+      "file": "../../../01-core/schemas/issuer_registry_snapshot_v1.schema.json",
+      "sha256": "99aab4d3f1e463b7a8003e0629cc6de2fc2daab6e74c597d1290921daee2af29"
+    },
+    {
+      "sourcePath": "../../../01-core/schemas/attestation_status_v1.schema.json",
+      "file": "../../../01-core/schemas/attestation_status_v1.schema.json",
+      "sha256": "f16adf2a3e69812ab688adb2618dc33945b184be1b85b9f1a073dc1418bef8f6"
+    },
+    {
+      "sourcePath": "../../../04-condition-layer/schemas/spend_predicate_v1.schema.json",
+      "file": "../../../04-condition-layer/schemas/spend_predicate_v1.schema.json",
+      "sha256": "6b4968000142cde692bafcc005f897909c617d208049c67478bea651985118ff"
+    }
+  ],
+  "publicationBlockers": [],
+  "launchBlockers": [
+    "RUNTIME_ADOPTION_AND_DEPLOYMENT_ARE_SEPARATE",
+    "VERIFICATION_POLICY_HASH_BINDING_NOT_YET_ADDED_OM5"
+  ]
+}

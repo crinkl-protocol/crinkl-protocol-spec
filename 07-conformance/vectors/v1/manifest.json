@@ -80,6 +80,22 @@
         "type": "node",
         "file": "../../profiles/w3c-vc-2.0-spend-attestation-v1/scripts/check_w3c_spend_attestation_credential_vectors.mjs"
       }
+    },
+    {
+      "kind": "schema.objectModel.om4.v1",
+      "file": "../../profiles/object-model-v1/conformance/v1/vectors/schema.objectModel.om4.v1.json",
+      "externalVerifier": {
+        "type": "python3",
+        "file": "../../profiles/object-model-v1/scripts/check_object_model_schema_vectors.py"
+      }
+    },
+    {
+      "kind": "objectModel.collapsedArtifactKind.rejected",
+      "file": "vectors/objectModel.collapsedArtifactKind.rejected.json",
+      "externalVerifier": {
+        "type": "python3",
+        "file": "../../profiles/object-model-v1/scripts/check_object_model_schema_vectors.py"
+      }
     }
   ]
 }

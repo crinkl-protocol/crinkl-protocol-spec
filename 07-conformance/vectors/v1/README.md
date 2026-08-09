@@ -8,7 +8,7 @@ normative: true
 # Crinkl Protocol Conformance Suite (v1, suite version 3)
 
 This folder contains versioned conformance vectors for the Crinkl Protocol. The
-repository runner executes 12 manifest kinds and reports 3 kinds as data-only.
+repository runner executes 14 manifest kinds and reports 3 kinds as data-only.
 The data-only kinds are the two reward-batch Merkle kinds and the ZK fixture
 descriptor; the ZK package-specific checks are not executed by this runner.
 
@@ -72,6 +72,20 @@ Executable verifier:
   the exact byte-pinned sponsor-neutral direct buyer-reward
   package. Release consumers must authenticate the accepted tag and exact
   `versions/release.json` digest before relying on it.
+
+### Object Model (OM4)
+
+- `schema.objectModel.om4.v1` — manifest-bound external verification (Draft
+  2020-12, via `jsonschema.Draft202012Validator`) of the four unreleased
+  draft object-model schemas: `VerificationPolicy`, `IssuerRegistrySnapshot`,
+  `AttestationStatus`, `SpendPredicate`. One valid instance is accepted and
+  one invalid instance is rejected per schema. See
+  `../../profiles/object-model-v1/README.md`.
+- `objectModel.collapsedArtifactKind.rejected` — negative conformance for the
+  collapsed campaign roles: artifacts of kind `eligibilityProof` and
+  `conversionProof` are rejected against the thirteen-name canonical object
+  inventory in `README.md#core-objects`, with `ProofOfMatch` and
+  `SpendPredicate` as positive controls.
 
 ## Contract
 
