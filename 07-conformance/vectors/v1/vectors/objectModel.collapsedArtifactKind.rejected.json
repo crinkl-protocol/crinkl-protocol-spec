@@ -17,12 +17,12 @@
         "kind": "SpendPredicate",
         "payload": {
           "predicateId": "predicate-om4-fixture-1",
-          "predicateHash": "sha256:18655b4fa5df6e1804f1b25d9d64d647d224e6f9d854300bfd21e8565f6e358d",
+          "predicateHash": "sha256:a9ff7c30ba3d7636486c25a4d03ee95d5f9007339de215c6698f680ec557620e",
           "predicateVersion": "v1",
           "parameters": {"minimumTotalMinor": "1000"},
           "evaluationContext": {
             "scopeId": "campaign-epoch-om4-fixture-1",
-            "verifierPolicyRef": "sha256:10c3d7198676e1a539e3dfcc3fa33718f11cdd8159dd4ee96205dd1ab6e59499",
+            "verifierPolicyRef": "policy:object-model-conformance-v1",
             "replayNullifierRules": {"nullifierRequired": true, "scopeBinding": "campaign-epoch-om4-fixture-1"}
           },
           "ruleExpression": {"profile": "campaign.directBuyerReward.profileV1", "requirement": "minimum-total"}

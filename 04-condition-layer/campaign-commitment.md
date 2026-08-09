@@ -598,11 +598,11 @@ protocol artifact:
 `CampaignRuleV1.verifier.verifierId`, and `approvedAt` is the campaign
 verifier's statement time. `approvalHash` MUST equal
 `"sha256:" + lowercaseHex(SHA-256(JCS(projection)))`, using RFC 8785 JCS.
-The Finality Certificate admitting settlement MUST bind the identical
-`approvalHash` as its finalized statement reference. `approvalHash` is not
-the Finality Certificate hash. Finality Certificate signatures establish
-record-level admission; the compatibility projection does not create a
-separate approval object or a competing settlement surface.
+The settlement leaf binds this hash. Record-level admission independently
+follows the committed-leaf-set procedure in
+`../02-proof-lifecycle/admission.md`; `approvalHash` is not the Finality
+Certificate hash. The compatibility projection does not create a separate
+approval object or a competing settlement surface.
 
 ### 6.4 Payout Settlement
 

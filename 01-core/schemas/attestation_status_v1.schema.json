@@ -39,10 +39,18 @@
       },
       "then": {
         "properties": {
-          "set": { "const": false },
           "supersededByRef": { "type": "null" },
           "reason": { "type": "null" }
-        }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": { "statusPurpose": { "const": "revocation" } },
+              "required": ["statusPurpose"]
+            },
+            "then": { "properties": { "set": { "const": false } } }
+          }
+        ]
       }
     },
     {
@@ -52,14 +60,21 @@
       },
       "then": {
         "properties": {
-          "statusPurpose": { "const": "refresh" },
-          "set": { "const": true },
           "supersededByRef": {
             "type": "string",
             "pattern": "^sha256:[a-f0-9]{64}$"
           },
           "reason": { "type": "null" }
-        }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": { "statusPurpose": { "const": "revocation" } },
+              "required": ["statusPurpose"]
+            },
+            "then": { "properties": { "set": { "const": false } } }
+          }
+        ]
       }
     },
     {
