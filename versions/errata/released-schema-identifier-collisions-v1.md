@@ -12,10 +12,12 @@ successor from `crinkl-protocol` commit
 `52648bae72a8c3b83883392be1c4ae714e4359c3` by exact identifier, path, and
 digest. Strict resolution uses release/tag+digest and fails ambiguity.
 
-The successor map is adopted source only: it is not adopted on `main`, public,
-released, runtime, or deployed. Consumer migration is explicit and inactive;
-identifier-only resolution was already unsafe where the old bytes differ; this
-candidate does not create that condition.
+The successor map is adopted on `crinkl-protocol` main at
+`52648bae72a8c3b83883392be1c4ae714e4359c3`. The public erratum/candidate is
+not yet on public-spec main, publicly released, runtime-consumed, or deployed.
+Consumer migration is explicit and inactive; identifier-only resolution was
+already unsafe where the old bytes differ; this candidate does not create that
+condition.
 
 Verification note: the local gate authenticates the historical release/tag and
 digest evidence from this repository's released tags/full Git objects; it does

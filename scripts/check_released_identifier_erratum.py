@@ -23,6 +23,8 @@ EXPECTED_MAP_SHA256 = "sha256:a3a3c5977e42563982f4f555245b20eefeab831ec4d3b831e9
 EXPECTED_INVENTORY_COMMIT = "bffe3ec9c95996524ca733628c1a9ca45e08be5a"
 EXPECTED_SUCCESSOR_RECEIPT = "sha256:743f61538793f3f5d406c8f144c22344f35330b8b009c70e69ebfca57fbe8ba0"
 EXPECTED_EFFECT = "OLD_IDENTITY_BYTES_PRESERVED; ADDITIVE_SUCCESSOR; CONSUMER_MIGRATION_EXPLICIT"
+EXPECTED_ADOPTED_MAIN_BOUNDARY = "The successor map is adopted on `crinkl-protocol` main at\n`52648bae72a8c3b83883392be1c4ae714e4359c3`."
+EXPECTED_PUBLIC_CANDIDATE_BOUNDARY = "The public erratum/candidate is\nnot yet on public-spec main, publicly released, runtime-consumed, or deployed."
 
 class DuplicateKeyError(ValueError):
     pass
@@ -199,6 +201,9 @@ def validate_docs(root: Path) -> None:
     require("[machine-readable erratum](released-schema-identifier-collisions-v1.json)" in markdown, "erratum markdown JSON link missing")
     require("22 mappings: 21 NATS binding schemas and one store schema." in markdown, "erratum markdown category/count statement missing")
     require(EXPECTED_SUCCESSOR_COMMIT in markdown and "release/tag+digest" in markdown and "already unsafe" in markdown and "released tags/full Git objects" in markdown, "erratum markdown resolution/source wording missing")
+    require(EXPECTED_ADOPTED_MAIN_BOUNDARY in markdown, "erratum markdown adopted-main boundary missing")
+    require(EXPECTED_PUBLIC_CANDIDATE_BOUNDARY in markdown, "erratum markdown public-candidate boundary missing")
+    require("not adopted on `main`" not in markdown, "erratum markdown contradicts adopted-main state")
     require("[released schema identifier collision erratum](errata/released-schema-identifier-collisions-v1.md)" in changelog, "changelog erratum link missing")
     require("## Schema identifier erratum candidate (not published)" in changelog, "changelog erratum candidate heading missing")
 

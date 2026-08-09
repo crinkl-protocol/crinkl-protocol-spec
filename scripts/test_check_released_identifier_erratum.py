@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import copy
 import os
+import tempfile
 from pathlib import Path
 
 import check_released_identifier_erratum as checker
@@ -29,6 +30,23 @@ def rejected(name: str, document: dict, adopted: Path | None = None) -> None:
         return
     raise AssertionError(f"{name}: mutation was accepted")
 
+def rejected_docs(name: str, mutate) -> None:
+    with tempfile.TemporaryDirectory() as directory:
+        root = Path(directory)
+        markdown_path = root / checker.MARKDOWN_REL
+        markdown_path.parent.mkdir(parents=True)
+        markdown = (ROOT / checker.MARKDOWN_REL).read_text(encoding="utf-8")
+        markdown_path.write_text(mutate(markdown), encoding="utf-8")
+        changelog_path = root / checker.CHANGELOG_REL
+        changelog_path.parent.mkdir(parents=True, exist_ok=True)
+        changelog_path.write_text((ROOT / checker.CHANGELOG_REL).read_text(encoding="utf-8"), encoding="utf-8")
+        try:
+            checker.validate_docs(root)
+        except ValueError:
+            print(f"[released-identifier-erratum-test] rejected: {name}")
+            return
+    raise AssertionError(f"{name}: mutation was accepted")
+
 def main() -> int:
     adopted = args().adopted_repo.resolve()
     _, document = checker.read_document(ROOT, checker.ERRATUM_REL)
@@ -36,6 +54,10 @@ def main() -> int:
     checker.validate_full(ROOT, adopted, document)
     checker.validate_docs(ROOT)
     print("[released-identifier-erratum-test] accepted: current erratum")
+    rejected_docs(
+        "contradictory adopted-main wording",
+        lambda text: text + "\nThe successor map is adopted source only: it is not adopted on `main`, public, released, runtime, or deployed.\n",
+    )
     for name, mutate in [
         ("missing mapping", lambda value: value["mappings"].pop()),
         ("duplicate old identifier", lambda value: value["mappings"].append(copy.deepcopy(value["mappings"][0]))),
