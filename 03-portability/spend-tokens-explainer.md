@@ -28,10 +28,10 @@ data, however, is not portable or independently verifiable: it is siloed in priv
 logs, inferred by opaque attribution, or exposed only through trusted APIs.
 
 Spend Tokens define a minimal set of issuer-signed, machine-verifiable artifacts
-that represent (1) canonical spend truth under uncertainty, (2) economic actions
-taken on that truth, and (3) aggregate economic throughput, while minimizing
+that represent (1) canonical issuer claims under protocol rules, (2) economic actions
+taken on those claims, and (3) aggregate economic throughput, while minimizing
 identity exposure. Tokens are portable (verifiable without private APIs),
-correction-aware (truth evolves via append-only events), and separable from
+correction-aware (canonical state evolves via append-only events), and separable from
 application-layer economics (funding and incentives). Optional zero-knowledge
 predicates support eligibility proofs without revealing receipt details.
 
@@ -43,7 +43,8 @@ bucketing, on-chain commitments), along with usage patterns and explicit non-cla
 
 We want a verifier to answer four questions using portable artifacts:
 
-1) Is this spend true under protocol-defined verification rules?
+1) Is this Spend Attestation Token authentic, authorized, current, and
+   acceptable under protocol-defined verification rules?
 2) Was value issued because of this spend, and can that issuance be proven later?
 3) How much verified activity occurred in a time window, without revealing users?
 4) Where is verified activity distributed by category or market bucket, without revealing users?
@@ -54,6 +55,7 @@ identity-minimizing.
 ### Non-goals (explicit)
 
 Spend Tokens do not attempt to:
+- independently prove that a physical purchase occurred,
 - prove merchant authenticity or payment settlement/finality,
 - prove the absence of fraud beyond protocol verification tiers,
 - establish user intent or ownership unless explicitly stated,
@@ -72,29 +74,29 @@ Spend Tokens do not attempt to:
 
 ## 3. Design Principles
 
-### 3.1 Separation of truth and economics
+### 3.1 Separation of issuer claims and economics
 
-- Spend truth is an epistemic commitment: a claim about what is true under
-  protocol rules at a point in time.
+- A canonical spend state is an issuer claim accepted under protocol rules at a
+  point in time; verifying it does not independently prove the external event.
 - Economic action is an economic commitment: a record that value was issued.
 
-Truth can be corrected without rewriting economic history. Economic issuance can
-be audited without trusting private operator claims.
+Canonical claims can be corrected without rewriting economic history. Economic
+issuance can be audited without trusting private operator claims.
 
 ### 3.2 Scarcity through process, not syntax
 
-Tokens are scarce because producing them correctly is costly: it requires real
-commerce, verification under protocol rules, and (for economic commitments) a
+Tokens are scarce because producing them correctly requires evidence processing
+under protocol rules and (for economic commitments) a
 cryptographically anchored issuance record.
 
 ### 3.3 Minimal identity exposure
 
-Canonical spend truth and aggregate throughput claims do not require identity.
+Canonical spend claims and aggregate throughput claims do not require identity.
 Identity appears only where it is necessary to verify economic issuance.
 
 The issuer's internal spend stream can be wallet-scoped for replay, routing,
 abuse controls, and reward handling. The portable Spend Attestation Token is not
-the internal stream: it proves a commerce fact and should omit wallet, user,
+the internal stream: it authenticates an issuer claim and should omit wallet, user,
 account, and session identifiers by default.
 
 ### 3.4 Explicit non-claims
@@ -105,12 +107,12 @@ authenticity, payment settlement/finality, or absence of fraud.
 ## 4. Core Model: Spend as an Event-Sourced Stream
 
 A spend is represented as an append-only event stream keyed by `spendId`. The
-canonical spend truth is derived by replaying events. Corrections append new
+canonical spend state is derived by replaying events. Corrections append new
 events; prior events remain.
 
 Key properties:
 - Append-only: corrections add events; history is never rewritten.
-- Correction-aware: canonical truth can evolve via new events.
+- Correction-aware: canonical state can evolve via new events.
 - Tiered verification: provisional and authoritative tiers are supported.
 
 Spend Tokens are snapshots over the canonical stream and bind to a specific head
@@ -161,11 +163,12 @@ Portable tokens may include hashed references and commitment-safe roots/proofs.
 ## 6. The Four Core Spend Token Types
 
 The Crinkl Protocol defines four core token outputs as the minimal basis for
-representing economic truth, economic action, aggregate scale, and aggregate distribution.
+representing issuer-attested spend state, economic action, aggregate scale, and
+aggregate distribution.
 
 ### 6.1 Spend Attestation Token
 
-**Purpose:** canonical truth under uncertainty.
+**Purpose:** canonical issuer-attested spend state under protocol rules.
 
 **Asserts:**
 - A spend exists and reached a canonical verification state under protocol rules.
@@ -175,6 +178,7 @@ representing economic truth, economic action, aggregate scale, and aggregate dis
 - Issuer signature.
 
 **Does not assert:**
+- Independent proof that the physical purchase occurred.
 - Ownership.
 - Reward entitlement.
 - Aggregate behavior.
@@ -263,7 +267,7 @@ This maintains a stable audit trail while supporting operational correction.
 
 ### 9.1 Identity minimization defaults
 
-- Spend truth does not require identity exposure (truth != ownership).
+- Canonical spend claims do not require identity exposure (claim != ownership).
 - Verified GMV explicitly prohibits recipient identity exposure.
 - Reward commitments include a recipient identifier only because issuance must be
   auditable.
@@ -345,16 +349,18 @@ This enables inclusion proofs and non-repudiation.
 
 Spend Tokens define a minimal, portable, correction-aware representation of
 verified commerce:
-- Spend Attestation: "Is this spend true under protocol semantics?"
+- Spend Attestation: "Is this issuer claim authentic, authorized, current, and
+  acceptable under protocol semantics?"
 - Reward Commitment: "Was value issued (and committed)?"
 - Verified GMV: "How much verified activity occurred, as-of time T, without
   surveillance?"
 - Verified Spend Distribution: "Where did verified activity occur by category
   or market bucket, without surveillance?"
 
-By separating truth from economics and making tokens portable, Spend Tokens turn
-real-world commerce into machine-verifiable facts that downstream systems and
-agents can validate without trusted APIs or identity graphs.
+By separating issuer claims from economics and making tokens portable, Spend Tokens
+give downstream systems and agents machine-verifiable protocol claims they can
+validate without trusted APIs or identity graphs. They do not independently prove
+that the underlying physical purchase occurred.
 
 ## Appendix A: Minimal Pseudocode
 

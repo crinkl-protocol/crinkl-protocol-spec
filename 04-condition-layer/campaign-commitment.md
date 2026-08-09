@@ -124,7 +124,7 @@ CampaignEpochV1 {
 
 `ClaimLevel` meanings:
 
-- `OBSERVED` means verified spend occurred under the epoch rule.
+- `OBSERVED` means an accepted Spend Attestation claim satisfies the epoch rule.
 - `ATTRIBUTED` means spend matched attribution conditions defined by the epoch.
 - `INCREMENTAL` requires a baseline, holdout, or incrementality method specified by the epoch.
 
@@ -355,14 +355,16 @@ Normative constraints:
 
 Marketing terms: **Verified Outcome** and **Verified Conversion**.
 
-Outcome / Conversion proves the required commerce event happened after the campaign rule was active.
+Outcome / Conversion proves that the required protocol claim was accepted after
+the campaign rule became active. It does not independently prove that the
+underlying physical commerce event occurred.
 
 Examples:
 
 - first verified receipt submitted
-- qualifying purchase occurred
-- repeat purchase happened
-- lapsed buyer returned
+- qualifying purchase claim accepted
+- repeat-purchase claim accepted
+- returning-buyer claim accepted
 - new Spend Attestation Token was issued
 - campaign match approved
 - reward settlement triggered
