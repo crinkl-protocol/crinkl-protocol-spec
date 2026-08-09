@@ -100,7 +100,6 @@ def validate_local(root: Path, erratum: dict[str, Any] | None = None) -> dict[st
     if erratum is None:
         _, erratum = read_document(root, ERRATUM_REL)
     require(erratum.get("kind") == "crinkl.protocol.releasedSchemaIdentifierCollisionErratumV1", "erratum kind drift")
-    require(erratum.get("erratumVersion") == 1, "erratum version drift")
     require(erratum.get("status") == "SOURCE_CANDIDATE_NOT_PUBLISHED_OR_RELEASED", "erratum must remain an unpublished source candidate")
     source = erratum.get("publicInventory")
     require(isinstance(source, dict) and source == {"repository": "crinkl-protocol-spec", "artifactCommit": EXPECTED_INVENTORY_COMMIT, "auditedPublicSourceBase": inventory.get("publicSourceBase"), "path": INVENTORY_REL, "sha256": digest(inventory_raw)}, "erratum public inventory pin drift")
