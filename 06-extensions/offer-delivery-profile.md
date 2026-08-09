@@ -42,7 +42,7 @@ This offer-delivery profile aims to make the following true:
 1) Brands define promotion rules and fund rewards.  
 2) Promotions are delivered to wallet apps.  
 3) Wallet apps locally decide which promotions matter (filtering).  
-4) Purchases are already verified by the system (spend tokens).  
+4) Spend claims have reached an accepted protocol state and are represented by Spend Attestation Tokens.
 5) Wallet proves it qualifies without sharing receipt details (ZK statements over commitments).  
 6) Each promotion has a unique identifier (`scopeId`).  
 7) A wallet can only qualify once per promotion (`nullifier`).  
@@ -60,7 +60,10 @@ This offer-delivery profile aims to make the following true:
 
 ## 4) Actors and trust boundaries
 
-- **Issuer (Crinkl protocol operator)**: signs `SpendAttestationTokenV1` (ground truth of verified spend). May publish verifier parameter registries.
+- **Issuer (Crinkl protocol operator)**: signs `SpendAttestationTokenV1`, an
+  issuer claim about canonical spend state under protocol rules. The token does
+  not independently prove that the physical purchase occurred. May publish
+  verifier parameter registries.
 - **Wallet**: receives non-portable witness material, generates eligibility proofs, and decrypts delivered promos.
 - **Brand Verifier**: validates spend tokens + proofs locally and decides whether to grant a promo.
 - **Relay (e.g., Crinkl infrastructure)**: transports messages. The protocol assumes the relay is **not** a secrecy boundary.
@@ -190,7 +193,7 @@ PromoEligibilityClaimV1 {
   scope: RedemptionScopeV1,
   scopeId: "sha256:" + Hash,
 
-  // Spend truth
+  // Issuer-attested spend state
   spendToken: SpendAttestationTokenV1,
 
   // Proof of eligibility for `statementId`
