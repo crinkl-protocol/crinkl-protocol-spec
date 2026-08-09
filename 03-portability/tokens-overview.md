@@ -7,11 +7,11 @@ normative: false
 
 # Crinkl Protocol Tokens
 
-Machine-verifiable economic truth, designed for composition.
+Machine-verifiable economic claims, designed for composition.
 
 ## Overview
 
-The Crinkl Protocol defines a small set of primitive, verifiable tokens that transform messy real-world commerce into machine-legible economic facts.
+The Crinkl Protocol defines a small set of primitive, verifiable tokens that transform messy real-world commerce evidence into machine-legible issuer claims.
 
 These native tokens are issuer-signed portable verification artifacts
 representing OCR-derived purchase claims, extended with correction semantics and
@@ -48,7 +48,7 @@ A verifier can answer “Is this claim valid?” using only the token, public ke
 ### 2) Scarcity through process, not syntax
 
 Crinkl tokens are scarce because they are expensive to produce correctly:
-- They require real-world activity (commerce)
+- They require submitted commerce evidence and protocol verification work
 - They require verification under protocol rules
 - They require issuer accountability
 - Some require irreversible economic commitment
@@ -78,16 +78,17 @@ The protocol defines four token outputs. Together, they form the minimum viable 
 
 ### 1) Spend Attestation Token
 
-Canonical truth under uncertainty.
+Canonical issuer attestation under uncertainty.
 
 **What it asserts**
-- “A specific spend exists and has reached a canonical verification state under the Crinkl Protocol.”
+- “The issuer derived this specific spend claim and verification state under the named Crinkl Protocol rules.”
 - Canonical spend fields (as defined by the state machine)
 - Verification tier (e.g., `HARD_VERIFIED`)
 - Lineage (attestation head hash)
 - Issuer signature
 
 **What it does not assert**
+- Independent proof that the underlying physical purchase occurred
 - Ownership
 - Reward entitlement
 - Aggregate behavior
@@ -187,7 +188,7 @@ Crinkl deliberately avoids proliferating token types. Each token corresponds to 
 
 | Question | Token |
 |---|---|
-| “Is this spend true?” | Spend Attestation |
+| “What exact Spend claim did the issuer attest?” | Spend Attestation |
 | “Was value issued?” | Reward Commitment |
 | “How much activity occurred?” | Verified GMV |
 | “Where is activity distributed?” | Verified Spend Distribution |
@@ -257,4 +258,4 @@ These are application concerns.
 
 Crinkl’s role is narrower and more durable:
 
-turning real-world commerce into machine-verifiable economic facts.
+turning real-world commerce evidence into machine-verifiable economic claims.

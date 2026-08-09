@@ -1,0 +1,102 @@
+{
+  "kind": "token.spendAttestation.portableV1.zkCommitmentGeography",
+  "constants": {
+    "requiredCommitments": ["C_store", "C_total", "C_dayIndex"],
+    "optionalCommitments": ["C_currency", "C_geoRegion", "C_cbsaCode"],
+    "privacyOmittedCanonicalFields": ["geoRegion", "cbsaCode"]
+  },
+  "positiveCases": [
+    {
+      "id": "v1-required-three",
+      "profile": "privacy-preserving-portable",
+      "token": {
+        "tokenType": "SPEND_ATTESTATION",
+        "schemaVersion": 1,
+        "canonical": { "status": "HARD_VERIFIED" },
+        "zk": { "commitments": { "C_store": "opaque-store", "C_total": "opaque-total", "C_dayIndex": "opaque-day" } }
+      }
+    },
+    {
+      "id": "v1-optional-geo-region",
+      "profile": "privacy-preserving-portable",
+      "token": {
+        "tokenType": "SPEND_ATTESTATION",
+        "schemaVersion": 1,
+        "canonical": { "status": "HARD_VERIFIED" },
+        "zk": { "commitments": { "C_store": "opaque-store", "C_total": "opaque-total", "C_dayIndex": "opaque-day", "C_geoRegion": "opaque-geo" } }
+      }
+    },
+    {
+      "id": "v1-optional-cbsa-code",
+      "profile": "privacy-preserving-portable",
+      "token": {
+        "tokenType": "SPEND_ATTESTATION",
+        "schemaVersion": 1,
+        "canonical": { "status": "HARD_VERIFIED" },
+        "zk": { "commitments": { "C_store": "opaque-store", "C_total": "opaque-total", "C_dayIndex": "opaque-day", "C_cbsaCode": "opaque-cbsa" } }
+      }
+    },
+    {
+      "id": "v2-optional-geography-and-holder-binding",
+      "profile": "privacy-preserving-portable",
+      "token": {
+        "tokenType": "SPEND_ATTESTATION",
+        "schemaVersion": 2,
+        "canonical": { "status": "HARD_VERIFIED" },
+        "holderBinding": { "scheme": "crinkl.holder.v2", "commitment": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" },
+        "zk": { "commitments": { "C_store": "opaque-store", "C_total": "opaque-total", "C_dayIndex": "opaque-day", "C_currency": "opaque-currency", "C_geoRegion": "opaque-geo", "C_cbsaCode": "opaque-cbsa" } }
+      }
+    },
+    {
+      "id": "legacy-v1-canonical-geography",
+      "profile": "legacy-signed-token",
+      "token": {
+        "tokenType": "SPEND_ATTESTATION",
+        "schemaVersion": 1,
+        "canonical": { "status": "HARD_VERIFIED", "geoRegion": "US-CA", "cbsaCode": "12420" }
+      }
+    },
+    {
+      "id": "legacy-v2-canonical-geography",
+      "profile": "legacy-signed-token",
+      "token": {
+        "tokenType": "SPEND_ATTESTATION",
+        "schemaVersion": 2,
+        "canonical": { "status": "HARD_VERIFIED", "geoRegion": "US-CA", "cbsaCode": "12420" },
+        "holderBinding": { "scheme": "crinkl.holder.v2", "commitment": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" }
+      }
+    }
+  ],
+  "rejectCases": [
+    {
+      "id": "missing-c-store",
+      "profile": "privacy-preserving-portable",
+      "token": { "tokenType": "SPEND_ATTESTATION", "schemaVersion": 1, "canonical": { "status": "HARD_VERIFIED" }, "zk": { "commitments": { "C_total": "opaque-total", "C_dayIndex": "opaque-day" } } },
+      "expectedCode": "missing_required_commitment"
+    },
+    {
+      "id": "missing-c-total",
+      "profile": "privacy-preserving-portable",
+      "token": { "tokenType": "SPEND_ATTESTATION", "schemaVersion": 1, "canonical": { "status": "HARD_VERIFIED" }, "zk": { "commitments": { "C_store": "opaque-store", "C_dayIndex": "opaque-day" } } },
+      "expectedCode": "missing_required_commitment"
+    },
+    {
+      "id": "missing-c-day-index",
+      "profile": "privacy-preserving-portable",
+      "token": { "tokenType": "SPEND_ATTESTATION", "schemaVersion": 2, "canonical": { "status": "HARD_VERIFIED" }, "zk": { "commitments": { "C_store": "opaque-store", "C_total": "opaque-total" } } },
+      "expectedCode": "missing_required_commitment"
+    },
+    {
+      "id": "privacy-profile-plaintext-geo-region",
+      "profile": "privacy-preserving-portable",
+      "token": { "tokenType": "SPEND_ATTESTATION", "schemaVersion": 1, "canonical": { "status": "HARD_VERIFIED", "geoRegion": "US-CA" }, "zk": { "commitments": { "C_store": "opaque-store", "C_total": "opaque-total", "C_dayIndex": "opaque-day" } } },
+      "expectedCode": "plaintext_geography_forbidden"
+    },
+    {
+      "id": "privacy-profile-plaintext-cbsa-code",
+      "profile": "privacy-preserving-portable",
+      "token": { "tokenType": "SPEND_ATTESTATION", "schemaVersion": 2, "canonical": { "status": "HARD_VERIFIED", "cbsaCode": "12420" }, "zk": { "commitments": { "C_store": "opaque-store", "C_total": "opaque-total", "C_dayIndex": "opaque-day" } } },
+      "expectedCode": "plaintext_geography_forbidden"
+    }
+  ]
+}

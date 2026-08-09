@@ -162,6 +162,8 @@ The claim is a **signed issuer attestation** about the canonical spend head for 
 #### Explicit non-claims (normative)
 
 A Spend Attestation Token:
+- does NOT independently prove that the underlying physical purchase occurred;
+  it proves the authorized issuer signed the exact protocol-derived claim;
 - does NOT prove user intent, legal identity, or wallet control; a schema-v2
   token with `holderBinding` can establish control of its per-Spend holder key
   only when accompanied by a valid fresh holder-control proof;
@@ -185,8 +187,8 @@ SpendAttestationTokenV1 {
     totalCents?: Amount,
     currency?: CurrencyCode,
     timestamp?: TimestampISO,
-    geoRegion?: RegionCode,         // OPTIONAL ISO 3166-2 subdivision (e.g., "US-CA")
-    cbsaCode?: CBSACode,            // OPTIONAL metro area code (e.g., "12420") — see ../01-core/canonicalization.md
+    geoRegion?: RegionCode,         // OPTIONAL legacy plaintext disclosure; privacy-preserving issuance omits it
+    cbsaCode?: CBSACode,            // OPTIONAL legacy plaintext disclosure; privacy-preserving issuance omits it
     verificationVersion?: Version
   },
   lineage: { headEventHash: Hash, eventCount: Integer },
@@ -385,12 +387,13 @@ If a user intentionally discloses `wallet` or uses the same wallet-included toke
 - `canonical.storeHash` MUST be computed deterministically from the canonical store identifier (when available) as:
   - `storeHash = "sha256:" + SHA-256( UTF8("crinkl.store.v1:") || UTF8(storeId) )`, where the `Hash` portion is lowercase hex.
 - `canonical.geoRegion` is OPTIONAL. When present, it MUST equal the `geoRegion` from the canonical spend-stream head, expressed as an ISO 3166-2 subdivision code (e.g., `US-CA`) or ISO 3166-1 alpha-2 country code.
-- `canonical.cbsaCode` is OPTIONAL. When present, it MUST equal the `cbsaCode` from the canonical spend-stream head, derived from the store's physical location via the OMB CBSA crosswalk (see `../01-core/canonicalization.md#cbsacode`). Portable tokens intended for brand/local-business verification SHOULD include `cbsaCode` when available.
+- `canonical.cbsaCode` is OPTIONAL. When present, it MUST equal the `cbsaCode` from the canonical spend-stream head, derived from the store's physical location via the OMB CBSA crosswalk (see `../01-core/canonicalization.md#cbsacode`).
 - `lineage.headEventHash` MUST equal the `eventHash` of the last spend-stream event at issuance time.
 - `lineage.eventCount` MUST equal the number of spend-stream events included in the canonical replay up to `headEventHash`.
-- If `zk.commitments` is present, each commitment MUST commit to canonical Spend fields at `lineage.headEventHash` and MUST be cryptographically bound to `spendId` and `lineage.headEventHash` (see `../06-extensions/zk-proof-extension.md`). Commitments are treated as opaque unless accompanied by a proof; the protocol does not require public recomputation of commitment values.
+- `zk` is OPTIONAL. If `zk.commitments` is present, it MUST contain `C_store`, `C_total`, and `C_dayIndex`; `C_currency`, `C_geoRegion`, and `C_cbsaCode` are independently OPTIONAL. Each present commitment MUST commit to canonical Spend fields at `lineage.headEventHash` and MUST be cryptographically bound to `spendId` and `lineage.headEventHash` (see `../06-extensions/zk-proof-extension.md`). Commitments are treated as opaque unless accompanied by a proof; the protocol does not require public recomputation of commitment values.
 - ZK commitments and proofs do not strengthen or supersede the verification tier of the underlying Spend; they only enable selective disclosure about already-verified fields.
 - **Selective disclosure rule (normative intent):** if a field is intended to be proven via ZK (e.g., `totalCents`, `timestamp`, `storeHash`), portable tokens SHOULD omit that field and rely on `zk.commitments` + proof instead, unless explicit disclosure is required by verifier policy.
+- **Privacy-preserving portable issuance (normative):** newly issued privacy-preserving portable `SpendAttestationTokenV1` and `SpendAttestationTokenV2` tokens MUST omit plaintext `canonical.geoRegion` and `canonical.cbsaCode`. Geographic predicates use `C_geoRegion` and `C_cbsaCode` only when the issuer includes those optional commitments. This issuance rule does not change immutable signed tokens: verifiers MUST continue to accept a valid legacy V1 or V2 token that contains either plaintext canonical geography field under the ordinary verification procedure. V2 retains this complete V1 commitment and disclosure contract; `holderBinding` is separate optional signed data.
 - `signatures.signature` MUST be an Ed25519 signature over `signatures.tokenHash`, where `tokenHash = sha256(RFC8785_canonicalize(unsignedToken))`. Domain separation is structural: `tokenType` and `schemaVersion` are included in the hashed unsigned token.
 
 **Optionality rule (normative):** all fields present in the unsigned token are covered by `tokenHash` and therefore by the signature. Absent optional fields are absent from the hash preimage. Optional fields MUST NOT silently change the meaning of `canonical.status`; they may only add additional, non-required context.
