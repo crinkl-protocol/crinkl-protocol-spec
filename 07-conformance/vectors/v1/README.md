@@ -5,10 +5,10 @@ version: v1
 normative: true
 ---
 
-# Crinkl Protocol Conformance Suite (v1, suite version 3)
+# Crinkl Protocol Conformance Suite (v1, suite version 4)
 
 This folder contains versioned conformance vectors for the Crinkl Protocol. The
-repository runner executes 14 manifest kinds and reports 3 kinds as data-only.
+repository runner executes 15 manifest kinds and reports 3 kinds as data-only.
 The data-only kinds are the two reward-batch Merkle kinds and the ZK fixture
 descriptor; the ZK package-specific checks are not executed by this runner.
 
@@ -30,6 +30,8 @@ Executable verifier:
   `node scripts/verify_conformance.mjs --require-kind token.spendAttestation.holderBinding.v2`.
 - Require the W3C Spend Attestation profile explicitly with
   `node scripts/verify_conformance.mjs --require-kind credential.spendAttestation.vcdm2.eddsaJcs2022`.
+- Require the geography-commitment profile explicitly with
+  `node scripts/verify_conformance.mjs --require-kind token.spendAttestation.portableV1.zkCommitmentGeography`.
 
 ## Layout
 
@@ -53,6 +55,9 @@ Executable verifier:
 - `credential.spendAttestation.vcdm2.eddsaJcs2022` — manifest-bound fixture
   harness for the optional W3C VC 2.0 Spend Attestation wire form; candidate
   only and not a generic VC/VP API or runtime authorization
+- `token.spendAttestation.portableV1.zkCommitmentGeography` — manifest-bound
+  verification of optional geography commitments and privacy-preserving
+  omission of plaintext geography; legacy valid V1/V2 tokens remain accepted.
 
 ### Commitment Layer
 - `merkle.rewardBatch.schemaV1.json` — Merkle tree for aggregated reward leaves (schema 1a/1b)

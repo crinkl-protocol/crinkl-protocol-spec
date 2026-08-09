@@ -5,7 +5,7 @@
   "releasedConformance": false,
   "note": "No engineeringSource field: this public-spec candidate bundle does not claim an adopted internal engineering implementation. See README.md.",
   "protocolObjectVersion": "1.0.0-rc.2",
-  "publicRepositoryVersion": "1.0.0-rc.5",
+  "publicRepositoryVersion": "1.0.0-rc.7",
   "conformanceManifestEntries": [
     {
       "kind": "schema.objectModel.om4.v1",
@@ -14,7 +14,7 @@
         "type": "python3",
         "file": "../../profiles/object-model-v1/scripts/check_object_model_schema_vectors.py"
       },
-      "status": "PRESENT_IN_RC5_SUITE_3_OM4R_CANDIDATE"
+      "status": "PRESENT_IN_RC7_SUITE_4_OM4R_CANDIDATE"
     },
     {
       "kind": "objectModel.collapsedArtifactKind.rejected",
@@ -23,7 +23,7 @@
         "type": "python3",
         "file": "../../profiles/object-model-v1/scripts/check_object_model_schema_vectors.py"
       },
-      "status": "PRESENT_IN_RC5_SUITE_3_OM4R_CANDIDATE"
+      "status": "PRESENT_IN_RC7_SUITE_4_OM4R_CANDIDATE"
     }
   ],
   "artifacts": [

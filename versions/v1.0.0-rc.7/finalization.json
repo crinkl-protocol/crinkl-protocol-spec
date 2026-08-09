@@ -1,0 +1,63 @@
+{
+  "kind": "crinkl.protocol.releaseFinalizationPlanV1",
+  "planVersion": 1,
+  "releaseVersion": "1.0.0-rc.7",
+  "requiredTag": "v1.0.0-rc.7",
+  "latestReleasedVersion": "1.0.0-rc.4",
+  "previousRelease": "1.0.0-rc.4",
+  "requiredProductionAuthorization": "PRODUCTION-OPS OK",
+  "candidateState": "SOURCE_CANDIDATE_AWAITING_REVIEW_NOT_PUBLISHABLE",
+  "sourceComposition": {
+    "publicMainBase": "3568faacf3f0b5d147e6c4034fd0fc47440dc509",
+    "d5CompatibilityHead": "8f720f8d4079cf22a5719aaa33f0a38c718809cf",
+    "adoptedMain": "52648bae72a8c3b83883392be1c4ae714e4359c3",
+    "reviewedNotContainedByAdoptedMain": [],
+    "adoptedMainContains": [
+      "9d5a35eb82b1bb0f4b3d24d6f353999945329aaf"
+    ]
+  },
+  "controllingArtifacts": [
+    {
+      "path": "versions/release.json",
+      "sha256": "sha256:301c801c855770309e127f28cc42bf1dd26cab9051d84f8a0a34613929396ca0"
+    },
+    {
+      "path": "07-conformance/vectors/v1/manifest.json",
+      "sha256": "sha256:060439efab64d718a06b2b284cb04bdca21a81490eed78e39bdb76b2d081d795"
+    },
+    {
+      "path": "07-conformance/profiles/spend-token-v1-v2-geography-commitments/manifest.json",
+      "sha256": "sha256:0c2c67cc87be6372b86db7ba2c9c9ac9784c740bab5434eced1270a201044711"
+    },
+    {
+      "path": "07-conformance/profiles/w3c-vc-2.0-spend-attestation-v1/manifest.json",
+      "sha256": "sha256:783c08b237e631181f919ce51c41f4dcea6bab9bbcb7bbe98152f1986a098d00"
+    },
+    {
+      "path": "07-conformance/profiles/object-model-v1/manifest.json",
+      "sha256": "sha256:757d2546720ab3c7684e562ffb7d50bb69b4d0f953374b3b2896843e25351bd6"
+    },
+    {
+      "path": "versions/release-registry.json",
+      "sha256": "sha256:bc4d0de88754d20115ab5772f50af60edf778b21ff366360dbdc47e1c1639feb"
+    },
+    {
+      "path": "07-conformance/compatibility.md",
+      "sha256": "sha256:28ee042677f3ab951061f9f5c11dea2be145f7ded688c8b0c729b41074581f46"
+    },
+    {
+      "path": "versions/identifier-inventory.json",
+      "sha256": "sha256:a8378d6c1d117dcb82faf27e22a3147dd0dde6846eec7dc07417f374e3c1e073"
+    },
+    {
+      "path": "versions/errata/released-schema-identifier-collisions-v1.json",
+      "sha256": "sha256:5e7556ca00deb38a4c8f030171bd603482fb763f37dda3568cdb77495fc34527"
+    }
+  ],
+  "candidateGates": [
+    "python3 scripts/check_successor_release_finalization.py --mode candidate",
+    "node scripts/verify_conformance.mjs --require-kind token.spendAttestation.portableV1.zkCommitmentGeography",
+    "python3 scripts/check_drift.py"
+  ],
+  "rollback": "DO_NOT_PUBLISH_OR_TAG_SOURCE_CANDIDATE"
+}

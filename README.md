@@ -13,7 +13,7 @@
 
 See the [full object inventory](#protocol-objects) for every artifact.
 
-[![Version](https://img.shields.io/badge/version-v1.0.0--rc.5-blue)](versions/CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-v1.0.0--rc.7-blue)](versions/CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-Apache%202.0-green)](LICENSE)
 [![CI](https://github.com/crinkl-protocol/crinkl-protocol-spec/actions/workflows/drift-check.yml/badge.svg)](https://github.com/crinkl-protocol/crinkl-protocol-spec/actions/workflows/drift-check.yml)
 
@@ -144,19 +144,33 @@ Downstream layers consume spend proof; they do not define it.
 | [`08-governance/`](08-governance/) | Versioning, change process, authority hierarchy, and shared glossary. |
 | [`schemas/experimental/`](schemas/experimental/) | Candidate non-core extension schemas; not required for Core Spend Attestation validity. |
 
-## Current Version
+## Release and source state
 
-**v1.0.0-rc.5** release candidate source — not yet published. See
-[`versions/release.json`](versions/release.json) and
-[`versions/CHANGELOG.md`](versions/CHANGELOG.md). The exact, machine-checkable
-release transition and rollback rules are in
-[`versions/v1.0.0-rc.5/finalization.json`](versions/v1.0.0-rc.5/finalization.json).
+`v1.0.0-rc.4` is the latest released public package. Current public repository
+source candidate: **v1.0.0-rc.7** (`RELEASE_CANDIDATE_NOT_PUBLISHED`),
+conformance suite 4; it is unreviewed, unpublished, not publishable, and does
+not inherit rc.5 review. Its current machine-readable release manifest is
+[`versions/release.json`](versions/release.json), and its candidate controls
+are in [`versions/v1.0.0-rc.7/finalization.json`](versions/v1.0.0-rc.7/finalization.json).
+The following preserved
+rc.5 transition text applies only to public-spec commit
+`81237937833ab32e5ce92d3b5ceed72854baecef` / tree
+`9121bdfbfc428f73557e993f1bd6e295ba733a12`:
+
+**v1.0.0-rc.5** historical exact reviewed source candidate — not published.
+Its historical transition controls are in
+[`versions/v1.0.0-rc.5/finalization.json`](versions/v1.0.0-rc.5/finalization.json)
+and [`versions/v1.0.0-rc.5/snapshot.md`](versions/v1.0.0-rc.5/snapshot.md).
 This is an unpublished SemVer prerelease candidate, not a stable `v1.0.0`
 release. The immutable released `v1.0.0-rc.4` tag remains available for
 historical verification.
+P4.4 and P9 remain blockers. This is rc.5 plan text for that exact reviewed
+candidate.
+It does not classify any later tree; any later tree remains unassigned unless a
+new exact candidate identity and independent review record it.
 Each document's frontmatter `status` states that document's maturity separately
 and does not change the repository release status. A successor release identity
-is selected as `v1.0.0-rc.5`. P4.4 and P9 remain blockers.
+is selected only by a separately reviewed candidate identity.
 
 ## Verification
 
@@ -167,7 +181,7 @@ python3 07-conformance/profiles/campaign-direct-buyer-reward-v1/scripts/check_ca
 node 07-conformance/profiles/spend-token-v2-holder-binding/scripts/check_holder_binding_vectors.mjs
 ```
 
-Verify the rc.5 candidate transition locally:
+Verify the rc.7 candidate transition locally:
 
 ```bash
 python3 scripts/check_successor_release_finalization.py --mode candidate

@@ -7,37 +7,90 @@ normative: true
 
 # Protocol Evolution
 
-Current public repository source candidate: **1.0.0-rc.5** (`RELEASE_CANDIDATE_NOT_PUBLISHED`)
+`v1.0.0-rc.4` is the latest released public package. Current public repository source candidate: **1.0.0-rc.7** (`RELEASE_CANDIDATE_NOT_PUBLISHED`), conformance suite 4; it is unreviewed, unpublished, not publishable, and does not inherit rc.5 review.
+The following preserved
+rc.5 transition text applies only to public-spec commit
+`81237937833ab32e5ce92d3b5ceed72854baecef` / tree
+`9121bdfbfc428f73557e993f1bd6e295ba733a12`:
 
-Current default Crinkl Platform binding `protocolVersion`: **1.0.0-rc.2**
+Historical exact reviewed source candidate: **1.0.0-rc.5** (`REVIEWED_CANDIDATE_NOT_PUBLISHED`)
+
+Current candidate-manifest default Crinkl Platform binding `protocolVersion`:
+**1.0.0-rc.2**. This records only the candidate-manifest default, not adopted
+binding emission, runtime support, public release, or production state.
 
 This document's frontmatter maturity is `draft`. Document maturity is separate
-from repository/package maturity: `v1.0.0-rc.5` is an unpublished SemVer prerelease candidate,
-while each document retains its own reviewed status. Neither state promotes or
+from repository/package maturity: historical `v1.0.0-rc.5` is an unpublished SemVer prerelease candidate,
+while each document retains its own declared maturity. Neither state promotes or
 demotes the other, no stable `v1.0.0` release is declared here, and the prior
 `v1.0.0-rc.4` tag remains immutable.
+
+`v1.0.0-rc.3` and `v1.0.0-rc.4` are released public packages; rc.4 is the
+latest released package. `1.0.0-rc.2` is supported embedded wire/source/binding
+history and has no observed public tag or public-release classification.
+
+It does not classify any later tree; any later tree remains unassigned unless a
+new exact candidate identity and independent review record it.
 
 This document describes how the Crinkl Protocol evolves without creating forked implementations. It is normative only where it constrains verifier behavior; governance and rollout timelines are non-normative.
 
 ## Version surfaces
 
-The protocol has multiple version “surfaces” with different compatibility expectations:
+A version is meaningful only within the surface that owns it. A specification
+release label is not, by itself, an object-schema, wire, profile, suite,
+binding, context, cryptographic-domain, document-maturity, runtime-support, or
+authority-state version.
 
-- **`protocolVersion`** (events, tokens): gates semantic interpretation of envelopes and required rules. Unknown `protocolVersion` MUST be rejected (see `../01-core/canonicalization.md#schema-evolution`).
-- **`schemaVersion`** (token schemas, event payload schemas, commitment leaf schemas, statement schemas): gates structure and verification procedure. Unknown `schemaVersion` MUST be rejected for portable verification surfaces.
-- **ZK metadata** (`proofSystem`, `circuitId`, `verifyingKeyId`): gates proof verification. Unknown circuits/keys MUST be rejected.
+| Surface | Identifies | Resolution rule |
+| --- | --- | --- |
+| Specification release | One exact public package and its declared artifacts | Resolve the SemVer label with its manifest, commit/tree, and conformance suite. A source candidate is not a release merely because it has a version-like label. |
+| Wire protocol | Signed envelope and event/token interoperability | `protocolVersion` is compared against the receiver's explicitly supported wire set. Unknown values MUST be rejected (see `../01-core/canonicalization.md#schema-evolution`). |
+| Object schema | The shape and meaning of one object family | The schema version is scoped to that family; it is not a global protocol version. Unknown portable schema versions MUST be rejected. |
+| Profile and conformance suite | An optional behavior profile and its executable checks | The profile or suite declares the object and wire versions it composes. |
+| Binding, context, and cryptographic domain | A transport mapping, signing context, hash construction, or domain separator | Each has its own identity and successor rules; compatibility is never inferred from a nearby schema label. |
+| Document maturity | The status of this prose | Draft, candidate, and released documentation do not themselves establish implementation or deployment state. |
+| Runtime support | Behavior of one named implementation | Support and default selection are declared by that runtime or applicable profile. |
+| Authority state | Candidate, adopted, released, superseded, or withdrawn standing | This state is established by the evidence appropriate to the authority, not by a filename or version string. |
 
-The public repository release and conformance `suiteVersion` describe a published package;
-they are not aliases for an embedded wire `protocolVersion`. A later public package may
-publish byte-identical objects carrying an already supported wire version. Such a release
-MUST state the version effect explicitly, preserve signed bytes, and require the released
-manifest/verifier to name the exact profile. Relabeling or rewriting an embedded version
-to match the repository release is prohibited.
+A source implementation, repository-main containment, engineering adoption,
+public release, runtime support, authority acceptance, validator-network
+adoption, and production deployment are distinct evidence-bearing states. No
+one state implies another.
 
-[`../versions/release.json`](../versions/release.json) is the machine-readable authority
-for these version surfaces. A source branch, README marker, directory name, or candidate
-manifest is not a released identity. Portable consumers require the authority-accepted
-tag and exact release-manifest digest, and must reject a manifest whose status is not
+### Artifact-scoped schema versions
+
+`verification_policy_v1.schema.json`, its `$id`
+`crinkl://protocol/schemas/verification_policy_v1`, and its
+`VerificationPolicyV1` title are artifact-scoped schema-V1 aliases for the
+same schema artifact. Its `policyVersion` field instead identifies an instance
+revision under that schema. These are separate axes and must not be compared as
+competing protocol releases.
+
+`SpendAttestationTokenV1` and `SpendAttestationTokenV2` are supported sibling
+schemas. V2 adds an optional signed `holderBinding`; V1 remains valid, and a
+V2 token without `holderBinding` remains valid. The issuance default is
+declared separately by the applicable profile or runtime; it is never inferred
+from the highest available schema version.
+
+Lower, artifact-scoped names such as `V1` remain correct when they identify
+their own stable family. A later specification release does not globally rename
+them.
+
+### Identifier stability and release evidence
+
+Aliases for one artifact must agree on the same identity and bytes. Agreement
+does not resolve a same-identifier, different-byte collision: that collision
+is invalid and requires explicit handling rather than alias preference.
+
+Released identities and bytes are immutable. A repair is made with a successor
+identity or an additive erratum that preserves the original release evidence;
+it is not made by silently replacing bytes at an existing identity.
+
+[`../versions/release.json`](../versions/release.json) is the machine-readable
+authority for declarations made by a public specification release. A source
+branch, README marker, directory name, or candidate manifest is not a released
+identity. Portable consumers require the authority-accepted tag and exact
+release-manifest digest, and must reject a manifest whose status is not
 `RELEASED`.
 
 Release finalization is an explicit state transition:
@@ -49,12 +102,12 @@ Release finalization is an explicit state transition:
 5. publish and accept the exact `versions/release.json` digest through the configured
    release authority.
 
-Changing a README, creating a branch, or adding a conformance-manifest entry satisfies
-none of these steps by itself.
+Changing a README, creating a branch, or adding a conformance-manifest entry
+satisfies none of these steps by itself.
 
-Schema display titles and filenames are non-authoritative. When two schemas share a title,
-a portable verifier MUST resolve the intended schema by its exact schema identifier and,
-where a profile pins bytes, its content hash. Title-only resolution is prohibited.
+Filenames and paths, `$id` values, and titles are artifact-scoped aliases that
+must agree. No alias alone resolves a same-ID, different-byte collision; a
+profile-pinned resolution uses the exact identifier plus content digest.
 
 ## Version numbering
 

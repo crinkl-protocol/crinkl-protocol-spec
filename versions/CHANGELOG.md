@@ -1,11 +1,23 @@
 # Changelog
 
-The current public repository release candidate is **v1.0.0-rc.5**, an
+`v1.0.0-rc.4` is the latest released public package. Current public repository
+source candidate: **1.0.0-rc.7** (`RELEASE_CANDIDATE_NOT_PUBLISHED`),
+conformance suite 4; it is unreviewed, unpublished, not publishable, and does
+not inherit rc.5 review.
+The following preserved
+rc.5 transition text applies only to public-spec commit
+`81237937833ab32e5ce92d3b5ceed72854baecef` / tree
+`9121bdfbfc428f73557e993f1bd6e295ba733a12`:
+
+The historical exact reviewed source candidate is **v1.0.0-rc.5**, an
 unpublished SemVer prerelease. Repository release maturity is separate from
 each document's frontmatter maturity. The immutable `v1.0.0-rc.4` tag remains
 the prior released package; no stable successor release is declared.
 
 ## v1.0.0-rc.5 release candidate (not published)
+
+It does not classify any later tree; any later tree remains unassigned unless a
+new exact candidate identity and independent review record it.
 
 - Publishes a source-only, byte-pinned candidate bundle for the optional W3C
   VC 2.0 Spend Attestation wire form, anchored to adopted `crinkl-protocol`
@@ -19,6 +31,14 @@ the prior released package; no stable successor release is declared.
   runtime, release, and production remain unclaimed. The rc.5 candidate adds
   the fixture harness as an executable manifest-bound suite-version-3 kind;
   this does not promote the W3C profile beyond candidate maturity.
+
+## Schema identifier erratum candidate (not published)
+
+- Adds a [released schema identifier collision erratum](errata/released-schema-identifier-collisions-v1.md)
+  as a source candidate. It preserves immutable released identities and bytes,
+  pins the corrected 22-row D4 receipt, and names adopted-source D3.1
+  successors without making any migration, public release, runtime, or
+  deployment claim.
 
 ## Unreleased governance update
 

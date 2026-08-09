@@ -1,7 +1,7 @@
 {
-  "releaseVersion": "1.0.0-rc.5",
+  "releaseVersion": "1.0.0-rc.7",
   "status": "RELEASE_CANDIDATE_NOT_PUBLISHED",
-  "requiredTag": "v1.0.0-rc.5",
+  "requiredTag": "v1.0.0-rc.7",
   "defaultBindingProtocolVersion": "1.0.0-rc.2",
   "supportedWireProtocolVersions": [
     "1.0.0-rc.1",
@@ -9,7 +9,7 @@
   ],
   "conformance": {
     "suite": "crinkl-protocol-conformance",
-    "suiteVersion": 3,
+    "suiteVersion": 4,
     "manifest": "07-conformance/vectors/v1/manifest.json"
   },
   "releaseAuthority": {
@@ -39,6 +39,11 @@
     },
     {
       "kind": "objectModel.collapsedArtifactKind.rejected",
+      "maturity": "CANDIDATE",
+      "runtimeAvailability": "UNAVAILABLE"
+    },
+    {
+      "kind": "token.spendAttestation.portableV1.zkCommitmentGeography",
       "maturity": "CANDIDATE",
       "runtimeAvailability": "UNAVAILABLE"
     }
