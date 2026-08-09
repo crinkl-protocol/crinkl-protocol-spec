@@ -154,6 +154,10 @@ release transition and rollback rules are in
 This is an unpublished SemVer prerelease candidate, not a stable `v1.0.0`
 release. The immutable released `v1.0.0-rc.4` tag remains available for
 historical verification.
+The rc.5 review applies only to public-spec commit
+`81237937833ab32e5ce92d3b5ceed72854baecef` and tree
+`9121bdfbfc428f73557e993f1bd6e295ba733a12`; later source is unassigned and
+cannot inherit that review.
 Each document's frontmatter `status` states that document's maturity separately
 and does not change the repository release status. A successor release identity
 is selected as `v1.0.0-rc.5`. P4.4 and P9 remain blockers.

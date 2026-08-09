@@ -9,6 +9,11 @@ normative: true
 
 Current public repository source candidate: **1.0.0-rc.5** (`RELEASE_CANDIDATE_NOT_PUBLISHED`)
 
+That review is limited to public-spec commit
+`81237937833ab32e5ce92d3b5ceed72854baecef` / tree
+`9121bdfbfc428f73557e993f1bd6e295ba733a12`. Later source is unassigned and
+cannot inherit the rc.5 review.
+
 Current candidate-manifest default Crinkl Platform binding `protocolVersion`:
 **1.0.0-rc.2**. This records only the candidate-manifest default, not adopted
 binding emission, runtime support, public release, or production state.
@@ -18,6 +23,10 @@ from repository/package maturity: `v1.0.0-rc.5` is an unpublished SemVer prerele
 while each document retains its own declared maturity. Neither state promotes or
 demotes the other, no stable `v1.0.0` release is declared here, and the prior
 `v1.0.0-rc.4` tag remains immutable.
+
+`v1.0.0-rc.3` and `v1.0.0-rc.4` are released public packages; rc.4 is the
+latest released package. `1.0.0-rc.2` is supported embedded wire/source/binding
+history and has no observed public tag or public-release classification.
 
 This document describes how the Crinkl Protocol evolves without creating forked implementations. It is normative only where it constrains verifier behavior; governance and rollout timelines are non-normative.
 

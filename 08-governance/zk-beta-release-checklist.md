@@ -24,6 +24,10 @@ Required release inputs:
 
 A beta announcement MUST name these commits or a release tag that resolves to them.
 
+`1.0.0-rc.2` is an embedded wire/source/binding history label, not an observed
+public tag or public-release classification. A beta announcement remains a
+separately authorized release claim.
+
 ## Public Artifact Inventory
 
 The public artifact home is `07-conformance/vectors/v1/zk/h2-promo-open-min-v1/`.

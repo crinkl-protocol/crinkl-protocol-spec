@@ -34,6 +34,10 @@ State which artifact is affected:
   (`RELEASE_CANDIDATE_NOT_PUBLISHED`), not a tag, GitHub Release, runtime
   activation, or production deployment.
 
+The reviewed rc.5 source is exactly commit
+`81237937833ab32e5ce92d3b5ceed72854baecef` / tree
+`9121bdfbfc428f73557e993f1bd6e295ba733a12`; later source is unassigned.
+
 Do not infer a release, deployment, or runtime claim from a report against
 current `main` or the rc.5 candidate.
 

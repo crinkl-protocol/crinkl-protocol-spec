@@ -234,6 +234,12 @@ def main() -> int:
     if subprocess.run([sys.executable, str(released_identifier_erratum), "--local-only"], cwd=repo_root).returncode != 0:
         return die("released identifier collision erratum local verifier failed")
 
+    living_version_claims = repo_root / "scripts" / "check_living_version_claims.py"
+    if not living_version_claims.is_file():
+        return die("missing living version claims verifier")
+    if subprocess.run([sys.executable, str(living_version_claims)], cwd=repo_root).returncode != 0:
+        return die("living version claims verifier failed")
+
     # The optional W3C VC profile follows the active candidate/released state.
     # Its verifier proves adopted-source bytes, the rc.4 immutable baseline,
     # rc.5 suite inclusion, official self-cell boundaries, and fixture checks.

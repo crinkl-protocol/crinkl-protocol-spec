@@ -9,16 +9,17 @@ normative: false
 
 > Non-normative implementation guidance and notes.
 
-## Producer/Consumer Compatibility
+## Compatibility and release-state record
 
-| Producer protocolVersion | Consumer supports | Expected behavior |
+| Surface | Exact supported or observed state | Compatibility / authority boundary |
 | --- | --- | --- |
-| N (current) | N, N-1 | Accept and validate deterministically. |
-| N-1 (previous) | N, N-1 | Accept; may log deprecation warnings but MUST remain readable. |
-| < N-1 | N, N-1 | Accept only if explicitly within the published deprecation window; otherwise reject as VersionMismatch. |
-| N+1 (future) | N, N-1 | Reject with VersionMismatch; future-version events MUST NOT be accepted without explicit feature negotiation. |
-
-Compatibility matrices SHOULD be extended per release to enumerate schema-level requirements (required/optional fields, hashing/signature algorithms) and interop results across reference implementations.
+| Public specification releases | `v1.0.0-rc.3` and `v1.0.0-rc.4` are released immutable tags; `v1.0.0-rc.4` is the latest released public package. | Resolve a release by its tag, exact commit/tree, and release-manifest digest. |
+| `v1.0.0-rc.5` source candidate | Reviewed only at `81237937833ab32e5ce92d3b5ceed72854baecef` / tree `9121bdfbfc428f73557e993f1bd6e295ba733a12`; it is not published or released. | Later source, including this branch, is unassigned and cannot inherit that review. |
+| Embedded wire and binding history | `1.0.0-rc.1` and `1.0.0-rc.2` are supported embedded wire values; `1.0.0-rc.2` is not an observed public tag or public release. | A verifier accepts only its explicitly supported wire values; a wire label does not classify a public release. |
+| Spend Attestation Token schemas | `SpendAttestationTokenV1` and `SpendAttestationTokenV2` remain valid supported sibling schemas. | V2 `holderBinding` is OPTIONAL; a V2 token without it remains valid, but has no portable holder-control proof. |
+| Holder-binding profile | `token.spendAttestation.holderBinding.v2` is released as a profile with separately governed runtime support. | Profile release does not assert runtime, deployment, or a protocol-wide issuance choice. |
+| Token issuance | There is **no protocol-wide token issuance default**. | Each profile or runtime explicitly selects its issuance behavior; availability of V2 never silently selects it. |
+| Maturity and runtime | Source review, adopted-main containment, public release, runtime support, and deployment are separate evidence-bearing states. | No source candidate or released document alone activates runtime or production behavior. |
 
 ## Rollout Guidance
 - Stage new protocol versions behind feature flags; enable on a canary subset of producers before global rollout.

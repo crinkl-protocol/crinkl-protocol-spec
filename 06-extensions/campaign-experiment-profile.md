@@ -35,7 +35,7 @@ Product, retailer, merchant, category, market, channel, incentive, allocation, s
 
 This repository owns the public specification claim at the maturity declared above. `crinkl-protocol` owns the adopted engineering object, exact schema bytes, canonical hashes, signatures, vectors, and current conformance behavior.
 
-The adopted `CampaignExperimentPolicyV1` bytes carry `protocol.protocolVersion = "1.0.0-rc.1"`. This repository's current documentation release marker `v1.0.0-rc.2` does not rewrite those bytes or silently create a second object. A later public release must state its exact compatibility/acceptance effect while preserving the adopted canonical object.
+The adopted `CampaignExperimentPolicyV1` bytes carry `protocol.protocolVersion = "1.0.0-rc.1"`. `1.0.0-rc.2` is supported embedded wire/source/binding history, not an observed public tag or public release. A later public release must state its exact compatibility/acceptance effect while preserving the adopted canonical object.
 
 Until a public release vendors those exact artifacts:
 

@@ -5,6 +5,11 @@ unpublished SemVer prerelease. Repository release maturity is separate from
 each document's frontmatter maturity. The immutable `v1.0.0-rc.4` tag remains
 the prior released package; no stable successor release is declared.
 
+The rc.5 candidate documentation applies only to reviewed public-spec commit
+`81237937833ab32e5ce92d3b5ceed72854baecef` / tree
+`9121bdfbfc428f73557e993f1bd6e295ba733a12`; later source is unassigned and
+cannot inherit that review.
+
 ## v1.0.0-rc.5 release candidate (not published)
 
 - Publishes a source-only, byte-pinned candidate bundle for the optional W3C

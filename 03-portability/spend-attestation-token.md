@@ -225,6 +225,10 @@ holder control is unavailable. A verifier MUST NOT infer holder control from
 token possession, `spendId`, a wallet lookup, a delivery key, a ZK proof, or an
 issuer signature.
 
+`SpendAttestationTokenV1` and `SpendAttestationTokenV2` are both supported.
+There is no protocol-wide token issuance default: each profile or runtime must
+explicitly select its issuance behavior, and V2 availability does not select it.
+
 #### Holder commitment
 
 For `scheme = "crinkl.holder.v2"`:
