@@ -1,0 +1,35 @@
+{
+  "kind": "objectModel.collapsedArtifactKind.rejected",
+  "description": "Negative conformance for the collapsed campaign roles: an artifact declaring kind eligibilityProof or conversionProof MUST be rejected because neither is a distinct object type in the thirteen-artifact inventory (README.md#core-objects; 08-governance/glossary.md). Eligibility and conversion are roles a ProofOfMatch plays inside a campaign, not separate schemas or wire kinds (governance/protocol-object-model-decisions-2026-08-08.md, 'Three rule/proof pairs' decision).",
+  "canonicalKinds": [
+    "SpendStreamEvent",
+    "SpendAttestation",
+    "VerificationPolicy",
+    "IssuerRegistrySnapshot",
+    "AttestationStatus",
+    "SpendAttestationToken",
+    "SpendAttestationCredential",
+    "SpendPredicate",
+    "ProofOfMatch",
+    "CampaignEpoch",
+    "FinalityCertificate",
+    "RewardCommitment",
+    "CampaignSettlementCommitment"
+  ],
+  "acceptCases": [
+    { "id": "proof-of-match-is-canonical", "kind": "ProofOfMatch" },
+    { "id": "spend-predicate-is-canonical", "kind": "SpendPredicate" }
+  ],
+  "rejectCases": [
+    {
+      "id": "eligibility-proof-rejected",
+      "kind": "eligibilityProof",
+      "reason": "Eligibility Proof is a role a ProofOfMatch plays inside a campaign, not a distinct object type (08-governance/glossary.md#eligibility-proof)."
+    },
+    {
+      "id": "conversion-proof-rejected",
+      "kind": "conversionProof",
+      "reason": "Conversion Proof is a role a ProofOfMatch plays inside a campaign, not a distinct object type (08-governance/glossary.md#conversion-proof)."
+    }
+  ]
+}

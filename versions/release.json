@@ -31,6 +31,16 @@
       "kind": "credential.spendAttestation.vcdm2.eddsaJcs2022",
       "maturity": "CANDIDATE",
       "runtimeAvailability": "UNAVAILABLE"
+    },
+    {
+      "kind": "schema.objectModel.om4.v1",
+      "maturity": "CANDIDATE",
+      "runtimeAvailability": "UNAVAILABLE"
+    },
+    {
+      "kind": "objectModel.collapsedArtifactKind.rejected",
+      "maturity": "CANDIDATE",
+      "runtimeAvailability": "UNAVAILABLE"
     }
   ]
 }

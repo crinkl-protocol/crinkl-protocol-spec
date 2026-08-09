@@ -60,6 +60,10 @@ intentionally fails that gate until P4.4/P9 complete the governed release.
   byte-pinned Node verifier
 - `credential.spendAttestation.vcdm2.eddsaJcs2022` through its manifest-bound
   Node fixture harness
+- `schema.objectModel.om4.v1` through its manifest-bound, byte-pinned Python
+  (`jsonschema.Draft202012Validator`) verifier
+- `objectModel.collapsedArtifactKind.rejected` through the same manifest-bound
+  Python verifier
 
 Checks include:
 
@@ -80,6 +84,12 @@ malformed-composition rejection and same-position equivocation rejection.
   fixture coverage only; it does not claim complete official-suite conformance,
   peer interoperability, a generic VC/VP API, endpoint operation, runtime, or
   production.
+- Object-model OM4 Draft 2020-12 schema acceptance/rejection for
+  `VerificationPolicy`, `IssuerRegistrySnapshot`, `AttestationStatus`,
+  `SpendPredicate`, and rejection of the collapsed `eligibilityProof` /
+  `conversionProof` artifact kinds. Candidate fixture coverage only; none of
+  the four schemas is required for Core validity and none has a runtime
+  implementation.
 
 Manifest-bound external verifiers are restricted to files under
 `07-conformance/profiles/`, receive no shell interpolation or manifest-supplied arguments,
