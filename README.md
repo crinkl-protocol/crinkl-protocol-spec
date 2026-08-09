@@ -1,10 +1,17 @@
 # Crinkl Protocol
 
-Crinkl Protocol defines how real-world commerce evidence becomes signed, privacy-preserving spend proof.
+> Crinkl turns verified commerce evidence into portable, privately usable
+> proof through four concepts.
+>
+> - **Spend Attestation** — an issuer's signed statement that spend was verified under a named policy.
+> - **Spend Attestation Token** — its identity-minimized portable representation.
+> - **Verification Policy** — the content-addressed rules defining what "verified" means.
+> - **Spend Predicate** — a reusable rule that evaluates one or more Spend Attestations without changing them.
+>
+> A successful predicate evaluation produces a **Proof of Match** that
+> campaigns, rewards, analytics and agents consume.
 
-A spend attestation proves that a purchase event was observed, normalized, verified, and signed by an authorized verifier.
-
-The protocol is designed so that campaigns, reward systems, analytics tools, agents, and settlement layers can verify commerce facts without requiring raw receipt access or user identity.
+See the [full object inventory](#core-objects) for every artifact.
 
 [![Version](https://img.shields.io/badge/version-v1.0.0--rc.5-blue)](versions/CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-Apache%202.0-green)](LICENSE)
@@ -36,7 +43,7 @@ Crinkl proves that commerce evidence advanced through a defined proof lifecycle:
 5. The Spend Attestation may be packaged as a Spend Attestation Token.
 6. Selected proof validators may admit attestations to the shared record by finalizing statements over committed attestation sets.
 7. External systems may verify the attestation.
-8. Conditions and CampaignEpochs may evaluate one or more attestations.
+8. Spend Predicates and CampaignEpochs may evaluate one or more attestations.
 9. Valid ProofOfMatch results may trigger rewards, settlement, campaigns, analytics, or agent responses.
 
 ## What Crinkl Does Not Prove
@@ -52,8 +59,8 @@ The spec follows this dependency order:
 ```text
 Evidence before claims.
 Claims before attestations.
-Attestations before conditions.
-Conditions before rewards.
+Attestations before predicates.
+Predicates before rewards.
 Rewards before campaigns.
 Campaigns before agents and markets.
 ```
@@ -62,19 +69,26 @@ Core protocol validity does not depend on campaigns, rewards, Solana, ZK, MCP, R
 
 ## Core Objects
 
+Complete inventory of thirteen artifacts; anything not on this list is prose
+(defined in the [glossary](08-governance/glossary.md), not a schema or a table
+row). Four artifacts are named but not yet schema-defined; they carry an
+explicit `(schema pending, OM4)` marker below.
+
 | Object | Layer | Purpose |
 |---|---|---|
-| Commerce Evidence | Purpose/Core | Raw or semi-structured input that may support a spend claim. |
-| Spend Event | Core | Normalized representation of a purchase event. |
-| Verification State | Core/Lifecycle | Current confidence and status for a Spend Event. |
-| Spend Attestation | Core | Signed claim that a Spend Event was verified according to Crinkl rules. |
-| Spend Attestation Token | Portability | Portable representation of a Spend Attestation for external verification. |
-| Condition | Condition Layer | Rule over one or more Spend Attestations. |
-| CampaignEpoch | Condition Layer | Immutable, append-only funded rule window for campaign eligibility. |
-| Proof of Match | Condition Layer | Result of evaluating attestations against a condition. |
-| Reward Commitment | Reward/Settlement | Downstream accounting or promise based on valid proof of match. |
-| Finality Certificate | Lifecycle | Quorum evidence that selected proof validators independently re-verified and co-signed a deterministic statement, admitting the covered attestations to the shared record. |
-| Merchant Claim Attestation | Extension | Optional authority proof over store identity for official merchant actions. |
+| `SpendStreamEvent` | Record | The serialized append-only atom. |
+| `SpendAttestation` | Record | Issuer's signed statement about the stream head, under a named policy. |
+| `VerificationPolicy` | Trust | Content-addressed rules defining what "verified" means. (schema pending, OM4) |
+| `IssuerRegistrySnapshot` | Trust | Immutable authority set at a point in time, including retired keys and validity windows. (schema pending, OM4) |
+| `AttestationStatus` | Trust | Revocation and supersession. (schema pending, OM4) |
+| `SpendAttestationToken` | Portability | Native identity-minimized form. |
+| `SpendAttestationCredential` | Portability | W3C VC 2.0 serialization. |
+| `SpendPredicate` | Rule | Reusable rule over one or more Spend Attestations. (schema pending, OM4) |
+| `ProofOfMatch` | Rule | Result of evaluating a predicate. |
+| `CampaignEpoch` | Campaign | Immutable, append-only funded rule window. |
+| `FinalityCertificate` | Finality/Settlement | Quorum acceptance of a specific statement. |
+| `RewardCommitment` | Finality/Settlement | Recipient-scoped inclusion. |
+| `CampaignSettlementCommitment` | Finality/Settlement | Campaign-scoped settlement. |
 
 ## Privacy Boundary
 
@@ -94,7 +108,7 @@ Downstream layers consume spend proof; they do not define it.
 
 | Layer | Documents |
 |---|---|
-| Condition rules and CampaignEpochs | [`04-condition-layer/`](04-condition-layer/) |
+| Spend Predicate rules and CampaignEpochs | [`04-condition-layer/`](04-condition-layer/) |
 | Reward and settlement | [`05-reward-and-settlement/`](05-reward-and-settlement/) including [`campaign-settlement-gcd.md`](05-reward-and-settlement/campaign-settlement-gcd.md) |
 | ZK, Campaign experiments, direct buyer rewards, merchant authority, agent, REST/MCP, Solana, offer delivery | [`06-extensions/`](06-extensions/) including the public-draft [`campaign-experiment-profile.md`](06-extensions/campaign-experiment-profile.md), released [`campaign-direct-buyer-reward-profile.md`](06-extensions/campaign-direct-buyer-reward-profile.md), [`merchant-authority.md`](06-extensions/merchant-authority.md), [`zk-external-verifier-integration-guide.md`](06-extensions/zk-external-verifier-integration-guide.md), and [`solana-campaign-settlement-binding.md`](06-extensions/solana-campaign-settlement-binding.md) |
 | Conformance | [`07-conformance/`](07-conformance/) |
@@ -110,7 +124,7 @@ Downstream layers consume spend proof; they do not define it.
 | [`01-core/`](01-core/) | Evidence, Spend Events, verification states, canonicalization, signatures, privacy boundaries. |
 | [`02-proof-lifecycle/`](02-proof-lifecycle/) | Ingestion, normalization, soft/hard verification, correction, attestation issuance. |
 | [`03-portability/`](03-portability/) | Spend Attestation Tokens, verifier requirements, identity exclusion, replay/auditability. |
-| [`04-condition-layer/`](04-condition-layer/) | Conditions, condition evaluation, proof of match, campaign commitment. |
+| [`04-condition-layer/`](04-condition-layer/) | Spend Predicates, predicate evaluation, proof of match, campaign commitment. |
 | [`05-reward-and-settlement/`](05-reward-and-settlement/) | Reward Commitment, GMV, distribution, settlement bindings. |
 | [`06-extensions/`](06-extensions/) | Optional ZK, merchant authority, agent query, transport, Solana, offer-delivery, and registry profiles. |
 | [`07-conformance/`](07-conformance/) | Vectors, verifier test suite, compatibility notes. |

@@ -372,7 +372,7 @@ Default for portable tokens intended for external verifiers: **omit wallet**.
 
 When `wallet` is omitted from Spend Attestation Tokens:
 - `spendId` remains present and may be correlatable across verification contexts
-- This correlation can reveal spend-pattern reuse without including wallet, user, account, or session identifiers (e.g., "same identity-excluded spend qualified for two different conditions")
+- This correlation can reveal spend-pattern reuse without including wallet, user, account, or session identifiers (e.g., "same identity-excluded spend qualified for two different predicates")
 - This correlation is not a user identity claim and does not, by itself, disclose wallet, account, or session identity
 - This enables legitimate uses: fraud detection (same spend claimed multiple times), incremental sales analysis (did coffee promo drive breakfast purchases), cross-promotion strategy, and aggregate market intelligence
 

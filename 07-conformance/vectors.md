@@ -297,7 +297,7 @@ These are normative conformance expectations for campaign implementations. They 
 | 3 | Remove one EligibleMerchant by creating Epoch 2 with a new `targetMerchantSetRoot` or `targetMerchantSetHash` | ✓ Accept TargetMerchantSet change through a new epoch |
 | 4 | Sponsor lowers or invalidates a reward already earned under Epoch 1 after a valid ProofOfMatch | ✗ Reject reward downgrade for an already-earned claim |
 | 5 | CampaignEpoch omits `timingRule` | ✗ Reject invalid CampaignEpoch |
-| 6 | Add budget as a child FundingTranche bound to the same `campaignId`, `epochId`, and `ruleSetHash` without changing condition, TargetMerchantSet reference, reward rule, claim level, effective window, timing rule, or funding policy | ✓ Accept budget top-up without rule change |
+| 6 | Add budget as a child FundingTranche bound to the same `campaignId`, `epochId`, and `ruleSetHash` without changing predicate, TargetMerchantSet reference, reward rule, claim level, effective window, timing rule, or funding policy | ✓ Accept budget top-up without rule change |
 | 7 | `claimLevel = "INCREMENTAL"` without a baseline, holdout, or incrementality method in the epoch rule material | ✗ Reject invalid INCREMENTAL claim |
 
 ---

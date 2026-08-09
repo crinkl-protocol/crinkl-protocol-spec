@@ -160,7 +160,7 @@ Scope binding does NOT prevent correlation of the same `spendId` across differen
 - Proofs cannot be copied and replayed in unintended contexts
 - Audit trails can track proof usage without exposing user wallet addresses
 
-If multiple proofs reference the same `spendId` across different scopes, verifiers who collude can still correlate those proofs as originating from the same identity-excluded spend. This correlation reveals behavioral patterns (e.g., "this spend qualified for two different conditions") but does NOT reveal user identity when `wallet` is omitted from the underlying Spend Attestation Token.
+If multiple proofs reference the same `spendId` across different scopes, verifiers who collude can still correlate those proofs as originating from the same identity-excluded spend. This correlation reveals behavioral patterns (e.g., "this spend qualified for two different predicates") but does NOT reveal user identity when `wallet` is omitted from the underlying Spend Attestation Token.
 
 ### Statement constraints (normative)
 

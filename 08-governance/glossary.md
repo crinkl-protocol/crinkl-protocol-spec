@@ -18,6 +18,10 @@ The protocol’s signed statement about spend state at a given verification tier
 **Attestation is:** a claim about spend state under protocol semantics.  
 **Attestation is not:** necessarily portable; not authoritative state independent of the append-only Attestation Ledger history.
 
+## Verification State
+
+The current confidence and status of a Spend Event, derived by replaying its event stream. Verification State is a concept, not a stored artifact — the protocol defines no state database; state is always recomputed from append-only event history.
+
 ## Provisional (Soft Attestation)
 
 An attestation produced at **Soft Verification**. It is an intermediate, non-final statement that MUST NOT be treated as canonical Spend attestation.
@@ -218,7 +222,7 @@ The reviewed set of EligibleMerchant entries bound to a CampaignEpoch by `target
 
 ## CampaignEpoch
 
-An immutable, append-only, funded rule window. A CampaignEpoch binds `campaignId`, `epochId`, `epochVersion`, effective window, timing rule, condition hash, RuleSetHash, TargetMerchantSet reference, reward rule hash, FundingTranche, claim level, previous epoch reference when present, issuer authority, and creation time.
+An immutable, append-only, funded rule window. A CampaignEpoch binds `campaignId`, `epochId`, `epochVersion`, effective window, timing rule, predicate hash, RuleSetHash, TargetMerchantSet reference, reward rule hash, FundingTranche, claim level, previous epoch reference when present, issuer authority, and creation time.
 
 **Publication boundary:** this is the earlier public `v1.0.0-rc.2` conceptual/experimental CampaignEpoch candidate. It is not wire-compatible with the exact signed adopted engineering `CampaignEpochV1` used by the Campaign Experiment Profile or the adopted-engineering dependency in the Direct Buyer Reward release-candidate package. See `../06-extensions/campaign-experiment-profile.md` and `../06-extensions/campaign-direct-buyer-reward-profile.md`.
 
@@ -234,7 +238,7 @@ Budget increases are represented as child FundingTranche records (`parentFunding
 
 ## RuleSetHash
 
-The canonical hash over condition, TargetMerchantSet reference/root, reward rule, claim level, effective window, timing rule, and funding reference.
+The canonical hash over predicate, TargetMerchantSet reference/root, reward rule, claim level, effective window, timing rule, and funding reference.
 
 ## ClaimLevel
 
@@ -264,6 +268,22 @@ The campaign-facing spelling of Proof of Match. A ProofOfMatch evaluates spend a
 
 The campaign-facing spelling of Reward Commitment. A RewardCommitment is produced only after valid proof material such as ProofOfMatch and records downstream economic consequence without changing spend truth.
 
+## Eligibility Rule
+
+The audience-side criteria a campaign uses to admit a holder into a campaign flow. Eligibility Rule is a role a Spend Predicate plays inside a campaign, not a distinct object type.
+
+## Eligibility Proof
+
+Evidence that a holder satisfies a campaign's Eligibility Rule. Eligibility Proof is a role a ProofOfMatch plays inside a campaign, not a distinct object type.
+
+## Conversion Rule
+
+The outcome-side criteria a campaign uses to determine that its required commerce event occurred. Conversion Rule is a role a Spend Predicate plays inside a campaign, not a distinct object type.
+
+## Conversion Proof
+
+Evidence that a holder satisfied a campaign's Conversion Rule. Conversion Proof is a role a ProofOfMatch plays inside a campaign, not a distinct object type.
+
 ## Audience Qualification
 
 A campaign-scoped proof that a holder satisfies the audience side of a Campaign Rule. Audience Qualification is a marketing-facing term for qualification proof over Campaign Spend Proof Primitives.
@@ -278,9 +298,13 @@ Verified Conversion is a marketing-facing term for an Outcome / Conversion proof
 
 ## Conversion Approval
 
-A verifier-signed decision that Audience Qualification and Verified Conversion satisfy a Campaign Rule and may proceed to settlement.
+A ProofOfMatch that has reached finality for a campaign flow: the state in which Audience Qualification and Verified Conversion have satisfied a Campaign Rule and settlement may proceed. Conversion Approval is a state, not a distinct object type.
 
-Conversion Approval binds the campaign parameters, qualification proof, conversion Spend Token hash, payout terms, settlement scope, and settlement nullifier.
+The finalized state binds the campaign parameters, qualification proof, conversion Spend Token hash, payout terms, settlement scope, and settlement nullifier.
+
+## Issuer Key History
+
+The sequence of an issuer's key registrations and revocations over time. Issuer Key History is a concept, derivable from the series of `IssuerRegistrySnapshot` artifacts plus the `AUTHORITY_REGISTERED`/`AUTHORITY_REVOKED` system-stream events; it is not a fourth representation requiring its own artifact.
 
 ## Campaign Settlement Commitment
 

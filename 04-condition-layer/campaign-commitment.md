@@ -1,6 +1,6 @@
 ---
 status: draft
-layer: condition
+layer: predicate
 version: v1
 normative: true
 ---
@@ -13,7 +13,7 @@ normative: true
 >
 > Implementation status: terminology and primitive families are proposed for v1; public campaign settlement anchoring is frozen by `../05-reward-and-settlement/campaign-settlement-gcd.md`.
 >
-> Experimental schemas: candidate machine-readable schemas for CampaignEpoch, CampaignAmendment, and FundingTranche live in `../schemas/experimental/`. They are non-core condition/campaign extension schemas and are not required for Core Spend Attestation validity.
+> Experimental schemas: candidate machine-readable schemas for CampaignEpoch, CampaignAmendment, and FundingTranche live in `../schemas/experimental/`. They are non-core predicate/campaign extension schemas and are not required for Core Spend Attestation validity.
 >
 > **Publication boundary:** the CampaignEpoch shape and schema on this page are the earlier `v1.0.0-rc.2` experimental candidate, not the exact signed adopted engineering `CampaignEpochV1`. Implementations of the Campaign Experiment Profile MUST use the exact adopted engineering artifacts described by [`../06-extensions/campaign-experiment-profile.md`](../06-extensions/campaign-experiment-profile.md). Similar names do not imply wire compatibility.
 
@@ -106,8 +106,8 @@ CampaignEpochV1 {
   effectiveFrom: TimestampISO,
   effectiveTo?: TimestampISO,
   timingRule: "SPEND_TIMESTAMP" | "ATTESTATION_TIMESTAMP" | "CLAIM_TIMESTAMP",
-  conditionId?: Identifier,
-  conditionHash: "sha256:" + Hash,
+  predicateId?: Identifier,
+  predicateHash: "sha256:" + Hash,
   ruleSetHash: "sha256:" + Hash,
   candidateSetHash?: "sha256:" + Hash,
   targetMerchantSetRoot?: Hash,
@@ -128,7 +128,7 @@ CampaignEpochV1 {
 - `ATTRIBUTED` means spend matched attribution conditions defined by the epoch.
 - `INCREMENTAL` requires a baseline, holdout, or incrementality method specified by the epoch.
 
-`RuleSetHash` is the canonical hash over condition, target merchant set reference/root, reward rule, claim level, effective window, timing rule, funding reference, and `campaignAuthority` when present. It MUST be computed with RFC 8785 canonical JSON and SHA-256 over the epoch rule material, excluding signatures and transport-only metadata.
+`RuleSetHash` is the canonical hash over predicate, target merchant set reference/root, reward rule, claim level, effective window, timing rule, funding reference, and `campaignAuthority` when present. It MUST be computed with RFC 8785 canonical JSON and SHA-256 over the epoch rule material, excluding signatures and transport-only metadata.
 
 `campaignAuthority` is optional for operator and system campaigns. If a campaign or epoch declares merchant-official authority (`CampaignAuthorityV1.authorityType = "VERIFIED_MERCHANT"`), the field is REQUIRED and MUST validate under `../06-extensions/merchant-authority.md`.
 
@@ -536,7 +536,9 @@ The `conversionSpendTokenHash` MUST reference a Spend Attestation Token issued b
 
 Marketing term: **Conversion Approval**.
 
-Conversion Approval is the verifier-signed decision that audience qualification and verified conversion satisfy the campaign rule and may proceed to settlement.
+Conversion Approval is not a separate object. It is a ProofOfMatch that has reached finality for this campaign flow: the verifier-signed state confirming that audience qualification and verified conversion satisfy the campaign rule and may proceed to settlement.
+
+The finalized-state shape:
 
 ```text
 ConversionApprovalV1 {
