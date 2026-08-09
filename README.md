@@ -71,19 +71,22 @@ Core protocol validity does not depend on campaigns, rewards, Solana, ZK, MCP, R
 
 Complete inventory of thirteen artifacts; anything not on this list is prose
 (defined in the [glossary](08-governance/glossary.md), not a schema or a table
-row). Four artifacts are named but not yet schema-defined; they carry an
-explicit `(schema pending, OM4)` marker below.
+row). `VerificationPolicy`, `IssuerRegistrySnapshot`, `AttestationStatus`, and
+`SpendPredicate` are unreleased draft schemas (object-model board step OM4):
+they exist below the release candidate line, are not required for Core
+validity, and are not yet referenced by `SpendAttestation`,
+`SpendAttestationToken`, or `SpendAttestationCredential`.
 
 | Object | Layer | Purpose |
 |---|---|---|
 | `SpendStreamEvent` | Record | The serialized append-only atom. |
 | `SpendAttestation` | Record | Issuer's signed statement about the stream head, under a named policy. |
-| `VerificationPolicy` | Trust | Content-addressed rules defining what "verified" means. (schema pending, OM4) |
-| `IssuerRegistrySnapshot` | Trust | Immutable authority set at a point in time, including retired keys and validity windows. (schema pending, OM4) |
-| `AttestationStatus` | Trust | Revocation and supersession. (schema pending, OM4) |
+| [`VerificationPolicy`](01-core/schemas/verification_policy_v1.schema.json) | Trust | Content-addressed rules defining what "verified" means. (unreleased draft, OM4) |
+| [`IssuerRegistrySnapshot`](01-core/schemas/issuer_registry_snapshot_v1.schema.json) | Trust | Immutable authority set at a point in time, including retired keys and validity windows. (unreleased draft, OM4) |
+| [`AttestationStatus`](01-core/schemas/attestation_status_v1.schema.json) | Trust | Revocation and supersession. (unreleased draft, OM4) |
 | `SpendAttestationToken` | Portability | Native identity-minimized form. |
 | `SpendAttestationCredential` | Portability | W3C VC 2.0 serialization. |
-| `SpendPredicate` | Rule | Reusable rule over one or more Spend Attestations. (schema pending, OM4) |
+| [`SpendPredicate`](04-condition-layer/schemas/spend_predicate_v1.schema.json) | Rule | Reusable rule over one or more Spend Attestations. (unreleased draft, OM4) |
 | `ProofOfMatch` | Rule | Result of evaluating a predicate. |
 | `CampaignEpoch` | Campaign | Immutable, append-only funded rule window. |
 | `FinalityCertificate` | Finality/Settlement | Quorum acceptance of a specific statement. |
