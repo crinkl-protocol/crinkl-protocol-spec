@@ -1,0 +1,81 @@
+{
+  "inventoryVersion": 1,
+  "publicSourceBase": "b0e5b5e463f117e7cd22063e74edd2861a459cd8",
+  "adoptedMainAtAudit": "e7ad40a5ef585e3484185e1cb464e930182ef813",
+  "repositories": {
+    "public": {
+      "repository": "crinkl-protocol-spec",
+      "rules": [
+        { "prefix": "01-core/", "surface": "objectSchema" },
+        { "prefix": "04-condition-layer/", "surface": "objectSchema" },
+        { "prefix": "05-reward-and-settlement/", "surface": "objectSchema" },
+        { "prefix": "06-extensions/schemas/", "surface": "objectSchema" },
+        { "prefix": "06-extensions/examples/", "surface": "externalOwnership" },
+        { "prefix": "07-conformance/", "surface": "profileConformanceSuite" },
+        { "prefix": "bindings/", "surface": "bindingContextCryptographicDomain" },
+        { "prefix": "schemas/", "surface": "objectSchema" },
+        { "prefix": "versions/", "surface": "specificationRelease" }
+      ],
+      "exclusions": [".github/"]
+    },
+    "adopted": {
+      "repository": "crinkl-protocol",
+      "rules": [
+        { "prefix": "bindings/", "surface": "bindingContextCryptographicDomain" },
+        { "prefix": "conformance/", "surface": "profileConformanceSuite" },
+        { "prefix": "protocol/artifacts/", "surface": "profileConformanceSuite" },
+        { "prefix": "protocol/context/", "surface": "bindingContextCryptographicDomain" },
+        { "prefix": "protocol/core/schemas/", "surface": "objectSchema" },
+        { "prefix": "protocol/examples/", "surface": "externalOwnership" },
+        { "prefix": "protocol/portability/schemas/", "surface": "objectSchema" },
+        { "prefix": "protocol/schemas/", "surface": "objectSchema" },
+        { "prefix": "reference/", "surface": "profileConformanceSuite" }
+      ],
+      "exclusions": [".github/"]
+    }
+  },
+  "requiredAliases": [
+    {
+      "repository": "public",
+      "path": "01-core/schemas/verification_policy_v1.schema.json",
+      "surface": "objectSchema",
+      "filename": "verification_policy_v1.schema.json",
+      "$id": "crinkl://protocol/schemas/verification_policy_v1",
+      "title": "VerificationPolicyV1",
+      "instanceRevisionField": "policyVersion"
+    }
+  ],
+  "effectiveCollisionReceipt": {
+    "digest": "sha256:d2441f0da9fef029fc8f59b099458c3e7ff22ffd181c3ee3f9fd75525113ccf9",
+    "lineCount": 22,
+    "state": "OBSERVED_UNRESOLVED_RELEASED_IDENTITY_COLLISION",
+    "comparisons": [
+      { "publicTag": "v1.0.0-rc.3", "publicCommit": "a8368577b6331ed5c076105da1536e32be39bdf6", "adoptedCommit": "8c641f57201c75bac12819a0f903ae6105c7f3c3" },
+      { "publicTag": "v1.0.0-rc.4", "publicCommit": "7ce390fb3f562f589318ea36e9b8200aa4585da0", "adoptedCommit": "5019e41bdeb924449363aa3b538eaa5b3b6ee4dc" }
+    ]
+  },
+  "collisionRecords": [
+    { "identifier": "crinkl://bindings/nats/crinkl-platform/v1/event.fraud_flagged", "public": { "path": "bindings/nats/crinkl-platform/v1/schemas/event.fraud_flagged.schema.json", "sha256": "sha256:522e262eaa59d0d50d811b590f7715b1e760c3c4c5378f6c8d50652603d4444b" }, "adopted": { "path": "bindings/nats/crinkl-platform/v1/schemas/event.fraud_flagged.schema.json", "sha256": "sha256:c2badd2677e3ab130d29cb00b4a4a3ab30dc8d375d21e1b5cffc854b3cf81315" } },
+    { "identifier": "crinkl://bindings/nats/crinkl-platform/v1/event.receipt_uploaded", "public": { "path": "bindings/nats/crinkl-platform/v1/schemas/event.receipt_uploaded.schema.json", "sha256": "sha256:3b9f0a541e506e0ef9f5f612af3fc9bd475f1f49ef9097f304895cc03abf16a7" }, "adopted": { "path": "bindings/nats/crinkl-platform/v1/schemas/event.receipt_uploaded.schema.json", "sha256": "sha256:d0318b24e8ec6ee1ef2431eb176f5ef8aa519804fa3f0c57b8d7707d6378a64f" } },
+    { "identifier": "crinkl://bindings/nats/crinkl-platform/v1/event.reward_final_issued", "public": { "path": "bindings/nats/crinkl-platform/v1/schemas/event.reward_final_issued.schema.json", "sha256": "sha256:b28969d1e4aa8bb869ca4dd3912f036abffe52e82f3ae1daed3e1c48f688baf5" }, "adopted": { "path": "bindings/nats/crinkl-platform/v1/schemas/event.reward_final_issued.schema.json", "sha256": "sha256:7ef525f53c20a81f6f7da4d6126a17019ec9d554d96d8fe69f5de263207d216d" } },
+    { "identifier": "crinkl://bindings/nats/crinkl-platform/v1/event.reward_provisional_issued", "public": { "path": "bindings/nats/crinkl-platform/v1/schemas/event.reward_provisional_issued.schema.json", "sha256": "sha256:e0121348186965172a920b8e34f5ca0548c83e31521a537a0b7f991a4fa54ae9" }, "adopted": { "path": "bindings/nats/crinkl-platform/v1/schemas/event.reward_provisional_issued.schema.json", "sha256": "sha256:ffe7e0ac4495af08a3452f6c993967be64fad758b151346293761554887bfa54" } },
+    { "identifier": "crinkl://bindings/nats/crinkl-platform/v1/event.spend_corrected", "public": { "path": "bindings/nats/crinkl-platform/v1/schemas/event.spend_corrected.schema.json", "sha256": "sha256:19e3cca69bd4ff08a2ddc524b5f5c648e0ba263f6ae2ee7eac311fdb7f472424" }, "adopted": { "path": "bindings/nats/crinkl-platform/v1/schemas/event.spend_corrected.schema.json", "sha256": "sha256:1828f862bfa625182222a2dd14550f7d442abc626af966f88c481d9bc4168642" } },
+    { "identifier": "crinkl://bindings/nats/crinkl-platform/v1/event.spend_hard_verified", "public": { "path": "bindings/nats/crinkl-platform/v1/schemas/event.spend_hard_verified.schema.json", "sha256": "sha256:f050b9e7b78f5c51ffc23a0ff8daaaa5712af64c1b643947bde241ba1425455f" }, "adopted": { "path": "bindings/nats/crinkl-platform/v1/schemas/event.spend_hard_verified.schema.json", "sha256": "sha256:5649a6b643f0f9b012a01c8c84a15d1114f6a806ea4a412f78b74bdd47bf9e59" } },
+    { "identifier": "crinkl://bindings/nats/crinkl-platform/v1/event.spend_invalidated", "public": { "path": "bindings/nats/crinkl-platform/v1/schemas/event.spend_invalidated.schema.json", "sha256": "sha256:a7be3184721c9ca10bd19369f6bddca333609aac95b7ce7cfca84eede60c3bbf" }, "adopted": { "path": "bindings/nats/crinkl-platform/v1/schemas/event.spend_invalidated.schema.json", "sha256": "sha256:c03b7cdbb80be2537e9fc2c78598b422f020ec067dfba133d42278bac819f5c0" } },
+    { "identifier": "crinkl://bindings/nats/crinkl-platform/v1/event.spend_review_requested", "public": { "path": "bindings/nats/crinkl-platform/v1/schemas/event.spend_review_requested.schema.json", "sha256": "sha256:8ffe92956e9683434edfb1aa516ff98c72782ab373e76d6103dd26660b87567a" }, "adopted": { "path": "bindings/nats/crinkl-platform/v1/schemas/event.spend_review_requested.schema.json", "sha256": "sha256:0cda0979ddb9e50e1f68777394b67dc06c2bc9896d4fe38e4e4f3a3140197d58" } },
+    { "identifier": "crinkl://bindings/nats/crinkl-platform/v1/event.spend_soft_verified", "public": { "path": "bindings/nats/crinkl-platform/v1/schemas/event.spend_soft_verified.schema.json", "sha256": "sha256:ebdd3af6c9ed0776b96247140767f362aaa564884e291af5081e1218bd756eee" }, "adopted": { "path": "bindings/nats/crinkl-platform/v1/schemas/event.spend_soft_verified.schema.json", "sha256": "sha256:34098beba2082b7b20b9f32289ab849995fd202b1795d3d5094777318a6d3d2f" } },
+    { "identifier": "crinkl://bindings/nats/crinkl-platform/v1/pipeline.ingest.receipt", "public": { "path": "bindings/nats/crinkl-platform/v1/schemas/pipeline.ingest.receipt.schema.json", "sha256": "sha256:0ce9e6892f7594cfd7bb698dfeeb32f4b3a4a4a5e1e52323ee799d99aca8ed7b" }, "adopted": { "path": "bindings/nats/crinkl-platform/v1/schemas/pipeline.ingest.receipt.schema.json", "sha256": "sha256:ae979b46014093c00170956e7a748c359d9a770a50954966deb9467c48052705" } },
+    { "identifier": "crinkl://bindings/nats/crinkl-platform/v1/pipeline.normalize.done", "public": { "path": "bindings/nats/crinkl-platform/v1/schemas/pipeline.normalize.done.schema.json", "sha256": "sha256:4a9672945f8dd360bfda842c7e33c2aee2f2ff79f22f77d3687b1889f5ef7444" }, "adopted": { "path": "bindings/nats/crinkl-platform/v1/schemas/pipeline.normalize.done.schema.json", "sha256": "sha256:893955bbe3ea32bfc8db0011c1db8fd950466e30bde162d953355ef134da2e2b" } },
+    { "identifier": "crinkl://bindings/nats/crinkl-platform/v1/pipeline.normalize.request", "public": { "path": "bindings/nats/crinkl-platform/v1/schemas/pipeline.normalize.request.schema.json", "sha256": "sha256:f00fb880e0b2cd9bdc5a886ab3fe75656b2b4bd5cbde5f10fac71237e9dff771" }, "adopted": { "path": "bindings/nats/crinkl-platform/v1/schemas/pipeline.normalize.request.schema.json", "sha256": "sha256:68f508672a93d0140c0605aff94728e19b17a394d38dc8c0d414ea9b62342661" } },
+    { "identifier": "crinkl://bindings/nats/crinkl-platform/v1/pipeline.ocr.final.request", "public": { "path": "bindings/nats/crinkl-platform/v1/schemas/pipeline.ocr.final.request.schema.json", "sha256": "sha256:2b5d676a02eb2d619a74fece6a8064f0ae48721e39fe88ed2330cb7a0b4e40c5" }, "adopted": { "path": "bindings/nats/crinkl-platform/v1/schemas/pipeline.ocr.final.request.schema.json", "sha256": "sha256:f666f3ff91b377e7465348759825bc4c2c04fa180d4b6458a4e4a7e8c0ae9cd9" } },
+    { "identifier": "crinkl://bindings/nats/crinkl-platform/v1/pipeline.ocr.request", "public": { "path": "bindings/nats/crinkl-platform/v1/schemas/pipeline.ocr.request.schema.json", "sha256": "sha256:f560a72153425cefd9350d13773cc252fca8c36fca03a7cc1b76310d0eb7f365" }, "adopted": { "path": "bindings/nats/crinkl-platform/v1/schemas/pipeline.ocr.request.schema.json", "sha256": "sha256:3b0c31de4e7a4ba332b5f12345a583af87f7d44a83ed5fd74d550d5bf73ecd55" } },
+    { "identifier": "crinkl://bindings/nats/crinkl-platform/v1/pipeline.ocr.result", "public": { "path": "bindings/nats/crinkl-platform/v1/schemas/pipeline.ocr.result.schema.json", "sha256": "sha256:7d82256282fe682cebc79d9326cff86c59cd4d6dd9d7113ad8061e2f1effd13d" }, "adopted": { "path": "bindings/nats/crinkl-platform/v1/schemas/pipeline.ocr.result.schema.json", "sha256": "sha256:e101daaa6521e26db75481ff01ab9175dacf6e44a3b74434e824f05522f91eca" } },
+    { "identifier": "crinkl://bindings/nats/crinkl-platform/v1/system.authority_registered", "public": { "path": "bindings/nats/crinkl-platform/v1/schemas/system.authority_registered.schema.json", "sha256": "sha256:c3711aa82f722d7a74aad6a4a69d352d70d83633746f584e824d21a568c74ca1" }, "adopted": { "path": "bindings/nats/crinkl-platform/v1/schemas/system.authority_registered.schema.json", "sha256": "sha256:b1bf12a2844e1a8ddf8e40eb9935fd578cc332cba148c5d7438e83a977e0b6ff" } },
+    { "identifier": "crinkl://bindings/nats/crinkl-platform/v1/system.authority_revoked", "public": { "path": "bindings/nats/crinkl-platform/v1/schemas/system.authority_revoked.schema.json", "sha256": "sha256:024dee835d818da07f6caca6e4fbc5dbc773c9bb034dd2c8c6d65669ce6e1e9d" }, "adopted": { "path": "bindings/nats/crinkl-platform/v1/schemas/system.authority_revoked.schema.json", "sha256": "sha256:1c63f53684dd35df73ca7c88642db05e5f46b37ba31d831678dcdb9ed3481389" } },
+    { "identifier": "crinkl://bindings/nats/crinkl-platform/v1/system.cumulative_snapshot_committed", "public": { "path": "bindings/nats/crinkl-platform/v1/schemas/system.cumulative_snapshot_committed.schema.json", "sha256": "sha256:67e3f3edbf16656ef318d983df8c77fbd4c5bdfd91174d7962fb07de31e9c85e" }, "adopted": { "path": "bindings/nats/crinkl-platform/v1/schemas/system.cumulative_snapshot_committed.schema.json", "sha256": "sha256:2a6b9dd120e7b8bb7ffbe05a63fb2622321935032b33adc3c24044a7fd4aa169" } },
+    { "identifier": "crinkl://bindings/nats/crinkl-platform/v1/system.reward_batch_backing_attested", "public": { "path": "bindings/nats/crinkl-platform/v1/schemas/system.reward_batch_backing_attested.schema.json", "sha256": "sha256:c428eacee45b6e9ada474ebdd8d05e0b9144f2064ab23d7c74c575a1963a3019" }, "adopted": { "path": "bindings/nats/crinkl-platform/v1/schemas/system.reward_batch_backing_attested.schema.json", "sha256": "sha256:69bbe744d06d48121ca5d42a00f41422c178249c8f76a259912df0c95ea76003" } },
+    { "identifier": "crinkl://bindings/nats/crinkl-platform/v1/system.reward_batch_committed", "public": { "path": "bindings/nats/crinkl-platform/v1/schemas/system.reward_batch_committed.schema.json", "sha256": "sha256:c59107e437bd9bcfafb6b5d0466f7cc19046f93800e430af18606fdb79da7971" }, "adopted": { "path": "bindings/nats/crinkl-platform/v1/schemas/system.reward_batch_committed.schema.json", "sha256": "sha256:33d93228363c1b95032f5269c3a32bccaa5bf5f78f2b9522f5be425240c4a4b1" } },
+    { "identifier": "crinkl://bindings/nats/crinkl-platform/v1/system.reward_batch_correction", "public": { "path": "bindings/nats/crinkl-platform/v1/schemas/system.reward_batch_correction.schema.json", "sha256": "sha256:4d2b71c3f2dc302add152bd56ca693702bcbb6b724e471669db061c1dfbe5f70" }, "adopted": { "path": "bindings/nats/crinkl-platform/v1/schemas/system.reward_batch_correction.schema.json", "sha256": "sha256:b1591d2e60d20e90c403175b95ff513ad65294095794eb265809d7f12c7f192d" } },
+    { "identifier": "crinkl://protocol/schemas/store_location_entry_v1", "public": { "path": "06-extensions/schemas/store-registry/store_location_entry_v1.schema.json", "sha256": "sha256:affddb1cbfe722abc66b178d88daf518b7549fa57ea6063fb3a282ba27eca6aa" }, "adopted": { "path": "protocol/schemas/store_location_entry_v1.schema.json", "sha256": "sha256:137cbdc666ecc83df9380165bae2fb3a5798e8b22182c0f9dbb1ccde577dc1e8" } }
+  ]
+}
