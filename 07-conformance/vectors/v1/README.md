@@ -75,22 +75,24 @@ Executable verifier:
 
 ### Object Model (OM4)
 
-- `schema.objectModel.om4.v1` — manifest-bound external verification (Draft
-  2020-12, via `jsonschema.Draft202012Validator`) of the four unreleased
-  draft object-model schemas: `VerificationPolicy`, `IssuerRegistrySnapshot`,
-  `AttestationStatus`, `SpendPredicate`. One valid instance is accepted and
-  one invalid instance is rejected per schema. See
+- `schema.objectModel.om4.v1` — manifest-bound structural and semantic
+  verification of the four candidate object-model schemas:
+  `VerificationPolicy`, `IssuerRegistrySnapshot`, `AttestationStatus`, and
+  `SpendPredicate`. The checker recomputes content addresses and executes
+  timestamp-ordering and cross-field failures. See
   `../../profiles/object-model-v1/README.md`.
-- `objectModel.collapsedArtifactKind.rejected` — negative conformance for the
-  collapsed campaign roles: artifacts of kind `eligibilityProof` and
-  `conversionProof` are rejected against the thirteen-name canonical object
-  inventory in `README.md#core-objects`, with `ProofOfMatch` and
-  `SpendPredicate` as positive controls.
+- `objectModel.collapsedArtifactKind.rejected` — whole-object dispatcher
+  conformance. The shipped checker owns the thirteen-name canonical object
+  inventory in `README.md#protocol-objects`; vectors supply only artifact
+  inputs. `eligibilityProof` and `conversionProof` are rejected, with
+  `ProofOfMatch` and a valid `SpendPredicate` as positive controls.
 
 ## Contract
 
-- Vector files are **append-only** within a given `v1` suite.
-- If semantics change, add a new suite version (e.g., `v2`) instead of rewriting `v1`.
+- Released vector files are **append-only** within a given suite.
+- Untagged candidate profile fixtures may be corrected in place only when the
+  profile artifact digests are updated in the same independently reviewed
+  slice. A released semantic change requires a new suite version.
 - Implementations SHOULD allow overriding the protocol repo path via an env var (e.g., `CRINKL_PROTOCOL_DIR`) so CI can locate these vectors.
 
 ## Privacy Vectors

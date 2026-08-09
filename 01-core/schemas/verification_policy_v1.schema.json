@@ -2,8 +2,8 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "crinkl://protocol/schemas/verification_policy_v1",
   "title": "VerificationPolicyV1",
-  "description": "Content-addressed rules defining what \"verified\" means for a Spend Attestation. Unreleased draft schema (object-model artifact, board step OM4); no existing schema references this artifact yet. Adding a `verificationPolicyHash` binding to SpendAttestation, SpendAttestationToken, or SpendAttestationCredential is a separate, later-sliced change (OM5) and is intentionally NOT made by this schema.",
-  "$comment": "Derived from README.md#core-objects (\"VerificationPolicy | Trust | Content-addressed rules defining what 'verified' means.\") and 05-reward-and-settlement/policy-layer.md#hashing, which defines the repository's one existing content-address convention for a policy artifact: RFC 8785 canonical JSON serialization + SHA-256 over the UTF-8 canonical bytes, with `\"sha256:\" + lowercaseHex` as the recommended id form over legacy bare hex (policy-layer.md: 'Policy artifacts MUST be hashed using: RFC 8785 canonical JSON serialization ... SHA-256 over the UTF-8 bytes ... Recommended string form: policyId = \"sha256:\" + <64 hex>.'). No normative document in this repository enumerates the concrete rule content of a verification policy (grep for 'receipt age', 'total bounds', 'CBSA rule' tied to a policy object returns no hits outside this schema); `rules` is therefore left open/minimal rather than invented. See the OM4 PR body 'open points' list for what remains undefined, including how this artifact's id relates to the `verificationVersion` string already carried by Hard Verification (02-proof-lifecycle/hard-verification.md) and canonicalization.md's determinism clause.",
+  "description": "Content-addressed rules defining what verified means for a Spend Attestation. This candidate schema defines the policy artifact without adding the separately governed verificationPolicyHash binding to an Attestation, Token, or Credential.",
+  "$comment": "Derived from README.md#protocol-objects and 05-reward-and-settlement/policy-layer.md#hashing. policyId is the RFC 8785 plus SHA-256 content address of rules. The rule vocabulary remains profile-defined, while every policy carries a non-empty rule object whose exact bytes are hash-bound.",
   "type": "object",
   "additionalProperties": true,
   "required": ["policyId", "policyVersion", "rules"],
@@ -11,27 +11,29 @@
     "policyId": {
       "type": "string",
       "pattern": "^sha256:[a-f0-9]{64}$",
-      "description": "Content address of the canonicalized policy: sha256: + lowercaseHex(SHA-256(RFC8785_canonicalize(rules))), following the hashing convention in 05-reward-and-settlement/policy-layer.md#hashing (the repository's only existing precedent for hashing a policy-shaped artifact)."
+      "description": "sha256: plus lowercaseHex(SHA-256(RFC8785_canonicalize(rules)))."
     },
     "policyVersion": {
       "type": "string",
       "minLength": 1,
-      "description": "Version label for this policy. A change to `rules` produces a new `policyId` and SHOULD accompany a new `policyVersion`. OPEN POINT: no normative source defines whether `policyVersion` is a semantic version, a monotonic counter, or a free-form label."
+      "description": "Version label for the policy. Any rule change produces a different policyId."
     },
     "effectiveFrom": {
       "type": "string",
       "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
-      "description": "When this policy version becomes the version an issuer may cite. OPEN POINT: no normative source ties this to a specific attestation field yet."
+      "description": "Earliest instant at which an issuer may cite this policy version."
     },
     "previousPolicyId": {
       "type": ["string", "null"],
       "pattern": "^sha256:[a-f0-9]{64}$",
-      "description": "policyId of the immediately prior version in this policy's evolution, or null for the first version. OPEN POINT: unlike IssuerRegistrySnapshot (which has a normatively described sequence/equivocation model), no normative source in this repository describes a policy version series, so this field is a minimal, non-load-bearing placeholder for chaining."
+      "description": "Content address of the immediately preceding policy version, or null for the first version."
     },
     "rules": {
       "type": "object",
+      "minProperties": 1,
+      "propertyNames": { "minLength": 1 },
       "additionalProperties": true,
-      "description": "OPEN POINT: this repository does not yet normatively enumerate verification-policy rule content. Left open/extensible on purpose so this schema does not invent structure the prose does not support; do not treat this shape as complete."
+      "description": "Non-empty profile-defined verification rules. Every property and value participates in policyId."
     }
   }
 }

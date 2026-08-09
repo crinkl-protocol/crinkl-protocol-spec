@@ -504,8 +504,8 @@ Every audience-scope Proof of Match MUST carry, directly or by binding:
   and epoch scope required by §3
 - `scopeId`, `nullifier` — the scope and replay bindings required by §3
 - `proofMode` — as declared on the matched `CampaignSpendProofPrimitiveRequirementV1` entries (§5)
-- the evaluated evidence for each matched primitive requirement (previously
-  the `primitiveProofs` field) — the Proof of Match's evidentiary content for
+- the evaluated evidence for each matched primitive requirement — the Proof
+  of Match's evidentiary content for
   the composed `audience.requiredPrimitives` list
 - `campaignAuthorityHash`, when the campaign or epoch declares
   `CampaignAuthorityV1` (§3a, §5)
@@ -515,13 +515,11 @@ proves qualification for a campaign scope.
 
 The audience-scope match timestamp and its own content hash (referenced
 elsewhere in this document and in `CampaignSettlementLeafV1` as
-`qualificationHash`) are Proof of Match fields. Proof of Match has no
-formalized field shape or canonical hash computation rule in this repository
-yet (`proof-of-match.md` is prose-only, and it is not currently marked
-`(schema pending, OM4)` in `README.md` alongside `SpendPredicate` even though
-no shape exists) — see the open point in this slice's PR body. Until Proof
-of Match is formalized, `qualificationHash` is a verifier/issuer-committed
-reference, not a value this document defines a recomputation rule for.
+`qualificationHash`) are Proof of Match fields. The governing campaign
+profile MUST define the Proof of Match serialization and canonical hash rule
+it accepts. This generic campaign composition surface treats
+`qualificationHash` as a verifier/issuer-committed reference whose
+recomputation procedure comes from that profile.
 
 ### 6.2 Verified Conversion
 
@@ -549,12 +547,11 @@ issued by the normal verification pipeline. The campaign does not create a
 special Spend Token type.
 
 As in §6.1, the conversion-scope match timestamp and its own content hash
-(`conversionHash` downstream) are Proof of Match fields with no formalized
-shape yet; see the open point in this slice's PR body. `conversionHash` here
-names the conversion-scope match result and MUST NOT be confused with
-`CampaignRuleV1.hashes.conversionHash` (§5), which hashes the rule's
-`conversion` requirement definition, not a match result — this naming reuse
-predates this slice and is flagged as a separate open point.
+(`conversionHash` downstream) are Proof of Match fields whose serialization
+and recomputation procedure come from the governing campaign profile.
+`conversionHash` here names the conversion-scope match result and MUST NOT be
+confused with `CampaignRuleV1.hashes.conversionHash` (§5), which hashes the
+rule's `conversion` requirement definition rather than a match result.
 
 ### 6.3 Conversion Approval
 
@@ -568,36 +565,48 @@ deterministic result) per `../02-proof-lifecycle/admission.md`. Settlement
 MAY proceed only once this state is reached; an Attested-only match (signed
 but not yet Admitted, per the same admission states) MUST NOT settle.
 
-The fields the old `ConversionApprovalV1` draft carried map onto surviving
-artifacts as follows:
+`CampaignSettlementLeafV1.approvalHash` keeps the V1 approval-statement
+commitment. The canonical hash input is a projection, not an independent
+protocol artifact:
 
-- `campaignId`, `epochId`, `ruleSetHash`, `campaignParamsHash`,
-  `qualificationHash`, `conversionHash`, `conversionSpendTokenHash`,
-  `conversionHeadEventHash`, `campaignAuthorityHash` — the campaign binding
-  fields the finalized statement covers (§6.1, §6.2); unchanged.
-- `payout.amount`, `payout.asset`, `settlementScopeId`,
-  `settlementNullifier` — carried forward unchanged into
-  `CampaignSettlementLeafV1` (§6.5) and `campaign-settlement-gcd.md`.
-  Conversion Approval does not define a competing payout or nullifier
-  surface.
-- `approvedBy`, `approvedAt` — this purpose is now served jointly by the
-  campaign's declared verifier authority (`CampaignRuleV1.verifier.verifierId`,
-  §5) for who the finalized statement is scoped to, and the Finality
-  Certificate's quorum of selected-validator signatures and finalization
-  time (`../02-proof-lifecycle/admission.md`) for who admitted it. There is
-  no single-signer "approver" role.
-- `signatures.publicKey` / `signatures.signature` — superseded by the
-  Finality Certificate's quorum-signature envelope
-  (`../02-proof-lifecycle/admission.md`); a single verifier Ed25519
-  signature no longer creates network acceptance on its own.
-- `signatures.approvalHash` — this is the same `approvalHash` field required
-  by the frozen `CampaignSettlementLeafV1` (§6.5, `campaign-settlement-gcd.md`).
-  It survives unchanged on the wire. Its definition changes: `approvalHash`
-  MUST now be read as the hash of the Finality Certificate (or the finalized
-  statement it certifies) that admitted this campaign's Proof of Match, not
-  the hash of a bespoke `ConversionApprovalV1` object.
-- `schemaVersion` — not applicable; there is no bespoke object shape left to
-  version.
+```text
+{
+  schemaVersion: 1,
+  campaignId: Identifier,
+  epochId: Identifier,
+  ruleSetHash: "sha256:" + Hash,
+  campaignParamsHash: "sha256:" + Hash,
+  qualificationHash: "sha256:" + Hash,
+  conversionHash: "sha256:" + Hash,
+  conversionSpendTokenHash: "sha256:" + Hash,
+  conversionHeadEventHash: Hash,
+  campaignAuthorityHash?: "sha256:" + Hash,
+
+  payout: {
+    amount: String(Integer >= 0),
+    asset: "POINTS" | "BTC" | "CRINKL" | String
+  },
+
+  settlementScopeId: "sha256:" + Hash,
+  settlementNullifier: "sha256:" + Hash,
+  approvedBy: Identifier,
+  approvedAt: TimestampISO
+}
+```
+
+`approvedBy` identifies the campaign-scope signer, and `approvedAt` is that
+signer's statement time. `approvalHash` MUST equal
+`"sha256:" + lowercaseHex(SHA-256(JCS(projection)))`, using RFC 8785 JCS.
+The governing campaign profile MUST carry or bind the signer's public key and
+signature. The signature MUST verify over `approvalHash`, and verifiers MUST
+reject evidence whose signer is not authorized for the campaign scope or whose
+signature is invalid. This authentication evidence is not a separate protocol
+artifact and is not embedded in `CampaignSettlementLeafV1`.
+The settlement leaf binds this hash. Record-level admission independently
+follows the committed-leaf-set procedure in
+`../02-proof-lifecycle/admission.md`; `approvalHash` is not the Finality
+Certificate hash. The compatibility projection does not create a separate
+approval object or a competing settlement surface.
 
 ### 6.4 Payout Settlement
 
@@ -621,8 +630,8 @@ Settlement MUST bind, directly or by hash reference:
 - `campaignAuthorityHash` when present in the governing campaign rule
 - payout amount and asset
 - settlement nullifier
-- `approvalHash` — the Finality Certificate hash admitting the campaign's
-  Proof of Match to record-level finality (§6.3)
+- `approvalHash` — the V1 approval-statement projection hash admitted by the
+  Finality Certificate (§6.3)
 
 ### 6.5 Campaign Settlement Commitment
 

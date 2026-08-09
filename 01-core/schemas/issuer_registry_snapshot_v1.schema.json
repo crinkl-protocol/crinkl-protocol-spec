@@ -2,8 +2,8 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "crinkl://protocol/schemas/issuer_registry_snapshot_v1",
   "title": "IssuerRegistrySnapshotV1",
-  "description": "Immutable authority set at a point in time, including retired keys and validity windows — the artifact a historical Spend Attestation issuer signature is verified against. Unreleased draft schema (object-model artifact, board step OM4).",
-  "$comment": "Derived from README.md#core-objects (\"IssuerRegistrySnapshot | Trust | Immutable authority set at a point in time, including retired keys and validity windows.\") and this repository's own AUTHORITY_REGISTERED / AUTHORITY_REVOKED system-stream event payloads (01-core/spend-event.md: 'AUTHORITY_REGISTERED { authorityId, publicKey, validFrom, predecessorId?, txRef, registeredAt }' / 'AUTHORITY_REVOKED { authorityId, validUntil, revokedBy, reason, txRef, revokedAt }'; see also 05-reward-and-settlement/settlement-bindings.md#authority-registered-event / #authority-revoked-event for the same fields). The snapshot-level shape (registryId as a series identifier distinct from the snapshot hash, integer `sequence` starting at 0 with `previousSnapshotRef: null` at 0, `asOf`, and `keys[]` carrying `validFrom`/`validUntil` so retired keys remain listed rather than deleted) is modeled on the adopted internal `SpendIssuerSetSnapshotV1` artifact (crinkl-protocol repo, protocol/BUYER_STATE_ISSUER_AND_HEAD_SOURCES.md §3.1-3.3, read-only reference; that artifact is not itself part of this public spec release and its exact field list is not reproduced verbatim). Field name `authorityId` (rather than the internal artifact's `issuerId`) follows this repository's own AUTHORITY_REGISTERED/AUTHORITY_REVOKED vocabulary. `terminationRef` is this schema's generalization of the internal artifact's per-key `terminationRef`, populated here from the public AUTHORITY_REVOKED event's `txRef`. OPEN POINTS (see OM4 PR body): (1) the internal artifact tracks a separate `keyId` per authority, allowing multiple concurrent keys per `authorityId`; this minimal public schema does not yet model that and assumes at most one active key per `authorityId` per snapshot. (2) the internal artifact's `authorityScope`, `authorizationTimeBasis`, and `authorizedArtifactTypes` fields (fixing scope to SPEND_ATTESTATION_TOKEN_ISSUANCE / EVALUATION_CUTOFF) are not reproduced here because no public-repo prose defines them; a verifier consuming this snapshot for a specific purpose must obtain that scoping out of band. (3) the equivocation rule (\"a verifier that observes two different valid snapshots with the same (registryId, sequence) MUST treat the series as equivocated\") is verifier behavior, not a structural field, and is recorded here in prose rather than as a schema constraint this format can express. RELATIONSHIP TO W3CIssuerKeyHistoryV1: this artifact is the protocol-level authority-set snapshot and does NOT supersede, replace, or retire `W3CIssuerKeyHistoryV1` (adopted, byte-pinned, vector-backed at 07-conformance/profiles/w3c-vc-2.0-spend-attestation-v1/protocol/schemas/w3c_issuer_key_history_v1.schema.json). `W3CIssuerKeyHistoryV1` is a W3C-profile-internal, `did:web`-scoped retained-key-history artifact (its `issuer`/`verificationMethod`/`publicKeyMultibase` fields are DID-specific and its shape is not interchangeable with `keys[].authorityId`/`publicKey` here) that remains a dependent artifact of the W3C VC 2.0 serialization; it continues to govern retained key history for `did:web` issuers inside that profile exactly as it does today. `IssuerRegistrySnapshot` governs the native, non-VC authority set. Neither artifact references or requires the other in this schema; a future slice may define a binding, but this schema makes no such claim.",
+  "description": "Immutable authority set at a point in time, including retired keys and validity windows, used to verify historical Spend Attestation issuer signatures.",
+  "$comment": "Derived from README.md#protocol-objects, the AUTHORITY_REGISTERED and AUTHORITY_REVOKED payloads in 01-core/spend-event.md, and the signed-snapshot convention in 06-extensions/schemas/store-registry/store_registry_snapshot_token_v1.schema.json. The protocol snapshot is distinct from the W3C profile's dependent W3CIssuerKeyHistoryV1 serialization.",
   "type": "object",
   "additionalProperties": true,
   "required": ["registryId", "sequence", "asOf", "previousSnapshotRef", "keys", "signatures"],
@@ -11,72 +11,72 @@
     "registryId": {
       "type": "string",
       "minLength": 1,
-      "description": "Identifies one snapshot series; it is not the snapshot's own content hash."
+      "description": "Identifier for one snapshot series."
     },
     "sequence": {
       "type": "integer",
       "minimum": 0,
-      "description": "Monotonic sequence within `registryId`. Sequence 0 MUST use `previousSnapshotRef: null`. A verifier that observes two different valid snapshots with the same (registryId, sequence) MUST treat the series as equivocated and reject contexts depending on either branch until resolved out of band."
+      "description": "Monotonic sequence within registryId."
     },
     "asOf": {
       "type": "string",
       "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
-      "description": "The authority-set cutoff this snapshot reflects."
+      "description": "Authority-set cutoff represented by this snapshot."
     },
     "previousSnapshotRef": {
       "type": ["string", "null"],
       "pattern": "^sha256:[a-f0-9]{64}$",
-      "description": "Content address of the immediately previous verified snapshot in this series, or null when sequence is 0."
+      "description": "Content address of the preceding snapshot, or null at sequence 0."
     },
     "keys": {
       "type": "array",
       "minItems": 1,
-      "description": "Retired keys remain listed with a non-null `validUntil` rather than being removed, so the snapshot stays a complete historical record ('including retired keys', README.md#core-objects).",
+      "description": "Complete authority history at the cutoff. Retired keys remain present with a validity end, termination reference, and reason.",
       "items": {
         "type": "object",
         "additionalProperties": true,
-        "required": ["authorityId", "publicKey", "validFrom", "validUntil"],
+        "required": ["authorityId", "publicKey", "validFrom", "validUntil", "predecessorId", "terminationRef", "revocationReason"],
         "properties": {
-          "authorityId": {
-            "type": "string",
-            "minLength": 1,
-            "description": "Matches AUTHORITY_REGISTERED.payload.authorityId / AUTHORITY_REVOKED.payload.authorityId (01-core/spend-event.md)."
-          },
-          "publicKey": {
-            "type": "string",
-            "minLength": 1,
-            "description": "Matches AUTHORITY_REGISTERED.payload.publicKey."
-          },
+          "authorityId": { "type": "string", "minLength": 1 },
+          "publicKey": { "type": "string", "minLength": 1 },
           "validFrom": {
             "type": "string",
-            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
-            "description": "Matches AUTHORITY_REGISTERED.payload.validFrom."
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$"
           },
           "validUntil": {
             "type": ["string", "null"],
-            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
-            "description": "null while the key is active; set from AUTHORITY_REVOKED.payload.validUntil once revoked or otherwise ended."
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$"
           },
-          "predecessorId": {
-            "type": ["string", "null"],
-            "description": "Matches AUTHORITY_REGISTERED.payload.predecessorId (previous authority, for rotation)."
-          },
-          "terminationRef": {
-            "type": ["string", "null"],
-            "description": "Reference to the immutable authority evidence that ended this key's authorization (populated from AUTHORITY_REVOKED.payload.txRef when present); null while the key is active."
-          },
-          "revocationReason": {
-            "type": ["string", "null"],
-            "description": "Matches AUTHORITY_REVOKED.payload.reason; null while the key is active."
+          "predecessorId": { "type": ["string", "null"], "minLength": 1 },
+          "terminationRef": { "type": ["string", "null"], "minLength": 1 },
+          "revocationReason": { "type": ["string", "null"], "minLength": 1 }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": { "validUntil": { "type": "null" } },
+              "required": ["validUntil"]
+            },
+            "then": {
+              "properties": {
+                "terminationRef": { "type": "null" },
+                "revocationReason": { "type": "null" }
+              }
+            },
+            "else": {
+              "properties": {
+                "terminationRef": { "type": "string", "minLength": 1 },
+                "revocationReason": { "type": "string", "minLength": 1 }
+              }
+            }
           }
-        }
+        ]
       }
     },
     "signatures": {
       "type": "object",
       "additionalProperties": true,
       "required": ["issuedBy", "publicKey", "tokenHash", "signature"],
-      "description": "Field shape reuses this repository's existing signed-snapshot convention (06-extensions/schemas/store-registry/store_registry_snapshot_token_v1.schema.json).",
       "properties": {
         "issuedBy": { "type": "string", "minLength": 1 },
         "publicKey": { "type": "string", "minLength": 1 },
@@ -84,5 +84,24 @@
         "signature": { "type": "string", "minLength": 1 }
       }
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "sequence": { "const": 0 } },
+        "required": ["sequence"]
+      },
+      "then": {
+        "properties": { "previousSnapshotRef": { "type": "null" } }
+      },
+      "else": {
+        "properties": {
+          "previousSnapshotRef": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          }
+        }
+      }
+    }
+  ]
 }
