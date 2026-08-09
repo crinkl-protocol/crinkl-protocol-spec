@@ -49,6 +49,9 @@ Merchant authority is an rc.2-compatible extension. It uses artifact-level
 - `MerchantClaimEventV1.schemaVersion = 1`
 - `CampaignAuthorityV1.schemaVersion = 1`
 
+`1.0.0-rc.2` is supported embedded wire/source/binding history; it is not an
+observed public tag or public release classification.
+
 Adding this extension does not by itself require a global `protocolVersion`
 bump because core spend event validity, Spend Attestation Token validity, and
 operator/system campaign validity are unchanged. A future change that makes
@@ -257,4 +260,3 @@ A verifier evaluating an official merchant action MUST:
   extension.
 - Merchant authority artifacts MUST NOT include raw personal documents, private
   account credentials, payment processor secrets, or raw customer data.
-

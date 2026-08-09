@@ -70,25 +70,24 @@ def main() -> int:
     manifest = load_json(bundle_root / "manifest.json")
     release = load_json(repo_root / "versions/release.json")
     release_status = release.get("status")
-    if release.get("releaseVersion") != "1.0.0-rc.5" or release_status not in {"RELEASE_CANDIDATE_NOT_PUBLISHED", "RELEASED"}:
-        fail("rc.5 release boundary drift")
-    released = release_status == "RELEASED"
+    if release.get("releaseVersion") != "1.0.0-rc.7" or release_status not in {"RELEASE_CANDIDATE_NOT_PUBLISHED", "RELEASED"}:
+        fail("rc.7 release boundary drift")
     expected_bundle_state = {
-        "maturity": "released" if released else "candidate",
-        "releasedConformance": released,
-        "conformanceStatus": "PRESENT_IN_RELEASED_RC5_SUITE_3" if released else "PRESENT_IN_RC5_SUITE_3_SOURCE_CANDIDATE",
-        "publicationBlockers": [] if released else ["P4.4_EXACT_PUBLIC_CANDIDATE_REVIEW", "P9_ACCEPTED_PUBLIC_RELEASE"],
-        "releaseClaim": released,
+        "maturity": "candidate",
+        "releasedConformance": False,
+        "conformanceStatus": "PRESENT_IN_RC7_SUITE_4_SOURCE_CANDIDATE",
+        "publicationBlockers": ["P4.4_EXACT_PUBLIC_CANDIDATE_REVIEW", "P9_ACCEPTED_PUBLIC_RELEASE"],
+        "releaseClaim": False,
     }
     if manifest.get("maturity") != expected_bundle_state["maturity"] or manifest.get("releasedConformance") is not expected_bundle_state["releasedConformance"]:
         fail("W3C profile maturity boundary drift")
     if manifest.get("engineeringSource") != {
         "repository": "crinkl-protocol",
-        "commit": "ae6382f1ed11b88f9bbfdcc4ef12119647cc7698",
+        "commit": "52648bae72a8c3b83883392be1c4ae714e4359c3",
         "maturity": "engineering-adopted-on-protected-main",
     }:
         fail("engineering source anchor drift")
-    if manifest.get("publicRepositoryVersion") != "1.0.0-rc.5":
+    if manifest.get("publicRepositoryVersion") != "1.0.0-rc.7":
         fail("candidate public-version boundary drift")
     if manifest.get("conformanceManifestEntry") != {
         "kind": W3C_KIND,
@@ -157,10 +156,10 @@ def main() -> int:
             "file": "../../profiles/w3c-vc-2.0-spend-attestation-v1/scripts/check_w3c_spend_attestation_credential_vectors.mjs",
         },
     }
-    if current_manifest.get("releaseVersion") != "1.0.0-rc.5" or current_manifest.get("releaseStatus") != release_status or current_manifest.get("suiteVersion") != 3:
-        fail("rc.5 candidate suite boundary drift")
+    if current_manifest.get("releaseVersion") != "1.0.0-rc.7" or current_manifest.get("releaseStatus") != release_status or current_manifest.get("suiteVersion") != 4:
+        fail("rc.7 candidate suite boundary drift")
     if sum(entry == expected_entry for entry in current_manifest.get("vectors") or []) != 1:
-        fail("rc.5 candidate suite must contain exactly one manifest-bound W3C entry")
+        fail("rc.7 candidate suite must contain exactly one manifest-bound W3C entry")
     frozen_rc4 = subprocess.run(
         ["git", "show", "v1.0.0-rc.4:07-conformance/vectors/v1/manifest.json"],
         cwd=repo_root,

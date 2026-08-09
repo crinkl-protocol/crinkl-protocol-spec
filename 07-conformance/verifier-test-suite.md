@@ -1,5 +1,5 @@
 ---
-status: release-candidate
+status: released
 layer: conformance
 version: v1
 normative: true
@@ -8,6 +8,9 @@ normative: true
 # Conformance Verification
 
 This document describes the executable verifier for `vectors/v1`.
+The released rc.7 package uses conformance suite 4 and includes the
+geography-commitment profile as a required manifest-bound kind; that profile
+remains candidate maturity unless separately released.
 
 ## Run
 
@@ -40,6 +43,9 @@ node scripts/verify_conformance.mjs \
 
 Release consumers additionally use `--require-released`. The rc.5 candidate
 intentionally fails that gate until P4.4/P9 complete the governed release.
+That candidate wording applies only to reviewed public-spec commit
+`81237937833ab32e5ce92d3b5ceed72854baecef` / tree
+`9121bdfbfc428f73557e993f1bd6e295ba733a12`; later source is unassigned.
 
 ## What Is Checked
 

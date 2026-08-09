@@ -1,0 +1,343 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://protocol.crinkl.xyz/versions/release-ledger.schema.json",
+  "title": "Crinkl Protocol Public Release Ledger",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "ledgerVersion",
+    "registryGateState",
+    "latestReleasedVersion",
+    "reviewedCandidateVersion",
+    "candidateState",
+    "releases",
+    "profiles",
+    "embeddedWireVersionObservations",
+    "unassignedSourceHeads",
+    "releasedSchemaIdentityCollisionReceipt"
+  ],
+  "properties": {
+    "$schema": { "const": "https://protocol.crinkl.xyz/versions/release-ledger.schema.json" },
+    "ledgerVersion": { "const": 1 },
+    "registryGateState": { "const": "SHAPE_VALIDATED_CROSS_REFERENCES_AND_APPEND_ONLY_PENDING" },
+    "latestReleasedVersion": { "$ref": "#/$defs/semver" },
+    "reviewedCandidateVersion": { "anyOf": [{ "$ref": "#/$defs/semver" }, { "type": "null" }] },
+    "candidateState": { "enum": ["NO_ACTIVE_OR_PUBLISHABLE_CANDIDATE", "SOURCE_CANDIDATE_AWAITING_REVIEW_NOT_PUBLISHABLE"] },
+    "releases": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": { "$ref": "#/$defs/semver" },
+      "additionalProperties": { "$ref": "#/$defs/releaseRecord" }
+    },
+    "profiles": {
+      "type": "object",
+      "propertyNames": { "pattern": "^[A-Za-z][A-Za-z0-9]*(?:\\.[A-Za-z][A-Za-z0-9]*)+$" },
+      "additionalProperties": { "$ref": "#/$defs/profileRecord" }
+    },
+    "embeddedWireVersionObservations": {
+      "type": "object",
+      "propertyNames": { "$ref": "#/$defs/semver" },
+      "additionalProperties": { "$ref": "#/$defs/wireObservation" }
+    },
+    "unassignedSourceHeads": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/unassignedSourceHead" }
+    },
+    "releasedSchemaIdentityCollisionReceipt": { "$ref": "#/$defs/knownCollisionReceipt" },
+    "collisionReceiptCorrections": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/collisionReceiptCorrection" }
+    },
+    "additionalCollisionObservations": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/collisionObservation" }
+    }
+  },
+  "$defs": {
+    "semver": {
+      "type": "string",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[A-Za-z-][0-9A-Za-z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[A-Za-z-][0-9A-Za-z-]*))*))?(?:\\+([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?$"
+    },
+    "tag": {
+      "type": "string",
+      "pattern": "^v(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[A-Za-z-][0-9A-Za-z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[A-Za-z-][0-9A-Za-z-]*))*))?(?:\\+([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?$"
+    },
+    "commit": { "type": "string", "pattern": "^[a-f0-9]{40}$" },
+    "digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "commit", "tree"],
+      "properties": {
+        "repository": { "type": "string", "minLength": 1 },
+        "commit": { "$ref": "#/$defs/commit" },
+        "tree": { "$ref": "#/$defs/commit" }
+      }
+    },
+    "tagTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tag", "preTagTarget", "postTagTarget"],
+      "properties": {
+        "tag": { "$ref": "#/$defs/tag" },
+        "preTagTarget": { "const": "CURRENT_HEAD" },
+        "postTagTarget": { "const": "IMMUTABLE_TAG_MUST_RESOLVE_TO_CURRENT_HEAD" }
+      }
+    },
+    "tagTargetSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "tagTarget"],
+      "properties": {
+        "repository": { "const": "crinkl-protocol-spec" },
+        "tagTarget": { "$ref": "#/$defs/tagTarget" }
+      }
+    },
+    "releaseSource": {
+      "oneOf": [
+        { "$ref": "#/$defs/source" },
+        { "$ref": "#/$defs/tagTargetSource" }
+      ]
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "digestAlgorithm", "digestBasis", "digest", "role"],
+      "properties": {
+        "path": { "type": "string", "pattern": "^(?!/)(?!.*\\.\\.)[^\\s]+$" },
+        "digestAlgorithm": { "const": "sha256" },
+        "digestBasis": { "const": "EXACT_GIT_BLOB_BYTES" },
+        "digest": { "$ref": "#/$defs/digest" },
+        "role": { "enum": ["RELEASE_MANIFEST", "CONFORMANCE_MANIFEST", "FINALIZATION_PLAN", "RELEASE_SNAPSHOT"] }
+      }
+    },
+    "wire": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["defaultBindingProtocolVersion", "supportedWireProtocolVersions"],
+      "properties": {
+        "defaultBindingProtocolVersion": { "$ref": "#/$defs/semver" },
+        "supportedWireProtocolVersions": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/semver" } }
+      }
+    },
+    "conformance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["suite", "suiteVersion", "manifest", "manifestDigest"],
+      "properties": {
+        "suite": { "type": "string", "minLength": 1 },
+        "suiteVersion": { "type": "integer", "minimum": 1 },
+        "manifest": { "type": "string", "pattern": "^(?!/)(?!.*\\.\\.)[^\\s]+$" },
+        "manifestDigest": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "adoptedSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "commit", "evidenceState"],
+      "properties": {
+        "repository": { "const": "crinkl-protocol" },
+        "commit": { "$ref": "#/$defs/commit" },
+        "evidenceState": { "enum": ["PINNED_BY_RELEASED_PROFILE_MANIFEST", "PINNED_BY_CANDIDATE_PROFILE_MANIFEST"] }
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tagState", "manifestAuthority", "releaseAuthority", "provenanceCompleteness", "runtimeImplication", "productionImplication"],
+      "properties": {
+        "tagState": { "enum": ["PRESENT_IMMUTABLE_TAG", "NOT_CREATED", "TAG_TARGET_MUST_RESOLVE_TO_CURRENT_HEAD"] },
+        "manifestAuthority": { "enum": ["AUTHORITY_ACCEPTED", "COMPUTED_NOT_AUTHORITY_ACCEPTED", "NOT_AVAILABLE_LEGACY"] },
+        "releaseAuthority": { "enum": ["ACCEPTED_TAG_AND_MANIFEST", "RELEASED_TAG_WITH_UNACCEPTED_MANIFEST", "LEGACY_RELEASED_TAG_PROVENANCE_INCOMPLETE", "REVIEWED_SOURCE_NOT_RELEASED", "RELEASED_PACKAGE_TAG_TARGET_DECLARED"] },
+        "provenanceCompleteness": { "enum": ["COMPLETE", "INCOMPLETE", "TAG_TARGET_DECLARED"] },
+        "runtimeImplication": { "const": "NONE" },
+        "productionImplication": { "const": "NONE" }
+      }
+    },
+    "releaseRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "plannedTag", "actualTag", "previousRelease", "source", "releaseManifestArtifact", "artifactInventory", "wire", "conformance", "adoptedSources", "authority"],
+      "properties": {
+        "status": { "enum": ["RELEASED", "REVIEWED_CANDIDATE_NOT_PUBLISHED"] },
+        "plannedTag": { "anyOf": [{ "$ref": "#/$defs/tag" }, { "type": "null" }] },
+        "actualTag": { "anyOf": [{ "$ref": "#/$defs/tag" }, { "type": "null" }] },
+        "previousRelease": { "anyOf": [{ "$ref": "#/$defs/semver" }, { "type": "null" }] },
+        "source": { "$ref": "#/$defs/releaseSource" },
+        "releaseManifestArtifact": { "anyOf": [{ "$ref": "#/$defs/artifact" }, { "type": "null" }] },
+        "artifactInventory": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/artifact" } },
+        "wire": { "anyOf": [{ "$ref": "#/$defs/wire" }, { "type": "null" }] },
+        "conformance": { "anyOf": [{ "$ref": "#/$defs/conformance" }, { "type": "null" }] },
+        "adoptedSources": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/adoptedSource" } },
+        "authority": { "$ref": "#/$defs/authority" }
+      },
+      "oneOf": [
+        {
+          "properties": {
+            "status": { "const": "RELEASED" },
+            "plannedTag": { "$ref": "#/$defs/tag" },
+            "actualTag": { "$ref": "#/$defs/tag" },
+            "releaseManifestArtifact": { "$ref": "#/$defs/artifact" },
+            "conformance": { "$ref": "#/$defs/conformance" },
+            "authority": { "properties": { "tagState": { "const": "PRESENT_IMMUTABLE_TAG" }, "manifestAuthority": { "const": "AUTHORITY_ACCEPTED" }, "releaseAuthority": { "const": "ACCEPTED_TAG_AND_MANIFEST" }, "provenanceCompleteness": { "const": "COMPLETE" } } }
+          }
+        },
+        {
+          "properties": {
+            "status": { "const": "RELEASED" },
+            "plannedTag": { "$ref": "#/$defs/tag" },
+            "actualTag": { "$ref": "#/$defs/tag" },
+            "releaseManifestArtifact": { "$ref": "#/$defs/artifact" },
+            "conformance": { "$ref": "#/$defs/conformance" },
+            "authority": { "properties": { "tagState": { "const": "PRESENT_IMMUTABLE_TAG" }, "manifestAuthority": { "const": "COMPUTED_NOT_AUTHORITY_ACCEPTED" }, "releaseAuthority": { "const": "RELEASED_TAG_WITH_UNACCEPTED_MANIFEST" }, "provenanceCompleteness": { "const": "INCOMPLETE" } } }
+          }
+        },
+        {
+          "properties": {
+            "status": { "const": "RELEASED" },
+            "plannedTag": { "$ref": "#/$defs/tag" },
+            "actualTag": { "$ref": "#/$defs/tag" },
+            "releaseManifestArtifact": { "type": "null" },
+            "conformance": { "type": "null" },
+            "artifactInventory": { "maxItems": 0 },
+            "authority": { "properties": { "tagState": { "const": "PRESENT_IMMUTABLE_TAG" }, "manifestAuthority": { "const": "NOT_AVAILABLE_LEGACY" }, "releaseAuthority": { "const": "LEGACY_RELEASED_TAG_PROVENANCE_INCOMPLETE" }, "provenanceCompleteness": { "const": "INCOMPLETE" } } }
+          }
+        },
+        {
+          "properties": {
+            "status": { "const": "RELEASED" },
+            "plannedTag": { "$ref": "#/$defs/tag" },
+            "actualTag": { "type": "null" },
+            "source": { "$ref": "#/$defs/tagTargetSource" },
+            "releaseManifestArtifact": { "$ref": "#/$defs/artifact" },
+            "conformance": { "$ref": "#/$defs/conformance" },
+            "authority": { "properties": { "tagState": { "const": "TAG_TARGET_MUST_RESOLVE_TO_CURRENT_HEAD" }, "manifestAuthority": { "const": "COMPUTED_NOT_AUTHORITY_ACCEPTED" }, "releaseAuthority": { "const": "RELEASED_PACKAGE_TAG_TARGET_DECLARED" }, "provenanceCompleteness": { "const": "TAG_TARGET_DECLARED" } } }
+          }
+        },
+        {
+          "properties": {
+            "status": { "const": "REVIEWED_CANDIDATE_NOT_PUBLISHED" },
+            "plannedTag": { "$ref": "#/$defs/tag" },
+            "actualTag": { "type": "null" },
+            "releaseManifestArtifact": { "$ref": "#/$defs/artifact" },
+            "conformance": { "$ref": "#/$defs/conformance" },
+            "authority": { "properties": { "tagState": { "const": "NOT_CREATED" }, "manifestAuthority": { "const": "COMPUTED_NOT_AUTHORITY_ACCEPTED" }, "releaseAuthority": { "const": "REVIEWED_SOURCE_NOT_RELEASED" }, "provenanceCompleteness": { "const": "INCOMPLETE" } } }
+          }
+        }
+      ]
+    },
+    "profileRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["profileVersion", "maturity", "documentMaturity", "runtimeSupport", "authorityState", "objectConstraints", "adoptedSourceState", "adoptedSource"],
+      "properties": {
+        "profileVersion": { "type": "integer", "minimum": 1 },
+        "maturity": { "enum": ["RELEASED", "CANDIDATE"] },
+        "documentMaturity": { "enum": ["RELEASED", "CANDIDATE"] },
+        "runtimeSupport": { "enum": ["UNAVAILABLE", "SEPARATELY_GOVERNED"] },
+        "authorityState": { "enum": ["RELEASED_TAG_ACCEPTED", "CANDIDATE_SOURCE_ONLY", "PUBLIC_SPEC_CANDIDATE_WITHOUT_ADOPTED_SOURCE"] },
+        "objectConstraints": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/objectConstraint" } },
+        "adoptedSourceState": { "enum": ["PINNED", "NOT_CLAIMED"] },
+        "adoptedSource": { "anyOf": [{ "$ref": "#/$defs/adoptedSource" }, { "type": "null" }] }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "adoptedSourceState": { "const": "PINNED" } } },
+          "then": { "properties": { "adoptedSource": { "$ref": "#/$defs/adoptedSource" } } }
+        },
+        {
+          "if": { "properties": { "adoptedSourceState": { "const": "NOT_CLAIMED" } } },
+          "then": { "properties": { "adoptedSource": { "type": "null" } } }
+        }
+      ]
+    },
+    "objectConstraint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["objectId", "supportedSchemaVersions", "requiredSchemaVersions"],
+      "properties": {
+        "objectId": { "type": "string", "minLength": 1 },
+        "supportedSchemaVersions": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "integer", "minimum": 1 } },
+        "requiredSchemaVersions": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "integer", "minimum": 1 } }
+      }
+    },
+    "wireObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["classification"],
+      "properties": { "classification": { "const": "EMBEDDED_WIRE_LABEL_NOT_A_PUBLIC_RELEASE_CLASSIFICATION_PENDING" } }
+    },
+    "unassignedSourceHead": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source", "state", "releaseAssignment"],
+      "properties": {
+        "source": { "$ref": "#/$defs/source" },
+        "state": { "const": "UNREVIEWED" },
+        "releaseAssignment": { "const": "NONE" }
+      }
+    },
+    "knownCollisionReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "digest", "lineCount", "state", "comparisons"],
+      "properties": {
+        "algorithm": { "const": "sha256" },
+        "digest": { "const": "sha256:0d1c6a393a9be65bbb1d33a36e5e06b92708a352b351790120ceccc3e1ac5ac6" },
+        "lineCount": { "const": 22 },
+        "state": { "const": "OBSERVED_UNRESOLVED_RELEASED_IDENTITY_COLLISION" },
+        "comparisons": {
+          "const": [
+            { "publicTag": "v1.0.0-rc.3", "publicCommit": "a8368577b6331ed5c076105da1536e32be39bdf6", "adoptedCommit": "8c641f57201c75bac12819a0f903ae6105c7f3c3" },
+            { "publicTag": "v1.0.0-rc.4", "publicCommit": "7ce390fb3f562f589318ea36e9b8200aa4585da0", "adoptedCommit": "5019e41bdeb924449363aa3b538eaa5b3b6ee4dc" }
+          ]
+        }
+      }
+    },
+    "collisionReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "digest", "lineCount", "state", "comparisons"],
+      "properties": {
+        "algorithm": { "const": "sha256" },
+        "digest": { "$ref": "#/$defs/digest" },
+        "lineCount": { "type": "integer", "minimum": 0 },
+        "state": { "const": "OBSERVED_UNRESOLVED_RELEASED_IDENTITY_COLLISION" },
+        "comparisons": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["publicTag", "publicCommit", "adoptedCommit"],
+            "properties": {
+              "publicTag": { "$ref": "#/$defs/tag" },
+              "publicCommit": { "$ref": "#/$defs/commit" },
+              "adoptedCommit": { "$ref": "#/$defs/commit" }
+            }
+          }
+        }
+      }
+    },
+    "collisionReceiptCorrection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["supersededDigest", "reason", "effectiveReceipt"],
+      "properties": {
+        "supersededDigest": { "$ref": "#/$defs/digest" },
+        "reason": { "type": "string", "minLength": 1 },
+        "effectiveReceipt": { "$ref": "#/$defs/collisionReceipt" }
+      }
+    },
+    "collisionObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "digest", "state"],
+      "properties": {
+        "algorithm": { "const": "sha256" },
+        "digest": { "$ref": "#/$defs/digest" },
+        "state": { "enum": ["OBSERVED_UNRESOLVED", "RESOLVED_BY_SUCCESSOR"] }
+      }
+    }
+  }
+}

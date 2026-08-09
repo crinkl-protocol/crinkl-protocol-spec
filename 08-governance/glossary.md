@@ -39,6 +39,12 @@ Crinkl tokens follow the **verifiable credential** model: they are issuer-signed
 **Token is:** a derived, portable artifact intended for third-party verification.  
 **Token is not:** authoritative protocol state (authority lives in append-only streams and, where applicable, on-chain commitments).
 
+**Token version compatibility:** `SpendAttestationTokenV1` and
+`SpendAttestationTokenV2` are supported sibling schemas. V2 `holderBinding` is
+OPTIONAL, so a V2 token without it remains valid. The protocol has no
+protocol-wide token issuance default; a profile or runtime explicitly selects
+issuance behavior.
+
 ## Verifiable Credential (VC)
 
 A tamper-evident, machine-verifiable claim about a subject, digitally signed by an issuer. Crinkl spend tokens instantiate the VC model for OCR-derived purchase claims:
@@ -258,7 +264,10 @@ The signed, immutable optional policy that binds one exact adopted Campaign Epoc
 
 The engineering-candidate signed policy resolved by one exact adopted-engineering `CampaignEpochV1.rewardPolicyRef`. It fixes one buyer reward leg, no promoter/referrer split, exact reward terms and outcome-evidence references, and an explicit boundary that affiliate link/coupon use and commission do not determine the buyer reward.
 
-**Publication boundary:** the public profile and byte-pinned package are an unpublished `v1.0.0-rc.3` / conformance suite-2 release candidate. Source-candidate conformance does not establish product-purchase evidence, funding, escrow, settlement, validator finality, runtime, deployment, or production availability.
+**Publication boundary:** the public profile and byte-pinned package are released in
+`v1.0.0-rc.3` / conformance suite 2. Profile release does not establish
+product-purchase evidence, funding, escrow, settlement, validator finality,
+runtime, deployment, or production availability.
 
 ## ProofOfMatch
 

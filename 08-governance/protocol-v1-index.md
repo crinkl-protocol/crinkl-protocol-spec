@@ -13,7 +13,7 @@ Canonical entrypoint for version 1 of the Crinkl Protocol specification. Each se
 - [../00-purpose/what-crinkl-proves.md](../00-purpose/what-crinkl-proves.md) — protocol overview and scope
 - [../01-core/spend-attestation.md](../01-core/spend-attestation.md) — core protocol concepts (spend-centric objects, scoped recipients, and ledgers)
 - [../03-portability/spend-attestation-token.md](../03-portability/spend-attestation-token.md) — token outputs (attestation + commitments)
-- [../03-portability/w3c-vc-2.0-binding.md](../03-portability/w3c-vc-2.0-binding.md) — candidate optional W3C VC 2.0 Spend Attestation wire form; source-only, not released rc.4 conformance or runtime
+- [../03-portability/w3c-vc-2.0-binding.md](../03-portability/w3c-vc-2.0-binding.md) — candidate optional W3C VC 2.0 Spend Attestation wire form; reviewed only at public-spec rc.5 commit `81237937833ab32e5ce92d3b5ceed72854baecef` / tree `9121bdfbfc428f73557e993f1bd6e295ba733a12`, not released conformance or runtime
 - [../01-core/canonicalization.md](../01-core/canonicalization.md) — canonical schema definitions
 - [../02-proof-lifecycle/ingestion.md](../02-proof-lifecycle/ingestion.md) — soft and hard verification flows
 - [../02-proof-lifecycle/gmv-price-aggregate-v1.md](../02-proof-lifecycle/gmv-price-aggregate-v1.md) — GmvPriceAggregateV1 artifact format, canonicalization, and registry/committee binding
@@ -26,7 +26,7 @@ Canonical entrypoint for version 1 of the Crinkl Protocol specification. Each se
 - [../06-extensions/zk-circuit-catalog.md](../06-extensions/zk-circuit-catalog.md) — mapping from statement types to proof circuits (optional extension)
 - [../04-condition-layer/campaign-commitment.md](../04-condition-layer/campaign-commitment.md) — campaign rule composition from finite spend proof primitives (optional extension)
 - [../06-extensions/campaign-experiment-profile.md](../06-extensions/campaign-experiment-profile.md) — public publication draft for the adopted engineering cross-vertical experiment profile; not released `v1.0.0-rc.2` conformance and runtime unavailable
-- [../06-extensions/campaign-direct-buyer-reward-profile.md](../06-extensions/campaign-direct-buyer-reward-profile.md) — `v1.0.0-rc.3` / conformance suite-2 release candidate for the engineering-candidate sponsor-neutral direct buyer-reward profile; byte-pinned package and executable verifier present, release not published, and runtime unavailable
+- [../06-extensions/campaign-direct-buyer-reward-profile.md](../06-extensions/campaign-direct-buyer-reward-profile.md) — released `v1.0.0-rc.3` / conformance suite 2 sponsor-neutral direct buyer-reward profile; byte-pinned package and executable verifier present, with runtime separately unavailable
 - [../06-extensions/merchant-authority.md](../06-extensions/merchant-authority.md) — optional merchant claim authority for official merchant actions
 - [../06-extensions/offer-delivery-profile.md](../06-extensions/offer-delivery-profile.md) — offer delivery profile + verifier rules (optional extension)
 - [../06-extensions/encryption-envelopes.md](../06-extensions/encryption-envelopes.md) — encrypted envelope formats for wallet/brand messages (optional extension)
