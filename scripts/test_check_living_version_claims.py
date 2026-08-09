@@ -30,9 +30,11 @@ def main() -> int:
         ("invented issuance default", "07-conformance/compatibility.md", "**no protocol-wide token issuance default**", "the protocol-wide token issuance default is V2"),
         ("rc.2 promoted", "07-conformance/compatibility.md", "not an observed public tag or public release.", "an observed public tag and public release."),
         ("rc.3 demoted", "07-conformance/compatibility.md", "are released immutable tags", "are unpublished release candidates"),
+        ("rc.1 omitted", "07-conformance/compatibility.md", "`v1.0.0-rc.1`, ", ""),
+        ("rc.1 demoted", "07-conformance/compatibility.md", "`v1.0.0-rc.1`, `v1.0.0-rc.3`, and `v1.0.0-rc.4` are released immutable tags", "`v1.0.0-rc.1` is an unpublished candidate"),
         ("rc.5 reviewed commit changed", "07-conformance/compatibility.md", checker.REVIEWED_COMMIT, "0" * 40),
         ("rc.5 reviewed tree changed", "07-conformance/compatibility.md", checker.REVIEWED_TREE, "0" * 40),
-        ("later tree inherits review", "07-conformance/compatibility.md", "Later source, including this branch, is unassigned and cannot inherit that review.", "Later source inherits this review."),
+        ("later tree inherits review", "07-conformance/compatibility.md", "Any later tree remains unassigned unless a new exact candidate identity and independent review record it.", "Any later tree inherits this review."),
         ("latest release wrong", "07-conformance/compatibility.md", "`v1.0.0-rc.4` is the latest released public package", "`v1.0.0-rc.3` is the latest released public package"),
         ("read-only overlap false rc.3 classification", "03-portability/spend-tokens-explainer.md", "\n", "\nv1.0.0-rc.3 is an unpublished release candidate.\n"),
     ]
@@ -40,6 +42,14 @@ def main() -> int:
         altered = copy.deepcopy(documents)
         altered[path] = altered[path].replace(old, new, 1)
         rejected(name, altered)
+    altered = copy.deepcopy(documents)
+    scope = checker.SCOPE
+    marker = "**v1.0.0-rc.5** release candidate source — not yet published."
+    altered["README.md"] = altered["README.md"].replace(scope + "\n\n", "", 1).replace(marker, marker + "\n\n" + scope, 1)
+    rejected("rc.5 scope moved after legacy marker", altered)
+    altered = copy.deepcopy(documents)
+    altered["versions/CHANGELOG.md"] = altered["versions/CHANGELOG.md"].replace(checker.LATER_TREE, "It classifies any later tree as the reviewed candidate.", 1)
+    rejected("legacy marker applies to later source", altered)
     return 0
 
 

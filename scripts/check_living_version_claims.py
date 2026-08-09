@@ -14,6 +14,14 @@ REGISTRY = "versions/release-registry.json"
 FINALIZATION = "versions/v1.0.0-rc.5/finalization.json"
 REVIEWED_COMMIT = "81237937833ab32e5ce92d3b5ceed72854baecef"
 REVIEWED_TREE = "9121bdfbfc428f73557e993f1bd6e295ba733a12"
+SCOPE = (
+    "The following preserved\nrc.5 transition text applies only to public-spec commit\n"
+    f"`{REVIEWED_COMMIT}` / tree\n`{REVIEWED_TREE}`:"
+)
+LATER_TREE = (
+    "It does not classify any later tree; any later tree remains unassigned unless a\n"
+    "new exact candidate identity and independent review record it."
+)
 LIVING_PATHS = (
     "README.md", "SECURITY.md", "03-portability/spend-attestation-token.md",
     "06-extensions/campaign-experiment-profile.md", "06-extensions/merchant-authority.md",
@@ -59,7 +67,7 @@ def validate_registry(registry: dict[str, Any]) -> None:
     require(isinstance(releases, dict), "release registry releases missing")
     require(registry.get("latestReleasedVersion") == "1.0.0-rc.4", "latest released version drift")
     require(registry.get("reviewedCandidateVersion") == "1.0.0-rc.5", "reviewed candidate version drift")
-    for version in ("1.0.0-rc.3", "1.0.0-rc.4"):
+    for version in ("1.0.0-rc.1", "1.0.0-rc.3", "1.0.0-rc.4"):
         require(isinstance(releases.get(version), dict) and releases[version].get("status") == "RELEASED", f"{version} must be released")
     candidate = releases.get("1.0.0-rc.5")
     require(isinstance(candidate, dict) and candidate.get("status") == "REVIEWED_CANDIDATE_NOT_PUBLISHED", "rc.5 candidate state drift")
@@ -72,17 +80,19 @@ def validate_registry(registry: dict[str, Any]) -> None:
 def validate_documents(documents: dict[str, str]) -> None:
     compatibility = documents["07-conformance/compatibility.md"]
     for marker in (
-        "`v1.0.0-rc.3` and `v1.0.0-rc.4` are released immutable tags",
+        "`v1.0.0-rc.1`, `v1.0.0-rc.3`, and `v1.0.0-rc.4` are released immutable tags",
         "`v1.0.0-rc.4` is the latest released public package",
-        REVIEWED_COMMIT, REVIEWED_TREE, "Later source, including this branch, is unassigned and cannot inherit that review.",
+        REVIEWED_COMMIT, REVIEWED_TREE, "Any later tree remains unassigned unless a new exact candidate identity and independent review record it.",
         "`1.0.0-rc.2` is not an observed public tag or public release.",
         "`SpendAttestationTokenV1` and `SpendAttestationTokenV2` remain valid supported sibling schemas.",
         "V2 `holderBinding` is OPTIONAL; a V2 token without it remains valid",
         "**no protocol-wide token issuance default**",
     ):
         require(marker in compatibility, f"compatibility record missing: {marker}")
+    require(not re.search(r"\bN(?:-1|\+1)?\b", compatibility), "generic adjacent-version compatibility heuristic remains")
+    require("including this branch" not in compatibility, "branch-relative compatibility wording remains")
     required = {
-        "README.md": ("**v1.0.0-rc.5** release candidate source — not yet published.", REVIEWED_COMMIT, "cannot inherit that review"),
+        "README.md": ("## Release and source state", "`v1.0.0-rc.4` is the latest released public package.", "**v1.0.0-rc.5** release candidate source — not yet published.", "P4.4 and P9 remain blockers."),
         "SECURITY.md": (REVIEWED_COMMIT, REVIEWED_TREE, "later source is unassigned"),
         "03-portability/spend-attestation-token.md": ("SpendAttestationTokenV1` and `SpendAttestationTokenV2` are both supported", "no protocol-wide token issuance default"),
         "06-extensions/campaign-experiment-profile.md": ("supported embedded wire/source/binding history, not an observed public tag or public release",),
@@ -92,19 +102,33 @@ def validate_documents(documents: dict[str, str]) -> None:
         "07-conformance/profiles/w3c-vc-2.0-spend-attestation-v1/README.md": ("This is a source-only candidate bundle", REVIEWED_COMMIT, "later source is unassigned"),
         "08-governance/glossary.md": ("V2 `holderBinding` is\nOPTIONAL, so a V2 token without it remains valid",),
         "08-governance/protocol-v1-index.md": ("released `v1.0.0-rc.3` / conformance suite 2", REVIEWED_COMMIT),
-        "08-governance/versioning.md": ("Current public repository source candidate: **1.0.0-rc.5** (`RELEASE_CANDIDATE_NOT_PUBLISHED`)", REVIEWED_COMMIT, "`v1.0.0-rc.3` and `v1.0.0-rc.4` are released public packages; rc.4 is the\nlatest released package."),
+        "08-governance/versioning.md": ("`v1.0.0-rc.4` is the latest released public package.", "Current public repository source candidate: **1.0.0-rc.5** (`RELEASE_CANDIDATE_NOT_PUBLISHED`)", "`v1.0.0-rc.3` and `v1.0.0-rc.4` are released public packages; rc.4 is the\nlatest released package."),
         "08-governance/zk-beta-release-checklist.md": ("embedded wire/source/binding history label, not an observed\npublic tag or public-release classification",),
-        "versions/CHANGELOG.md": ("## v1.0.0-rc.5 release candidate (not published)", REVIEWED_COMMIT, "does not promote the W3C profile beyond candidate maturity."),
+        "versions/CHANGELOG.md": ("`v1.0.0-rc.4` is the latest released public package.", "The current public repository release candidate is **v1.0.0-rc.5**, an\nunpublished SemVer prerelease.", "## v1.0.0-rc.5 release candidate (not published)", "does not promote the W3C profile beyond candidate maturity."),
     }
     for rel, markers in required.items():
         for marker in markers:
             require(marker in documents[rel], f"{rel}: required living wording missing: {marker}")
+    for rel, legacy_markers in {
+        "README.md": ("**v1.0.0-rc.5** release candidate source — not yet published.", "This is an unpublished SemVer prerelease candidate, not a stable `v1.0.0`", "P4.4 and P9 remain blockers."),
+        "08-governance/versioning.md": ("Current public repository source candidate: **1.0.0-rc.5** (`RELEASE_CANDIDATE_NOT_PUBLISHED`)", "unpublished SemVer prerelease candidate"),
+        "versions/CHANGELOG.md": ("The current public repository release candidate is **v1.0.0-rc.5**, an\nunpublished SemVer prerelease.", "## v1.0.0-rc.5 release candidate (not published)"),
+    }.items():
+        text = documents[rel]
+        scope_at = text.find(SCOPE)
+        require(scope_at >= 0, f"{rel}: exact rc.5 scope qualification missing")
+        for marker in legacy_markers:
+            marker_at = text.find(marker)
+            require(marker_at >= 0 and text.count(marker) == 1, f"{rel}: legacy rc.5 marker must occur exactly once: {marker}")
+            require(scope_at < marker_at, f"{rel}: rc.5 scope qualification must precede legacy marker: {marker}")
+        require(text.find(LATER_TREE) > max(text.find(marker) for marker in legacy_markers), f"{rel}: later-tree noninheritance qualification must follow legacy markers")
     corpus = "\n".join(documents.values())
     for pattern in (
         r"(?i)unpublished\s+`?v?1\.0\.0-rc\.3`?",
         r"(?i)v1\.0\.0-rc\.3[^\n]{0,90}(?:release candidate|not published)",
         r"(?i)v1\.0\.0-rc\.4[^\n]{0,90}(?:unpublished|release candidate)",
         r"(?i)protocol-wide token issuance default is(?:\s+)?v2",
+        r"including this branch",
     ):
         require(not re.search(pattern, corpus), f"false living release/issuance classification: {pattern}")
 

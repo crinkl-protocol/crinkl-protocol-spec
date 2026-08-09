@@ -7,12 +7,12 @@ normative: true
 
 # Protocol Evolution
 
-Current public repository source candidate: **1.0.0-rc.5** (`RELEASE_CANDIDATE_NOT_PUBLISHED`)
-
-That review is limited to public-spec commit
+`v1.0.0-rc.4` is the latest released public package. The following preserved
+rc.5 transition text applies only to public-spec commit
 `81237937833ab32e5ce92d3b5ceed72854baecef` / tree
-`9121bdfbfc428f73557e993f1bd6e295ba733a12`. Later source is unassigned and
-cannot inherit the rc.5 review.
+`9121bdfbfc428f73557e993f1bd6e295ba733a12`:
+
+Current public repository source candidate: **1.0.0-rc.5** (`RELEASE_CANDIDATE_NOT_PUBLISHED`)
 
 Current candidate-manifest default Crinkl Platform binding `protocolVersion`:
 **1.0.0-rc.2**. This records only the candidate-manifest default, not adopted
@@ -27,6 +27,9 @@ demotes the other, no stable `v1.0.0` release is declared here, and the prior
 `v1.0.0-rc.3` and `v1.0.0-rc.4` are released public packages; rc.4 is the
 latest released package. `1.0.0-rc.2` is supported embedded wire/source/binding
 history and has no observed public tag or public-release classification.
+
+It does not classify any later tree; any later tree remains unassigned unless a
+new exact candidate identity and independent review record it.
 
 This document describes how the Crinkl Protocol evolves without creating forked implementations. It is normative only where it constrains verifier behavior; governance and rollout timelines are non-normative.
 

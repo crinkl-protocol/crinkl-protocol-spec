@@ -144,7 +144,12 @@ Downstream layers consume spend proof; they do not define it.
 | [`08-governance/`](08-governance/) | Versioning, change process, authority hierarchy, and shared glossary. |
 | [`schemas/experimental/`](schemas/experimental/) | Candidate non-core extension schemas; not required for Core Spend Attestation validity. |
 
-## Current Version
+## Release and source state
+
+`v1.0.0-rc.4` is the latest released public package. The following preserved
+rc.5 transition text applies only to public-spec commit
+`81237937833ab32e5ce92d3b5ceed72854baecef` / tree
+`9121bdfbfc428f73557e993f1bd6e295ba733a12`:
 
 **v1.0.0-rc.5** release candidate source — not yet published. See
 [`versions/release.json`](versions/release.json) and
@@ -154,13 +159,13 @@ release transition and rollback rules are in
 This is an unpublished SemVer prerelease candidate, not a stable `v1.0.0`
 release. The immutable released `v1.0.0-rc.4` tag remains available for
 historical verification.
-The rc.5 review applies only to public-spec commit
-`81237937833ab32e5ce92d3b5ceed72854baecef` and tree
-`9121bdfbfc428f73557e993f1bd6e295ba733a12`; later source is unassigned and
-cannot inherit that review.
+P4.4 and P9 remain blockers. This is rc.5 plan text for that exact reviewed
+candidate.
+It does not classify any later tree; any later tree remains unassigned unless a
+new exact candidate identity and independent review record it.
 Each document's frontmatter `status` states that document's maturity separately
 and does not change the repository release status. A successor release identity
-is selected as `v1.0.0-rc.5`. P4.4 and P9 remain blockers.
+is selected only by a separately reviewed candidate identity.
 
 ## Verification
 
