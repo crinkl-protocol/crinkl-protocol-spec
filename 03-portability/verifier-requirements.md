@@ -23,10 +23,11 @@ Proves:
 Steps:
 1) Recompute the token hash from the unsigned fields.  
 2) Verify the Ed25519 signature against the issuer public key.  
-3) Verify the canonical spend head fields (amount, currency, timestamp, status).  
-can 
+3) Verify issuer authorization and apply local acceptance policy to the canonical spend head fields and status.
+
 Proves:
-- The issuer attests to a specific finalized spend head without DB access.
+- An authorized issuer signed the exact canonical spend-head claim without DB access.
+- This does not independently prove that the underlying physical purchase occurred.
 
 ## 2) Verify a Verified GMV Token
 
@@ -58,7 +59,8 @@ Steps:
 4) Verify the batch root is anchored on-chain (onchain processor).  
 
 Proves:
-- Rewards were actually issued and anchored, independent of the DB.
+- The issuer committed the named reward liability in the verified batch and the
+  batch root satisfies the selected chain-acceptance policy, independent of the DB.
 
 ## 5) (Optional) Audit continuity across days
 
@@ -71,7 +73,11 @@ Proves:
 
 ---
 
-If you can verify steps 1–4, you have a complete, DB‑independent proof of:  
-- a spend is real (spend attestation),  
-- it is included in GMV (Merkle inclusion),  
-- and it was rewarded (reward batch root anchored on-chain).
+If you can verify steps 1–4, you have DB-independent proof that:
+- an authorized issuer signed the exact Spend claim,
+- the named Spend head is included in the GMV snapshot, and
+- the named reward liability is included in a commitment whose root satisfies
+  the selected chain-acceptance policy.
+
+These checks do not independently prove that the underlying physical purchase
+occurred or that an off-chain or on-chain payout reached its intended recipient.

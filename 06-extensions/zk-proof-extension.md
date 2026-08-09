@@ -54,10 +54,22 @@ ZKCommitments {
     C_store: Commitment,      // Commitment to canonical.storeHash
     C_total: Commitment,      // Commitment to totalCents
     C_dayIndex: Commitment,   // Commitment to dayIndex (days since epoch)
-    C_geoRegion: Commitment,  // Commitment to geoRegion (ISO 3166-2 subdivision)
-    C_cbsaCode?: Commitment   // OPTIONAL commitment to cbsaCode (CBSA metro area)
+    C_currency?: Commitment,  // OPTIONAL commitment to currency
+    C_geoRegion?: Commitment, // OPTIONAL commitment to geoRegion
+    C_cbsaCode?: Commitment   // OPTIONAL commitment to cbsaCode
 }
 ```
+
+The entire `zk` object is optional. When `zk.commitments` is present,
+`C_store`, `C_total`, and `C_dayIndex` are required. `C_currency`,
+`C_geoRegion`, and `C_cbsaCode` are independently optional. A proof profile
+that needs one optional commitment is unavailable when that commitment is
+absent; the underlying Spend Attestation Token remains valid.
+
+New privacy-preserving portable V1 and V2 issuance MUST omit plaintext
+`canonical.geoRegion` and `canonical.cbsaCode`. Existing valid signed V1 or V2
+tokens containing either legacy plaintext field remain verifiable because
+their immutable bytes are covered by the token signature.
 
 **Commitment scheme:** To be specified. Candidates include Pedersen commitments (for range proofs) and Poseidon hash (for SNARK compatibility). For Halo2 IPA circuits in `zk-circuit-catalog.md`, commitments are Poseidon-based and bind `(spendIdHash, headEventHash, label, value, blinding)`; see the circuit entry for the exact encoding rules.
 

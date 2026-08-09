@@ -7,11 +7,17 @@ normative: true
 
 # What Crinkl Proves
 
-The Crinkl Protocol turns Commerce Evidence into signed, privacy-preserving spend proof.
+The Crinkl Protocol turns Commerce Evidence into signed, privacy-preserving
+claims about protocol-derived spend state.
 
 It transforms submitted commerce evidence into **canonical spend state**: the authoritative, correction-aware record of a purchase event as derived from an append-only event stream under a specific protocol version.
 
 Canonical spend state is deterministic and replayable: given the same event stream and protocol version, any verifier derives the same result. Truth is advanced only by appending new events (e.g., corrections or invalidations), never by mutating history.
+
+Verifying a Spend Attestation Token proves that an authorized issuer signed the
+exact canonical claim under the named protocol rules. It does not independently
+prove that the underlying physical purchase occurred, that the submitted
+evidence was truthful, or that payment settled.
 
 ## Conceptual Model
 

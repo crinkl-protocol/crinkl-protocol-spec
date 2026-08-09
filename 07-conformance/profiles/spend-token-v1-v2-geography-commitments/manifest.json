@@ -1,0 +1,40 @@
+{
+  "bundle": "spend-token-v1-v2-geography-commitments",
+  "bundleVersion": 1,
+  "maturity": "candidate",
+  "releasedConformance": false,
+  "engineeringSource": {
+    "repository": "crinkl-protocol",
+    "commit": "12337aa2c688ef0fe4cd275d6f791e5a4eda4a16",
+    "maturity": "engineering-adopted-on-protected-main"
+  },
+  "protocolObjectVersion": "1.0.0-rc.1",
+  "publicRepositoryVersion": "1.0.0-rc.5",
+  "conformanceManifestEntry": {
+    "kind": "token.spendAttestation.portableV1.zkCommitmentGeography",
+    "file": "conformance/spend-attestation-portability/v1/vectors/spend-attestation.zk-commitment-geography.v1.json",
+    "externalVerifier": {
+      "type": "node",
+      "file": "scripts/check_spend_token_geography_commitments.mjs"
+    },
+    "status": "CANDIDATE_NOT_IN_RELEASED_SUITE"
+  },
+  "artifacts": [
+    {
+      "sourcePath": "conformance/spend-attestation-portability/v1/vectors/spend-attestation.zk-commitment-geography.v1.json",
+      "file": "conformance/spend-attestation-portability/v1/vectors/spend-attestation.zk-commitment-geography.v1.json",
+      "sha256": "8ce569216ca1ff936d653a433dd73a4577187e334357e5594253e3f5b93aef6d"
+    },
+    {
+      "sourcePath": "public-profile-specific checker",
+      "file": "scripts/check_spend_token_geography_commitments.mjs",
+      "sha256": "0cdf69f4fdb93bcd11d771ba98a899cdf49d80dcf2a9fc3776a31a348c701770"
+    }
+  ],
+  "publicationBlockers": [
+    "PUBLIC_SPEC_SUCCESSOR_RELEASE_NOT_FINALIZED"
+  ],
+  "launchBlockers": [
+    "RUNTIME_ADOPTION_AND_DEPLOYMENT_ARE_SEPARATE"
+  ]
+}
