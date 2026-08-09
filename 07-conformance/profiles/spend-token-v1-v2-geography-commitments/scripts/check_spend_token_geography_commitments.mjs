@@ -60,7 +60,11 @@ assert(
   createHash("sha256").update(vectorBytes).digest("hex") === vectorArtifact.sha256,
   "geography vector hash does not match manifest"
 );
-assert(release.releaseVersion === "1.0.0-rc.7" && release.status === "RELEASE_CANDIDATE_NOT_PUBLISHED", "rc.7 candidate release boundary drift");
+assert(
+  release.releaseVersion === "1.0.0-rc.7" &&
+    ["RELEASE_CANDIDATE_NOT_PUBLISHED", "RELEASED"].includes(release.status),
+  "rc.7 public-package release boundary drift"
+);
 assert(manifest.publicRepositoryVersion === "1.0.0-rc.7", "geography public repository version drift");
 assert(
   JSON.stringify(manifest.engineeringSource) ===

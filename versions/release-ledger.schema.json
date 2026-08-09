@@ -74,6 +74,31 @@
         "tree": { "$ref": "#/$defs/commit" }
       }
     },
+    "tagTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tag", "preTagTarget", "postTagTarget"],
+      "properties": {
+        "tag": { "$ref": "#/$defs/tag" },
+        "preTagTarget": { "const": "CURRENT_HEAD" },
+        "postTagTarget": { "const": "IMMUTABLE_TAG_MUST_RESOLVE_TO_CURRENT_HEAD" }
+      }
+    },
+    "tagTargetSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "tagTarget"],
+      "properties": {
+        "repository": { "const": "crinkl-protocol-spec" },
+        "tagTarget": { "$ref": "#/$defs/tagTarget" }
+      }
+    },
+    "releaseSource": {
+      "oneOf": [
+        { "$ref": "#/$defs/source" },
+        { "$ref": "#/$defs/tagTargetSource" }
+      ]
+    },
     "artifact": {
       "type": "object",
       "additionalProperties": false,
@@ -121,10 +146,10 @@
       "additionalProperties": false,
       "required": ["tagState", "manifestAuthority", "releaseAuthority", "provenanceCompleteness", "runtimeImplication", "productionImplication"],
       "properties": {
-        "tagState": { "enum": ["PRESENT_IMMUTABLE_TAG", "NOT_CREATED"] },
+        "tagState": { "enum": ["PRESENT_IMMUTABLE_TAG", "NOT_CREATED", "TAG_TARGET_MUST_RESOLVE_TO_CURRENT_HEAD"] },
         "manifestAuthority": { "enum": ["AUTHORITY_ACCEPTED", "COMPUTED_NOT_AUTHORITY_ACCEPTED", "NOT_AVAILABLE_LEGACY"] },
-        "releaseAuthority": { "enum": ["ACCEPTED_TAG_AND_MANIFEST", "RELEASED_TAG_WITH_UNACCEPTED_MANIFEST", "LEGACY_RELEASED_TAG_PROVENANCE_INCOMPLETE", "REVIEWED_SOURCE_NOT_RELEASED"] },
-        "provenanceCompleteness": { "enum": ["COMPLETE", "INCOMPLETE"] },
+        "releaseAuthority": { "enum": ["ACCEPTED_TAG_AND_MANIFEST", "RELEASED_TAG_WITH_UNACCEPTED_MANIFEST", "LEGACY_RELEASED_TAG_PROVENANCE_INCOMPLETE", "REVIEWED_SOURCE_NOT_RELEASED", "RELEASED_PACKAGE_TAG_TARGET_DECLARED"] },
+        "provenanceCompleteness": { "enum": ["COMPLETE", "INCOMPLETE", "TAG_TARGET_DECLARED"] },
         "runtimeImplication": { "const": "NONE" },
         "productionImplication": { "const": "NONE" }
       }
@@ -138,7 +163,7 @@
         "plannedTag": { "anyOf": [{ "$ref": "#/$defs/tag" }, { "type": "null" }] },
         "actualTag": { "anyOf": [{ "$ref": "#/$defs/tag" }, { "type": "null" }] },
         "previousRelease": { "anyOf": [{ "$ref": "#/$defs/semver" }, { "type": "null" }] },
-        "source": { "$ref": "#/$defs/source" },
+        "source": { "$ref": "#/$defs/releaseSource" },
         "releaseManifestArtifact": { "anyOf": [{ "$ref": "#/$defs/artifact" }, { "type": "null" }] },
         "artifactInventory": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/artifact" } },
         "wire": { "anyOf": [{ "$ref": "#/$defs/wire" }, { "type": "null" }] },
@@ -176,6 +201,17 @@
             "conformance": { "type": "null" },
             "artifactInventory": { "maxItems": 0 },
             "authority": { "properties": { "tagState": { "const": "PRESENT_IMMUTABLE_TAG" }, "manifestAuthority": { "const": "NOT_AVAILABLE_LEGACY" }, "releaseAuthority": { "const": "LEGACY_RELEASED_TAG_PROVENANCE_INCOMPLETE" }, "provenanceCompleteness": { "const": "INCOMPLETE" } } }
+          }
+        },
+        {
+          "properties": {
+            "status": { "const": "RELEASED" },
+            "plannedTag": { "$ref": "#/$defs/tag" },
+            "actualTag": { "type": "null" },
+            "source": { "$ref": "#/$defs/tagTargetSource" },
+            "releaseManifestArtifact": { "$ref": "#/$defs/artifact" },
+            "conformance": { "$ref": "#/$defs/conformance" },
+            "authority": { "properties": { "tagState": { "const": "TAG_TARGET_MUST_RESOLVE_TO_CURRENT_HEAD" }, "manifestAuthority": { "const": "COMPUTED_NOT_AUTHORITY_ACCEPTED" }, "releaseAuthority": { "const": "RELEASED_PACKAGE_TAG_TARGET_DECLARED" }, "provenanceCompleteness": { "const": "TAG_TARGET_DECLARED" } } }
           }
         },
         {

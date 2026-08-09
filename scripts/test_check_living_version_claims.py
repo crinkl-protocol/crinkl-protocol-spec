@@ -6,6 +6,7 @@ import copy
 from pathlib import Path
 
 import check_living_version_claims as checker
+import check_successor_release_finalization as finalizer
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -24,6 +25,47 @@ def main() -> int:
     checker.validate(ROOT)
     documents = checker.load_documents(ROOT)
     print("[living-version-claims-test] accepted: current documents")
+
+    finalization = finalizer.read_json(ROOT / "versions/v1.0.0-rc.7/finalization.json")
+    finalizer.validate_plan(finalization)
+    released_json, released_text, _ = finalizer.materialize_released(ROOT, finalization)
+    released_documents = copy.deepcopy(documents)
+    for path, text in released_text.items():
+        if path in released_documents:
+            released_documents[path] = text
+    checker.validate(
+        ROOT,
+        released_documents,
+        released_json["versions/release-registry.json"],
+        released_json["versions/release.json"],
+    )
+    print("[living-version-claims-test] accepted: materialized release wording")
+
+    altered_released = copy.deepcopy(released_documents)
+    altered_released["07-conformance/compatibility.md"] = altered_released["07-conformance/compatibility.md"].replace(
+        "`v1.0.0-rc.7` is the latest released public package",
+        "`v1.0.0-rc.4` is the latest released public package",
+        1,
+    )
+    try:
+        checker.validate_documents(altered_released, "RELEASED")
+    except ValueError:
+        print("[living-version-claims-test] rejected: materialized release latest-version rollback")
+    else:
+        raise AssertionError("materialized release latest-version rollback was accepted")
+
+    altered_released = copy.deepcopy(released_documents)
+    altered_released["07-conformance/compatibility.md"] = altered_released["07-conformance/compatibility.md"].replace(
+        "candidate profile maturity",
+        "released profile maturity",
+        1,
+    )
+    try:
+        checker.validate_documents(altered_released, "RELEASED")
+    except ValueError:
+        print("[living-version-claims-test] rejected: materialized release candidate-profile promotion")
+    else:
+        raise AssertionError("materialized release candidate-profile promotion was accepted")
     mutations = [
         ("V1 removed", "07-conformance/compatibility.md", "`SpendAttestationTokenV1`", "`RemovedTokenV1`"),
         ("V2 holder made mandatory", "07-conformance/compatibility.md", "is OPTIONAL; a V2 token without it remains valid", "is REQUIRED; a V2 token without it is invalid"),

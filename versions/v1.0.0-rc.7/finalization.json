@@ -1,6 +1,6 @@
 {
   "kind": "crinkl.protocol.releaseFinalizationPlanV1",
-  "planVersion": 1,
+  "planVersion": 2,
   "releaseVersion": "1.0.0-rc.7",
   "requiredTag": "v1.0.0-rc.7",
   "latestReleasedVersion": "1.0.0-rc.4",
@@ -54,10 +54,337 @@
       "sha256": "sha256:5e7556ca00deb38a4c8f030171bd603482fb763f37dda3568cdb77495fc34527"
     }
   ],
-  "candidateGates": [
+  "machineTransitions": [
+    {
+      "path": "versions/release.json",
+      "pointer": "/status",
+      "candidate": "RELEASE_CANDIDATE_NOT_PUBLISHED",
+      "released": "RELEASED"
+    },
+    {
+      "path": "07-conformance/vectors/v1/manifest.json",
+      "pointer": "/releaseStatus",
+      "candidate": "RELEASE_CANDIDATE_NOT_PUBLISHED",
+      "released": "RELEASED"
+    },
+    {
+      "path": "versions/release-registry.json",
+      "pointer": "/latestReleasedVersion",
+      "candidate": "1.0.0-rc.4",
+      "released": "1.0.0-rc.7"
+    },
+    {
+      "path": "versions/release-registry.json",
+      "pointer": "/candidateState",
+      "candidate": "SOURCE_CANDIDATE_AWAITING_REVIEW_NOT_PUBLISHABLE",
+      "released": "NO_ACTIVE_OR_PUBLISHABLE_CANDIDATE"
+    },
+    {
+      "path": "versions/release-registry.json",
+      "pointer": "/releases/1.0.0-rc.7",
+      "candidate": {
+        "presence": "ABSENT"
+      },
+      "released": {
+        "status": "RELEASED",
+        "plannedTag": "v1.0.0-rc.7",
+        "actualTag": null,
+        "previousRelease": "1.0.0-rc.4",
+        "source": {
+          "repository": "crinkl-protocol-spec",
+          "tagTarget": {
+            "tag": "v1.0.0-rc.7",
+            "preTagTarget": "CURRENT_HEAD",
+            "postTagTarget": "IMMUTABLE_TAG_MUST_RESOLVE_TO_CURRENT_HEAD"
+          }
+        },
+        "releaseManifestArtifact": {
+          "path": "versions/release.json",
+          "digestAlgorithm": "sha256",
+          "digestBasis": "EXACT_GIT_BLOB_BYTES",
+          "digest": "sha256:70f3dc4cf660f68cafdc505c19498177f0a5259aa9acd15b8ce250a8d1680a1b",
+          "role": "RELEASE_MANIFEST"
+        },
+        "artifactInventory": [
+          {
+            "path": "versions/release.json",
+            "digestAlgorithm": "sha256",
+            "digestBasis": "EXACT_GIT_BLOB_BYTES",
+            "digest": "sha256:70f3dc4cf660f68cafdc505c19498177f0a5259aa9acd15b8ce250a8d1680a1b",
+            "role": "RELEASE_MANIFEST"
+          },
+          {
+            "path": "07-conformance/vectors/v1/manifest.json",
+            "digestAlgorithm": "sha256",
+            "digestBasis": "EXACT_GIT_BLOB_BYTES",
+            "digest": "sha256:71903d5714c5aee55e343651a468e4a84b7f81dfbb4232b08c64a36c9b8a7258",
+            "role": "CONFORMANCE_MANIFEST"
+          }
+        ],
+        "wire": {
+          "defaultBindingProtocolVersion": "1.0.0-rc.2",
+          "supportedWireProtocolVersions": [
+            "1.0.0-rc.1",
+            "1.0.0-rc.2"
+          ]
+        },
+        "conformance": {
+          "suite": "crinkl-protocol-conformance",
+          "suiteVersion": 4,
+          "manifest": "07-conformance/vectors/v1/manifest.json",
+          "manifestDigest": "sha256:71903d5714c5aee55e343651a468e4a84b7f81dfbb4232b08c64a36c9b8a7258"
+        },
+        "adoptedSources": [
+          {
+            "repository": "crinkl-protocol",
+            "commit": "52648bae72a8c3b83883392be1c4ae714e4359c3",
+            "evidenceState": "PINNED_BY_CANDIDATE_PROFILE_MANIFEST"
+          }
+        ],
+        "authority": {
+          "tagState": "TAG_TARGET_MUST_RESOLVE_TO_CURRENT_HEAD",
+          "manifestAuthority": "COMPUTED_NOT_AUTHORITY_ACCEPTED",
+          "releaseAuthority": "RELEASED_PACKAGE_TAG_TARGET_DECLARED",
+          "provenanceCompleteness": "TAG_TARGET_DECLARED",
+          "runtimeImplication": "NONE",
+          "productionImplication": "NONE"
+        }
+      }
+    }
+  ],
+  "invariants": [
+    {
+      "path": "versions/release.json",
+      "pointer": "/releaseVersion",
+      "value": "1.0.0-rc.7"
+    },
+    {
+      "path": "versions/release.json",
+      "pointer": "/requiredTag",
+      "value": "v1.0.0-rc.7"
+    },
+    {
+      "path": "versions/release.json",
+      "pointer": "/defaultBindingProtocolVersion",
+      "value": "1.0.0-rc.2"
+    },
+    {
+      "path": "versions/release.json",
+      "pointer": "/supportedWireProtocolVersions",
+      "value": [
+        "1.0.0-rc.1",
+        "1.0.0-rc.2"
+      ]
+    },
+    {
+      "path": "versions/release.json",
+      "pointer": "/conformance/suiteVersion",
+      "value": 4
+    },
+    {
+      "path": "versions/release.json",
+      "pointer": "/profiles/2/kind",
+      "value": "credential.spendAttestation.vcdm2.eddsaJcs2022"
+    },
+    {
+      "path": "versions/release.json",
+      "pointer": "/profiles/2/maturity",
+      "value": "CANDIDATE"
+    },
+    {
+      "path": "versions/release.json",
+      "pointer": "/profiles/3/maturity",
+      "value": "CANDIDATE"
+    },
+    {
+      "path": "versions/release.json",
+      "pointer": "/profiles/4/maturity",
+      "value": "CANDIDATE"
+    },
+    {
+      "path": "versions/release.json",
+      "pointer": "/profiles/5/kind",
+      "value": "token.spendAttestation.portableV1.zkCommitmentGeography"
+    },
+    {
+      "path": "versions/release.json",
+      "pointer": "/profiles/5/maturity",
+      "value": "CANDIDATE"
+    },
+    {
+      "path": "07-conformance/vectors/v1/manifest.json",
+      "pointer": "/releaseVersion",
+      "value": "1.0.0-rc.7"
+    },
+    {
+      "path": "07-conformance/vectors/v1/manifest.json",
+      "pointer": "/suiteVersion",
+      "value": 4
+    },
+    {
+      "path": "07-conformance/profiles/w3c-vc-2.0-spend-attestation-v1/manifest.json",
+      "pointer": "/maturity",
+      "value": "candidate"
+    },
+    {
+      "path": "07-conformance/profiles/w3c-vc-2.0-spend-attestation-v1/manifest.json",
+      "pointer": "/releasedConformance",
+      "value": false
+    },
+    {
+      "path": "07-conformance/profiles/w3c-vc-2.0-spend-attestation-v1/manifest.json",
+      "pointer": "/claims/release",
+      "value": false
+    },
+    {
+      "path": "07-conformance/profiles/spend-token-v1-v2-geography-commitments/manifest.json",
+      "pointer": "/maturity",
+      "value": "candidate"
+    },
+    {
+      "path": "07-conformance/profiles/spend-token-v1-v2-geography-commitments/manifest.json",
+      "pointer": "/conformanceManifestEntry/status",
+      "value": "PRESENT_IN_RC7_SUITE_4_SOURCE_CANDIDATE"
+    }
+  ],
+  "documentationTransitions": [
+    {
+      "path": "README.md",
+      "candidateMarker": "`v1.0.0-rc.4` is the latest released public package. Current public repository\nsource candidate: **v1.0.0-rc.7** (`RELEASE_CANDIDATE_NOT_PUBLISHED`),\nconformance suite 4; it is unreviewed, unpublished, not publishable, and does\nnot inherit rc.5 review.",
+      "releasedMarker": "`v1.0.0-rc.7` is the latest released public package. Current public repository\nrelease: **v1.0.0-rc.7** (`RELEASED`), conformance suite 4; it preserves the\nexplicit rc.1/rc.2 wire support set and remains independent from runtime,\nvalidator, authority, and production activation."
+    },
+    {
+      "path": "SECURITY.md",
+      "candidateMarker": "- `v1.0.0-rc.7` is the current unreviewed source candidate and conformance\n  suite 4 (`RELEASE_CANDIDATE_NOT_PUBLISHED`); it is unpublished and not\n  publishable until separately reviewed.",
+      "releasedMarker": "- `v1.0.0-rc.7` is the released public package and conformance suite 4;\n  release status does not activate runtime, validator, authority, or\n  production behavior."
+    },
+    {
+      "path": "08-governance/versioning.md",
+      "candidateMarker": "`v1.0.0-rc.4` is the latest released public package. Current public repository source candidate: **1.0.0-rc.7** (`RELEASE_CANDIDATE_NOT_PUBLISHED`), conformance suite 4; it is unreviewed, unpublished, not publishable, and does not inherit rc.5 review.",
+      "releasedMarker": "`v1.0.0-rc.7` is the latest released public package. Current public repository release: **1.0.0-rc.7** (`RELEASED`), conformance suite 4; it does not promote candidate profiles or activate runtime, validator, authority, or production behavior."
+    },
+    {
+      "path": "versions/CHANGELOG.md",
+      "candidateMarker": "`v1.0.0-rc.4` is the latest released public package. Current public repository\nsource candidate: **1.0.0-rc.7** (`RELEASE_CANDIDATE_NOT_PUBLISHED`),\nconformance suite 4; it is unreviewed, unpublished, not publishable, and does\nnot inherit rc.5 review.",
+      "releasedMarker": "`v1.0.0-rc.7` is the latest released public package. Current public repository\nrelease: **1.0.0-rc.7** (`RELEASED`), conformance suite 4; it does not promote\ncandidate profiles or activate runtime, validator, authority, deployment, or\nproduction behavior."
+    },
+    {
+      "path": "versions/v1.0.0-rc.7/snapshot.md",
+      "candidateMarker": "# v1.0.0-rc.7 source candidate",
+      "releasedMarker": "# v1.0.0-rc.7 release"
+    },
+    {
+      "path": "versions/v1.0.0-rc.7/snapshot.md",
+      "candidateMarker": "Status: `RELEASE_CANDIDATE_NOT_PUBLISHED`",
+      "releasedMarker": "Status: `RELEASED`"
+    },
+    {
+      "path": "versions/v1.0.0-rc.7/snapshot.md",
+      "candidateMarker": "The candidate is unreviewed, unpublished, and not publishable. `v1.0.0-rc.4` remains the latest immutable public release. Historical rc.5 review applies only to its recorded exact commit/tree. Historical rc.6 review remains permanently bound to `fe23ebe959254de095973943698cb6bb4ead6455` / tree `7f3013ff8a8cddcd854cbdfa16a94f69741dac05`; it is not retargeted.",
+      "releasedMarker": "This release supersedes `v1.0.0-rc.4` as the latest immutable public package. Historical rc.5 review applies only to its recorded exact commit/tree. Historical rc.6 review remains permanently bound to `fe23ebe959254de095973943698cb6bb4ead6455` / tree `7f3013ff8a8cddcd854cbdfa16a94f69741dac05`; it is not retargeted. Candidate profile maturity and all runtime, validator, authority, deployment, and production states remain separately governed."
+    },
+    {
+      "path": "07-conformance/vectors/v1/README.md",
+      "candidateMarker": "status: release-candidate",
+      "releasedMarker": "status: released"
+    },
+    {
+      "path": "07-conformance/verifier-test-suite.md",
+      "candidateMarker": "status: release-candidate",
+      "releasedMarker": "status: released"
+    },
+    {
+      "path": "07-conformance/verifier-test-suite.md",
+      "candidateMarker": "The current rc.7 source candidate uses conformance suite 4 and includes the\ngeography-commitment profile as a required manifest-bound kind.",
+      "releasedMarker": "The released rc.7 package uses conformance suite 4 and includes the\ngeography-commitment profile as a required manifest-bound kind; that profile\nremains candidate maturity unless separately released."
+    },
+    {
+      "path": "07-conformance/compatibility.md",
+      "candidateMarker": "`v1.0.0-rc.4` is the latest released public package",
+      "releasedMarker": "`v1.0.0-rc.7` is the latest released public package"
+    },
+    {
+      "path": "07-conformance/compatibility.md",
+      "candidateMarker": "| `v1.0.0-rc.7` source candidate | Current suite-4 source candidate; unreviewed, unpublished, and not publishable. | It does not inherit the rc.5 review and requires a new exact candidate identity and independent review. |",
+      "releasedMarker": "| `v1.0.0-rc.7` public release | Latest released suite-4 public package. | It preserves historical rc.5 review boundaries, candidate profile maturity, and separate runtime/production governance. |"
+    }
+  ],
+  "releasedArtifactDigests": [
+    {
+      "path": "07-conformance/compatibility.md",
+      "sha256": "sha256:e97f5f6367f30efb1310323052fbbd02238e875e4176d670f8ccab6e44d6a5cf"
+    },
+    {
+      "path": "07-conformance/vectors/v1/README.md",
+      "sha256": "sha256:70e0e959cf8bb816327c10d9984411fd8beac83320f303b0097764e77f88478a"
+    },
+    {
+      "path": "07-conformance/vectors/v1/manifest.json",
+      "sha256": "sha256:71903d5714c5aee55e343651a468e4a84b7f81dfbb4232b08c64a36c9b8a7258"
+    },
+    {
+      "path": "07-conformance/verifier-test-suite.md",
+      "sha256": "sha256:7aeb03216cc827e235d0f6dffe22b9aeea6156e0c00a054956b5b5dc9cf438a7"
+    },
+    {
+      "path": "08-governance/versioning.md",
+      "sha256": "sha256:f3107ec68f4a2ff18701c85d4d77eda8206518cb6de79a40ef48c74fa81121c6"
+    },
+    {
+      "path": "README.md",
+      "sha256": "sha256:c93902403f88bea17dc8a5a7b70bde844f0df2ef19e7335ac3c5ecd5c854a298"
+    },
+    {
+      "path": "SECURITY.md",
+      "sha256": "sha256:45bd54f4724aac975baf84cef99dea5bad38f35f83f39c553cab9abf0d2f999f"
+    },
+    {
+      "path": "versions/CHANGELOG.md",
+      "sha256": "sha256:7a3e5c6aeb6cfc834a880afd051f1c585247d8b15fc77df2645e1f8599bd623f"
+    },
+    {
+      "path": "versions/release-registry.json",
+      "sha256": "sha256:00360d0fb879e12884e97216c46ab733d1843757e87c594a70a08924f9a73f78"
+    },
+    {
+      "path": "versions/release.json",
+      "sha256": "sha256:70f3dc4cf660f68cafdc505c19498177f0a5259aa9acd15b8ce250a8d1680a1b"
+    },
+    {
+      "path": "versions/v1.0.0-rc.7/snapshot.md",
+      "sha256": "sha256:8e256ae30d6f58003e66116b56c806826046eef43ee6aaf29fe498c58a58eaa3"
+    }
+  ],
+  "requiredCandidateGates": [
     "python3 scripts/check_successor_release_finalization.py --mode candidate",
+    "python3 scripts/check_release_registry.py --adopted-repo <crinkl-protocol>",
+    "python3 scripts/check_living_version_claims.py",
+    "python3 scripts/check_released_identifier_erratum.py --adopted-repo <crinkl-protocol>",
+    "node 07-conformance/profiles/spend-token-v1-v2-geography-commitments/scripts/check_spend_token_geography_commitments.mjs",
     "node scripts/verify_conformance.mjs --require-kind token.spendAttestation.portableV1.zkCommitmentGeography",
     "python3 scripts/check_drift.py"
   ],
-  "rollback": "DO_NOT_PUBLISH_OR_TAG_SOURCE_CANDIDATE"
+  "requiredPreTagGates": [
+    "python3 scripts/check_successor_release_finalization.py --mode released",
+    "python3 scripts/check_release_registry.py --adopted-repo <crinkl-protocol>",
+    "python3 scripts/check_living_version_claims.py",
+    "node scripts/verify_conformance.mjs --require-released --require-kind token.spendAttestation.portableV1.zkCommitmentGeography",
+    "TAG_v1.0.0-rc.7_MUST_BE_ABSENT",
+    "python3 scripts/check_drift.py"
+  ],
+  "requiredPostTagGates": [
+    "python3 scripts/check_successor_release_finalization.py --mode released --require-tag",
+    "python3 scripts/check_release_registry.py --adopted-repo <crinkl-protocol> --require-tag",
+    "node scripts/verify_conformance.mjs --require-released --require-kind token.spendAttestation.portableV1.zkCommitmentGeography",
+    "IMMUTABLE_TAG_CHECKOUT_PARITY_RERUN"
+  ],
+  "transitionPathCount": 11,
+  "machineTransitionCount": 5,
+  "documentationTransitionCount": 14,
+  "rollback": {
+    "sourceCandidate": "KEEP_SOURCE_CANDIDATE_UNPUBLISHED_UNTAGGED_AND_UNDEPLOYED",
+    "beforeTag": "DISCARD_UNCOMMITTED_MATERIALIZATION_AND_RETAIN_REVIEWED_SOURCE_CANDIDATE",
+    "afterTag": "NEVER_RETARGET_OR_DELETE_ACCEPTED_TAG_USE_GOVERNED_WITHDRAWAL_OR_SUCCESSOR_RELEASE",
+    "runtimeRollback": "NOT_APPLICABLE_RELEASE_DOES_NOT_ACTIVATE_RUNTIME"
+  }
 }

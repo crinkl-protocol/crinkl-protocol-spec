@@ -72,13 +72,12 @@ def main() -> int:
     release_status = release.get("status")
     if release.get("releaseVersion") != "1.0.0-rc.7" or release_status not in {"RELEASE_CANDIDATE_NOT_PUBLISHED", "RELEASED"}:
         fail("rc.7 release boundary drift")
-    released = release_status == "RELEASED"
     expected_bundle_state = {
-        "maturity": "released" if released else "candidate",
-        "releasedConformance": released,
-        "conformanceStatus": "PRESENT_IN_RELEASED_RC7_SUITE_4" if released else "PRESENT_IN_RC7_SUITE_4_SOURCE_CANDIDATE",
-        "publicationBlockers": [] if released else ["P4.4_EXACT_PUBLIC_CANDIDATE_REVIEW", "P9_ACCEPTED_PUBLIC_RELEASE"],
-        "releaseClaim": released,
+        "maturity": "candidate",
+        "releasedConformance": False,
+        "conformanceStatus": "PRESENT_IN_RC7_SUITE_4_SOURCE_CANDIDATE",
+        "publicationBlockers": ["P4.4_EXACT_PUBLIC_CANDIDATE_REVIEW", "P9_ACCEPTED_PUBLIC_RELEASE"],
+        "releaseClaim": False,
     }
     if manifest.get("maturity") != expected_bundle_state["maturity"] or manifest.get("releasedConformance") is not expected_bundle_state["releasedConformance"]:
         fail("W3C profile maturity boundary drift")

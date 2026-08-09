@@ -344,8 +344,39 @@ def validate_schema(schema: dict[str, Any], registry: Any) -> list[str]:
     return errors
 
 
-def source_matches(root: Path, source: Any, location: str, errors: list[str]) -> None:
+def source_matches(
+    root: Path,
+    source: Any,
+    location: str,
+    errors: list[str],
+    *,
+    require_tag: bool = False,
+) -> None:
     if not isinstance(source, dict):
+        return
+    tag_target = source.get("tagTarget")
+    if isinstance(tag_target, dict):
+        tag = tag_target.get("tag")
+        if not isinstance(tag, str):
+            return
+        head = git(root, "rev-parse", "HEAD")
+        tree = git(root, "rev-parse", "HEAD^{tree}")
+        if not isinstance(head, str) or not isinstance(tree, str):
+            error(errors, location, "cannot resolve current HEAD/tree for tag-target authority")
+            return
+        try:
+            tag_exists = tag_ref_exists(root, tag)
+        except ValueError as exc:
+            error(errors, location, str(exc))
+            return
+        if require_tag and not tag_exists:
+            error(errors, location, f"required immutable tag is absent: {tag}")
+            return
+        if tag_exists:
+            tagged_head = git(root, "rev-parse", f"refs/tags/{tag}^{{commit}}")
+            tagged_tree = git(root, "rev-parse", f"refs/tags/{tag}^{{tree}}")
+            if tagged_head != head or tagged_tree != tree:
+                error(errors, location, f"tag target does not resolve to current HEAD/tree: {tag}")
         return
     commit = source.get("commit")
     tree = source.get("tree")
@@ -399,14 +430,23 @@ def artifact_key(artifact: Any) -> tuple[Any, Any, Any, Any, Any]:
     )
 
 
-def verify_artifact_blob(root: Path, commit: str, artifact: Any, location: str, errors: list[str]) -> None:
+def verify_artifact_blob(
+    root: Path,
+    commit: str,
+    artifact: Any,
+    location: str,
+    errors: list[str],
+    materialized_documents: dict[str, bytes] | None = None,
+) -> None:
     if not isinstance(artifact, dict):
         return
     path = artifact.get("path")
     digest = artifact.get("digest")
     if not isinstance(path, str) or not isinstance(digest, str):
         return
-    blob = git(root, "cat-file", "blob", f"{commit}:{path}", binary=True)
+    blob = materialized_documents.get(path) if materialized_documents is not None else None
+    if blob is None:
+        blob = git(root, "cat-file", "blob", f"{commit}:{path}", binary=True)
     if blob is None:
         error(errors, location, f"artifact is absent from {commit}: {path}")
         return
@@ -419,6 +459,14 @@ def expected_release_tuple(record: dict[str, Any]) -> tuple[str, str, str, str] 
     status = record.get("status")
     manifest = record.get("releaseManifestArtifact")
     conformance = record.get("conformance")
+    source = record.get("source")
+    if status == "RELEASED" and isinstance(source, dict) and isinstance(source.get("tagTarget"), dict):
+        return (
+            "TAG_TARGET_MUST_RESOLVE_TO_CURRENT_HEAD",
+            "COMPUTED_NOT_AUTHORITY_ACCEPTED",
+            "RELEASED_PACKAGE_TAG_TARGET_DECLARED",
+            "TAG_TARGET_DECLARED",
+        )
     if status == "RELEASED" and manifest is not None and conformance is not None:
         authority = record.get("authority", {})
         if authority.get("manifestAuthority") == "AUTHORITY_ACCEPTED":
@@ -437,19 +485,28 @@ def validate_release(
     record: Any,
     releases: dict[str, Any],
     errors: list[str],
+    *,
+    require_tag: bool = False,
+    materialized_documents: dict[str, bytes] | None = None,
 ) -> None:
     location = f"releases[{version}]"
     if not isinstance(record, dict):
         return
     source = record.get("source")
-    source_matches(root, source, f"{location}.source", errors)
+    source_matches(root, source, f"{location}.source", errors, require_tag=require_tag)
     expected_tag = f"v{version}"
     if record.get("plannedTag") != expected_tag:
         error(errors, location, f"plannedTag must equal {expected_tag}")
     status = record.get("status")
     actual_tag = record.get("actualTag")
+    tag_target = source.get("tagTarget") if isinstance(source, dict) else None
+    if isinstance(tag_target, dict) and tag_target.get("tag") != expected_tag:
+        error(errors, location, f"tagTarget.tag must equal {expected_tag}")
     if status == "RELEASED":
-        if actual_tag != expected_tag:
+        if isinstance(tag_target, dict):
+            if actual_tag is not None:
+                error(errors, location, "self-head tag-target release must not embed an actualTag")
+        elif actual_tag != expected_tag:
             error(errors, location, f"released actualTag must equal {expected_tag}")
     elif status == "REVIEWED_CANDIDATE_NOT_PUBLISHED":
         if actual_tag is not None:
@@ -464,6 +521,9 @@ def validate_release(
         if previous not in releases:
             error(errors, location, f"previousRelease does not resolve: {previous}")
         else:
+            prior_record = releases.get(previous)
+            if not isinstance(prior_record, dict) or prior_record.get("status") != "RELEASED":
+                error(errors, location, "previousRelease must resolve to a RELEASED entry")
             try:
                 if compare_semver(previous, version) >= 0:
                     error(errors, location, f"previousRelease is not semantically older: {previous}")
@@ -513,9 +573,19 @@ def validate_release(
         if len(same_path_role) != 1 or artifact_key(same_path_role[0]) != artifact_key(artifact):
             error(errors, location, f"{name} must appear exactly once in artifactInventory with matching path, digest, role, and basis")
     commit = source.get("commit")
+    if not isinstance(commit, str) and isinstance(tag_target, dict):
+        commit = git(root, "rev-parse", "HEAD")
     if isinstance(commit, str):
+        documents_for_record = materialized_documents if isinstance(tag_target, dict) else None
         for index, artifact in enumerate(inventory):
-            verify_artifact_blob(root, commit, artifact, f"{location}.artifactInventory[{index}]", errors)
+            verify_artifact_blob(
+                root,
+                commit,
+                artifact,
+                f"{location}.artifactInventory[{index}]",
+                errors,
+                documents_for_record,
+            )
 
 
 def validate_predecessors(releases: dict[str, Any], errors: list[str]) -> None:
@@ -651,6 +721,9 @@ def validate_registry(
     registry: Any,
     release_manifest: Any,
     adopted_root: Path | None = None,
+    *,
+    require_tag: bool = False,
+    materialized_documents: dict[str, bytes] | None = None,
 ) -> list[str]:
     errors = validate_schema(schema, registry)
     if not isinstance(registry, dict):
@@ -675,13 +748,19 @@ def validate_registry(
     maximum_reviewed = maximum_semver(reviewed_versions)
     if reviewed is not None and reviewed != maximum_reviewed:
         error(errors, "reviewedCandidateVersion", f"must equal SemVer-maximum reviewed candidate: {maximum_reviewed}")
-    if reviewed is not None and isinstance(latest, str):
+    if registry.get("candidateState") == "SOURCE_CANDIDATE_AWAITING_REVIEW_NOT_PUBLISHABLE" and reviewed is not None and isinstance(latest, str):
         try:
             if compare_semver(reviewed, latest) <= 0:
                 error(errors, "reviewedCandidateVersion", "must be later than latestReleasedVersion")
         except ValueError as exc:
             error(errors, "reviewedCandidateVersion", str(exc))
     if registry.get("candidateState") == "NO_ACTIVE_OR_PUBLISHABLE_CANDIDATE":
+        if not isinstance(release_manifest, dict):
+            error(errors, "releaseManifest", "released registry state requires an object release manifest")
+        elif release_manifest.get("status") != "RELEASED":
+            error(errors, "releaseManifest.status", "released registry state requires RELEASED")
+        elif release_manifest.get("releaseVersion") != latest:
+            error(errors, "releaseManifest.releaseVersion", "released registry state must match latestReleasedVersion")
         for version, record in releases.items():
             if isinstance(record, dict) and record.get("status") == "REVIEWED_CANDIDATE_NOT_PUBLISHED" and record.get("actualTag") is not None:
                 error(errors, f"releases[{version}]", "no-active candidate state forbids an actual tag")
@@ -712,7 +791,15 @@ def validate_registry(
                         except ValueError as exc:
                             error(errors, "releaseManifest.releaseVersion", str(exc))
     for version, record in releases.items():
-        validate_release(root, version, record, releases, errors)
+        validate_release(
+            root,
+            version,
+            record,
+            releases,
+            errors,
+            require_tag=require_tag,
+            materialized_documents=materialized_documents,
+        )
         if isinstance(record, dict):
             for index, source in enumerate(record.get("adoptedSources", [])):
                 adopted_source_matches(adopted_root, source, f"releases[{version}].adoptedSources[{index}]", errors)
@@ -748,6 +835,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--release-manifest", default="versions/release.json")
     parser.add_argument("--adopted-repo", type=Path, help="Git checkout containing every pinned crinkl-protocol commit.")
     parser.add_argument("--baseline", type=Path, help="Prior registry whose existing entries must remain unchanged.")
+    parser.add_argument(
+        "--require-tag",
+        action="store_true",
+        help="Require every self-head tag-target release record to resolve its immutable tag to current HEAD.",
+    )
     return parser.parse_args()
 
 
@@ -759,7 +851,7 @@ def main() -> int:
         registry = load_json(resolve(root, args.registry))
         release_manifest = load_json(resolve(root, args.release_manifest))
         adopted_root = args.adopted_repo.resolve() if args.adopted_repo else None
-        errors = validate_registry(root, schema, registry, release_manifest, adopted_root)
+        errors = validate_registry(root, schema, registry, release_manifest, adopted_root, require_tag=args.require_tag)
         if args.baseline:
             baseline = load_json(resolve(root, args.baseline))
             errors.extend(validate_schema(schema, baseline))
