@@ -6,6 +6,7 @@ import argparse
 import copy
 import json
 import os
+import subprocess
 import tempfile
 from pathlib import Path
 
@@ -102,6 +103,28 @@ def main() -> int:
         assert_rejected("unpublished candidate planned tag ref", copy.deepcopy(registry), adopted_root)
     finally:
         checker.tag_ref_exists = original_tag_ref_exists
+
+    original_run = checker.subprocess.run
+    def fail_tag_lookup(command, *args, **kwargs):
+        if len(command) > 3 and command[3] == "show-ref":
+            return subprocess.CompletedProcess(command, 128, b"", b"simulated tag lookup failure")
+        return original_run(command, *args, **kwargs)
+
+    try:
+        checker.subprocess.run = fail_tag_lookup
+        try:
+            checker.tag_ref_exists(ROOT, "v1.0.0-rc.5")
+        except ValueError as exc:
+            if "simulated tag lookup failure" not in str(exc):
+                raise AssertionError(f"unexpected tag lookup failure: {exc}") from exc
+        else:
+            raise AssertionError("tag lookup failure was treated as an absent ref")
+        errors = checker.validate_registry(ROOT, schema, copy.deepcopy(registry), release_manifest, adopted_root)
+        if not any("simulated tag lookup failure" in item for item in errors):
+            raise AssertionError(f"tag lookup failure was not reported by registry validation: {errors}")
+        print("[release-registry-test] rejected: tag lookup failure")
+    finally:
+        checker.subprocess.run = original_run
 
     with tempfile.TemporaryDirectory() as directory:
         duplicate = Path(directory) / "duplicate.json"
