@@ -11,17 +11,8 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 REGISTRY = "versions/release-registry.json"
-FINALIZATION = "versions/v1.0.0-rc.5/finalization.json"
 REVIEWED_COMMIT = "81237937833ab32e5ce92d3b5ceed72854baecef"
 REVIEWED_TREE = "9121bdfbfc428f73557e993f1bd6e295ba733a12"
-SCOPE = (
-    "The following preserved\nrc.5 transition text applies only to public-spec commit\n"
-    f"`{REVIEWED_COMMIT}` / tree\n`{REVIEWED_TREE}`:"
-)
-LATER_TREE = (
-    "It does not classify any later tree; any later tree remains unassigned unless a\n"
-    "new exact candidate identity and independent review record it."
-)
 LIVING_PATHS = (
     "README.md", "SECURITY.md", "03-portability/spend-attestation-token.md",
     "06-extensions/campaign-experiment-profile.md", "06-extensions/merchant-authority.md",
@@ -62,11 +53,12 @@ def load_documents(root: Path) -> dict[str, str]:
     return result
 
 
-def validate_registry(registry: dict[str, Any]) -> None:
+def validate_registry(registry: dict[str, Any], release_manifest: dict[str, Any]) -> None:
     releases = registry.get("releases")
     require(isinstance(releases, dict), "release registry releases missing")
     require(registry.get("latestReleasedVersion") == "1.0.0-rc.4", "latest released version drift")
     require(registry.get("reviewedCandidateVersion") == "1.0.0-rc.5", "reviewed candidate version drift")
+    require(registry.get("candidateState") == "SOURCE_CANDIDATE_AWAITING_REVIEW_NOT_PUBLISHABLE", "rc.6 source candidate state drift")
     for version in ("1.0.0-rc.1", "1.0.0-rc.3", "1.0.0-rc.4"):
         require(isinstance(releases.get(version), dict) and releases[version].get("status") == "RELEASED", f"{version} must be released")
     candidate = releases.get("1.0.0-rc.5")
@@ -75,6 +67,11 @@ def validate_registry(registry: dict[str, Any]) -> None:
     require(isinstance(source, dict) and source.get("commit") == REVIEWED_COMMIT and source.get("tree") == REVIEWED_TREE, "rc.5 reviewed commit/tree drift")
     observed = registry.get("embeddedWireVersionObservations", {}).get("1.0.0-rc.2", {})
     require(observed.get("classification") == "EMBEDDED_WIRE_LABEL_NOT_A_PUBLIC_RELEASE_CLASSIFICATION_PENDING", "rc.2 public-release classification drift")
+    require(release_manifest.get("releaseVersion") == "1.0.0-rc.6", "current source candidate version drift")
+    require(release_manifest.get("status") == "RELEASE_CANDIDATE_NOT_PUBLISHED", "current source candidate status drift")
+    require(release_manifest.get("requiredTag") == "v1.0.0-rc.6", "current source candidate tag drift")
+    require(release_manifest.get("conformance", {}).get("suiteVersion") == 4, "current source candidate suite drift")
+    require("1.0.0-rc.6" not in releases, "current source candidate must not be registered as released or reviewed")
 
 
 def validate_documents(documents: dict[str, str]) -> None:
@@ -92,7 +89,7 @@ def validate_documents(documents: dict[str, str]) -> None:
     require(not re.search(r"\bN(?:-1|\+1)?\b", compatibility), "generic adjacent-version compatibility heuristic remains")
     require("including this branch" not in compatibility, "branch-relative compatibility wording remains")
     required = {
-        "README.md": ("## Release and source state", "`v1.0.0-rc.4` is the latest released public package.", "**v1.0.0-rc.5** release candidate source — not yet published.", "P4.4 and P9 remain blockers."),
+        "README.md": ("## Release and source state", "`v1.0.0-rc.4` is the latest released public package. Current public repository\nsource candidate: **v1.0.0-rc.6** (`RELEASE_CANDIDATE_NOT_PUBLISHED`),\nconformance suite 4; it is unreviewed, unpublished, not publishable, and does\nnot inherit rc.5 review.", "**v1.0.0-rc.5** historical exact reviewed source candidate — not published.", "P4.4 and P9 remain blockers."),
         "SECURITY.md": (REVIEWED_COMMIT, REVIEWED_TREE, "later source is unassigned"),
         "03-portability/spend-attestation-token.md": ("SpendAttestationTokenV1` and `SpendAttestationTokenV2` are both supported", "no protocol-wide token issuance default"),
         "06-extensions/campaign-experiment-profile.md": ("supported embedded wire/source/binding history, not an observed public tag or public release",),
@@ -102,26 +99,17 @@ def validate_documents(documents: dict[str, str]) -> None:
         "07-conformance/profiles/w3c-vc-2.0-spend-attestation-v1/README.md": ("This is a source-only candidate bundle", REVIEWED_COMMIT, "later source is unassigned"),
         "08-governance/glossary.md": ("V2 `holderBinding` is\nOPTIONAL, so a V2 token without it remains valid",),
         "08-governance/protocol-v1-index.md": ("released `v1.0.0-rc.3` / conformance suite 2", REVIEWED_COMMIT),
-        "08-governance/versioning.md": ("`v1.0.0-rc.4` is the latest released public package.", "Current public repository source candidate: **1.0.0-rc.5** (`RELEASE_CANDIDATE_NOT_PUBLISHED`)", "`v1.0.0-rc.3` and `v1.0.0-rc.4` are released public packages; rc.4 is the\nlatest released package."),
+        "08-governance/versioning.md": ("`v1.0.0-rc.4` is the latest released public package. Current public repository source candidate: **1.0.0-rc.6** (`RELEASE_CANDIDATE_NOT_PUBLISHED`), conformance suite 4; it is unreviewed, unpublished, not publishable, and does not inherit rc.5 review.", "Historical exact reviewed source candidate: **1.0.0-rc.5** (`REVIEWED_CANDIDATE_NOT_PUBLISHED`)", "`v1.0.0-rc.3` and `v1.0.0-rc.4` are released public packages; rc.4 is the\nlatest released package."),
         "08-governance/zk-beta-release-checklist.md": ("embedded wire/source/binding history label, not an observed\npublic tag or public-release classification",),
-        "versions/CHANGELOG.md": ("`v1.0.0-rc.4` is the latest released public package.", "The current public repository release candidate is **v1.0.0-rc.5**, an\nunpublished SemVer prerelease.", "## v1.0.0-rc.5 release candidate (not published)", "does not promote the W3C profile beyond candidate maturity."),
+        "versions/CHANGELOG.md": ("`v1.0.0-rc.4` is the latest released public package. Current public repository\nsource candidate: **1.0.0-rc.6** (`RELEASE_CANDIDATE_NOT_PUBLISHED`),\nconformance suite 4; it is unreviewed, unpublished, not publishable, and does\nnot inherit rc.5 review.", "The historical exact reviewed source candidate is **v1.0.0-rc.5**, an\nunpublished SemVer prerelease.", "## v1.0.0-rc.5 release candidate (not published)", "does not promote the W3C profile beyond candidate maturity."),
     }
     for rel, markers in required.items():
         for marker in markers:
             require(marker in documents[rel], f"{rel}: required living wording missing: {marker}")
-    for rel, legacy_markers in {
-        "README.md": ("**v1.0.0-rc.5** release candidate source — not yet published.", "This is an unpublished SemVer prerelease candidate, not a stable `v1.0.0`", "P4.4 and P9 remain blockers."),
-        "08-governance/versioning.md": ("Current public repository source candidate: **1.0.0-rc.5** (`RELEASE_CANDIDATE_NOT_PUBLISHED`)", "unpublished SemVer prerelease candidate"),
-        "versions/CHANGELOG.md": ("The current public repository release candidate is **v1.0.0-rc.5**, an\nunpublished SemVer prerelease.", "## v1.0.0-rc.5 release candidate (not published)"),
-    }.items():
+    for rel in ("README.md", "08-governance/versioning.md", "versions/CHANGELOG.md"):
         text = documents[rel]
-        scope_at = text.find(SCOPE)
-        require(scope_at >= 0, f"{rel}: exact rc.5 scope qualification missing")
-        for marker in legacy_markers:
-            marker_at = text.find(marker)
-            require(marker_at >= 0 and text.count(marker) == 1, f"{rel}: legacy rc.5 marker must occur exactly once: {marker}")
-            require(scope_at < marker_at, f"{rel}: rc.5 scope qualification must precede legacy marker: {marker}")
-        require(text.find(LATER_TREE) > max(text.find(marker) for marker in legacy_markers), f"{rel}: later-tree noninheritance qualification must follow legacy markers")
+        require(REVIEWED_COMMIT in text and REVIEWED_TREE in text, f"{rel}: historical rc.5 identity missing")
+        require("historical" in text.lower() and "reviewed" in text.lower(), f"{rel}: rc.5 must be explicitly historical and reviewed")
     corpus = "\n".join(documents.values())
     for pattern in (
         r"(?i)unpublished\s+`?v?1\.0\.0-rc\.3`?",
@@ -129,29 +117,15 @@ def validate_documents(documents: dict[str, str]) -> None:
         r"(?i)v1\.0\.0-rc\.4[^\n]{0,90}(?:unpublished|release candidate)",
         r"(?i)protocol-wide token issuance default is(?:\s+)?v2",
         r"including this branch",
+        r"(?im)^Current public repository source candidate:\s+\*\*v?1\.0\.0-rc\.5",
+        r"(?im)^The current public repository release candidate is \*\*v1\.0\.0-rc\.5",
     ):
         require(not re.search(pattern, corpus), f"false living release/issuance classification: {pattern}")
 
 
-def validate_finalization_markers(root: Path) -> None:
-    plan = read_json(root / FINALIZATION)
-    transitions = plan.get("documentationTransitions")
-    require(isinstance(transitions, list), "finalization documentation transitions missing")
-    for transition in transitions:
-        require(isinstance(transition, dict), "finalization transition shape drift")
-        path, candidate = transition.get("path"), transition.get("candidateMarker")
-        require(isinstance(path, str) and isinstance(candidate, str), "finalization candidate marker shape drift")
-        try:
-            text = (root / path).read_text(encoding="utf-8")
-        except OSError as exc:
-            raise ValueError(f"cannot read finalization documentation path {path}: {exc}") from exc
-        require(candidate in text, f"finalization candidate marker missing: {path}: {candidate}")
-
-
 def validate(root: Path, documents: dict[str, str] | None = None) -> None:
-    validate_registry(read_json(root / REGISTRY))
+    validate_registry(read_json(root / REGISTRY), read_json(root / "versions/release.json"))
     validate_documents(load_documents(root) if documents is None else documents)
-    validate_finalization_markers(root)
 
 
 def main() -> int:

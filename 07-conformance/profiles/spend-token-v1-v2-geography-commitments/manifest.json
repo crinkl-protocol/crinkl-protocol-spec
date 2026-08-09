@@ -9,7 +9,7 @@
     "maturity": "engineering-adopted-on-protected-main"
   },
   "protocolObjectVersion": "1.0.0-rc.1",
-  "publicRepositoryVersion": "1.0.0-rc.5",
+  "publicRepositoryVersion": "1.0.0-rc.6",
   "conformanceManifestEntry": {
     "kind": "token.spendAttestation.portableV1.zkCommitmentGeography",
     "file": "conformance/spend-attestation-portability/v1/vectors/spend-attestation.zk-commitment-geography.v1.json",
@@ -17,7 +17,7 @@
       "type": "node",
       "file": "scripts/check_spend_token_geography_commitments.mjs"
     },
-    "status": "CANDIDATE_NOT_IN_RELEASED_SUITE"
+    "status": "PRESENT_IN_RC6_SUITE_4_SOURCE_CANDIDATE"
   },
   "artifacts": [
     {

@@ -104,6 +104,24 @@ def main() -> int:
     finally:
         checker.tag_ref_exists = original_tag_ref_exists
 
+    manifest = copy.deepcopy(release_manifest)
+    manifest["status"] = "RELEASED"
+    assert_rejected("source candidate wrong manifest status", copy.deepcopy(registry), adopted_root, manifest)
+
+    manifest = copy.deepcopy(release_manifest)
+    manifest["releaseVersion"] = "1.0.0-rc.5"
+    manifest["requiredTag"] = "v1.0.0-rc.5"
+    assert_rejected("source candidate non-successor version", copy.deepcopy(registry), adopted_root, manifest)
+
+    manifest = copy.deepcopy(release_manifest)
+    manifest["requiredTag"] = "v1.0.0-rc.99"
+    assert_rejected("source candidate tag mismatch", copy.deepcopy(registry), adopted_root, manifest)
+
+    manifest = copy.deepcopy(release_manifest)
+    manifest["releaseVersion"] = "1.0.0-rc.4"
+    manifest["requiredTag"] = "v1.0.0-rc.4"
+    assert_rejected("source candidate already in releases", copy.deepcopy(registry), adopted_root, manifest)
+
     original_run = checker.subprocess.run
     def fail_tag_lookup(command, *args, **kwargs):
         if len(command) > 3 and command[3] == "show-ref":

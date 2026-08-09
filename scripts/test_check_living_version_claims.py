@@ -43,13 +43,22 @@ def main() -> int:
         altered[path] = altered[path].replace(old, new, 1)
         rejected(name, altered)
     altered = copy.deepcopy(documents)
-    scope = checker.SCOPE
-    marker = "**v1.0.0-rc.5** release candidate source — not yet published."
-    altered["README.md"] = altered["README.md"].replace(scope + "\n\n", "", 1).replace(marker, marker + "\n\n" + scope, 1)
-    rejected("rc.5 scope moved after legacy marker", altered)
+    altered["README.md"] = altered["README.md"].replace(
+        "**v1.0.0-rc.5** historical exact reviewed source candidate — not published.",
+        "**v1.0.0-rc.5** current source candidate — not published.",
+        1,
+    )
+    rejected("rc.5 historical classification removed", altered)
     altered = copy.deepcopy(documents)
-    altered["versions/CHANGELOG.md"] = altered["versions/CHANGELOG.md"].replace(checker.LATER_TREE, "It classifies any later tree as the reviewed candidate.", 1)
-    rejected("legacy marker applies to later source", altered)
+    altered["08-governance/versioning.md"] = altered["08-governance/versioning.md"].replace(
+        "Historical exact reviewed source candidate: **1.0.0-rc.5** (`REVIEWED_CANDIDATE_NOT_PUBLISHED`)",
+        "Current public repository source candidate: **1.0.0-rc.5** (`REVIEWED_CANDIDATE_NOT_PUBLISHED`)",
+        1,
+    )
+    rejected("rc.5 promoted to current", altered)
+    altered = copy.deepcopy(documents)
+    altered["README.md"] = altered["README.md"].replace("does\nnot inherit rc.5 review.", "inherits rc.5 review.", 1)
+    rejected("current rc.6 inherits rc.5 review", altered)
     return 0
 
 

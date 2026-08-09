@@ -685,6 +685,32 @@ def validate_registry(
         for version, record in releases.items():
             if isinstance(record, dict) and record.get("status") == "REVIEWED_CANDIDATE_NOT_PUBLISHED" and record.get("actualTag") is not None:
                 error(errors, f"releases[{version}]", "no-active candidate state forbids an actual tag")
+    elif registry.get("candidateState") == "SOURCE_CANDIDATE_AWAITING_REVIEW_NOT_PUBLISHABLE":
+        if reviewed != "1.0.0-rc.5":
+            error(errors, "reviewedCandidateVersion", "source candidate state preserves the historical exact reviewed candidate")
+        if not isinstance(release_manifest, dict):
+            error(errors, "releaseManifest", "source candidate state requires an object release manifest")
+        else:
+            current_version = release_manifest.get("releaseVersion")
+            current_tag = release_manifest.get("requiredTag")
+            if release_manifest.get("status") != "RELEASE_CANDIDATE_NOT_PUBLISHED":
+                error(errors, "releaseManifest.status", "source candidate state requires RELEASE_CANDIDATE_NOT_PUBLISHED")
+            if not isinstance(current_version, str) or semver_parts(current_version) is None:
+                error(errors, "releaseManifest.releaseVersion", "source candidate state requires a SemVer releaseVersion")
+            else:
+                if current_tag != f"v{current_version}":
+                    error(errors, "releaseManifest.requiredTag", "must equal v${releaseVersion} for source candidate state")
+                if current_version in releases:
+                    error(errors, "releaseManifest.releaseVersion", "source candidate must not already appear in releases")
+                for earlier_name, earlier in (("latestReleasedVersion", latest), ("reviewedCandidateVersion", reviewed)):
+                    if not isinstance(earlier, str):
+                        error(errors, earlier_name, "must be a SemVer version for source candidate comparison")
+                    else:
+                        try:
+                            if compare_semver(current_version, earlier) <= 0:
+                                error(errors, "releaseManifest.releaseVersion", f"must be later than {earlier_name}")
+                        except ValueError as exc:
+                            error(errors, "releaseManifest.releaseVersion", str(exc))
     for version, record in releases.items():
         validate_release(root, version, record, releases, errors)
         if isinstance(record, dict):

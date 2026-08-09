@@ -22,7 +22,7 @@
     "registryGateState": { "const": "SHAPE_VALIDATED_CROSS_REFERENCES_AND_APPEND_ONLY_PENDING" },
     "latestReleasedVersion": { "$ref": "#/$defs/semver" },
     "reviewedCandidateVersion": { "anyOf": [{ "$ref": "#/$defs/semver" }, { "type": "null" }] },
-    "candidateState": { "const": "NO_ACTIVE_OR_PUBLISHABLE_CANDIDATE" },
+    "candidateState": { "enum": ["NO_ACTIVE_OR_PUBLISHABLE_CANDIDATE", "SOURCE_CANDIDATE_AWAITING_REVIEW_NOT_PUBLISHABLE"] },
     "releases": {
       "type": "object",
       "minProperties": 1,

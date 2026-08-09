@@ -11,16 +11,22 @@ const manifestUrl = new URL("../manifest.json", import.meta.url);
 const spendTokenDocUrl = new URL("../../../../03-portability/spend-attestation-token.md", import.meta.url);
 const verifierDocUrl = new URL("../../../../03-portability/verifier-requirements.md", import.meta.url);
 const zkDocUrl = new URL("../../../../06-extensions/zk-proof-extension.md", import.meta.url);
+const releaseUrl = new URL("../../../../versions/release.json", import.meta.url);
+const suiteManifestUrl = new URL("../../../vectors/v1/manifest.json", import.meta.url);
 
-const [vectorBytes, manifestBytes, spendTokenDoc, verifierDoc, zkDoc] = await Promise.all([
+const [vectorBytes, manifestBytes, spendTokenDoc, verifierDoc, zkDoc, releaseBytes, suiteManifestBytes] = await Promise.all([
   readFile(vectorUrl),
   readFile(manifestUrl),
   readFile(spendTokenDocUrl, "utf8"),
   readFile(verifierDocUrl, "utf8"),
-  readFile(zkDocUrl, "utf8")
+  readFile(zkDocUrl, "utf8"),
+  readFile(releaseUrl),
+  readFile(suiteManifestUrl)
 ]);
 const vector = JSON.parse(vectorBytes);
 const manifest = JSON.parse(manifestBytes);
+const release = JSON.parse(releaseBytes);
+const suiteManifest = JSON.parse(suiteManifestBytes);
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -54,6 +60,12 @@ assert(
   createHash("sha256").update(vectorBytes).digest("hex") === vectorArtifact.sha256,
   "geography vector hash does not match manifest"
 );
+assert(release.releaseVersion === "1.0.0-rc.6" && release.status === "RELEASE_CANDIDATE_NOT_PUBLISHED", "rc.6 candidate release boundary drift");
+assert(manifest.publicRepositoryVersion === "1.0.0-rc.6", "geography public repository version drift");
+assert(manifest.conformanceManifestEntry.status === "PRESENT_IN_RC6_SUITE_4_SOURCE_CANDIDATE", "geography suite status drift");
+assert(suiteManifest.releaseVersion === "1.0.0-rc.6" && suiteManifest.suiteVersion === 4, "suite-4 manifest boundary drift");
+assert(suiteManifest.vectors.some((entry) => entry.kind === vector.kind), "suite-4 manifest omits geography profile");
+assert(suiteManifest.vectors.some((entry) => entry.kind === "token.spendAttestation.holderBinding.v2"), "suite-4 manifest omits retained holder-binding profile");
 
 function evaluate(caseDefinition) {
   const token = caseDefinition.token;

@@ -7,19 +7,20 @@ normative: true
 
 # Protocol Evolution
 
-`v1.0.0-rc.4` is the latest released public package. The following preserved
+`v1.0.0-rc.4` is the latest released public package. Current public repository source candidate: **1.0.0-rc.6** (`RELEASE_CANDIDATE_NOT_PUBLISHED`), conformance suite 4; it is unreviewed, unpublished, not publishable, and does not inherit rc.5 review.
+The following preserved
 rc.5 transition text applies only to public-spec commit
 `81237937833ab32e5ce92d3b5ceed72854baecef` / tree
 `9121bdfbfc428f73557e993f1bd6e295ba733a12`:
 
-Current public repository source candidate: **1.0.0-rc.5** (`RELEASE_CANDIDATE_NOT_PUBLISHED`)
+Historical exact reviewed source candidate: **1.0.0-rc.5** (`REVIEWED_CANDIDATE_NOT_PUBLISHED`)
 
 Current candidate-manifest default Crinkl Platform binding `protocolVersion`:
 **1.0.0-rc.2**. This records only the candidate-manifest default, not adopted
 binding emission, runtime support, public release, or production state.
 
 This document's frontmatter maturity is `draft`. Document maturity is separate
-from repository/package maturity: `v1.0.0-rc.5` is an unpublished SemVer prerelease candidate,
+from repository/package maturity: historical `v1.0.0-rc.5` is an unpublished SemVer prerelease candidate,
 while each document retains its own declared maturity. Neither state promotes or
 demotes the other, no stable `v1.0.0` release is declared here, and the prior
 `v1.0.0-rc.4` tag remains immutable.

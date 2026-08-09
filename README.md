@@ -13,7 +13,7 @@
 
 See the [full object inventory](#protocol-objects) for every artifact.
 
-[![Version](https://img.shields.io/badge/version-v1.0.0--rc.5-blue)](versions/CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-v1.0.0--rc.6-blue)](versions/CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-Apache%202.0-green)](LICENSE)
 [![CI](https://github.com/crinkl-protocol/crinkl-protocol-spec/actions/workflows/drift-check.yml/badge.svg)](https://github.com/crinkl-protocol/crinkl-protocol-spec/actions/workflows/drift-check.yml)
 
@@ -146,16 +146,21 @@ Downstream layers consume spend proof; they do not define it.
 
 ## Release and source state
 
-`v1.0.0-rc.4` is the latest released public package. The following preserved
+`v1.0.0-rc.4` is the latest released public package. Current public repository
+source candidate: **v1.0.0-rc.6** (`RELEASE_CANDIDATE_NOT_PUBLISHED`),
+conformance suite 4; it is unreviewed, unpublished, not publishable, and does
+not inherit rc.5 review. Its current machine-readable release manifest is
+[`versions/release.json`](versions/release.json), and its candidate controls
+are in [`versions/v1.0.0-rc.6/finalization.json`](versions/v1.0.0-rc.6/finalization.json).
+The following preserved
 rc.5 transition text applies only to public-spec commit
 `81237937833ab32e5ce92d3b5ceed72854baecef` / tree
 `9121bdfbfc428f73557e993f1bd6e295ba733a12`:
 
-**v1.0.0-rc.5** release candidate source — not yet published. See
-[`versions/release.json`](versions/release.json) and
-[`versions/CHANGELOG.md`](versions/CHANGELOG.md). The exact, machine-checkable
-release transition and rollback rules are in
-[`versions/v1.0.0-rc.5/finalization.json`](versions/v1.0.0-rc.5/finalization.json).
+**v1.0.0-rc.5** historical exact reviewed source candidate — not published.
+Its historical transition controls are in
+[`versions/v1.0.0-rc.5/finalization.json`](versions/v1.0.0-rc.5/finalization.json)
+and [`versions/v1.0.0-rc.5/snapshot.md`](versions/v1.0.0-rc.5/snapshot.md).
 This is an unpublished SemVer prerelease candidate, not a stable `v1.0.0`
 release. The immutable released `v1.0.0-rc.4` tag remains available for
 historical verification.
@@ -176,7 +181,7 @@ python3 07-conformance/profiles/campaign-direct-buyer-reward-v1/scripts/check_ca
 node 07-conformance/profiles/spend-token-v2-holder-binding/scripts/check_holder_binding_vectors.mjs
 ```
 
-Verify the rc.5 candidate transition locally:
+Verify the rc.6 candidate transition locally:
 
 ```bash
 python3 scripts/check_successor_release_finalization.py --mode candidate

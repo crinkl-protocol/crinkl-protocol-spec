@@ -8,6 +8,8 @@ normative: true
 # Conformance Verification
 
 This document describes the executable verifier for `vectors/v1`.
+The current rc.6 source candidate uses conformance suite 4 and includes the
+geography-commitment profile as a required manifest-bound kind.
 
 ## Run
 

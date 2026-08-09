@@ -12,7 +12,9 @@ Profile release state: candidate.
 This is a source-only candidate bundle for the optional W3C VC 2.0 Spend
 Attestation wire form. It is present in the unpublished `v1.0.0-rc.5`
 candidate conformance suite. It does not change the immutable released
-`v1.0.0-rc.4` manifest or tag, and it does not activate runtime behavior.
+`v1.0.0-rc.4` manifest or tag, and it does not activate runtime behavior. The
+rc.6/suite-4 source candidate retains this candidate bundle without changing its
+independent release or runtime boundary.
 The candidate review applies only to public-spec commit
 `81237937833ab32e5ce92d3b5ceed72854baecef` / tree
 `9121bdfbfc428f73557e993f1bd6e295ba733a12`; later source is unassigned.

@@ -7,7 +7,8 @@ normative: true
 
 # Spend Attestation Token V1/V2 Geography Commitment Profile
 
-Maturity: `candidate` in the unpublished public `v1.0.0-rc.5` source.
+Maturity: `candidate` in the unpublished public `v1.0.0-rc.6` source and
+included in conformance suite 4.
 
 This profile publishes byte-pinned adopted-engineering semantics for
 `SpendAttestationTokenV1` and `SpendAttestationTokenV2` geography disclosure:
@@ -34,4 +35,3 @@ Run the exact candidate-profile verifier:
 ```bash
 node 07-conformance/profiles/spend-token-v1-v2-geography-commitments/scripts/check_spend_token_geography_commitments.mjs
 ```
-

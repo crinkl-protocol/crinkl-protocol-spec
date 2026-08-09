@@ -1,11 +1,15 @@
 # Changelog
 
-`v1.0.0-rc.4` is the latest released public package. The following preserved
+`v1.0.0-rc.4` is the latest released public package. Current public repository
+source candidate: **1.0.0-rc.6** (`RELEASE_CANDIDATE_NOT_PUBLISHED`),
+conformance suite 4; it is unreviewed, unpublished, not publishable, and does
+not inherit rc.5 review.
+The following preserved
 rc.5 transition text applies only to public-spec commit
 `81237937833ab32e5ce92d3b5ceed72854baecef` / tree
 `9121bdfbfc428f73557e993f1bd6e295ba733a12`:
 
-The current public repository release candidate is **v1.0.0-rc.5**, an
+The historical exact reviewed source candidate is **v1.0.0-rc.5**, an
 unpublished SemVer prerelease. Repository release maturity is separate from
 each document's frontmatter maturity. The immutable `v1.0.0-rc.4` tag remains
 the prior released package; no stable successor release is declared.

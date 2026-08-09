@@ -30,16 +30,20 @@ State which artifact is affected:
 
 - `v1.0.0-rc.4` is the immutable released tag.
 - Current `main` is repository source and can contain work beyond that tag.
-- `v1.0.0-rc.5` is an unpublished source candidate
-  (`RELEASE_CANDIDATE_NOT_PUBLISHED`), not a tag, GitHub Release, runtime
+- `v1.0.0-rc.5` is the historical exact reviewed source candidate
+  (`REVIEWED_CANDIDATE_NOT_PUBLISHED`), not a tag, GitHub Release, runtime
   activation, or production deployment.
+- `v1.0.0-rc.6` is the current unreviewed source candidate and conformance
+  suite 4 (`RELEASE_CANDIDATE_NOT_PUBLISHED`); it is unpublished and not
+  publishable until separately reviewed.
 
 The reviewed rc.5 source is exactly commit
 `81237937833ab32e5ce92d3b5ceed72854baecef` / tree
 `9121bdfbfc428f73557e993f1bd6e295ba733a12`; later source is unassigned.
 
 Do not infer a release, deployment, or runtime claim from a report against
-current `main` or the rc.5 candidate.
+current `main`, the current rc.6 source candidate, or the historical exact
+reviewed rc.5 candidate.
 
 ## Minimum safe report
 

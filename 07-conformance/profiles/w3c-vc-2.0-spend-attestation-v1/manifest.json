@@ -9,7 +9,7 @@
     "maturity": "engineering-adopted-on-protected-main"
   },
   "protocolObjectVersion": "1.0.0-rc.1",
-  "publicRepositoryVersion": "1.0.0-rc.5",
+  "publicRepositoryVersion": "1.0.0-rc.6",
   "conformanceManifestEntry": {
     "kind": "credential.spendAttestation.vcdm2.eddsaJcs2022",
     "file": "../../profiles/w3c-vc-2.0-spend-attestation-v1/conformance/w3c-vc-2.0/v1/vectors/spend-attestation-credential.v1.json",
@@ -17,7 +17,7 @@
       "type": "node",
       "file": "../../profiles/w3c-vc-2.0-spend-attestation-v1/scripts/check_w3c_spend_attestation_credential_vectors.mjs"
     },
-    "status": "PRESENT_IN_RC5_SUITE_3_SOURCE_CANDIDATE"
+    "status": "PRESENT_IN_RC6_SUITE_4_SOURCE_CANDIDATE"
   },
   "artifacts": [
     {
