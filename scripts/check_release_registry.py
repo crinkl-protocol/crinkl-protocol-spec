@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Verify the public protocol release registry against immutable Git evidence.
 
-The optional --baseline enforces append-only semantics for the registered
-release, profile, embedded-wire, and collision-receipt entries. It compares
+Pinned adopted-protocol commits require --adopted-repo so their existence is
+independently checked. The optional --baseline enforces append-only semantics
+for registered maps and designated ordered observation lists. It compares
 parsed JSON values, so whitespace and object-member order are not history.
 New entries remain subject to every ordinary registry check.
 """
@@ -121,6 +122,16 @@ def compare_semver(left: str, right: str) -> int:
     return -1 if len(left_pre) < len(right_pre) else 1
 
 
+def maximum_semver(versions: list[str]) -> str | None:
+    if not versions:
+        return None
+    maximum = versions[0]
+    for candidate in versions[1:]:
+        if compare_semver(candidate, maximum) > 0:
+            maximum = candidate
+    return maximum
+
+
 def error(errors: list[str], location: str, message: str) -> None:
     errors.append(f"{location}: {message}")
 
@@ -151,6 +162,34 @@ def source_matches(root: Path, source: Any, location: str, errors: list[str]) ->
     observed = git(root, "rev-parse", f"{commit}^{{tree}}")
     if observed != tree:
         error(errors, location, f"source tree mismatch: expected {tree}, observed {observed}")
+
+
+def adopted_repo_usable(root: Path | None) -> bool:
+    return root is not None and git(root, "rev-parse", "--is-inside-work-tree") == "true"
+
+
+def adopted_source_matches(root: Path | None, source: Any, location: str, errors: list[str]) -> None:
+    if not isinstance(source, dict):
+        return
+    commit = source.get("commit")
+    if not isinstance(commit, str):
+        return
+    if not adopted_repo_usable(root):
+        error(errors, location, "pinned adopted source requires a usable --adopted-repo")
+        return
+    assert root is not None
+    if git(root, "cat-file", "-e", f"{commit}^{{commit}}") is None:
+        error(errors, location, f"adopted source commit does not exist: {commit}")
+        return
+    tree = source.get("tree")
+    if isinstance(tree, str):
+        observed_tree = git(root, "rev-parse", f"{commit}^{{tree}}")
+        if observed_tree != tree:
+            error(errors, location, f"adopted source tree mismatch: expected {tree}, observed {observed_tree}")
+    artifacts = source.get("artifactInventory")
+    if isinstance(artifacts, list):
+        for index, artifact in enumerate(artifacts):
+            verify_artifact_blob(root, commit, artifact, f"{location}.artifactInventory[{index}]", errors)
 
 
 def artifact_key(artifact: Any) -> tuple[Any, Any, Any, Any, Any]:
@@ -292,11 +331,15 @@ def validate_predecessors(releases: dict[str, Any], errors: list[str]) -> None:
             current = record.get("previousRelease") if isinstance(record, dict) else None
 
 
-def validate_profiles(registry: dict[str, Any], release_manifest: Any, errors: list[str]) -> None:
+def validate_profiles(
+    registry: dict[str, Any],
+    release_manifest: Any,
+    adopted_root: Path | None,
+    errors: list[str],
+) -> None:
     profiles = registry.get("profiles")
     if not isinstance(profiles, dict):
         return
-    object_ids: set[str] = set()
     for key, profile in profiles.items():
         location = f"profiles[{key}]"
         if not isinstance(profile, dict):
@@ -320,12 +363,15 @@ def validate_profiles(registry: dict[str, Any], release_manifest: Any, errors: l
             error(errors, location, "pinned adoptedSourceState requires an adoptedSource")
         if source_state == "NOT_CLAIMED" and source is not None:
             error(errors, location, "not-claimed adoptedSourceState requires null adoptedSource")
+        if isinstance(source, dict):
+            adopted_source_matches(adopted_root, source, f"{location}.adoptedSource", errors)
         runtime = profile.get("runtimeSupport")
         if runtime not in {"UNAVAILABLE", "SEPARATELY_GOVERNED"}:
             error(errors, location, f"runtimeSupport is not a non-activation state: {runtime}")
         constraints = profile.get("objectConstraints")
         if not isinstance(constraints, list):
             continue
+        object_ids: set[str] = set()
         for index, constraint in enumerate(constraints):
             if not isinstance(constraint, dict):
                 continue
@@ -333,7 +379,7 @@ def validate_profiles(registry: dict[str, Any], release_manifest: Any, errors: l
             if not isinstance(object_id, str):
                 continue
             if object_id in object_ids:
-                error(errors, f"{location}.objectConstraints[{index}]", f"duplicate objectId across profiles: {object_id}")
+                error(errors, f"{location}.objectConstraints[{index}]", f"duplicate objectId within profile: {object_id}")
             object_ids.add(object_id)
             supported = constraint.get("supportedSchemaVersions")
             required = constraint.get("requiredSchemaVersions")
@@ -345,11 +391,16 @@ def validate_profiles(registry: dict[str, Any], release_manifest: Any, errors: l
     if not isinstance(manifest_profiles, list):
         error(errors, "versions/release.json", "profiles must be an array")
         return
+    manifest_kinds: set[str] = set()
     for index, entry in enumerate(manifest_profiles):
         if not isinstance(entry, dict):
             error(errors, f"versions/release.json.profiles[{index}]", "profile entry must be an object")
             continue
         kind = entry.get("kind")
+        if isinstance(kind, str):
+            if kind in manifest_kinds:
+                error(errors, f"versions/release.json.profiles[{index}]", f"duplicate profile kind: {kind}")
+            manifest_kinds.add(kind)
         registered = profiles.get(kind)
         if not isinstance(kind, str) or not isinstance(registered, dict):
             error(errors, f"versions/release.json.profiles[{index}]", f"unregistered profile kind: {kind}")
@@ -375,12 +426,27 @@ def validate_baseline(current: dict[str, Any], baseline: dict[str, Any]) -> list
                 error(errors, f"baseline.{section}[{key}]", "registered entry was mutated")
     if current.get("releasedSchemaIdentityCollisionReceipt") != baseline.get("releasedSchemaIdentityCollisionReceipt"):
         error(errors, "baseline.releasedSchemaIdentityCollisionReceipt", "known collision receipt was mutated or deleted")
+    if current.get("ledgerVersion") != baseline.get("ledgerVersion"):
+        error(errors, "baseline.ledgerVersion", "ledger version was mutated")
+    for section in ("additionalCollisionObservations", "unassignedSourceHeads"):
+        prior = baseline.get(section)
+        latest = current.get(section)
+        if not isinstance(prior, list) or not isinstance(latest, list):
+            error(errors, f"baseline.{section}", "both baseline and current registries must contain an array")
+        elif len(latest) < len(prior) or latest[:len(prior)] != prior:
+            error(errors, f"baseline.{section}", "existing ordered observations must remain an exact prefix")
     return errors
 
 
-def validate_registry(root: Path, schema: dict[str, Any], registry: Any, release_manifest: Any) -> list[str]:
+def validate_registry(
+    root: Path,
+    schema: dict[str, Any],
+    registry: Any,
+    release_manifest: Any,
+    adopted_root: Path | None = None,
+) -> list[str]:
     errors = validate_schema(schema, registry)
-    if errors or not isinstance(registry, dict):
+    if not isinstance(registry, dict):
         return errors
     releases = registry.get("releases")
     if not isinstance(releases, dict):
@@ -389,40 +455,58 @@ def validate_registry(root: Path, schema: dict[str, Any], registry: Any, release
     latest_record = releases.get(latest)
     if not isinstance(latest_record, dict) or latest_record.get("status") != "RELEASED":
         error(errors, "latestReleasedVersion", "must resolve to a RELEASED entry")
+    released_versions = [version for version, record in releases.items() if isinstance(record, dict) and record.get("status") == "RELEASED"]
+    maximum_released = maximum_semver(released_versions)
+    if maximum_released is not None and latest != maximum_released:
+        error(errors, "latestReleasedVersion", f"must equal SemVer-maximum RELEASED version: {maximum_released}")
     reviewed = registry.get("reviewedCandidateVersion")
     if reviewed is not None:
         reviewed_record = releases.get(reviewed)
         if not isinstance(reviewed_record, dict) or reviewed_record.get("status") != "REVIEWED_CANDIDATE_NOT_PUBLISHED":
             error(errors, "reviewedCandidateVersion", "must resolve to REVIEWED_CANDIDATE_NOT_PUBLISHED or be null")
+    reviewed_versions = [version for version, record in releases.items() if isinstance(record, dict) and record.get("status") == "REVIEWED_CANDIDATE_NOT_PUBLISHED"]
+    maximum_reviewed = maximum_semver(reviewed_versions)
+    if reviewed is not None and reviewed != maximum_reviewed:
+        error(errors, "reviewedCandidateVersion", f"must equal SemVer-maximum reviewed candidate: {maximum_reviewed}")
+    if reviewed is not None and isinstance(latest, str):
+        try:
+            if compare_semver(reviewed, latest) <= 0:
+                error(errors, "reviewedCandidateVersion", "must be later than latestReleasedVersion")
+        except ValueError as exc:
+            error(errors, "reviewedCandidateVersion", str(exc))
     if registry.get("candidateState") == "NO_ACTIVE_OR_PUBLISHABLE_CANDIDATE":
         for version, record in releases.items():
             if isinstance(record, dict) and record.get("status") == "REVIEWED_CANDIDATE_NOT_PUBLISHED" and record.get("actualTag") is not None:
                 error(errors, f"releases[{version}]", "no-active candidate state forbids an actual tag")
     for version, record in releases.items():
         validate_release(root, version, record, releases, errors)
+        if isinstance(record, dict):
+            for index, source in enumerate(record.get("adoptedSources", [])):
+                adopted_source_matches(adopted_root, source, f"releases[{version}].adoptedSources[{index}]", errors)
     validate_predecessors(releases, errors)
     for index, head in enumerate(registry.get("unassignedSourceHeads", [])):
         if isinstance(head, dict):
             source_matches(root, head.get("source"), f"unassignedSourceHeads[{index}].source", errors)
     if registry.get("releasedSchemaIdentityCollisionReceipt") != KNOWN_COLLISION_RECEIPT:
         error(errors, "releasedSchemaIdentityCollisionReceipt", "does not match the immutable known collision receipt")
-    validate_profiles(registry, release_manifest, errors)
+    validate_profiles(registry, release_manifest, adopted_root, errors)
     return errors
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Validate the schema-shaped protocol release registry against local Git evidence.",
+        description="Validate the protocol release registry against public and adopted Git evidence.",
         epilog=(
-            "--baseline permits additions but rejects deletion or parsed-value mutation of existing releases, profiles, "
-            "embedded-wire observations, and the known collision receipt. Cross-field history is otherwise validated "
-            "against the current registry and local Git."
+            "--adopted-repo is required when the registry pins adopted commits. --baseline permits map additions but rejects "
+            "deletion or parsed-value mutation of existing releases, profiles, embedded-wire observations, ledgerVersion, and "
+            "the known collision receipt; additional collision observations and unassigned heads retain an exact prefix."
         ),
     )
     parser.add_argument("--repo-root", type=Path, default=Path(__file__).resolve().parents[1])
     parser.add_argument("--registry", default="versions/release-registry.json")
     parser.add_argument("--schema", default="versions/release-ledger.schema.json")
     parser.add_argument("--release-manifest", default="versions/release.json")
+    parser.add_argument("--adopted-repo", type=Path, help="Git checkout containing every pinned crinkl-protocol commit.")
     parser.add_argument("--baseline", type=Path, help="Prior registry whose existing entries must remain unchanged.")
     return parser.parse_args()
 
@@ -434,7 +518,8 @@ def main() -> int:
         schema = load_json(resolve(root, args.schema))
         registry = load_json(resolve(root, args.registry))
         release_manifest = load_json(resolve(root, args.release_manifest))
-        errors = validate_registry(root, schema, registry, release_manifest)
+        adopted_root = args.adopted_repo.resolve() if args.adopted_repo else None
+        errors = validate_registry(root, schema, registry, release_manifest, adopted_root)
         if args.baseline:
             baseline = load_json(resolve(root, args.baseline))
             errors.extend(validate_schema(schema, baseline))
@@ -447,7 +532,7 @@ def main() -> int:
         for item in errors:
             print(f"- {item}", file=sys.stderr)
         return 1
-    print("[release-registry] OK (schema, registry, local Git evidence, and profile consistency)")
+    print("[release-registry] OK (schema, registry, public/adopted Git evidence, and profile consistency)")
     return 0
 
 

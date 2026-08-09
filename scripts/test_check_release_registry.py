@@ -11,6 +11,7 @@ import check_release_registry as checker
 
 
 ROOT = Path(__file__).resolve().parents[1]
+ADOPTED_ROOT = Path("/home/azureuser/crinkl-protocol")
 
 
 def load(path: str) -> dict:
@@ -23,6 +24,7 @@ def assert_rejected(name: str, registry: dict, release_manifest: dict | None = N
         load("versions/release-ledger.schema.json"),
         registry,
         release_manifest if release_manifest is not None else load("versions/release.json"),
+        ADOPTED_ROOT,
     )
     if not errors:
         raise AssertionError(f"{name}: registry mutation was accepted")
@@ -33,7 +35,7 @@ def main() -> int:
     schema = load("versions/release-ledger.schema.json")
     registry = load("versions/release-registry.json")
     release_manifest = load("versions/release.json")
-    valid_errors = checker.validate_registry(ROOT, schema, registry, release_manifest)
+    valid_errors = checker.validate_registry(ROOT, schema, registry, release_manifest, ADOPTED_ROOT)
     if valid_errors:
         raise AssertionError(f"valid registry rejected: {valid_errors}")
     print("[release-registry-test] accepted: current registry")
@@ -43,8 +45,18 @@ def main() -> int:
     assert_rejected("dangling latest release", mutated)
 
     mutated = copy.deepcopy(registry)
+    mutated["latestReleasedVersion"] = "1.0.0-rc.3"
+    assert_rejected("stale latest release", mutated)
+
+    mutated = copy.deepcopy(registry)
     mutated["reviewedCandidateVersion"] = "1.0.0-rc.99"
     assert_rejected("dangling reviewed candidate", mutated)
+
+    mutated = copy.deepcopy(registry)
+    mutated["releases"]["1.0.0-rc.6"] = copy.deepcopy(mutated["releases"]["1.0.0-rc.5"])
+    mutated["releases"]["1.0.0-rc.6"]["plannedTag"] = "v1.0.0-rc.6"
+    mutated["releases"]["1.0.0-rc.6"]["previousRelease"] = "1.0.0-rc.5"
+    assert_rejected("stale reviewed candidate", mutated)
 
     mutated = copy.deepcopy(registry)
     mutated["releases"]["1.0.0-rc.5"]["previousRelease"] = "1.0.0-rc.99"
@@ -85,6 +97,14 @@ def main() -> int:
     assert_rejected("source tree mismatch", mutated)
 
     mutated = copy.deepcopy(registry)
+    mutated["releases"]["1.0.0-rc.3"]["adoptedSources"][0]["commit"] = "f" * 40
+    assert_rejected("fabricated release adopted commit", mutated)
+
+    mutated = copy.deepcopy(registry)
+    mutated["profiles"]["campaign.directBuyerReward.profileV1"]["adoptedSource"]["commit"] = "f" * 40
+    assert_rejected("fabricated profile adopted commit", mutated)
+
+    mutated = copy.deepcopy(registry)
     mutated["profiles"]["campaign.directBuyerReward.profileV1"]["runtimeSupport"] = "AVAILABLE"
     assert_rejected("runtime activation claim", mutated)
 
@@ -92,9 +112,26 @@ def main() -> int:
     mutated["profiles"]["token.spendAttestation.holderBinding.v2"]["objectConstraints"][0]["requiredSchemaVersions"] = [3]
     assert_rejected("required schema version not supported", mutated)
 
+    reused = copy.deepcopy(registry)
+    reused["profiles"]["portable.spendAttestation.reuse.v1"] = copy.deepcopy(
+        reused["profiles"]["token.spendAttestation.holderBinding.v2"]
+    )
+    if checker.validate_registry(ROOT, schema, reused, release_manifest, ADOPTED_ROOT):
+        raise AssertionError("object identifier reuse across profiles was rejected")
+    print("[release-registry-test] accepted: object identifier reuse across profiles")
+
+    mutated = copy.deepcopy(registry)
+    constraint = copy.deepcopy(mutated["profiles"]["token.spendAttestation.holderBinding.v2"]["objectConstraints"][0])
+    mutated["profiles"]["token.spendAttestation.holderBinding.v2"]["objectConstraints"].append(constraint)
+    assert_rejected("duplicate object identifier within profile", mutated)
+
     manifest = copy.deepcopy(release_manifest)
     manifest["profiles"][0]["kind"] = "unregistered.profile.v1"
     assert_rejected("unregistered release manifest profile", copy.deepcopy(registry), manifest)
+
+    manifest = copy.deepcopy(release_manifest)
+    manifest["profiles"].append(copy.deepcopy(manifest["profiles"][0]))
+    assert_rejected("duplicate release manifest profile kind", copy.deepcopy(registry), manifest)
 
     mutated = copy.deepcopy(registry)
     mutated["releasedSchemaIdentityCollisionReceipt"]["digest"] = "sha256:" + "f" * 64
@@ -120,6 +157,35 @@ def main() -> int:
     if checker.validate_baseline(appended, baseline):
         raise AssertionError("baseline rejected an allowed append")
     print("[release-registry-test] accepted: baseline append")
+
+    heads_appended = copy.deepcopy(registry)
+    heads_appended["unassignedSourceHeads"].append(copy.deepcopy(heads_appended["unassignedSourceHeads"][0]))
+    if checker.validate_baseline(heads_appended, baseline):
+        raise AssertionError("baseline rejected an allowed unassigned-source suffix append")
+    print("[release-registry-test] accepted: unassigned source append")
+
+    observation_baseline = copy.deepcopy(registry)
+    observation_baseline["additionalCollisionObservations"] = [
+        {"algorithm": "sha256", "digest": "sha256:" + "b" * 64, "state": "OBSERVED_UNRESOLVED"},
+        {"algorithm": "sha256", "digest": "sha256:" + "c" * 64, "state": "OBSERVED_UNRESOLVED"},
+    ]
+    changed = copy.deepcopy(observation_baseline)
+    changed["additionalCollisionObservations"].reverse()
+    if not checker.validate_baseline(changed, observation_baseline):
+        raise AssertionError("baseline observation reorder was accepted")
+    print("[release-registry-test] rejected: observation reorder")
+
+    changed = copy.deepcopy(registry)
+    changed["unassignedSourceHeads"][0]["state"] = "MUTATED"
+    if not checker.validate_baseline(changed, baseline):
+        raise AssertionError("baseline unassigned source mutation was accepted")
+    print("[release-registry-test] rejected: unassigned source mutation")
+
+    changed = copy.deepcopy(registry)
+    changed["ledgerVersion"] = 2
+    if not checker.validate_baseline(changed, baseline):
+        raise AssertionError("baseline ledger version mutation was accepted")
+    print("[release-registry-test] rejected: ledger version mutation")
     return 0
 
 
