@@ -44,6 +44,10 @@
       "items": { "$ref": "#/$defs/unassignedSourceHead" }
     },
     "releasedSchemaIdentityCollisionReceipt": { "$ref": "#/$defs/knownCollisionReceipt" },
+    "collisionReceiptCorrections": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/collisionReceiptCorrection" }
+    },
     "additionalCollisionObservations": {
       "type": "array",
       "items": { "$ref": "#/$defs/collisionObservation" }
@@ -252,6 +256,41 @@
             { "publicTag": "v1.0.0-rc.4", "publicCommit": "7ce390fb3f562f589318ea36e9b8200aa4585da0", "adoptedCommit": "5019e41bdeb924449363aa3b538eaa5b3b6ee4dc" }
           ]
         }
+      }
+    },
+    "collisionReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "digest", "lineCount", "state", "comparisons"],
+      "properties": {
+        "algorithm": { "const": "sha256" },
+        "digest": { "$ref": "#/$defs/digest" },
+        "lineCount": { "type": "integer", "minimum": 0 },
+        "state": { "const": "OBSERVED_UNRESOLVED_RELEASED_IDENTITY_COLLISION" },
+        "comparisons": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["publicTag", "publicCommit", "adoptedCommit"],
+            "properties": {
+              "publicTag": { "$ref": "#/$defs/tag" },
+              "publicCommit": { "$ref": "#/$defs/commit" },
+              "adoptedCommit": { "$ref": "#/$defs/commit" }
+            }
+          }
+        }
+      }
+    },
+    "collisionReceiptCorrection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["supersededDigest", "reason", "effectiveReceipt"],
+      "properties": {
+        "supersededDigest": { "$ref": "#/$defs/digest" },
+        "reason": { "type": "string", "minLength": 1 },
+        "effectiveReceipt": { "$ref": "#/$defs/collisionReceipt" }
       }
     },
     "collisionObservation": {

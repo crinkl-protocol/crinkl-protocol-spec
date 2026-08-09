@@ -253,5 +253,21 @@
       { "publicTag": "v1.0.0-rc.4", "publicCommit": "7ce390fb3f562f589318ea36e9b8200aa4585da0", "adoptedCommit": "5019e41bdeb924449363aa3b538eaa5b3b6ee4dc" }
     ]
   },
+  "collisionReceiptCorrections": [
+    {
+      "supersededDigest": "sha256:0d1c6a393a9be65bbb1d33a36e5e06b92708a352b351790120ceccc3e1ac5ac6",
+      "reason": "PINNED_ADOPTED_STORE_LOCATION_ENTRY_BLOB_MISMATCH",
+      "effectiveReceipt": {
+        "algorithm": "sha256",
+        "digest": "sha256:d2441f0da9fef029fc8f59b099458c3e7ff22ffd181c3ee3f9fd75525113ccf9",
+        "lineCount": 22,
+        "state": "OBSERVED_UNRESOLVED_RELEASED_IDENTITY_COLLISION",
+        "comparisons": [
+          { "publicTag": "v1.0.0-rc.3", "publicCommit": "a8368577b6331ed5c076105da1536e32be39bdf6", "adoptedCommit": "8c641f57201c75bac12819a0f903ae6105c7f3c3" },
+          { "publicTag": "v1.0.0-rc.4", "publicCommit": "7ce390fb3f562f589318ea36e9b8200aa4585da0", "adoptedCommit": "5019e41bdeb924449363aa3b538eaa5b3b6ee4dc" }
+        ]
+      }
+    }
+  ],
   "additionalCollisionObservations": []
 }

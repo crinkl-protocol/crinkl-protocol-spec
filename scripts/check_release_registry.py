@@ -51,6 +51,22 @@ KNOWN_COLLISION_RECEIPT = {
     ],
 }
 
+CORRECTED_COLLISION_RECEIPT = {
+    "algorithm": "sha256",
+    "digest": "sha256:d2441f0da9fef029fc8f59b099458c3e7ff22ffd181c3ee3f9fd75525113ccf9",
+    "lineCount": 22,
+    "state": "OBSERVED_UNRESOLVED_RELEASED_IDENTITY_COLLISION",
+    "comparisons": KNOWN_COLLISION_RECEIPT["comparisons"],
+}
+
+FIRST_COLLISION_RECEIPT_CORRECTION = {
+    "supersededDigest": KNOWN_COLLISION_RECEIPT["digest"],
+    "reason": "PINNED_ADOPTED_STORE_LOCATION_ENTRY_BLOB_MISMATCH",
+    "effectiveReceipt": CORRECTED_COLLISION_RECEIPT,
+}
+
+COLLISION_STREAM_CACHE: dict[tuple[str, str, str, str], tuple[bytes, str]] = {}
+
 
 def reject_duplicate_pairs(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
     value: dict[str, Any] = {}
@@ -83,6 +99,166 @@ def git(root: Path, *args: str, binary: bool = False) -> bytes | str | None:
     if result.returncode:
         return None
     return result.stdout if binary else result.stdout.decode("utf-8").strip()
+
+
+def git_required(root: Path, *args: str, binary: bool = False) -> bytes | str:
+    """Read one exact Git object, preserving errors as validation evidence."""
+    try:
+        result = subprocess.run(
+            ["git", "-C", str(root), *args],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=False,
+        )
+    except OSError as exc:
+        raise ValueError(f"cannot run git {' '.join(args)} in {root}: {exc}") from exc
+    if result.returncode:
+        detail = result.stderr.decode("utf-8", errors="replace").strip()
+        raise ValueError(f"git {' '.join(args)} in {root} failed: {detail or f'exit {result.returncode}'}")
+    return result.stdout if binary else result.stdout.decode("utf-8")
+
+
+def tracked_json_ids(root: Path, commit: str) -> dict[str, tuple[str, str]]:
+    """Resolve every root JSON Schema identifier and raw blob digest at one commit."""
+    git_required(root, "cat-file", "-e", f"{commit}^{{commit}}")
+    names = git_required(root, "ls-tree", "-r", "-z", "--name-only", commit, binary=True)
+    assert isinstance(names, bytes)
+    entries: dict[str, tuple[str, str]] = {}
+    for raw_path in names.split(b"\0"):
+        if not raw_path:
+            continue
+        try:
+            path = raw_path.decode("utf-8")
+        except UnicodeDecodeError as exc:
+            raise ValueError(f"{commit}: tracked path is not UTF-8") from exc
+        if not path.endswith(".json"):
+            continue
+        blob = git_required(root, "show", f"{commit}:{path}", binary=True)
+        assert isinstance(blob, bytes)
+        try:
+            document = json.loads(blob.decode("utf-8"), object_pairs_hook=reject_duplicate_pairs)
+        except (UnicodeDecodeError, json.JSONDecodeError, DuplicateKeyError) as exc:
+            raise ValueError(f"{commit}:{path}: invalid JSON: {exc}") from exc
+        if not isinstance(document, dict) or "$id" not in document:
+            continue
+        identifier = document["$id"]
+        if not isinstance(identifier, str) or not identifier:
+            raise ValueError(f"{commit}:{path}: root $id must be a non-empty string")
+        if identifier in entries:
+            raise ValueError(f"{commit}: duplicate root $id {identifier!r} at {entries[identifier][0]} and {path}")
+        entries[identifier] = (path, "sha256:" + hashlib.sha256(blob).hexdigest())
+    return entries
+
+
+def clear_collision_comparison_cache() -> None:
+    """Clear cached immutable schema comparisons for focused failure simulation."""
+    COLLISION_STREAM_CACHE.clear()
+
+
+def reproduce_collision_comparison(
+    public_root: Path,
+    adopted_root: Path,
+    comparison: Any,
+) -> tuple[bytes, str]:
+    """Produce the canonical same-ID/different-byte receipt for one historical pair."""
+    if not isinstance(comparison, dict):
+        raise ValueError("collision comparison must be an object")
+    public_tag = comparison.get("publicTag")
+    public_commit = comparison.get("publicCommit")
+    adopted_commit = comparison.get("adoptedCommit")
+    if not all(isinstance(value, str) and value for value in (public_tag, public_commit, adopted_commit)):
+        raise ValueError("collision comparison requires publicTag, publicCommit, and adoptedCommit")
+    tag_commit = git_required(public_root, "rev-parse", f"refs/tags/{public_tag}^{{commit}}")
+    assert isinstance(tag_commit, str)
+    if tag_commit.strip() != public_commit:
+        raise ValueError(f"{public_tag} resolves to {tag_commit.strip()}, not recorded public commit {public_commit}")
+    cache_key = (str(public_root.resolve()), str(adopted_root.resolve()), public_commit, adopted_commit)
+    cached = COLLISION_STREAM_CACHE.get(cache_key)
+    if cached is not None:
+        return cached
+    public_ids = tracked_json_ids(public_root, public_commit)
+    adopted_ids = tracked_json_ids(adopted_root, adopted_commit)
+    shared_ids = set(public_ids).intersection(adopted_ids)
+    if len(shared_ids) != 35:
+        raise ValueError(f"collision comparison has {len(shared_ids)} shared root $id values, expected 35")
+    lines: list[bytes] = []
+    for identifier in sorted(shared_ids, key=lambda value: value.encode("utf-8")):
+        public_digest = public_ids[identifier][1]
+        adopted_digest = adopted_ids[identifier][1]
+        if public_digest != adopted_digest:
+            lines.append(
+                identifier.encode("utf-8") + b"\t" + public_digest.encode("ascii") + b"\t" + adopted_digest.encode("ascii") + b"\n"
+            )
+    if len(lines) != 22:
+        raise ValueError(f"collision comparison has {len(lines)} differing root $id values, expected 22")
+    stream = b"".join(lines)
+    result = (stream, "sha256:" + hashlib.sha256(stream).hexdigest())
+    COLLISION_STREAM_CACHE[cache_key] = result
+    return result
+
+
+def validate_collision_receipt(
+    public_root: Path,
+    adopted_root: Path | None,
+    receipt: Any,
+    location: str = "releasedSchemaIdentityCollisionReceipt",
+) -> list[str]:
+    """Bind the registered receipt to both immutable public/adopted Git comparisons."""
+    errors: list[str] = []
+    if adopted_root is None:
+        error(errors, location, "collision receipt requires a usable --adopted-repo")
+        return errors
+    if not isinstance(receipt, dict):
+        error(errors, location, "collision receipt must be an object")
+        return errors
+    comparisons = receipt.get("comparisons")
+    if not isinstance(comparisons, list) or len(comparisons) != 2:
+        error(errors, location, "collision receipt must contain exactly two comparisons")
+        return errors
+    streams: list[bytes] = []
+    digests: list[str] = []
+    for index, comparison in enumerate(comparisons):
+        try:
+            stream, digest = reproduce_collision_comparison(public_root, adopted_root, comparison)
+        except ValueError as exc:
+            error(errors, f"{location}.comparisons[{index}]", str(exc))
+            continue
+        streams.append(stream)
+        digests.append(digest)
+    if len(streams) != len(comparisons):
+        return errors
+    if streams[0] != streams[1]:
+        error(errors, location, "historical comparisons produce different collision streams")
+        return errors
+    digest = digests[0]
+    if receipt.get("algorithm") != "sha256" or receipt.get("digest") != digest:
+        error(errors, location, f"digest does not match reproduced stream: expected {digest}")
+    if receipt.get("lineCount") != 22:
+        error(errors, location, "lineCount must equal the reproduced 22 collisions")
+    return errors
+
+
+def effective_collision_receipts(corrections: Any) -> list[Any]:
+    """Resolve an append-only correction chain over immutable historical evidence."""
+    if not isinstance(corrections, list) or not corrections:
+        raise ValueError("collision receipt corrections must contain an effective correction")
+    if corrections[0] != FIRST_COLLISION_RECEIPT_CORRECTION:
+        raise ValueError("first collision receipt correction does not preserve the canonical correction evidence")
+    prior_digest = KNOWN_COLLISION_RECEIPT["digest"]
+    receipts: list[Any] = []
+    for index, correction in enumerate(corrections):
+        if not isinstance(correction, dict):
+            raise ValueError(f"collision receipt correction {index} must be an object")
+        if correction.get("supersededDigest") != prior_digest:
+            raise ValueError(f"collision receipt correction {index} does not supersede the prior effective digest")
+        receipt = correction.get("effectiveReceipt")
+        if not isinstance(receipt, dict) or not isinstance(receipt.get("digest"), str):
+            raise ValueError(f"collision receipt correction {index} has no effective receipt digest")
+        if receipt["digest"] == prior_digest:
+            raise ValueError(f"collision receipt correction {index} must select a successor effective digest")
+        receipts.append(receipt)
+        prior_digest = receipt["digest"]
+    return receipts
 
 
 def tag_ref_exists(root: Path, tag: str) -> bool:
@@ -459,6 +635,13 @@ def validate_baseline(current: dict[str, Any], baseline: dict[str, Any]) -> list
             error(errors, f"baseline.{section}", "both baseline and current registries must contain an array")
         elif len(latest) < len(prior) or latest[:len(prior)] != prior:
             error(errors, f"baseline.{section}", "existing ordered observations must remain an exact prefix")
+    prior_corrections = baseline.get("collisionReceiptCorrections")
+    latest_corrections = current.get("collisionReceiptCorrections")
+    if prior_corrections is not None:
+        if not isinstance(prior_corrections, list) or not isinstance(latest_corrections, list):
+            error(errors, "baseline.collisionReceiptCorrections", "both registries must contain an array when the baseline has corrections")
+        elif len(latest_corrections) < len(prior_corrections) or latest_corrections[:len(prior_corrections)] != prior_corrections:
+            error(errors, "baseline.collisionReceiptCorrections", "existing corrections must remain an exact prefix")
     return errors
 
 
@@ -513,6 +696,13 @@ def validate_registry(
             source_matches(root, head.get("source"), f"unassignedSourceHeads[{index}].source", errors)
     if registry.get("releasedSchemaIdentityCollisionReceipt") != KNOWN_COLLISION_RECEIPT:
         error(errors, "releasedSchemaIdentityCollisionReceipt", "does not match the immutable known collision receipt")
+    try:
+        receipts = effective_collision_receipts(registry.get("collisionReceiptCorrections"))
+    except ValueError as exc:
+        error(errors, "collisionReceiptCorrections", str(exc))
+    else:
+        for index, receipt in enumerate(receipts):
+            errors.extend(validate_collision_receipt(root, adopted_root, receipt, f"collisionReceiptCorrections[{index}].effectiveReceipt"))
     validate_profiles(registry, release_manifest, adopted_root, errors)
     return errors
 

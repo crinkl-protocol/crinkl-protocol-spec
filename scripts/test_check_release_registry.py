@@ -193,6 +193,49 @@ def main() -> int:
     mutated["releasedSchemaIdentityCollisionReceipt"]["digest"] = "sha256:" + "f" * 64
     assert_rejected("collision receipt mutation", mutated, adopted_root)
 
+    corrected_receipt = copy.deepcopy(registry["collisionReceiptCorrections"][-1]["effectiveReceipt"])
+    corrected_receipt["digest"] = "sha256:" + "f" * 64
+    errors = checker.validate_collision_receipt(ROOT, adopted_root, corrected_receipt)
+    if not any("digest does not match reproduced stream" in item for item in errors):
+        raise AssertionError(f"altered effective receipt digest was accepted: {errors}")
+    print("[release-registry-test] rejected: altered effective receipt digest")
+
+    corrected_receipt = copy.deepcopy(registry["collisionReceiptCorrections"][-1]["effectiveReceipt"])
+    corrected_receipt["comparisons"][0]["publicTag"] = "v1.0.0-rc.4"
+    errors = checker.validate_collision_receipt(ROOT, adopted_root, corrected_receipt)
+    if not any("not recorded public commit" in item for item in errors):
+        raise AssertionError(f"altered effective receipt comparison was accepted: {errors}")
+    print("[release-registry-test] rejected: altered effective receipt comparison")
+
+    original_git_required = checker.git_required
+    def fail_collision_lookup(root, *args, binary=False):
+        if args[:2] == ("rev-parse", "refs/tags/v1.0.0-rc.3^{commit}"):
+            raise ValueError("simulated collision receipt Git lookup failure")
+        return original_git_required(root, *args, binary=binary)
+
+    try:
+        checker.clear_collision_comparison_cache()
+        checker.git_required = fail_collision_lookup
+        errors = checker.validate_collision_receipt(
+            ROOT,
+            adopted_root,
+            copy.deepcopy(registry["collisionReceiptCorrections"][-1]["effectiveReceipt"]),
+        )
+        if not any("simulated collision receipt Git lookup failure" in item for item in errors):
+            raise AssertionError(f"collision receipt Git lookup failure was accepted: {errors}")
+        print("[release-registry-test] rejected: collision receipt Git lookup failure")
+    finally:
+        checker.git_required = original_git_required
+        checker.clear_collision_comparison_cache()
+
+    legacy_baseline = copy.deepcopy(registry)
+    del legacy_baseline["collisionReceiptCorrections"]
+    if checker.validate_schema(schema, legacy_baseline):
+        raise AssertionError("legacy registry without a correction is not schema-valid as a baseline")
+    if checker.validate_baseline(registry, legacy_baseline):
+        raise AssertionError("legacy registry without a correction was rejected as a baseline")
+    print("[release-registry-test] accepted: legacy correction-free baseline")
+
     baseline = copy.deepcopy(registry)
     deleted = copy.deepcopy(registry)
     del deleted["profiles"]["campaign.directBuyerReward.profileV1"]
@@ -205,6 +248,26 @@ def main() -> int:
     if not checker.validate_baseline(changed, baseline):
         raise AssertionError("baseline wire observation mutation was accepted")
     print("[release-registry-test] rejected: baseline mutation")
+
+    deleted = copy.deepcopy(registry)
+    del deleted["collisionReceiptCorrections"][0]
+    if not checker.validate_baseline(deleted, baseline):
+        raise AssertionError("baseline collision receipt correction deletion was accepted")
+    print("[release-registry-test] rejected: correction deletion")
+
+    changed = copy.deepcopy(registry)
+    changed["collisionReceiptCorrections"][0]["reason"] = "MUTATED"
+    if not checker.validate_baseline(changed, baseline):
+        raise AssertionError("baseline collision receipt correction mutation was accepted")
+    print("[release-registry-test] rejected: correction mutation")
+
+    correction_baseline = copy.deepcopy(registry)
+    correction_baseline["collisionReceiptCorrections"].append({"sequence": 2})
+    changed = copy.deepcopy(correction_baseline)
+    changed["collisionReceiptCorrections"].reverse()
+    if not checker.validate_baseline(changed, correction_baseline):
+        raise AssertionError("baseline collision receipt correction reorder was accepted")
+    print("[release-registry-test] rejected: correction reorder")
 
     appended = copy.deepcopy(registry)
     appended["additionalCollisionObservations"].append(
