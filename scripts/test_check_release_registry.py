@@ -2,8 +2,10 @@
 """Hostile tests for the release-registry gate."""
 from __future__ import annotations
 
+import argparse
 import copy
 import json
+import os
 import tempfile
 from pathlib import Path
 
@@ -11,20 +13,38 @@ import check_release_registry as checker
 
 
 ROOT = Path(__file__).resolve().parents[1]
-ADOPTED_ROOT = Path("/home/azureuser/crinkl-protocol")
 
 
 def load(path: str) -> dict:
     return json.loads((ROOT / path).read_text(encoding="utf-8"))
 
 
-def assert_rejected(name: str, registry: dict, release_manifest: dict | None = None) -> None:
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Run hostile release-registry gate tests.")
+    parser.add_argument(
+        "--adopted-repo",
+        type=Path,
+        default=os.environ.get("CRINKL_PROTOCOL_ADOPTED_REPO") or None,
+        help="Git checkout containing every pinned crinkl-protocol commit.",
+    )
+    args = parser.parse_args()
+    if args.adopted_repo is None:
+        parser.error("--adopted-repo or CRINKL_PROTOCOL_ADOPTED_REPO is required")
+    return args
+
+
+def assert_rejected(
+    name: str,
+    registry: dict,
+    adopted_root: Path,
+    release_manifest: dict | None = None,
+) -> None:
     errors = checker.validate_registry(
         ROOT,
         load("versions/release-ledger.schema.json"),
         registry,
         release_manifest if release_manifest is not None else load("versions/release.json"),
-        ADOPTED_ROOT,
+        adopted_root,
     )
     if not errors:
         raise AssertionError(f"{name}: registry mutation was accepted")
@@ -32,43 +52,56 @@ def assert_rejected(name: str, registry: dict, release_manifest: dict | None = N
 
 
 def main() -> int:
+    args = parse_args()
+    adopted_root = args.adopted_repo.resolve()
     schema = load("versions/release-ledger.schema.json")
     registry = load("versions/release-registry.json")
     release_manifest = load("versions/release.json")
-    valid_errors = checker.validate_registry(ROOT, schema, registry, release_manifest, ADOPTED_ROOT)
+    valid_errors = checker.validate_registry(ROOT, schema, registry, release_manifest, adopted_root)
     if valid_errors:
         raise AssertionError(f"valid registry rejected: {valid_errors}")
-    print("[release-registry-test] accepted: current registry")
+    print(f"[release-registry-test] accepted: current registry (adopted repo: {adopted_root})")
 
     mutated = copy.deepcopy(registry)
     mutated["latestReleasedVersion"] = "1.0.0-rc.99"
-    assert_rejected("dangling latest release", mutated)
+    assert_rejected("dangling latest release", mutated, adopted_root)
 
     mutated = copy.deepcopy(registry)
     mutated["latestReleasedVersion"] = "1.0.0-rc.3"
-    assert_rejected("stale latest release", mutated)
+    assert_rejected("stale latest release", mutated, adopted_root)
 
     mutated = copy.deepcopy(registry)
     mutated["reviewedCandidateVersion"] = "1.0.0-rc.99"
-    assert_rejected("dangling reviewed candidate", mutated)
+    assert_rejected("dangling reviewed candidate", mutated, adopted_root)
 
     mutated = copy.deepcopy(registry)
     mutated["releases"]["1.0.0-rc.6"] = copy.deepcopy(mutated["releases"]["1.0.0-rc.5"])
     mutated["releases"]["1.0.0-rc.6"]["plannedTag"] = "v1.0.0-rc.6"
     mutated["releases"]["1.0.0-rc.6"]["previousRelease"] = "1.0.0-rc.5"
-    assert_rejected("stale reviewed candidate", mutated)
+    assert_rejected("stale reviewed candidate", mutated, adopted_root)
 
     mutated = copy.deepcopy(registry)
     mutated["releases"]["1.0.0-rc.5"]["previousRelease"] = "1.0.0-rc.99"
-    assert_rejected("dangling predecessor", mutated)
+    assert_rejected("dangling predecessor", mutated, adopted_root)
 
     mutated = copy.deepcopy(registry)
     mutated["releases"]["1.0.0-rc.1"]["previousRelease"] = "1.0.0-rc.5"
-    assert_rejected("predecessor cycle", mutated)
+    assert_rejected("predecessor cycle", mutated, adopted_root)
 
     mutated = copy.deepcopy(registry)
     mutated["releases"]["1.0.0-rc.3"]["actualTag"] = "v1.0.0-rc.4"
-    assert_rejected("tag-key mismatch", mutated)
+    assert_rejected("tag-key mismatch", mutated, adopted_root)
+
+    mutated = copy.deepcopy(registry)
+    mutated["releases"]["1.0.0-rc.5"]["actualTag"] = "v1.0.0-rc.5"
+    assert_rejected("unpublished candidate actual tag", mutated, adopted_root)
+
+    original_tag_ref_exists = checker.tag_ref_exists
+    try:
+        checker.tag_ref_exists = lambda root, tag: tag == "v1.0.0-rc.5" or original_tag_ref_exists(root, tag)
+        assert_rejected("unpublished candidate planned tag ref", copy.deepcopy(registry), adopted_root)
+    finally:
+        checker.tag_ref_exists = original_tag_ref_exists
 
     with tempfile.TemporaryDirectory() as directory:
         duplicate = Path(directory) / "duplicate.json"
@@ -82,60 +115,60 @@ def main() -> int:
 
     mutated = copy.deepcopy(registry)
     mutated["releases"]["1.0.0-rc.3"]["artifactInventory"][0]["digest"] = "sha256:" + "0" * 64
-    assert_rejected("artifact digest mismatch", mutated)
+    assert_rejected("artifact digest mismatch", mutated, adopted_root)
 
     mutated = copy.deepcopy(registry)
     mutated["releases"]["1.0.0-rc.3"]["authority"]["releaseAuthority"] = "REVIEWED_SOURCE_NOT_RELEASED"
-    assert_rejected("released authority tuple", mutated)
+    assert_rejected("released authority tuple", mutated, adopted_root)
 
     mutated = copy.deepcopy(registry)
     mutated["profiles"]["campaign.directBuyerReward.profileV1"]["maturity"] = "CANDIDATE"
-    assert_rejected("profile maturity authority", mutated)
+    assert_rejected("profile maturity authority", mutated, adopted_root)
 
     mutated = copy.deepcopy(registry)
     mutated["releases"]["1.0.0-rc.3"]["source"]["tree"] = "0" * 40
-    assert_rejected("source tree mismatch", mutated)
+    assert_rejected("source tree mismatch", mutated, adopted_root)
 
     mutated = copy.deepcopy(registry)
     mutated["releases"]["1.0.0-rc.3"]["adoptedSources"][0]["commit"] = "f" * 40
-    assert_rejected("fabricated release adopted commit", mutated)
+    assert_rejected("fabricated release adopted commit", mutated, adopted_root)
 
     mutated = copy.deepcopy(registry)
     mutated["profiles"]["campaign.directBuyerReward.profileV1"]["adoptedSource"]["commit"] = "f" * 40
-    assert_rejected("fabricated profile adopted commit", mutated)
+    assert_rejected("fabricated profile adopted commit", mutated, adopted_root)
 
     mutated = copy.deepcopy(registry)
     mutated["profiles"]["campaign.directBuyerReward.profileV1"]["runtimeSupport"] = "AVAILABLE"
-    assert_rejected("runtime activation claim", mutated)
+    assert_rejected("runtime activation claim", mutated, adopted_root)
 
     mutated = copy.deepcopy(registry)
     mutated["profiles"]["token.spendAttestation.holderBinding.v2"]["objectConstraints"][0]["requiredSchemaVersions"] = [3]
-    assert_rejected("required schema version not supported", mutated)
+    assert_rejected("required schema version not supported", mutated, adopted_root)
 
     reused = copy.deepcopy(registry)
     reused["profiles"]["portable.spendAttestation.reuse.v1"] = copy.deepcopy(
         reused["profiles"]["token.spendAttestation.holderBinding.v2"]
     )
-    if checker.validate_registry(ROOT, schema, reused, release_manifest, ADOPTED_ROOT):
+    if checker.validate_registry(ROOT, schema, reused, release_manifest, adopted_root):
         raise AssertionError("object identifier reuse across profiles was rejected")
     print("[release-registry-test] accepted: object identifier reuse across profiles")
 
     mutated = copy.deepcopy(registry)
     constraint = copy.deepcopy(mutated["profiles"]["token.spendAttestation.holderBinding.v2"]["objectConstraints"][0])
     mutated["profiles"]["token.spendAttestation.holderBinding.v2"]["objectConstraints"].append(constraint)
-    assert_rejected("duplicate object identifier within profile", mutated)
+    assert_rejected("duplicate object identifier within profile", mutated, adopted_root)
 
     manifest = copy.deepcopy(release_manifest)
     manifest["profiles"][0]["kind"] = "unregistered.profile.v1"
-    assert_rejected("unregistered release manifest profile", copy.deepcopy(registry), manifest)
+    assert_rejected("unregistered release manifest profile", copy.deepcopy(registry), adopted_root, manifest)
 
     manifest = copy.deepcopy(release_manifest)
     manifest["profiles"].append(copy.deepcopy(manifest["profiles"][0]))
-    assert_rejected("duplicate release manifest profile kind", copy.deepcopy(registry), manifest)
+    assert_rejected("duplicate release manifest profile kind", copy.deepcopy(registry), adopted_root, manifest)
 
     mutated = copy.deepcopy(registry)
     mutated["releasedSchemaIdentityCollisionReceipt"]["digest"] = "sha256:" + "f" * 64
-    assert_rejected("collision receipt mutation", mutated)
+    assert_rejected("collision receipt mutation", mutated, adopted_root)
 
     baseline = copy.deepcopy(registry)
     deleted = copy.deepcopy(registry)

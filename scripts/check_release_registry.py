@@ -85,6 +85,25 @@ def git(root: Path, *args: str, binary: bool = False) -> bytes | str | None:
     return result.stdout if binary else result.stdout.decode("utf-8").strip()
 
 
+def tag_ref_exists(root: Path, tag: str) -> bool:
+    """Return whether a local tag ref exists, failing closed on Git errors."""
+    try:
+        result = subprocess.run(
+            ["git", "-C", str(root), "show-ref", "--verify", "--quiet", f"refs/tags/{tag}"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=False,
+        )
+    except OSError as exc:
+        raise ValueError(f"cannot inspect local tag ref {tag}: {exc}") from exc
+    if result.returncode == 0:
+        return True
+    if result.returncode == 1:
+        return False
+    detail = result.stderr.decode("utf-8", errors="replace").strip()
+    raise ValueError(f"cannot inspect local tag ref {tag}: {detail or f'git exited {result.returncode}'}")
+
+
 def semver_parts(value: str) -> tuple[tuple[int, int, int], list[str]] | None:
     match = SEMVER.fullmatch(value)
     if not match:
@@ -259,6 +278,11 @@ def validate_release(
     elif status == "REVIEWED_CANDIDATE_NOT_PUBLISHED":
         if actual_tag is not None:
             error(errors, location, "reviewed unpublished candidate must not have an actualTag")
+        try:
+            if tag_ref_exists(root, expected_tag):
+                error(errors, location, f"reviewed unpublished candidate must not have a plannedTag ref: {expected_tag}")
+        except ValueError as exc:
+            error(errors, location, str(exc))
     previous = record.get("previousRelease")
     if previous is not None:
         if previous not in releases:
