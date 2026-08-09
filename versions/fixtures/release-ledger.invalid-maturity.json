@@ -1,0 +1,275 @@
+{
+  "$schema": "https://protocol.crinkl.xyz/versions/release-ledger.schema.json",
+  "ledgerVersion": 1,
+  "activeRelease": "1.0.0-rc.5",
+  "releases": {
+    "1.0.0-rc.3": {
+      "releaseVersion": "1.0.0-rc.3",
+      "status": "RELEASED",
+      "requiredTag": "v1.0.0-rc.3",
+      "previousRelease": null,
+      "source": {
+        "repository": "crinkl-protocol-spec",
+        "commit": "a8368577b6331ed5c076105da1536e32be39bdf6",
+        "tree": "e0283c322b9af6b246ab2c52a5097ea0bbf6c467"
+      },
+      "canonicalReleaseManifest": {
+        "path": "versions/release.json",
+        "digest": "sha256:65c621b5e0c64bc0343e24f97aa405de9b4803d68e8a6891c86ab6f892f5508f",
+        "role": "RELEASE_MANIFEST"
+      },
+      "artifactInventory": [
+        {
+          "path": "versions/release.json",
+          "digest": "sha256:65c621b5e0c64bc0343e24f97aa405de9b4803d68e8a6891c86ab6f892f5508f",
+          "role": "RELEASE_MANIFEST"
+        },
+        {
+          "path": "07-conformance/vectors/v1/manifest.json",
+          "digest": "sha256:af656bc6665b38be7808f95e3f98457e1ea87d05bf22c8eed4cda37080b68789",
+          "role": "CONFORMANCE_MANIFEST"
+        }
+      ],
+      "wire": {
+        "defaultBindingProtocolVersion": "1.0.0-rc.2",
+        "supportedWireProtocolVersions": ["1.0.0-rc.1", "1.0.0-rc.2"]
+      },
+      "conformance": {
+        "suite": "crinkl-protocol-conformance",
+        "suiteVersion": 2,
+        "manifest": "07-conformance/vectors/v1/manifest.json",
+        "manifestDigest": "sha256:af656bc6665b38be7808f95e3f98457e1ea87d05bf22c8eed4cda37080b68789"
+      },
+      "adoptedSources": [
+        {
+          "repository": "crinkl-protocol",
+          "commit": "8c641f57201c75bac12819a0f903ae6105c7f3c3",
+          "evidenceState": "PINNED_BY_RELEASED_PROFILE_MANIFEST"
+        }
+      ],
+      "authority": {
+        "releaseAuthority": "AUTHORITY_ACCEPTED_TAG_AND_RELEASE_MANIFEST_DIGEST",
+        "sourceBranchAuthority": "PROHIBITED",
+        "authorityState": "RELEASED_TAG_ACCEPTED",
+        "runtimeImplication": "NONE",
+        "productionImplication": "NONE"
+      }
+    },
+    "1.0.0-rc.4": {
+      "releaseVersion": "1.0.0-rc.4",
+      "status": "RELEASED",
+      "requiredTag": "v1.0.0-rc.4",
+      "previousRelease": "1.0.0-rc.3",
+      "source": {
+        "repository": "crinkl-protocol-spec",
+        "commit": "7ce390fb3f562f589318ea36e9b8200aa4585da0",
+        "tree": "66dca0e75d2955b6fd44b34747b3d471adb65515"
+      },
+      "canonicalReleaseManifest": {
+        "path": "versions/release.json",
+        "digest": "sha256:41839c234ecc143dcf841e19ebd2a26c479ac7de896ae1b3e1b29facc61671f2",
+        "role": "RELEASE_MANIFEST"
+      },
+      "artifactInventory": [
+        {
+          "path": "versions/release.json",
+          "digest": "sha256:41839c234ecc143dcf841e19ebd2a26c479ac7de896ae1b3e1b29facc61671f2",
+          "role": "RELEASE_MANIFEST"
+        },
+        {
+          "path": "07-conformance/vectors/v1/manifest.json",
+          "digest": "sha256:4deb342629d0c85f34b06cedf9c0e006dc2016d14fad53e301507ff2beeb06cd",
+          "role": "CONFORMANCE_MANIFEST"
+        }
+      ],
+      "wire": {
+        "defaultBindingProtocolVersion": "1.0.0-rc.2",
+        "supportedWireProtocolVersions": ["1.0.0-rc.1", "1.0.0-rc.2"]
+      },
+      "conformance": {
+        "suite": "crinkl-protocol-conformance",
+        "suiteVersion": 2,
+        "manifest": "07-conformance/vectors/v1/manifest.json",
+        "manifestDigest": "sha256:4deb342629d0c85f34b06cedf9c0e006dc2016d14fad53e301507ff2beeb06cd"
+      },
+      "adoptedSources": [
+        {
+          "repository": "crinkl-protocol",
+          "commit": "5019e41bdeb924449363aa3b538eaa5b3b6ee4dc",
+          "evidenceState": "PINNED_BY_RELEASED_PROFILE_MANIFEST"
+        }
+      ],
+      "authority": {
+        "releaseAuthority": "AUTHORITY_ACCEPTED_TAG_AND_RELEASE_MANIFEST_DIGEST",
+        "sourceBranchAuthority": "PROHIBITED",
+        "authorityState": "RELEASED_TAG_ACCEPTED",
+        "runtimeImplication": "NONE",
+        "productionImplication": "NONE"
+      }
+    },
+    "1.0.0-rc.5": {
+      "releaseVersion": "1.0.0-rc.5",
+      "status": "RELEASE_CANDIDATE_NOT_PUBLISHED",
+      "requiredTag": "v1.0.0-rc.5",
+      "previousRelease": "1.0.0-rc.4",
+      "source": {
+        "repository": "crinkl-protocol-spec",
+        "commit": "a332248f4feca4d9b8693acf83b165e773a6c947",
+        "tree": "d04f30f65e400b4b3b7796cb7fb849ab6dc0e37d"
+      },
+      "canonicalReleaseManifest": {
+        "path": "versions/release.json",
+        "digest": "sha256:5afb18b86420571b96a490412fd10b4e3b3f0df22e473ca61d5a10189ec3be4b",
+        "role": "RELEASE_MANIFEST"
+      },
+      "artifactInventory": [
+        {
+          "path": "versions/release.json",
+          "digest": "sha256:5afb18b86420571b96a490412fd10b4e3b3f0df22e473ca61d5a10189ec3be4b",
+          "role": "RELEASE_MANIFEST"
+        },
+        {
+          "path": "07-conformance/vectors/v1/manifest.json",
+          "digest": "sha256:d939d882f6a432dea4e6a23b9b05e421bd747b1d7db0420cce2dd1146bca2342",
+          "role": "CONFORMANCE_MANIFEST"
+        },
+        {
+          "path": "versions/v1.0.0-rc.5/finalization.json",
+          "digest": "sha256:656b93b193dd6ffe82eca59a6ebc83ce7300d9c8da7d35203208a2302245575b",
+          "role": "FINALIZATION_PLAN"
+        },
+        {
+          "path": "versions/v1.0.0-rc.5/snapshot.md",
+          "digest": "sha256:91adfbc9ee8838fa932a7d8f3d3565e4b31740dd7e930002d5959b3dbca488dc",
+          "role": "RELEASE_SNAPSHOT"
+        }
+      ],
+      "wire": {
+        "defaultBindingProtocolVersion": "1.0.0-rc.2",
+        "supportedWireProtocolVersions": ["1.0.0-rc.1", "1.0.0-rc.2"]
+      },
+      "conformance": {
+        "suite": "crinkl-protocol-conformance",
+        "suiteVersion": 3,
+        "manifest": "07-conformance/vectors/v1/manifest.json",
+        "manifestDigest": "sha256:d939d882f6a432dea4e6a23b9b05e421bd747b1d7db0420cce2dd1146bca2342"
+      },
+      "adoptedSources": [
+        {
+          "repository": "crinkl-protocol",
+          "commit": "ae6382f1ed11b88f9bbfdcc4ef12119647cc7698",
+          "evidenceState": "PINNED_BY_CANDIDATE_PROFILE_MANIFEST"
+        }
+      ],
+      "authority": {
+        "releaseAuthority": "AUTHORITY_ACCEPTED_TAG_AND_RELEASE_MANIFEST_DIGEST",
+        "sourceBranchAuthority": "PROHIBITED",
+        "authorityState": "CANDIDATE_SOURCE_ONLY",
+        "runtimeImplication": "NONE",
+        "productionImplication": "NONE"
+      }
+    }
+  },
+  "profiles": {
+    "campaign.directBuyerReward.profileV1": {
+      "kind": "campaign.directBuyerReward.profileV1",
+      "profileVersion": 1,
+      "maturity": "UNDECLARED",
+      "documentMaturity": "RELEASED",
+      "runtimeSupport": "UNAVAILABLE",
+      "authorityState": "RELEASED_TAG_ACCEPTED",
+      "objectConstraints": [
+        { "objectId": "CampaignDirectBuyerRewardPolicy", "supportedSchemaVersions": [1], "requiredSchemaVersions": [1] },
+        { "objectId": "CampaignEpoch", "supportedSchemaVersions": [1], "requiredSchemaVersions": [1] }
+      ],
+      "adoptedSourceState": "PINNED",
+      "adoptedSource": {
+        "repository": "crinkl-protocol",
+        "commit": "8c641f57201c75bac12819a0f903ae6105c7f3c3",
+        "evidenceState": "PINNED_BY_RELEASED_PROFILE_MANIFEST"
+      }
+    },
+    "token.spendAttestation.holderBinding.v2": {
+      "kind": "token.spendAttestation.holderBinding.v2",
+      "profileVersion": 2,
+      "maturity": "RELEASED",
+      "documentMaturity": "RELEASED",
+      "runtimeSupport": "SEPARATELY_GOVERNED",
+      "authorityState": "RELEASED_TAG_ACCEPTED",
+      "objectConstraints": [
+        { "objectId": "SpendAttestationToken", "supportedSchemaVersions": [1, 2], "requiredSchemaVersions": [2] }
+      ],
+      "adoptedSourceState": "PINNED",
+      "adoptedSource": {
+        "repository": "crinkl-protocol",
+        "commit": "5019e41bdeb924449363aa3b538eaa5b3b6ee4dc",
+        "evidenceState": "PINNED_BY_RELEASED_PROFILE_MANIFEST"
+      }
+    },
+    "credential.spendAttestation.vcdm2.eddsaJcs2022": {
+      "kind": "credential.spendAttestation.vcdm2.eddsaJcs2022",
+      "profileVersion": 1,
+      "maturity": "CANDIDATE",
+      "documentMaturity": "CANDIDATE",
+      "runtimeSupport": "UNAVAILABLE",
+      "authorityState": "CANDIDATE_SOURCE_ONLY",
+      "objectConstraints": [
+        { "objectId": "SpendAttestationCredential", "supportedSchemaVersions": [1], "requiredSchemaVersions": [1] },
+        { "objectId": "W3CIssuerKeyHistory", "supportedSchemaVersions": [1], "requiredSchemaVersions": [1] }
+      ],
+      "adoptedSourceState": "PINNED",
+      "adoptedSource": {
+        "repository": "crinkl-protocol",
+        "commit": "ae6382f1ed11b88f9bbfdcc4ef12119647cc7698",
+        "evidenceState": "PINNED_BY_CANDIDATE_PROFILE_MANIFEST"
+      }
+    },
+    "schema.objectModel.om4.v1": {
+      "kind": "schema.objectModel.om4.v1",
+      "profileVersion": 1,
+      "maturity": "CANDIDATE",
+      "documentMaturity": "CANDIDATE",
+      "runtimeSupport": "UNAVAILABLE",
+      "authorityState": "PUBLIC_SPEC_CANDIDATE_WITHOUT_ADOPTED_SOURCE",
+      "objectConstraints": [
+        { "objectId": "VerificationPolicy", "supportedSchemaVersions": [1], "requiredSchemaVersions": [1] },
+        { "objectId": "IssuerRegistrySnapshot", "supportedSchemaVersions": [1], "requiredSchemaVersions": [1] },
+        { "objectId": "AttestationStatus", "supportedSchemaVersions": [1], "requiredSchemaVersions": [1] },
+        { "objectId": "SpendPredicate", "supportedSchemaVersions": [1], "requiredSchemaVersions": [1] }
+      ],
+      "adoptedSourceState": "NOT_CLAIMED",
+      "adoptedSource": null
+    },
+    "objectModel.collapsedArtifactKind.rejected": {
+      "kind": "objectModel.collapsedArtifactKind.rejected",
+      "profileVersion": 1,
+      "maturity": "CANDIDATE",
+      "documentMaturity": "CANDIDATE",
+      "runtimeSupport": "UNAVAILABLE",
+      "authorityState": "PUBLIC_SPEC_CANDIDATE_WITHOUT_ADOPTED_SOURCE",
+      "objectConstraints": [
+        { "objectId": "ObjectModelArtifact", "supportedSchemaVersions": [1], "requiredSchemaVersions": [1] }
+      ],
+      "adoptedSourceState": "NOT_CLAIMED",
+      "adoptedSource": null
+    }
+  },
+  "releasedSchemaIdentityCollisions": {
+    "algorithm": "sha256",
+    "digest": "sha256:0d1c6a393a9be65bbb1d33a36e5e06b92708a352b351790120ceccc3e1ac5ac6",
+    "lineCount": 22,
+    "state": "OBSERVED_UNRESOLVED_RELEASED_IDENTITY_COLLISION",
+    "comparisons": [
+      {
+        "publicTag": "v1.0.0-rc.3",
+        "publicCommit": "a8368577b6331ed5c076105da1536e32be39bdf6",
+        "adoptedCommit": "8c641f57201c75bac12819a0f903ae6105c7f3c3"
+      },
+      {
+        "publicTag": "v1.0.0-rc.4",
+        "publicCommit": "7ce390fb3f562f589318ea36e9b8200aa4585da0",
+        "adoptedCommit": "5019e41bdeb924449363aa3b538eaa5b3b6ee4dc"
+      }
+    ]
+  }
+}

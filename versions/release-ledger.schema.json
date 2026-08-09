@@ -1,0 +1,240 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://protocol.crinkl.xyz/versions/release-ledger.schema.json",
+  "title": "Crinkl Protocol Public Release Ledger",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "ledgerVersion",
+    "activeRelease",
+    "releases",
+    "profiles",
+    "releasedSchemaIdentityCollisions"
+  ],
+  "properties": {
+    "$schema": { "const": "https://protocol.crinkl.xyz/versions/release-ledger.schema.json" },
+    "ledgerVersion": { "const": 1 },
+    "activeRelease": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z.-]+)?$" },
+    "releases": {
+      "type": "object",
+      "required": ["1.0.0-rc.3", "1.0.0-rc.4", "1.0.0-rc.5"],
+      "additionalProperties": false,
+      "properties": {
+        "1.0.0-rc.3": { "$ref": "#/$defs/rc3Release" },
+        "1.0.0-rc.4": { "$ref": "#/$defs/rc4Release" },
+        "1.0.0-rc.5": { "$ref": "#/$defs/rc5Release" }
+      }
+    },
+    "profiles": {
+      "type": "object",
+      "required": [
+        "campaign.directBuyerReward.profileV1",
+        "token.spendAttestation.holderBinding.v2",
+        "credential.spendAttestation.vcdm2.eddsaJcs2022",
+        "schema.objectModel.om4.v1",
+        "objectModel.collapsedArtifactKind.rejected"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "campaign.directBuyerReward.profileV1": { "$ref": "#/$defs/campaignProfile" },
+        "token.spendAttestation.holderBinding.v2": { "$ref": "#/$defs/holderBindingProfile" },
+        "credential.spendAttestation.vcdm2.eddsaJcs2022": { "$ref": "#/$defs/w3cProfile" },
+        "schema.objectModel.om4.v1": { "$ref": "#/$defs/objectModelProfile" },
+        "objectModel.collapsedArtifactKind.rejected": { "$ref": "#/$defs/collapsedArtifactProfile" }
+      }
+    },
+    "releasedSchemaIdentityCollisions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "digest", "lineCount", "comparisons", "state"],
+      "properties": {
+        "algorithm": { "const": "sha256" },
+        "digest": { "$ref": "#/$defs/digest" },
+        "lineCount": { "const": 22 },
+        "state": { "const": "OBSERVED_UNRESOLVED_RELEASED_IDENTITY_COLLISION" },
+        "comparisons": {
+          "type": "array",
+          "minItems": 2,
+          "items": { "$ref": "#/$defs/collisionComparison" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "commit": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{40}$"
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "commit", "tree"],
+      "properties": {
+        "repository": { "type": "string", "minLength": 1 },
+        "commit": { "$ref": "#/$defs/commit" },
+        "tree": { "$ref": "#/$defs/commit" }
+      }
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "digest", "role"],
+      "properties": {
+        "path": { "type": "string", "pattern": "^(?!/)(?!.*\\.\\.)[^\\s]+$" },
+        "digest": { "$ref": "#/$defs/digest" },
+        "role": {
+          "enum": [
+            "RELEASE_MANIFEST",
+            "CONFORMANCE_MANIFEST",
+            "FINALIZATION_PLAN",
+            "RELEASE_SNAPSHOT"
+          ]
+        }
+      }
+    },
+    "wire": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["defaultBindingProtocolVersion", "supportedWireProtocolVersions"],
+      "properties": {
+        "defaultBindingProtocolVersion": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z.-]+)?$" },
+        "supportedWireProtocolVersions": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z.-]+)?$" }
+        }
+      }
+    },
+    "conformance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["suite", "suiteVersion", "manifest", "manifestDigest"],
+      "properties": {
+        "suite": { "type": "string", "minLength": 1 },
+        "suiteVersion": { "type": "integer", "minimum": 1 },
+        "manifest": { "type": "string", "pattern": "^(?!/)(?!.*\\.\\.)[^\\s]+$" },
+        "manifestDigest": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "adoptedSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "commit", "evidenceState"],
+      "properties": {
+        "repository": { "const": "crinkl-protocol" },
+        "commit": { "$ref": "#/$defs/commit" },
+        "evidenceState": {
+          "enum": [
+            "PINNED_BY_RELEASED_PROFILE_MANIFEST",
+            "PINNED_BY_CANDIDATE_PROFILE_MANIFEST",
+            "NOT_CLAIMED"
+          ]
+        }
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["releaseAuthority", "sourceBranchAuthority", "authorityState", "runtimeImplication", "productionImplication"],
+      "properties": {
+        "releaseAuthority": { "const": "AUTHORITY_ACCEPTED_TAG_AND_RELEASE_MANIFEST_DIGEST" },
+        "sourceBranchAuthority": { "const": "PROHIBITED" },
+        "authorityState": { "enum": ["RELEASED_TAG_ACCEPTED", "CANDIDATE_SOURCE_ONLY"] },
+        "runtimeImplication": { "const": "NONE" },
+        "productionImplication": { "const": "NONE" }
+      }
+    },
+    "releaseRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["releaseVersion", "status", "requiredTag", "previousRelease", "source", "canonicalReleaseManifest", "artifactInventory", "wire", "conformance", "adoptedSources", "authority"],
+      "properties": {
+        "releaseVersion": { "type": "string" },
+        "status": { "enum": ["RELEASED", "RELEASE_CANDIDATE_NOT_PUBLISHED"] },
+        "requiredTag": { "type": "string", "pattern": "^v[0-9]+\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z.-]+)?$" },
+        "previousRelease": { "type": ["string", "null"] },
+        "source": { "$ref": "#/$defs/source" },
+        "canonicalReleaseManifest": { "$ref": "#/$defs/artifact" },
+        "artifactInventory": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/artifact" }
+        },
+        "wire": { "$ref": "#/$defs/wire" },
+        "conformance": { "$ref": "#/$defs/conformance" },
+        "adoptedSources": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/adoptedSource" }
+        },
+        "authority": { "$ref": "#/$defs/authority" }
+      }
+    },
+    "rc3Release": {
+      "allOf": [
+        { "$ref": "#/$defs/releaseRecord" },
+        { "properties": { "releaseVersion": { "const": "1.0.0-rc.3" }, "status": { "const": "RELEASED" }, "requiredTag": { "const": "v1.0.0-rc.3" }, "previousRelease": { "const": null } } }
+      ]
+    },
+    "rc4Release": {
+      "allOf": [
+        { "$ref": "#/$defs/releaseRecord" },
+        { "properties": { "releaseVersion": { "const": "1.0.0-rc.4" }, "status": { "const": "RELEASED" }, "requiredTag": { "const": "v1.0.0-rc.4" }, "previousRelease": { "const": "1.0.0-rc.3" } } }
+      ]
+    },
+    "rc5Release": {
+      "allOf": [
+        { "$ref": "#/$defs/releaseRecord" },
+        { "properties": { "releaseVersion": { "const": "1.0.0-rc.5" }, "status": { "const": "RELEASE_CANDIDATE_NOT_PUBLISHED" }, "requiredTag": { "const": "v1.0.0-rc.5" }, "previousRelease": { "const": "1.0.0-rc.4" } } }
+      ]
+    },
+    "objectConstraint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["objectId", "supportedSchemaVersions", "requiredSchemaVersions"],
+      "properties": {
+        "objectId": { "type": "string", "minLength": 1 },
+        "supportedSchemaVersions": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "integer", "minimum": 1 } },
+        "requiredSchemaVersions": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "integer", "minimum": 1 } }
+      }
+    },
+    "profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "profileVersion", "maturity", "documentMaturity", "runtimeSupport", "authorityState", "objectConstraints", "adoptedSourceState", "adoptedSource"],
+      "properties": {
+        "kind": { "type": "string" },
+        "profileVersion": { "type": "integer", "minimum": 1 },
+        "maturity": { "enum": ["RELEASED", "CANDIDATE"] },
+        "documentMaturity": { "enum": ["RELEASED", "CANDIDATE"] },
+        "runtimeSupport": { "enum": ["UNAVAILABLE", "SEPARATELY_GOVERNED"] },
+        "authorityState": { "enum": ["RELEASED_TAG_ACCEPTED", "CANDIDATE_SOURCE_ONLY", "PUBLIC_SPEC_CANDIDATE_WITHOUT_ADOPTED_SOURCE"] },
+        "objectConstraints": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/objectConstraint" } },
+        "adoptedSourceState": { "enum": ["PINNED", "NOT_CLAIMED"] },
+        "adoptedSource": { "type": ["object", "null"], "allOf": [{ "if": { "type": "object" }, "then": { "$ref": "#/$defs/adoptedSource" } }] }
+      }
+    },
+    "campaignProfile": { "allOf": [{ "$ref": "#/$defs/profile" }, { "properties": { "kind": { "const": "campaign.directBuyerReward.profileV1" }, "profileVersion": { "const": 1 } } }] },
+    "holderBindingProfile": { "allOf": [{ "$ref": "#/$defs/profile" }, { "properties": { "kind": { "const": "token.spendAttestation.holderBinding.v2" }, "profileVersion": { "const": 2 } } }] },
+    "w3cProfile": { "allOf": [{ "$ref": "#/$defs/profile" }, { "properties": { "kind": { "const": "credential.spendAttestation.vcdm2.eddsaJcs2022" }, "profileVersion": { "const": 1 } } }] },
+    "objectModelProfile": { "allOf": [{ "$ref": "#/$defs/profile" }, { "properties": { "kind": { "const": "schema.objectModel.om4.v1" }, "profileVersion": { "const": 1 } } }] },
+    "collapsedArtifactProfile": { "allOf": [{ "$ref": "#/$defs/profile" }, { "properties": { "kind": { "const": "objectModel.collapsedArtifactKind.rejected" }, "profileVersion": { "const": 1 } } }] },
+    "collisionComparison": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["publicTag", "publicCommit", "adoptedCommit"],
+      "properties": {
+        "publicTag": { "enum": ["v1.0.0-rc.3", "v1.0.0-rc.4"] },
+        "publicCommit": { "$ref": "#/$defs/commit" },
+        "adoptedCommit": { "$ref": "#/$defs/commit" }
+      }
+    }
+  }
+}
