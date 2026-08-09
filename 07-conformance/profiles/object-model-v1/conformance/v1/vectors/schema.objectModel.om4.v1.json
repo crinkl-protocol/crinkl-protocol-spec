@@ -1,31 +1,38 @@
 {
   "kind": "schema.objectModel.om4.v1",
-  "description": "Schema-validation fixtures for the four OM4 object-model schemas (VerificationPolicy, IssuerRegistrySnapshot, AttestationStatus, SpendPredicate). One valid instance MUST validate; one invalid instance MUST be rejected, per governance/protocol-object-model-decisions-2026-08-08.md.",
+  "description": "Executable structural and semantic fixtures for VerificationPolicy, IssuerRegistrySnapshot, AttestationStatus, and SpendPredicate.",
   "cases": [
     {
       "id": "verification-policy-v1-valid-accepted",
       "schemaPath": "01-core/schemas/verification_policy_v1.schema.json",
       "expect": "accept",
       "instance": {
-        "policyId": "sha256:8e236922abb53f360e27787fe3a9cb979689f1dccfcb894db1a42ce25ecfb201",
+        "policyId": "sha256:2df3fec176f0f2d3cf8b1463e2c9521427136d6b7e75bce092888c2f5633afd8",
         "policyVersion": "v1",
         "effectiveFrom": "2026-08-08T00:00:00.000Z",
         "previousPolicyId": null,
-        "rules": {
-          "note": "open/extensible placeholder; this repository does not yet enumerate concrete verification-rule content (see schema $comment)"
-        }
+        "rules": {"profile": "object-model-conformance-policy", "numericThreshold": 1e-7}
       }
     },
     {
-      "id": "verification-policy-v1-non-content-addressed-id-rejected",
+      "id": "verification-policy-v1-wrong-content-address-rejected",
       "schemaPath": "01-core/schemas/verification_policy_v1.schema.json",
       "expect": "reject",
-      "reason": "policyId does not match the sha256: content-address pattern",
+      "expectStage": "semantic",
       "instance": {
-        "policyId": "not-a-content-address",
+        "policyId": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
         "policyVersion": "v1",
-        "effectiveFrom": "2026-08-08T00:00:00.000Z",
-        "previousPolicyId": null,
+        "rules": {"profile": "object-model-conformance-policy", "numericThreshold": 1e-7}
+      }
+    },
+    {
+      "id": "verification-policy-v1-empty-rules-rejected",
+      "schemaPath": "01-core/schemas/verification_policy_v1.schema.json",
+      "expect": "reject",
+      "expectStage": "schema",
+      "instance": {
+        "policyId": "sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "policyVersion": "v1",
         "rules": {}
       }
     },
@@ -67,26 +74,63 @@
       }
     },
     {
-      "id": "issuer-registry-snapshot-v1-empty-keys-rejected",
+      "id": "issuer-registry-sequence-zero-predecessor-rejected",
       "schemaPath": "01-core/schemas/issuer_registry_snapshot_v1.schema.json",
       "expect": "reject",
-      "reason": "keys array is empty; minItems 1 required",
+      "expectStage": "schema",
+      "instance": {
+        "registryId": "crinkl-issuer-registry-v1",
+        "sequence": 0,
+        "asOf": "2026-08-08T00:00:00.000Z",
+        "previousSnapshotRef": "sha256:65646156fe9344c731a2d277fe18a7726d7053eee818510e99806de8b508436b",
+        "keys": [{"authorityId": "authority-1", "publicKey": "key", "validFrom": "2026-01-01T00:00:00.000Z", "validUntil": null, "predecessorId": null, "terminationRef": null, "revocationReason": null}],
+        "signatures": {"issuedBy": "issuer", "publicKey": "key", "tokenHash": "e92ad37e76767d2e6778525b11135e7bd5e56a4d4f8f010b9c96235f15efb330", "signature": "sig"}
+      }
+    },
+    {
+      "id": "issuer-registry-positive-sequence-null-predecessor-rejected",
+      "schemaPath": "01-core/schemas/issuer_registry_snapshot_v1.schema.json",
+      "expect": "reject",
+      "expectStage": "schema",
+      "instance": {
+        "registryId": "crinkl-issuer-registry-v1",
+        "sequence": 1,
+        "asOf": "2026-08-08T00:00:00.000Z",
+        "previousSnapshotRef": null,
+        "keys": [{"authorityId": "authority-1", "publicKey": "key", "validFrom": "2026-01-01T00:00:00.000Z", "validUntil": null, "predecessorId": null, "terminationRef": null, "revocationReason": null}],
+        "signatures": {"issuedBy": "issuer", "publicKey": "key", "tokenHash": "e92ad37e76767d2e6778525b11135e7bd5e56a4d4f8f010b9c96235f15efb330", "signature": "sig"}
+      }
+    },
+    {
+      "id": "issuer-registry-invalid-validity-window-rejected",
+      "schemaPath": "01-core/schemas/issuer_registry_snapshot_v1.schema.json",
+      "expect": "reject",
+      "expectStage": "semantic",
       "instance": {
         "registryId": "crinkl-issuer-registry-v1",
         "sequence": 0,
         "asOf": "2026-08-08T00:00:00.000Z",
         "previousSnapshotRef": null,
-        "keys": [],
-        "signatures": {
-          "issuedBy": "crinkl-protocol-authority",
-          "publicKey": "MCowBQYDK2VwAyEAccccccccccccccccccccccccccccccccccccccccccccc",
-          "tokenHash": "e92ad37e76767d2e6778525b11135e7bd5e56a4d4f8f010b9c96235f15efb330",
-          "signature": "base64-signature-placeholder"
-        }
+        "keys": [{"authorityId": "authority-1", "publicKey": "key", "validFrom": "2026-01-01T00:00:00.000Z", "validUntil": "2025-12-31T23:59:59.999Z", "predecessorId": null, "terminationRef": "event:revoked:1", "revocationReason": "rotation"}],
+        "signatures": {"issuedBy": "issuer", "publicKey": "key", "tokenHash": "e92ad37e76767d2e6778525b11135e7bd5e56a4d4f8f010b9c96235f15efb330", "signature": "sig"}
       }
     },
     {
-      "id": "attestation-status-v1-valid-accepted",
+      "id": "issuer-registry-invalid-calendar-timestamp-rejected",
+      "schemaPath": "01-core/schemas/issuer_registry_snapshot_v1.schema.json",
+      "expect": "reject",
+      "expectStage": "semantic",
+      "instance": {
+        "registryId": "crinkl-issuer-registry-v1",
+        "sequence": 0,
+        "asOf": "2026-02-30T00:00:00.000Z",
+        "previousSnapshotRef": null,
+        "keys": [{"authorityId": "authority-1", "publicKey": "key", "validFrom": "2026-01-01T00:00:00.000Z", "validUntil": null, "predecessorId": null, "terminationRef": null, "revocationReason": null}],
+        "signatures": {"issuedBy": "issuer", "publicKey": "key", "tokenHash": "e92ad37e76767d2e6778525b11135e7bd5e56a4d4f8f010b9c96235f15efb330", "signature": "sig"}
+      }
+    },
+    {
+      "id": "attestation-status-invalidated-valid-accepted",
       "schemaPath": "01-core/schemas/attestation_status_v1.schema.json",
       "expect": "accept",
       "instance": {
@@ -100,19 +144,46 @@
       }
     },
     {
-      "id": "attestation-status-v1-invented-revoked-basis-rejected",
+      "id": "attestation-status-corrected-valid-accepted",
       "schemaPath": "01-core/schemas/attestation_status_v1.schema.json",
-      "expect": "reject",
-      "reason": "REVOKED is not a defined attestation head class in v1 (02-proof-lifecycle/correction-and-revocation.md); statusBasis enum excludes it",
+      "expect": "accept",
       "instance": {
         "spendId": "spend-om4-fixture-1",
-        "statusBasis": "REVOKED",
-        "statusPurpose": "revocation",
+        "statusBasis": "CORRECTED",
+        "statusPurpose": "refresh",
         "set": true,
-        "supersededByRef": null,
+        "supersededByRef": "sha256:65646156fe9344c731a2d277fe18a7726d7053eee818510e99806de8b508436b",
         "reason": null,
         "asOf": "2026-08-08T00:00:00.000Z"
       }
+    },
+    {
+      "id": "attestation-status-corrected-revocation-purpose-rejected",
+      "schemaPath": "01-core/schemas/attestation_status_v1.schema.json",
+      "expect": "reject",
+      "expectStage": "schema",
+      "instance": {"spendId": "spend-1", "statusBasis": "CORRECTED", "statusPurpose": "revocation", "set": true, "supersededByRef": "sha256:65646156fe9344c731a2d277fe18a7726d7053eee818510e99806de8b508436b", "reason": null, "asOf": "2026-08-08T00:00:00.000Z"}
+    },
+    {
+      "id": "attestation-status-corrected-null-supersession-rejected",
+      "schemaPath": "01-core/schemas/attestation_status_v1.schema.json",
+      "expect": "reject",
+      "expectStage": "schema",
+      "instance": {"spendId": "spend-1", "statusBasis": "CORRECTED", "statusPurpose": "refresh", "set": true, "supersededByRef": null, "reason": null, "asOf": "2026-08-08T00:00:00.000Z"}
+    },
+    {
+      "id": "attestation-status-invalidated-null-reason-rejected",
+      "schemaPath": "01-core/schemas/attestation_status_v1.schema.json",
+      "expect": "reject",
+      "expectStage": "schema",
+      "instance": {"spendId": "spend-1", "statusBasis": "INVALIDATED", "statusPurpose": "revocation", "set": true, "supersededByRef": null, "reason": null, "asOf": "2026-08-08T00:00:00.000Z"}
+    },
+    {
+      "id": "attestation-status-hard-verified-set-rejected",
+      "schemaPath": "01-core/schemas/attestation_status_v1.schema.json",
+      "expect": "reject",
+      "expectStage": "schema",
+      "instance": {"spendId": "spend-1", "statusBasis": "HARD_VERIFIED", "statusPurpose": "refresh", "set": true, "supersededByRef": null, "reason": null, "asOf": "2026-08-08T00:00:00.000Z"}
     },
     {
       "id": "spend-predicate-v1-valid-accepted",
@@ -120,27 +191,51 @@
       "expect": "accept",
       "instance": {
         "predicateId": "predicate-om4-fixture-1",
-        "predicateHash": "sha256:9d3c4c621e47192a36d0ea70b78a73fd4dfd0e4ba8f971967bf928342e39b514",
+        "predicateHash": "sha256:18655b4fa5df6e1804f1b25d9d64d647d224e6f9d854300bfd21e8565f6e358d",
         "predicateVersion": "v1",
+        "parameters": {"minimumTotalMinor": "1000"},
         "evaluationContext": {
           "scopeId": "campaign-epoch-om4-fixture-1",
-          "verifierPolicyRef": "sha256:10c3d7198676e1a539e3dfcc3fa33718f11cdd8159dd4ee96205dd1ab6e59499"
+          "verifierPolicyRef": "sha256:10c3d7198676e1a539e3dfcc3fa33718f11cdd8159dd4ee96205dd1ab6e59499",
+          "replayNullifierRules": {"nullifierRequired": true, "scopeBinding": "campaign-epoch-om4-fixture-1"}
         },
-        "ruleExpression": {}
+        "ruleExpression": {"profile": "campaign.directBuyerReward.profileV1", "requirement": "minimum-total"}
       }
     },
     {
-      "id": "spend-predicate-v1-non-content-addressed-hash-rejected",
+      "id": "spend-predicate-v1-wrong-content-address-rejected",
       "schemaPath": "04-condition-layer/schemas/spend_predicate_v1.schema.json",
       "expect": "reject",
-      "reason": "predicateHash does not match the sha256: content-address pattern",
+      "expectStage": "semantic",
       "instance": {
         "predicateId": "predicate-om4-fixture-1",
-        "predicateHash": "deadbeef",
+        "predicateHash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
         "predicateVersion": "v1",
-        "evaluationContext": {},
-        "ruleExpression": {}
+        "parameters": {"minimumTotalMinor": "1000"},
+        "evaluationContext": {"scopeId": "campaign-epoch-om4-fixture-1", "verifierPolicyRef": "sha256:10c3d7198676e1a539e3dfcc3fa33718f11cdd8159dd4ee96205dd1ab6e59499", "replayNullifierRules": {"nullifierRequired": true}},
+        "ruleExpression": {"profile": "campaign.directBuyerReward.profileV1"}
       }
+    },
+    {
+      "id": "spend-predicate-v1-missing-rule-expression-rejected",
+      "schemaPath": "04-condition-layer/schemas/spend_predicate_v1.schema.json",
+      "expect": "reject",
+      "expectStage": "schema",
+      "instance": {"predicateId": "predicate-1", "predicateHash": "sha256:0000000000000000000000000000000000000000000000000000000000000000", "predicateVersion": "v1", "parameters": {"minimumTotalMinor": "1000"}, "evaluationContext": {"scopeId": "scope-1", "verifierPolicyRef": "sha256:10c3d7198676e1a539e3dfcc3fa33718f11cdd8159dd4ee96205dd1ab6e59499", "replayNullifierRules": {"nullifierRequired": true}}}
+    },
+    {
+      "id": "spend-predicate-v1-missing-replay-binding-rejected",
+      "schemaPath": "04-condition-layer/schemas/spend_predicate_v1.schema.json",
+      "expect": "reject",
+      "expectStage": "schema",
+      "instance": {"predicateId": "predicate-1", "predicateHash": "sha256:0000000000000000000000000000000000000000000000000000000000000000", "predicateVersion": "v1", "parameters": {"minimumTotalMinor": "1000"}, "evaluationContext": {"scopeId": "scope-1", "verifierPolicyRef": "sha256:10c3d7198676e1a539e3dfcc3fa33718f11cdd8159dd4ee96205dd1ab6e59499"}, "ruleExpression": {"profile": "campaign.directBuyerReward.profileV1"}}
+    },
+    {
+      "id": "spend-predicate-v1-empty-rule-expression-rejected",
+      "schemaPath": "04-condition-layer/schemas/spend_predicate_v1.schema.json",
+      "expect": "reject",
+      "expectStage": "schema",
+      "instance": {"predicateId": "predicate-1", "predicateHash": "sha256:0000000000000000000000000000000000000000000000000000000000000000", "predicateVersion": "v1", "parameters": {"minimumTotalMinor": "1000"}, "evaluationContext": {"scopeId": "scope-1", "verifierPolicyRef": "sha256:10c3d7198676e1a539e3dfcc3fa33718f11cdd8159dd4ee96205dd1ab6e59499", "replayNullifierRules": {"nullifierRequired": true}}, "ruleExpression": {}}
     }
   ]
 }

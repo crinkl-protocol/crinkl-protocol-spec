@@ -5,36 +5,33 @@ version: v1
 normative: true
 ---
 
-# Object-Model OM4 Conformance Bundle
+# Object-Model OM4r Conformance Bundle
 
 Maturity: `candidate`.
 
-This bundle registers the conformance fixtures for board step OM4 of the
+This bundle registers the conformance fixtures for board steps OM4 and OM4r of the
 object-model refactor
 (`governance/protocol-object-model-decisions-2026-08-08.md`): the four new
 standalone schemas (`VerificationPolicy`, `IssuerRegistrySnapshot`,
 `AttestationStatus`, `SpendPredicate`) and the negative conformance cases for
 the two collapsed campaign roles (`eligibilityProof`, `conversionProof`).
 
-Unlike the other profile bundles in `07-conformance/profiles/`, this bundle
-does not publish a previously-adopted internal engineering implementation —
-`VerificationPolicy`, `AttestationStatus`, and `SpendPredicate` are authored
-directly in this public spec repository from its own existing normative
-prose, and `IssuerRegistrySnapshot` is modeled on (not copied from) the
-internal `SpendIssuerSetSnapshotV1` artifact as a read-only reference. This
-manifest therefore omits the `engineeringSource` field the other bundles
-carry rather than assert an adopted-engineering provenance that does not
-exist for three of the four schemas.
+This bundle is derived directly from public-spec normative prose.
+`IssuerRegistrySnapshot` also uses the internal
+`SpendIssuerSetSnapshotV1` artifact as a read-only modeling reference. The
+manifest omits `engineeringSource` because this candidate bundle does not
+claim an adopted engineering implementation.
 
 The bundle binds:
 
-- Draft 2020-12 schema validation for each of the four schemas (one valid
-  instance accepted, one invalid instance rejected per schema), via
+- Draft 2020-12 structural validation and executable content-hash,
+  timestamp-ordering, and cross-field fixtures for the four schemas, via
   `jsonschema.Draft202012Validator` — the same mechanism
   `07-conformance/profiles/w3c-vc-2.0-spend-attestation-v1` already uses; and
-- rejection of `eligibilityProof` and `conversionProof` as artifact kinds,
-  against the thirteen-name canonical registry in `README.md#core-objects`,
-  with `ProofOfMatch` and `SpendPredicate` as positive controls.
+- whole-object dispatch through the checker's independent thirteen-name
+  canonical registry in `README.md#protocol-objects`, rejecting
+  `eligibilityProof` and `conversionProof` while accepting `ProofOfMatch` and
+  a schema-valid `SpendPredicate` as positive controls.
 
 The four schemas themselves live at their canonical spec locations, not
 inside this profile directory:
@@ -45,14 +42,14 @@ inside this profile directory:
 - `04-condition-layer/schemas/spend_predicate_v1.schema.json`
 
 None of the four schemas is required for Core Spend Attestation, Token, or
-Credential validity. `verificationPolicyHash` is not added to any existing
-artifact by this bundle or by the schemas it tests (that binding is a
-separate, later-sliced change, OM5).
+Credential validity. The separate OM5 wire slice governs the
+`verificationPolicyHash` binding and is outside this bundle.
 
-## Open points
+## Contract boundary
 
-See the OM4 pull request body for the full per-schema derivation notes and
-open points where existing prose was silent (`VerificationPolicy.rules`,
-`SpendPredicate.ruleExpression`, and the `IssuerRegistrySnapshot` fields the
-internal artifact models that this public schema does not yet, in
-particular per-authority key rotation via a separate `keyId`).
+`VerificationPolicy.rules`, `SpendPredicate.parameters`,
+`SpendPredicate.ruleExpression`, and replay/nullifier rule vocabulary are
+profile-defined non-empty objects whose complete contents are hash-bound.
+`IssuerRegistrySnapshot` uses the public authority-event vocabulary and does
+not import fields from the internal reference artifact that lack a public
+protocol definition.

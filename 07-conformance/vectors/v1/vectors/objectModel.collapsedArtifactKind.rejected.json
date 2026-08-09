@@ -1,35 +1,49 @@
 {
   "kind": "objectModel.collapsedArtifactKind.rejected",
-  "description": "Negative conformance for the collapsed campaign roles: an artifact declaring kind eligibilityProof or conversionProof MUST be rejected because neither is a distinct object type in the thirteen-artifact inventory (README.md#core-objects; 08-governance/glossary.md). Eligibility and conversion are roles a ProofOfMatch plays inside a campaign, not separate schemas or wire kinds (governance/protocol-object-model-decisions-2026-08-08.md, 'Three rule/proof pairs' decision).",
-  "canonicalKinds": [
-    "SpendStreamEvent",
-    "SpendAttestation",
-    "VerificationPolicy",
-    "IssuerRegistrySnapshot",
-    "AttestationStatus",
-    "SpendAttestationToken",
-    "SpendAttestationCredential",
-    "SpendPredicate",
-    "ProofOfMatch",
-    "CampaignEpoch",
-    "FinalityCertificate",
-    "RewardCommitment",
-    "CampaignSettlementCommitment"
-  ],
-  "acceptCases": [
-    { "id": "proof-of-match-is-canonical", "kind": "ProofOfMatch" },
-    { "id": "spend-predicate-is-canonical", "kind": "SpendPredicate" }
-  ],
-  "rejectCases": [
+  "description": "Whole-object dispatcher cases for canonical ProofOfMatch and SpendPredicate artifacts and the collapsed eligibilityProof and conversionProof roles (README.md#protocol-objects; 08-governance/glossary.md).",
+  "cases": [
+    {
+      "id": "proof-of-match-is-canonical",
+      "expect": "accept",
+      "artifact": {
+        "kind": "ProofOfMatch",
+        "payload": {"matchId": "match-object-model-positive-control"}
+      }
+    },
+    {
+      "id": "spend-predicate-is-canonical-and-valid",
+      "expect": "accept",
+      "artifact": {
+        "kind": "SpendPredicate",
+        "payload": {
+          "predicateId": "predicate-om4-fixture-1",
+          "predicateHash": "sha256:18655b4fa5df6e1804f1b25d9d64d647d224e6f9d854300bfd21e8565f6e358d",
+          "predicateVersion": "v1",
+          "parameters": {"minimumTotalMinor": "1000"},
+          "evaluationContext": {
+            "scopeId": "campaign-epoch-om4-fixture-1",
+            "verifierPolicyRef": "sha256:10c3d7198676e1a539e3dfcc3fa33718f11cdd8159dd4ee96205dd1ab6e59499",
+            "replayNullifierRules": {"nullifierRequired": true, "scopeBinding": "campaign-epoch-om4-fixture-1"}
+          },
+          "ruleExpression": {"profile": "campaign.directBuyerReward.profileV1", "requirement": "minimum-total"}
+        }
+      }
+    },
     {
       "id": "eligibility-proof-rejected",
-      "kind": "eligibilityProof",
-      "reason": "Eligibility Proof is a role a ProofOfMatch plays inside a campaign, not a distinct object type (08-governance/glossary.md#eligibility-proof)."
+      "expect": "reject",
+      "artifact": {
+        "kind": "eligibilityProof",
+        "payload": {"matchId": "collapsed-role-must-not-dispatch"}
+      }
     },
     {
       "id": "conversion-proof-rejected",
-      "kind": "conversionProof",
-      "reason": "Conversion Proof is a role a ProofOfMatch plays inside a campaign, not a distinct object type (08-governance/glossary.md#conversion-proof)."
+      "expect": "reject",
+      "artifact": {
+        "kind": "conversionProof",
+        "payload": {"matchId": "collapsed-role-must-not-dispatch"}
+      }
     }
   ]
 }

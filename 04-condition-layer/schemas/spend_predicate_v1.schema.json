@@ -2,48 +2,52 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "crinkl://protocol/schemas/spend_predicate_v1",
   "title": "SpendPredicateV1",
-  "description": "A reusable rule over one or more Spend Attestations. Downstream of attestations: a Spend Predicate does not create spend truth and does not mint Spend Attestation Tokens. Unreleased draft schema (object-model artifact, board step OM4).",
-  "$comment": "Derived from 04-condition-layer/condition.md ('A Spend Predicate is a rule over one or more Spend Attestations. Spend Predicates are downstream of attestations: they do not create spend truth and they do not mint Spend Attestation Tokens.') and 04-condition-layer/condition-evaluation.md ('Evaluation MUST bind the predicate parameters, version, scope, verifier policy, and replay/nullifier rules where payment or settlement depends on the result.'). `predicateId`/`predicateHash` field shapes reuse the exact `$defs` already declared for CampaignEpochV1 (schemas/experimental/campaign-epoch.v1.schema.json: Identifier = {type: string, minLength: 1}; Sha256Id = {type: string, pattern: ^sha256:[a-f0-9]{64}$}), where `predicateId` is optional on the epoch (a reference) but required here (this schema defines the predicate itself, not a reference to one). `evaluationContext` reuses the parameters/version/scope/verifier-policy/replay-nullifier vocabulary from condition-evaluation.md rather than the narrower CBSA/store-exclusion shape in 06-extensions/offer-delivery-profile.md's PredicateDefinitionV1, which is a routing/distribution profile specialization, not the generic Rule-layer object. OPEN POINTS (see OM4 PR body): (1) `ruleExpression` is left open/minimal -- no normative document in this repository describes a boolean-composition or field-comparison grammar for predicate rules; condition-evaluation.md defers rule-composition detail to 04-condition-layer/campaign-commitment.md, which is itself campaign-profile-specific, not a generic Core/Rule grammar. (2) `evaluationContext.verifierPolicyRef` names the 'verifier policy' condition-evaluation.md requires evaluation to bind, but no normative source ties it to this same OM4 slice's `VerificationPolicy` artifact; that binding is undefined.",
+  "description": "Reusable rule over one or more Spend Attestations. A Spend Predicate is downstream of attestation truth and does not mint a Spend Attestation Token.",
+  "$comment": "Derived from 04-condition-layer/condition.md and 04-condition-layer/condition-evaluation.md. parameters and ruleExpression are non-empty profile-defined objects. evaluationContext binds scope, verifier policy, and replay/nullifier rules. predicateHash covers the complete predicate with only predicateHash omitted.",
   "type": "object",
   "additionalProperties": true,
-  "required": ["predicateId", "predicateHash", "predicateVersion"],
+  "required": ["predicateId", "predicateHash", "predicateVersion", "parameters", "evaluationContext", "ruleExpression"],
   "properties": {
-    "predicateId": {
-      "type": "string",
-      "minLength": 1,
-      "description": "Stable identifier for this predicate (04-condition-layer/condition.md; CampaignEpochV1's Identifier $def)."
-    },
+    "predicateId": { "type": "string", "minLength": 1 },
     "predicateHash": {
       "type": "string",
       "pattern": "^sha256:[a-f0-9]{64}$",
-      "description": "Content address of the canonicalized predicate: sha256: + lowercaseHex(SHA-256(RFC8785_canonicalize(predicate))). Field shape matches CampaignEpochV1's Sha256Id $def (schemas/experimental/campaign-epoch.v1.schema.json)."
+      "description": "sha256: plus lowercaseHex(SHA-256(RFC8785_canonicalize(predicate with only predicateHash omitted)))."
     },
-    "predicateVersion": {
-      "type": "string",
-      "minLength": 1,
-      "description": "Version bound during evaluation ('Evaluation MUST bind the predicate parameters, version, scope...', condition-evaluation.md)."
+    "predicateVersion": { "type": "string", "minLength": 1 },
+    "parameters": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": { "minLength": 1 },
+      "additionalProperties": true,
+      "description": "Profile-defined values bound into the predicate and its content hash."
     },
     "evaluationContext": {
       "type": "object",
       "additionalProperties": true,
-      "description": "Scope and replay/nullifier binding required at evaluation time (condition-evaluation.md). Left open/extensible; this repository does not normatively define a fixed evaluationContext shape shared across all predicate uses.",
+      "required": ["scopeId", "verifierPolicyRef", "replayNullifierRules"],
       "properties": {
-        "scopeId": {
-          "type": "string",
-          "minLength": 1,
-          "description": "The declared scope evaluation MUST bind (condition-evaluation.md)."
-        },
+        "scopeId": { "type": "string", "minLength": 1 },
         "verifierPolicyRef": {
           "type": "string",
-          "minLength": 1,
-          "description": "Reference to the verifier policy bound during evaluation (condition-evaluation.md's 'verifier policy'). OPEN POINT: no normative source ties this to VerificationPolicy.policyId from this same OM4 slice."
+          "pattern": "^sha256:[a-f0-9]{64}$",
+          "description": "Content address of the VerificationPolicy bound during evaluation."
+        },
+        "replayNullifierRules": {
+          "type": "object",
+          "minProperties": 1,
+          "propertyNames": { "minLength": 1 },
+          "additionalProperties": true,
+          "description": "Profile-defined replay and nullifier requirements bound into the evaluation context."
         }
       }
     },
     "ruleExpression": {
       "type": "object",
+      "minProperties": 1,
+      "propertyNames": { "minLength": 1 },
       "additionalProperties": true,
-      "description": "OPEN POINT: this repository does not describe a generic rule-expression grammar for Spend Predicates (boolean composition, field comparisons, thresholds). Left open/extensible on purpose; do not treat this shape as complete."
+      "description": "Non-empty profile-defined rule expression. Its complete structure participates in predicateHash."
     }
   }
 }

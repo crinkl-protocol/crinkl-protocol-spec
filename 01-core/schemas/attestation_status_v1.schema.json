@@ -2,44 +2,79 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "crinkl://protocol/schemas/attestation_status_v1",
   "title": "AttestationStatusV1",
-  "description": "Revocation and supersession status for a Spend Attestation at a point in time — the native, non-VC-specific counterpart to the two BitstringStatusListEntry purposes this repository already defines for the W3C credential binding. Unreleased draft schema (object-model artifact, board step OM4).",
-  "$comment": "Derived from README.md#core-objects (\"AttestationStatus | Trust | Revocation and supersession.\"); 01-core/verification-state.md, which defines the attestation head classes this schema's `statusBasis` enum reuses verbatim ('HARD_VERIFIED, CORRECTED, and INVALIDATED are attestation head classes' / 'INVALIDATED is terminal for spend truth'); 02-proof-lifecycle/correction-and-revocation.md, which states that v1 defines no REVOKED event or state ('The requested lifecycle term revoked maps to later invalidating/correction semantics only when a future protocol version defines a revocation event; v1 does not silently invent one') and that SPEND_CORRECTED supersedes by moving the head rather than retroactively editing it; and 03-portability/w3c-vc-2.0-binding.md, which fixes exactly two status purposes -- 'revocation' and 'refresh' (not the full upstream W3C purpose set; no 'suspension') -- states both are required and ordered per credential, that a set bit is irreversible, and that 'A CORRECTED head is a superseding claim and MUST NOT be marked revoked only because a later head exists.' `statusPurpose`'s enum literally matches 07-conformance/profiles/w3c-vc-2.0-spend-attestation-v1/protocol/schemas/w3c_bitstring_status_list_credential_v1.schema.json's `statusPurpose` enum. `reason` mirrors the required `reason` field on bindings/nats/crinkl-platform/v1/schemas/event.spend_invalidated.schema.json's payload. This schema intentionally does not invent a REVOKED status-basis value; only the three attestation head classes the repository already names are exposed. RELATIONSHIP TO THE W3C BITSTRING STATUS LIST CREDENTIAL: this artifact is the protocol-level status object and does NOT supersede, replace, or subsume the W3C-profile serialization of status, `07-conformance/profiles/w3c-vc-2.0-spend-attestation-v1/protocol/schemas/w3c_bitstring_status_list_credential_v1.schema.json` (a `BitstringStatusListCredential`/`BitstringStatusList` VC carrying an `encodedList` bitstring, referenced from a `SpendAttestationCredential` via `BitstringStatusListEntry`). That credential remains the W3C-profile-internal, VC-wrapped, bit-indexed serialization used when a Spend Attestation is presented as a W3C credential; this schema is the native, non-VC record of the same `statusPurpose` vocabulary (`revocation`/`refresh`) for any Spend Attestation regardless of serialization. This schema references, and does not replace, the W3C artifact's status semantics.",
+  "description": "Native revocation or supersession status for a Spend Attestation at a point in time.",
+  "$comment": "Derived from README.md#protocol-objects, 01-core/verification-state.md, 02-proof-lifecycle/correction-and-revocation.md, and the revocation and refresh purposes in 03-portability/w3c-vc-2.0-binding.md. This native status artifact references the same purposes without replacing the W3C profile's dependent Bitstring Status List credential.",
   "type": "object",
   "additionalProperties": true,
-  "required": ["spendId", "statusBasis", "statusPurpose", "set", "asOf"],
+  "required": ["spendId", "statusBasis", "statusPurpose", "set", "supersededByRef", "reason", "asOf"],
   "properties": {
-    "spendId": {
-      "type": "string",
-      "minLength": 1,
-      "description": "Identifies the spend stream this status describes (01-core/spend-event.md)."
-    },
+    "spendId": { "type": "string", "minLength": 1 },
     "statusBasis": {
       "type": "string",
-      "enum": ["HARD_VERIFIED", "CORRECTED", "INVALIDATED"],
-      "description": "The attestation head class this status reflects. These are the only three attestation head classes this repository defines (01-core/verification-state.md); no REVOKED basis exists in v1 (02-proof-lifecycle/correction-and-revocation.md)."
+      "enum": ["HARD_VERIFIED", "CORRECTED", "INVALIDATED"]
     },
     "statusPurpose": {
       "type": "string",
-      "enum": ["revocation", "refresh"],
-      "description": "Matches the exact two status-list purposes this repository defines for the W3C binding; not the full upstream W3C purpose set (03-portability/w3c-vc-2.0-binding.md)."
+      "enum": ["revocation", "refresh"]
     },
     "set": {
       "type": "boolean",
-      "description": "Whether the bit for this purpose is set. Irreversible once true: a set-to-clear transition is invalid (03-portability/w3c-vc-2.0-binding.md)."
+      "description": "Status bit for the declared purpose. A true bit is irreversible for that status-list entry."
     },
     "supersededByRef": {
       "type": ["string", "null"],
-      "pattern": "^sha256:[a-f0-9]{64}$",
-      "description": "Content address of the superseding artifact when statusBasis is CORRECTED. A CORRECTED head MUST NOT set the revocation purpose solely because a later head exists (03-portability/w3c-vc-2.0-binding.md); use this field together with a refresh-purpose entry instead. null otherwise."
+      "pattern": "^sha256:[a-f0-9]{64}$"
     },
-    "reason": {
-      "type": ["string", "null"],
-      "description": "Present when statusBasis is INVALIDATED, mirroring the required `reason` field on the SPEND_INVALIDATED event payload. null otherwise."
-    },
+    "reason": { "type": ["string", "null"], "minLength": 1 },
     "asOf": {
       "type": "string",
-      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
-      "description": "When this status determination was made."
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$"
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "statusBasis": { "const": "HARD_VERIFIED" } },
+        "required": ["statusBasis"]
+      },
+      "then": {
+        "properties": {
+          "set": { "const": false },
+          "supersededByRef": { "type": "null" },
+          "reason": { "type": "null" }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "statusBasis": { "const": "CORRECTED" } },
+        "required": ["statusBasis"]
+      },
+      "then": {
+        "properties": {
+          "statusPurpose": { "const": "refresh" },
+          "set": { "const": true },
+          "supersededByRef": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          },
+          "reason": { "type": "null" }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "statusBasis": { "const": "INVALIDATED" } },
+        "required": ["statusBasis"]
+      },
+      "then": {
+        "properties": {
+          "statusPurpose": { "const": "revocation" },
+          "set": { "const": true },
+          "supersededByRef": { "type": "null" },
+          "reason": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  ]
 }

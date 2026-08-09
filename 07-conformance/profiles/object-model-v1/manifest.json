@@ -3,7 +3,7 @@
   "bundleVersion": 1,
   "maturity": "candidate",
   "releasedConformance": false,
-  "note": "No engineeringSource field: unlike the other bundles in 07-conformance/profiles/, this bundle does not publish a previously-adopted internal engineering implementation. See README.md.",
+  "note": "No engineeringSource field: this public-spec candidate bundle does not claim an adopted internal engineering implementation. See README.md.",
   "protocolObjectVersion": "1.0.0-rc.2",
   "publicRepositoryVersion": "1.0.0-rc.5",
   "conformanceManifestEntries": [
@@ -14,7 +14,7 @@
         "type": "python3",
         "file": "../../profiles/object-model-v1/scripts/check_object_model_schema_vectors.py"
       },
-      "status": "PRESENT_IN_RC5_SUITE_3_OM4_CANDIDATE_DRAFT"
+      "status": "PRESENT_IN_RC5_SUITE_3_OM4R_CANDIDATE"
     },
     {
       "kind": "objectModel.collapsedArtifactKind.rejected",
@@ -23,44 +23,44 @@
         "type": "python3",
         "file": "../../profiles/object-model-v1/scripts/check_object_model_schema_vectors.py"
       },
-      "status": "PRESENT_IN_RC5_SUITE_3_OM4_CANDIDATE_DRAFT"
+      "status": "PRESENT_IN_RC5_SUITE_3_OM4R_CANDIDATE"
     }
   ],
   "artifacts": [
     {
       "sourcePath": "conformance/v1/vectors/schema.objectModel.om4.v1.json",
       "file": "conformance/v1/vectors/schema.objectModel.om4.v1.json",
-      "sha256": "86c24d9242e51211c7288035e25ce81b891548b98ee68ac5f9d2c655b53ecc46"
+      "sha256": "16146ad6552fb42b71fca2e748f95dadc507a01d56484c88eaa84f132849395a"
     },
     {
       "sourcePath": "scripts/check_object_model_schema_vectors.py",
       "file": "scripts/check_object_model_schema_vectors.py",
-      "sha256": "c52305e58e965ae04c926daac8fb48af89816d6dfaf17c867679bf70c8ff3316"
+      "sha256": "c879e97aa9e3d22e392a3509ec3037abafab03670ad41033e8fb92efc6d0f7c2"
     },
     {
       "sourcePath": "../../vectors/v1/vectors/objectModel.collapsedArtifactKind.rejected.json",
       "file": "../../vectors/v1/vectors/objectModel.collapsedArtifactKind.rejected.json",
-      "sha256": "00b2d3c79369cb4fb23fdbf709726564ed52066072e6878edaa7d6eab809c66b"
+      "sha256": "f7d2c387dbf786104a8bb817b4aaf863ae75812d4accb60f7c26f89f0b05dd27"
     },
     {
       "sourcePath": "../../../01-core/schemas/verification_policy_v1.schema.json",
       "file": "../../../01-core/schemas/verification_policy_v1.schema.json",
-      "sha256": "0151eb789550077c566d98087574bcae15c5ef10c8af68f1bcd5ee8de228901d"
+      "sha256": "f11ca76b7f4a29a680dad9f02765e904e42aa082cfe03308c097f8e24fedb8c3"
     },
     {
       "sourcePath": "../../../01-core/schemas/issuer_registry_snapshot_v1.schema.json",
       "file": "../../../01-core/schemas/issuer_registry_snapshot_v1.schema.json",
-      "sha256": "99aab4d3f1e463b7a8003e0629cc6de2fc2daab6e74c597d1290921daee2af29"
+      "sha256": "f2c33c4c9387a2e315f4e94b5d928498baa225b0b7128cdecc4df7fdc86cf6d9"
     },
     {
       "sourcePath": "../../../01-core/schemas/attestation_status_v1.schema.json",
       "file": "../../../01-core/schemas/attestation_status_v1.schema.json",
-      "sha256": "f16adf2a3e69812ab688adb2618dc33945b184be1b85b9f1a073dc1418bef8f6"
+      "sha256": "6c45814c2928af5b02c81a0acc1366c95eb9c411fce712a6026cd8e487016c74"
     },
     {
       "sourcePath": "../../../04-condition-layer/schemas/spend_predicate_v1.schema.json",
       "file": "../../../04-condition-layer/schemas/spend_predicate_v1.schema.json",
-      "sha256": "6b4968000142cde692bafcc005f897909c617d208049c67478bea651985118ff"
+      "sha256": "6fada273c191c417b20b54711abf59b4a0598a1447defd3126a89c9f89547011"
     }
   ],
   "publicationBlockers": [],
