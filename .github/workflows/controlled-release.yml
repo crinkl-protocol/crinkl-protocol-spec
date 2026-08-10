@@ -38,6 +38,8 @@ jobs:
   release-validation-receipt:
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
     permissions:
       contents: read
     steps:
