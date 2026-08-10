@@ -28,7 +28,9 @@ jobs:
               - 'scripts/check_living_version_claims.py'
             protected_version_surface:
               - '.github/workflows/drift-check.yml'
-              - '01-core/**'
+              - 'protocol/core/**'
+              - 'protocol/portability/**'
+              - 'protocol/applications/**'
               - 'bindings/**'
               - 'schemas/**'
               - '07-conformance/**'
