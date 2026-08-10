@@ -10,15 +10,15 @@ from pathlib import Path
 
 
 RELEVANT_PREFIXES = (
-    "00-purpose/",
+    "protocol/purpose/",
     "protocol/core/",
     "protocol/core/",
     "protocol/portability/",
     "protocol/applications/conditions/",
     "protocol/applications/economics/",
-    "06-extensions/",
-    "07-conformance/",
-    "08-governance/",
+    "protocol/extensions/",
+    "conformance/",
+    "governance/",
     "bindings/",
     "formal/",
     "schemas/",

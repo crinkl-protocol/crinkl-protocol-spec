@@ -1,0 +1,49 @@
+{
+  "kind": "objectModel.collapsedArtifactKind.rejected",
+  "description": "Whole-object dispatcher cases for canonical ProofOfMatch and SpendPredicate artifacts and the collapsed eligibilityProof and conversionProof roles (README.md#protocol-objects; governance/glossary.md).",
+  "cases": [
+    {
+      "id": "proof-of-match-is-canonical",
+      "expect": "accept",
+      "artifact": {
+        "kind": "ProofOfMatch",
+        "payload": {"matchId": "match-object-model-positive-control"}
+      }
+    },
+    {
+      "id": "spend-predicate-is-canonical-and-valid",
+      "expect": "accept",
+      "artifact": {
+        "kind": "SpendPredicate",
+        "payload": {
+          "predicateId": "predicate-om4-fixture-1",
+          "predicateHash": "sha256:a9ff7c30ba3d7636486c25a4d03ee95d5f9007339de215c6698f680ec557620e",
+          "predicateVersion": "v1",
+          "parameters": {"minimumTotalMinor": "1000"},
+          "evaluationContext": {
+            "scopeId": "campaign-epoch-om4-fixture-1",
+            "verifierPolicyRef": "policy:object-model-conformance-v1",
+            "replayNullifierRules": {"nullifierRequired": true, "scopeBinding": "campaign-epoch-om4-fixture-1"}
+          },
+          "ruleExpression": {"profile": "campaign.directBuyerReward.profileV1", "requirement": "minimum-total"}
+        }
+      }
+    },
+    {
+      "id": "eligibility-proof-rejected",
+      "expect": "reject",
+      "artifact": {
+        "kind": "eligibilityProof",
+        "payload": {"matchId": "collapsed-role-must-not-dispatch"}
+      }
+    },
+    {
+      "id": "conversion-proof-rejected",
+      "expect": "reject",
+      "artifact": {
+        "kind": "conversionProof",
+        "payload": {"matchId": "collapsed-role-must-not-dispatch"}
+      }
+    }
+  ]
+}

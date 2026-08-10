@@ -9,7 +9,7 @@ normative: true
 
 The Commitment Layer publishes cryptographic proofs of reward issuance to an immutable blockchain. Once committed, rewards become **publicly verifiable** and **non-repudiable** — the operator cannot deny issuance or claw back rewards.
 
-Terms are defined in ../08-governance/glossary.md and used normatively throughout this specification.
+Terms are defined in ../../../governance/glossary.md and used normatively throughout this specification.
 
 ## Purpose
 
@@ -112,7 +112,7 @@ The `schemaVersion` for reward batch commitments is a **string** in the closed s
 | `2a` | `LinkableAggregatedRewardLeaf` | `batchId`, `recipientId`, `totalPoints`, `rewardEventsRoot` | `WalletRef` | yes |
 | `2b` | `LinkableAggregatedRewardLeaf` | `batchId`, `recipientId`, `totalPoints`, `rewardEventsRoot` | `Commitment` | yes |
 
-All leaf objects MUST be serialized using RFC 8785 canonical JSON (see `../protocol/core/canonicalization.md#serialization`), and leaf hashes MUST follow the Merkle rules in `#merkle-tree`.
+All leaf objects MUST be serialized using RFC 8785 canonical JSON (see `../../core/canonicalization.md#serialization`), and leaf hashes MUST follow the Merkle rules in `#merkle-tree`.
 
 #### Schema v1a (Aggregated totals, transparent recipient)
 
@@ -185,7 +185,7 @@ Rules:
 - Duplicate `spendId` values within the same recipient+batch MUST be rejected by the batcher. If a verifier observes evidence of duplication (e.g., two distinct inclusion proofs for the same `(recipientId, batchId, spendId)` under the same `rewardEventsRoot`), the verifier MUST treat the linkage root as invalid/ambiguous.
 - Leaf bytes MUST be `RFC8785_canonicalize(RewardIssuanceLeaf)`.
 - Leaf hash and internal node hashing MUST use the same domain separation and Merkle rules as the batch tree (`0x00` leaf prefix, `0x01` internal prefix, sorted-pair internal hashing).
-- `rewardEventHash` MUST equal the `eventHash` of the included reward event, recomputed per ../protocol/core/canonicalization.md.
+- `rewardEventHash` MUST equal the `eventHash` of the included reward event, recomputed per ../../core/canonicalization.md.
 
 ### Per-Spend Detail (Off-Chain)
 
@@ -259,7 +259,7 @@ For third-party verification of root origin, the commitment record MUST be authe
 
 ## Events
 
-Commitment Layer events are published as **SystemStreamEvents** (see ../protocol/core/spend-event.md). The system envelope supplies:
+Commitment Layer events are published as **SystemStreamEvents** (see ../../core/spend-event.md). The system envelope supplies:
 - `chainId` (system stream key)
 - `signedBy` (authority signer)
 
@@ -283,7 +283,7 @@ This event is recorded in the off-chain event stream to link rewards to their on
 
 #### Deterministic event representation (normative)
 
-Commitment layer events are carried as `SystemStreamEvent` envelopes (see `../protocol/core/spend-event.md`). The canonical, hashable representation is the RFC 8785 canonical JSON of the **system event envelope** (excluding `eventHash` and `signature`) as defined in `../protocol/core/canonicalization.md#integrity-envelope`.
+Commitment layer events are carried as `SystemStreamEvent` envelopes (see `../../core/spend-event.md`). The canonical, hashable representation is the RFC 8785 canonical JSON of the **system event envelope** (excluding `eventHash` and `signature`) as defined in `../../core/canonicalization.md#integrity-envelope`.
 
 On-chain logs/transactions are used for anchoring (`txRef`, `committedAt`) and finality, but are not the canonical bytes for `eventHash` unless a chain binding explicitly defines such a mapping.
 
@@ -877,7 +877,7 @@ Verifiers SHOULD reject commitment artifacts whose `txRef` cannot be parsed or d
 
 Campaign settlement commitment requirements are defined in
 `campaign-settlement-gcd.md`. The Solana campaign settlement binding is defined
-in `../06-extensions/solana-campaign-settlement-binding.md`.
+in `../../extensions/solana-campaign-settlement-binding.md`.
 
 Chain bindings are documented separately from this core specification.
 

@@ -15,7 +15,7 @@ normative: true
 >
 > Experimental schemas: candidate machine-readable schemas for CampaignEpoch, CampaignAmendment, and FundingTranche live in `../schemas/experimental/`. They are non-core predicate/campaign extension schemas and are not required for Core Spend Attestation validity.
 >
-> **Publication boundary:** the CampaignEpoch shape and schema on this page are the earlier `v1.0.0-rc.2` experimental candidate, not the exact signed adopted engineering `CampaignEpochV1`. Implementations of the Campaign Experiment Profile MUST use the exact adopted engineering artifacts described by [`../06-extensions/campaign-experiment-profile.md`](../06-extensions/campaign-experiment-profile.md). Similar names do not imply wire compatibility.
+> **Publication boundary:** the CampaignEpoch shape and schema on this page are the earlier `v1.0.0-rc.2` experimental candidate, not the exact signed adopted engineering `CampaignEpochV1`. Implementations of the Campaign Experiment Profile MUST use the exact adopted engineering artifacts described by [`../../extensions/campaign-experiment-profile.md`](../../extensions/campaign-experiment-profile.md). Similar names do not imply wire compatibility.
 
 ## 1) Scope and Boundary
 
@@ -23,12 +23,12 @@ Campaign Spend Proof Primitives are finite proof families used to express campai
 
 This extension composes:
 
-- `SpendAttestationTokenV1` from `../protocol/portability/spend-attestation-token.md`
-- `SpendZkStatementProofV1` and private witness envelopes from `../06-extensions/zk-proof-extension.md`
-- `statementId`, `scopeId`, and `nullifier` from `../06-extensions/zk-foundation.md`
+- `SpendAttestationTokenV1` from `../../portability/spend-attestation-token.md`
+- `SpendZkStatementProofV1` and private witness envelopes from `../../extensions/zk-proof-extension.md`
+- `statementId`, `scopeId`, and `nullifier` from `../../extensions/zk-foundation.md`
 - reward issuance and reward commitments from `../protocol/applications/economics/reward-layer.md` and `../protocol/applications/economics/settlement-bindings.md`
-- store/category/market references from `../06-extensions/store-registry.md`
-- optional merchant authority claims from `../06-extensions/merchant-authority.md`
+- store/category/market references from `../../extensions/store-registry.md`
+- optional merchant authority claims from `../../extensions/merchant-authority.md`
 
 This extension does **not**:
 
@@ -130,7 +130,7 @@ CampaignEpochV1 {
 
 `RuleSetHash` is the canonical hash over predicate, target merchant set reference/root, reward rule, claim level, effective window, timing rule, funding reference, and `campaignAuthority` when present. It MUST be computed with RFC 8785 canonical JSON and SHA-256 over the epoch rule material, excluding signatures and transport-only metadata.
 
-`campaignAuthority` is optional for operator and system campaigns. If a campaign or epoch declares merchant-official authority (`CampaignAuthorityV1.authorityType = "VERIFIED_MERCHANT"`), the field is REQUIRED and MUST validate under `../06-extensions/merchant-authority.md`.
+`campaignAuthority` is optional for operator and system campaigns. If a campaign or epoch declares merchant-official authority (`CampaignAuthorityV1.authorityType = "VERIFIED_MERCHANT"`), the field is REQUIRED and MUST validate under `../../extensions/merchant-authority.md`.
 
 `FundingTranche` is a budget allocation bound to a specific CampaignEpoch. A tranche may fund rewards only under the rule set it was committed to. Budget increases are represented by child tranche records; the original tranche amount MUST NOT be mutated.
 
@@ -182,7 +182,7 @@ CAMPAIGN_EPOCH_APPENDED {
 }
 ```
 
-`CAMPAIGN_EPOCH_APPENDED` is a future candidate system-stream event. It is not part of the current Core event catalog or NATS binding. If activated later, it should use the System-Stream Event Envelope in `../protocol/core/spend-event.md`.
+`CAMPAIGN_EPOCH_APPENDED` is a future candidate system-stream event. It is not part of the current Core event catalog or NATS binding. If activated later, it should use the System-Stream Event Envelope in `../../core/spend-event.md`.
 
 Normative rules:
 
@@ -240,7 +240,7 @@ Spend Validity proves that a referenced Spend Attestation Token represents a val
 
 Minimum checks:
 
-1. Verify the Spend Attestation Token per `../protocol/portability/spend-attestation-token.md`.
+1. Verify the Spend Attestation Token per `../../portability/spend-attestation-token.md`.
 2. Verify issuer authority for the signing key.
 3. Verify `canonical.status` is accepted by the campaign rule.
 4. Verify freshness policy if the campaign requires latest-head evidence.
@@ -450,7 +450,7 @@ CampaignRuleV1 {
 
 `audienceHash` MUST be computed over `audience`. `conversionHash` MUST be computed over `conversion`. `rewardPolicyHash` MUST be computed over the referenced reward policy artifact when present. `campaignAuthorityHash` MUST be computed over `campaignAuthority` when present. `ruleSetHash` MUST match the selected `CampaignEpochV1.ruleSetHash`. All hashes use RFC 8785 canonical JSON and SHA-256 encoded as `"sha256:" + lowercase hex`.
 
-`CampaignAuthorityV1` is defined by `../06-extensions/merchant-authority.md`. Its absence does not invalidate operator or system campaigns. Its absence MUST invalidate campaigns whose declared authority type is merchant-official or `VERIFIED_MERCHANT`.
+`CampaignAuthorityV1` is defined by `../../extensions/merchant-authority.md`. Its absence does not invalidate operator or system campaigns. Its absence MUST invalidate campaigns whose declared authority type is merchant-official or `VERIFIED_MERCHANT`.
 
 `minimumVerification: "HARD_VERIFIED"` means the conversion spend must have passed the hard-verification pipeline. A verifier MAY accept `CORRECTED` as a later canonical hard-verification head when the campaign rule includes `CORRECTED` in `acceptedStatuses`.
 
@@ -482,7 +482,7 @@ Unknown primitive names MUST be rejected by conforming verifiers.
 ## 6) Proof, Match, and Settlement Artifacts
 
 The campaign flow is expressed in terms of the protocol object model
-(`../08-governance/glossary.md`, `../README.md#protocol-objects`): a **Spend
+(`../../../governance/glossary.md`, `../README.md#protocol-objects`): a **Spend
 Predicate** is evaluated and produces a **Proof of Match**; a Proof of Match
 that reaches finality may settle. Audience Qualification, Verified
 Conversion, and Conversion Approval are roles and states of that flow, not
@@ -563,7 +563,7 @@ Conversion Approval is not a separate object. It is a **state**: the
 audience-scope and conversion-scope Proof of Match for this campaign flow
 have reached finality — admitted to the shared record by a Finality
 Certificate (a quorum of selected Proof Validators co-signing the identical
-deterministic result) per `../protocol/core/admission.md`. Settlement
+deterministic result) per `../../core/admission.md`. Settlement
 MAY proceed only once this state is reached; an Attested-only match (signed
 but not yet Admitted, per the same admission states) MUST NOT settle.
 
@@ -606,7 +606,7 @@ signature is invalid. This authentication evidence is not a separate protocol
 artifact and is not embedded in `CampaignSettlementLeafV1`.
 The settlement leaf binds this hash. Record-level admission independently
 follows the committed-leaf-set procedure in
-`../protocol/core/admission.md`; `approvalHash` is not the Finality
+`../../core/admission.md`; `approvalHash` is not the Finality
 Certificate hash. The compatibility projection does not create a separate
 approval object or a competing settlement surface.
 
@@ -696,7 +696,7 @@ CAMPAIGN_SETTLEMENT_COMMITTED {
 }
 ```
 
-The system event envelope supplies `chainId`, `signedBy`, `prevHash`, `eventHash`, and the authority signature as defined in `../protocol/core/spend-event.md`.
+The system event envelope supplies `chainId`, `signedBy`, `prevHash`, `eventHash`, and the authority signature as defined in `../../core/spend-event.md`.
 
 Normative constraints:
 
@@ -718,19 +718,19 @@ A verifier processing a Campaign Rule MUST:
 2. Select exactly one CampaignEpoch using the epoch `timingRule`; reject missing `timingRule` or ambiguous epoch matches.
 3. Recompute `ruleSetHash` from the selected CampaignEpoch rule material.
 4. Verify each primitive requirement uses a supported primitive name and proof mode.
-5. If `CampaignAuthorityV1.authorityType = "VERIFIED_MERCHANT"`, verify the merchant claim attestation under `../06-extensions/merchant-authority.md` and reject missing, expired, revoked, unverified, or scope-mismatched claims.
+5. If `CampaignAuthorityV1.authorityType = "VERIFIED_MERCHANT"`, verify the merchant claim attestation under `../../extensions/merchant-authority.md` and reject missing, expired, revoked, unverified, or scope-mismatched claims.
 6. Verify Audience Qualification:
    - verify all referenced Spend Tokens and proofs
    - verify `scopeId` and `nullifier` binding
    - reject replayed qualification nullifiers within the campaign scope
 7. Verify Verified Conversion:
-   - verify the conversion Spend Attestation Token per `../protocol/portability/spend-attestation-token.md`
+   - verify the conversion Spend Attestation Token per `../../portability/spend-attestation-token.md`
    - verify `conversionSpendTokenHash` and `conversionHeadEventHash`
    - verify the conversion occurred inside the campaign conversion window
    - verify it occurred after audience qualification when required
    - reject replayed conversion or settlement nullifiers
 8. Verify payout terms against the selected CampaignEpoch.
-9. Confirm the campaign's audience-scope and conversion-scope Proof of Match have reached finality — Conversion Approval, per §6.3 — via Finality Certificate admission under `../protocol/core/admission.md`. An Attested-only match MUST NOT proceed to settlement.
+9. Confirm the campaign's audience-scope and conversion-scope Proof of Match have reached finality — Conversion Approval, per §6.3 — via Finality Certificate admission under `../../core/admission.md`. An Attested-only match MUST NOT proceed to settlement.
 10. Settle through the Reward Layer and, when enabled, the Commitment Layer.
 11. If `settlement.publicCommitment.enabled` is true:
    - compute `CampaignSettlementLeafV1` from the approved conversion
@@ -755,7 +755,7 @@ The correct campaign memory model is scoped proof memory:
 
 ## 9) Relationship to Offer Delivery
 
-`../06-extensions/offer-delivery-profile.md` defines an offer-delivery profile: campaign message, holder proof submission, rollout/only-once proof, and encrypted grant or rejection. It is useful for presenting or unlocking offers.
+`../../extensions/offer-delivery-profile.md` defines an offer-delivery profile: campaign message, holder proof submission, rollout/only-once proof, and encrypted grant or rejection. It is useful for presenting or unlocking offers.
 
 This document defines the campaign proof composition and verified conversion settlement surface. Offer delivery MAY use these primitives, but offer delivery is not the campaign settlement primitive.
 

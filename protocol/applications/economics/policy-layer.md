@@ -8,7 +8,7 @@ normative: true
 # Policy Layer (Issuer / Application Layer, Protocol-Aligned Artifacts)
 
 Crinkl separates **truth formation** (Attestation Ledger) from **economic action** (Reward Ledger).
-This is a core invariant of the protocol (see `../00-purpose/what-crinkl-proves.md` and `reward-layer.md`).
+This is a core invariant of the protocol (see `../protocol/purpose/what-crinkl-proves.md` and `reward-layer.md`).
 
 However, deployments still need a *standard* way to describe and audit the **policy knobs** that:
 - determine reward issuance outputs (`deltaPoints`, `deltaBTCsats`), and
@@ -26,7 +26,7 @@ The protocol requires that reward issuance records the `policyVersion` used at i
 
 The protocol does **not** define:
 - reward formulas, multipliers, tiers, thresholds, campaigns (`reward-layer.md`),
-- redemption availability, solvency, or reserves (`../protocol/portability/spend-attestation-token.md` explicit non-claims),
+- redemption availability, solvency, or reserves (`../../portability/spend-attestation-token.md` explicit non-claims),
 - clawbacks/reversals (protocol has no clawback events).
 
 Policy artifacts bridge this gap by making the issuer’s policy knobs **auditable** without making them protocol truth.
@@ -40,7 +40,7 @@ Policy artifacts bridge this gap by making the issuer’s policy knobs **auditab
 ## 3) Canonicalization and hashing (normative)
 
 Policy artifacts MUST be hashed using:
-- RFC 8785 canonical JSON serialization (`../protocol/core/canonicalization.md#serialization`)
+- RFC 8785 canonical JSON serialization (`../../core/canonicalization.md#serialization`)
 - SHA-256 over the UTF-8 bytes of that canonical JSON
 - Lowercase hex output (64 chars)
 
@@ -87,7 +87,7 @@ Reward rules MAY change only by creating a new CampaignEpoch with a new `rewardR
 ## 5) Reserve / backing artifacts (issuer claims, not protocol truth)
 
 Crinkl tokens and events are explicit about non-claims:
-- Reward commitments do NOT prove solvency, reserves, or redemption availability (`../protocol/portability/spend-attestation-token.md`).
+- Reward commitments do NOT prove solvency, reserves, or redemption availability (`../../portability/spend-attestation-token.md`).
 
 If a deployment wants to make issuer-side economic posture auditable, it SHOULD do so via:
 

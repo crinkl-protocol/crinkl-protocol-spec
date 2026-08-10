@@ -9,7 +9,7 @@ normative: true
 
 Crinkl has two event streams:
 
-Terms are defined in ../08-governance/glossary.md and used normatively throughout this specification.
+Terms are defined in ../../governance/glossary.md and used normatively throughout this specification.
 
 - **Spend-stream events**: per-`spendId`, represent verification state transitions for commerce evidence and may carry downstream reward events.
 - **System-stream events**: per-`chainId`, represent protocol-level commitments and governance transitions (Commitment Layer + Authority Registry).

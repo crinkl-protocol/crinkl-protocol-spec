@@ -9,9 +9,9 @@ normative: true
 
 The Reward Layer operates above the protocol. It consumes Attestation Ledger events to compute economic outputs but does NOT define verification, normalization, or canonical truth.
 
-The separation between attestation (epistemic commitment) and rewards (economic commitment) is intentional: economic action bears the cost of epistemic error while canonical truth remains protocol-defined and replayable. See the Economic Reinforcement Invariant in ../00-purpose/what-crinkl-proves.md.
+The separation between attestation (epistemic commitment) and rewards (economic commitment) is intentional: economic action bears the cost of epistemic error while canonical truth remains protocol-defined and replayable. See the Economic Reinforcement Invariant in ../protocol/purpose/what-crinkl-proves.md.
 
-Terms are defined in ../08-governance/glossary.md and used normatively throughout this specification.
+Terms are defined in ../../../governance/glossary.md and used normatively throughout this specification.
 
 ## Reward Ledger Entry
 
@@ -51,7 +51,7 @@ NO_REWARD ──→ PROVISIONAL_REWARD_ISSUED ──→ FINAL_REWARD_ISSUED
 | NO_REWARD | FINAL_REWARD_ISSUED | At issuance time, current spend head class is `HARD_VERIFIED` or `CORRECTED` (skip provisional) |
 | PROVISIONAL_REWARD_ISSUED | FINAL_REWARD_ISSUED | At issuance time, current spend head class is `HARD_VERIFIED` or `CORRECTED` |
 
-**Issuance binding (normative):** reward issuance events are spend-stream events. `REWARD_*_ISSUED.prevHash` MUST equal the then-current spend-stream head `eventHash` for the `spendId` (see `../protocol/core/spend-event.md#cross-fsm-ordering-constraints-normative`).
+**Issuance binding (normative):** reward issuance events are spend-stream events. `REWARD_*_ISSUED.prevHash` MUST equal the then-current spend-stream head `eventHash` for the `spendId` (see `../../core/spend-event.md#cross-fsm-ordering-constraints-normative`).
 
 Reward entries are immutable: no clawbacks, no adjustments, even for fraud.
 
@@ -83,7 +83,7 @@ Reward entries are immutable: no clawbacks, no adjustments, even for fraud.
 4. **Reward Ledger is append-only** — entries are never deleted or modified
 5. **No clawback** — once issued, rewards MUST NOT be revoked or adjusted by the protocol. This constraint applies only to protocol-level actions. Application-layer systems MAY implement independent recovery, offsetting, or account-level controls outside the protocol.
 6. **policyVersion** MUST be recorded with every reward for auditability. This refers to the reward policy version, not the protocol version. Deployments SHOULD treat `policyVersion` as an audit pointer to a stable policy snapshot artifact (see `policy-layer.md`).
-7. **Unique identity (reward-layer)** — reward-layer implementations SHOULD assign a unique `rewardId` for internal idempotency and reconciliation. If a deployment chooses to carry it in protocol artifacts, it MAY include `rewardId` in `REWARD_*_ISSUED` payloads (see `../protocol/core/spend-event.md`) and in derived reward ledger views.
+7. **Unique identity (reward-layer)** — reward-layer implementations SHOULD assign a unique `rewardId` for internal idempotency and reconciliation. If a deployment chooses to carry it in protocol artifacts, it MAY include `rewardId` in `REWARD_*_ISSUED` payloads (see `../../core/spend-event.md`) and in derived reward ledger views.
 
 ## Provisional vs Final Rewards
 

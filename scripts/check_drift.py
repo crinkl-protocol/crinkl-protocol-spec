@@ -54,6 +54,14 @@ def subject_to_event_name(subject: str) -> str | None:
 
 def main() -> int:
     repo_root = Path(__file__).resolve().parents[1]
+    layout = subprocess.run(
+        [sys.executable, str(repo_root / "scripts" / "check_repository_layout.py")],
+        cwd=repo_root,
+        check=False,
+    )
+    if layout.returncode != 0:
+        return die("repository layout verification failed")
+
     binding_dir = repo_root / "bindings" / "nats" / "crinkl-platform" / "v1"
     protocol_binding_path = binding_dir / "binding.protocol.yaml"
     platform_binding_path = binding_dir / "binding.platform.yaml"
@@ -180,7 +188,7 @@ def main() -> int:
             f"README.md release mismatch: README={m.group(1)} release={release_version}"
         )
 
-    evolution = read_text(repo_root / "08-governance" / "versioning.md")
+    evolution = read_text(repo_root / "governance" / "versioning.md")
     m2 = re.search(
         r"Current public repository\s+(source candidate|release):\s+"
         r"\*\*(\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?)\*\*",
@@ -188,7 +196,7 @@ def main() -> int:
     )
     if not m2:
         return die(
-            "08-governance/versioning.md missing "
+            "governance/versioning.md missing "
             "'Current public repository source candidate|release: **X.Y.Z**'"
         )
     expected_versioning_label = (
@@ -225,21 +233,21 @@ def main() -> int:
         return die(f"protocol/core/schemas/event.schema.json missing eventName enum(s): {', '.join(spend_missing)}")
 
     # Conformance manifest version must match the binding (catches half-applied version bumps).
-    manifest = read_json(repo_root / "07-conformance" / "vectors" / "v1" / "manifest.json")
+    manifest = read_json(repo_root / "conformance" / "vectors" / "v1" / "manifest.json")
     mver = manifest.get("protocolVersion")
     if mver != protocol_version:
-        return die(f"07-conformance manifest version mismatch: manifest={mver} binding={protocol_version}")
+        return die(f"conformance manifest version mismatch: manifest={mver} binding={protocol_version}")
     if manifest.get("releaseVersion") != release_version:
-        return die("07-conformance manifest releaseVersion mismatch")
+        return die("conformance manifest releaseVersion mismatch")
     if manifest.get("releaseStatus") != release_status:
-        return die("07-conformance manifest releaseStatus mismatch")
+        return die("conformance manifest releaseStatus mismatch")
     if manifest.get("supportedWireProtocolVersions") != supported_wire_versions:
-        return die("07-conformance manifest supportedWireProtocolVersions mismatch")
+        return die("conformance manifest supportedWireProtocolVersions mismatch")
     release_conformance = dict(release.get("conformance") or {})
     if manifest.get("suite") != release_conformance.get("suite"):
-        return die("07-conformance manifest suite mismatch with release manifest")
+        return die("conformance manifest suite mismatch with release manifest")
     if manifest.get("suiteVersion") != release_conformance.get("suiteVersion"):
-        return die("07-conformance manifest suiteVersion mismatch with release manifest")
+        return die("conformance manifest suiteVersion mismatch with release manifest")
 
     if release_status == "RELEASE_CANDIDATE_NOT_PUBLISHED" and release_version == "1.0.0-rc.8":
         rc8_checker = repo_root / "scripts" / "check_reward_commitment_rc8_candidate.py"
@@ -270,7 +278,7 @@ def main() -> int:
 
     geography_checker = (
         repo_root
-        / "07-conformance"
+        / "conformance"
         / "profiles"
         / "spend-token-v1-v2-geography-commitments"
         / "scripts"
@@ -286,7 +294,7 @@ def main() -> int:
     # current suite inclusion, official self-cell boundaries, and fixture checks.
     w3c_bundle_checker = (
         repo_root
-        / "07-conformance"
+        / "conformance"
         / "profiles"
         / "w3c-vc-2.0-spend-attestation-v1"
         / "scripts"

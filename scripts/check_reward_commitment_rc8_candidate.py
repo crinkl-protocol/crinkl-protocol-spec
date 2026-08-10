@@ -77,7 +77,7 @@ def main() -> int:
         require((adopted_root / ".git").exists(), "--adopted-repo is not a Git checkout")
         release = json.loads((ROOT / "versions/release.json").read_text())
         registry = json.loads((ROOT / "versions/release-registry.json").read_text())
-        manifest = json.loads((ROOT / "07-conformance/vectors/v1/manifest.json").read_text())
+        manifest = json.loads((ROOT / "conformance/vectors/v1/manifest.json").read_text())
         plan = json.loads((ROOT / "versions/v1.0.0-rc.8/finalization.json").read_text())
         require(release.get("releaseVersion") == "1.0.0-rc.8" and release.get("requiredTag") == "v1.0.0-rc.8" and release.get("status") == "RELEASE_CANDIDATE_NOT_PUBLISHED", "release candidate state")
         require(registry.get("latestReleasedVersion") == "1.0.0-rc.7" and registry.get("candidateState") == "SOURCE_CANDIDATE_AWAITING_REVIEW_NOT_PUBLISHABLE", "registry state")
@@ -97,7 +97,7 @@ def main() -> int:
         for path in (
             "protocol/portability/spend-attestation-token.md",
             "protocol/applications/economics/settlement-bindings.md",
-            "07-conformance/compatibility.md",
+            "conformance/compatibility.md",
             "versions/CHANGELOG.md",
         ):
             require(path in controlling, f"missing controlling artifact: {path}")

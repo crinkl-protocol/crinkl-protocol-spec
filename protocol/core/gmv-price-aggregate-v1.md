@@ -11,7 +11,7 @@ normative: true
 
 The aggregate carries **price-evidence authority only**. It does not establish GMV proof finality, perform a lifecycle transition, authorize consumption, mutate points, or settle anything. That boundary is embedded in the artifact itself (see `authorityBoundary`) and a verifier MUST reject any aggregate that claims more.
 
-Verifier behavior, the ordered check sequence, and the failure-code vocabulary are specified in `../07-conformance/gmv-price-aggregate-verification.md`.
+Verifier behavior, the ordered check sequence, and the failure-code vocabulary are specified in `../../conformance/gmv-price-aggregate-verification.md`.
 
 ## Identifiers and Domains
 
@@ -305,4 +305,4 @@ Checkable properties of this example:
 
 ## Consumption by Sealed-Day Candidates
 
-A GMV day-seal candidate (V4) references the aggregate through its `priceEvidence` section: artifact reference (`contentHash`, `byteLength`), `aggregateHash`, `sourceProfileHash`, `aggregationPolicyHash`, `sampleSetRoot`, registry and assignment identifiers, window bounds, `publishedAt`, and `priceMicroUsdPerToken`. Every one of those fields MUST equal the corresponding aggregate field. The candidate's own statement price MUST equal the aggregate price or fall within the aggregate's signed tolerance, and the aggregate's `windowStart` MUST NOT precede the candidate's day-window end (the price is observed after the day being sealed). Sealing attempts that consume price evidence MUST declare the `GMV_PRICE_AGGREGATE_V1` capability. The exact checks and failure codes are in `../07-conformance/gmv-price-aggregate-verification.md`.
+A GMV day-seal candidate (V4) references the aggregate through its `priceEvidence` section: artifact reference (`contentHash`, `byteLength`), `aggregateHash`, `sourceProfileHash`, `aggregationPolicyHash`, `sampleSetRoot`, registry and assignment identifiers, window bounds, `publishedAt`, and `priceMicroUsdPerToken`. Every one of those fields MUST equal the corresponding aggregate field. The candidate's own statement price MUST equal the aggregate price or fall within the aggregate's signed tolerance, and the aggregate's `windowStart` MUST NOT precede the candidate's day-window end (the price is observed after the day being sealed). Sealing attempts that consume price evidence MUST declare the `GMV_PRICE_AGGREGATE_V1` capability. The exact checks and failure codes are in `../../conformance/gmv-price-aggregate-verification.md`.
