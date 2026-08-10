@@ -7,7 +7,12 @@ normative: true
 
 # Protocol Evolution
 
-`v1.0.0-rc.7` is the latest released public package. Current public repository release: **1.0.0-rc.7** (`RELEASED`), conformance suite 4; it does not promote candidate profiles or activate runtime, validator, authority, or production behavior.
+`v1.0.0-rc.7` remains the latest released public package. Current public
+repository source candidate: **1.0.0-rc.8**
+(`RELEASE_CANDIDATE_NOT_PUBLISHED`), conformance suite 5. The candidate is an
+additive correction to public specification and conformance material; it does
+not change supported wire versions, promote candidate profiles, or activate
+runtime, validator, authority, or production behavior.
 The following preserved
 rc.5 transition text applies only to public-spec commit
 `81237937833ab32e5ce92d3b5ceed72854baecef` / tree
@@ -25,9 +30,10 @@ while each document retains its own declared maturity. Neither state promotes or
 demotes the other, no stable `v1.0.0` release is declared here, and the prior
 `v1.0.0-rc.4` tag remains immutable.
 
-`v1.0.0-rc.3` and `v1.0.0-rc.4` are released public packages; rc.4 is the
-latest released package. `1.0.0-rc.2` is supported embedded wire/source/binding
-history and has no observed public tag or public-release classification.
+`v1.0.0-rc.3`, `v1.0.0-rc.4`, and `v1.0.0-rc.7` are released public packages;
+rc.7 is the latest released package. `1.0.0-rc.2` is supported embedded
+wire/source/binding history and has no observed public tag or public-release
+classification.
 
 It does not classify any later tree; any later tree remains unassigned unless a
 new exact candidate identity and independent review record it.
