@@ -46,8 +46,8 @@
   ],
   "adoptedCandidate": {
     "repository": "crinkl-protocol",
-    "commit": "329c3711002bc84769fa2fc509bfc828225106d6",
-    "tree": "9a6315a9be142a43e4c0de27e26a4c2fd6af6737",
+    "commit": "c80760a0b8cac76b8aff137fe31b6ecbc6951954",
+    "tree": "d4cb3a9af00c3bc55134ccdb342e7a806400c2e9",
     "artifacts": [
       {
         "path": "protocol/portability/TOKENS.md",
