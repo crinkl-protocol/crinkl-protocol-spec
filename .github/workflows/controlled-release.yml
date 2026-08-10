@@ -136,7 +136,7 @@ jobs:
         run: |
           set -euo pipefail
           release_tag="$(python3 -c 'import json; print(json.load(open("versions/release.json", encoding="utf-8"))["requiredTag"])')"
-          git tag -a "$release_tag" -m 'local release-validation tag; never push'
+          git -c user.name='release-validation' -c user.email='release-validation@invalid' tag -a "$release_tag" -m 'local release-validation tag; never push'
           test "$(git rev-parse "${release_tag}^{}")" = "$(git rev-parse HEAD)"
           python3 scripts/check_successor_release_finalization.py --mode released --require-tag
           python3 scripts/check_release_registry.py --adopted-repo "$CRINKL_PROTOCOL_ADOPTED_REPO" --require-tag
