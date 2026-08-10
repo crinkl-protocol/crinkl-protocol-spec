@@ -376,7 +376,12 @@ def source_matches(
             tagged_head = git(root, "rev-parse", f"refs/tags/{tag}^{{commit}}")
             tagged_tree = git(root, "rev-parse", f"refs/tags/{tag}^{{tree}}")
             if tagged_head != head or tagged_tree != tree:
-                error(errors, location, f"tag target does not resolve to current HEAD/tree: {tag}")
+                # A later source candidate may be checked from a descendant
+                # workspace.  The released package remains authoritative at
+                # the immutable tag; only a required pre/post-tag check must
+                # insist that the workspace itself is the tag target.
+                if require_tag or git(root, "merge-base", "--is-ancestor", tagged_head, "HEAD") != "":
+                    error(errors, location, f"tag target does not resolve to current HEAD/tree: {tag}")
         return
     commit = source.get("commit")
     tree = source.get("tree")
