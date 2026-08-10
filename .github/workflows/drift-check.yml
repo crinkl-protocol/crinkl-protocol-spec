@@ -1,4 +1,4 @@
-name: protocol-drift-check
+name: protocol-integrity
 
 on:
   pull_request:
@@ -6,8 +6,48 @@ on:
     branches: ["main"]
 
 jobs:
-  drift:
+  changes:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      documentation_surface: ${{ steps.filter.outputs.documentation_surface }}
+      protected_version_surface: ${{ steps.filter.outputs.protected_version_surface }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            documentation_surface:
+              - '**/*.md'
+              - 'scripts/check_drift.py'
+              - 'scripts/check_living_version_claims.py'
+            protected_version_surface:
+              - '.github/workflows/drift-check.yml'
+              - '01-core/**'
+              - 'bindings/**'
+              - 'schemas/**'
+              - '07-conformance/**'
+              - 'versions/**'
+              - 'scripts/check_drift.py'
+              - 'scripts/check_living_version_claims.py'
+              - 'scripts/check_release_registry.py'
+              - 'scripts/check_released_identifier_erratum.py'
+              - 'scripts/check_version_identifier_inventory.py'
+              - 'scripts/test_check_release_registry.py'
+              - 'scripts/test_check_released_identifier_erratum.py'
+              - 'scripts/test_check_version_identifier_inventory.py'
+              - 'scripts/verify_conformance.mjs'
+
+  protocol-integrity:
+    needs: changes
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
         with:
@@ -25,10 +65,30 @@ jobs:
           python3 scripts/check_change_boundary.py
           --base "${{ github.event.pull_request.base.sha }}"
           --head "${{ github.event.pull_request.head.sha }}"
-      - name: Drift check
-        run: python3 scripts/check_drift.py
-      - name: Direct buyer-reward release profile
+      - name: Documentation version claims
+        if: needs.changes.outputs.documentation_surface == 'true' || needs.changes.outputs.protected_version_surface == 'true'
+        run: python3 scripts/check_living_version_claims.py
+      - name: Checkout adopted protocol evidence
+        if: needs.changes.outputs.protected_version_surface == 'true'
+        uses: actions/checkout@v4
+        with:
+          repository: crinkl-protocol/crinkl-protocol
+          ref: 52648bae72a8c3b83883392be1c4ae714e4359c3
+          path: adopted-protocol
+          fetch-depth: 0
+      - name: Protected version inventory, registry, and erratum
+        if: needs.changes.outputs.protected_version_surface == 'true'
         run: |
+          python3 scripts/check_version_identifier_inventory.py --adopted-repo adopted-protocol
+          python3 scripts/test_check_version_identifier_inventory.py --adopted-repo adopted-protocol
+          python3 scripts/check_release_registry.py --adopted-repo adopted-protocol
+          python3 scripts/test_check_release_registry.py --adopted-repo adopted-protocol
+          python3 scripts/check_released_identifier_erratum.py --adopted-repo adopted-protocol
+          python3 scripts/test_check_released_identifier_erratum.py --adopted-repo adopted-protocol
+      - name: Protected conformance and release profile
+        if: needs.changes.outputs.protected_version_surface == 'true'
+        run: |
+          node scripts/verify_conformance.mjs --strict-coverage
           python3 scripts/check_campaign_direct_reward_release_profile.py
           python3 07-conformance/profiles/campaign-direct-buyer-reward-v1/scripts/check_campaign_direct_reward_profile_vectors.py
           python3 07-conformance/profiles/campaign-direct-buyer-reward-v1/scripts/generate_campaign_direct_reward_profile_vectors.py --check
