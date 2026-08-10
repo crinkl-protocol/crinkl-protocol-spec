@@ -51,6 +51,8 @@ jobs:
           ref: 52648bae72a8c3b83883392be1c4ae714e4359c3
           path: adopted-protocol
           fetch-depth: 0
+          ssh-key: ${{ secrets.CRINKL_PROTOCOL_READ_SSH_KEY }}
+          persist-credentials: false
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
