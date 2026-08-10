@@ -1,0 +1,174 @@
+name: controlled-release-validation
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/controlled-release.yml'
+  workflow_dispatch:
+    inputs:
+      candidate_ref:
+        description: Immutable reviewed source-candidate commit (40 lowercase hex).
+        required: true
+        type: string
+      historical_replay:
+        description: Allow validation only when the required release tag already exists remotely.
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  source-review-read-only:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+      - name: Confirm source-review boundary
+        run: |
+          git diff --check "${{ github.event.pull_request.base.sha }}" "${{ github.event.pull_request.head.sha }}"
+          echo 'This pull-request path validates workflow source only; it cannot create a tag or release.'
+
+  release-validation-receipt:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.candidate_ref }}
+          fetch-depth: 0
+      - uses: actions/checkout@v4
+        with:
+          repository: crinkl-protocol/crinkl-protocol
+          ref: 52648bae72a8c3b83883392be1c4ae714e4359c3
+          path: adopted-protocol
+          fetch-depth: 0
+          ssh-key: ${{ secrets.CRINKL_PROTOCOL_READ_SSH_KEY }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install existing checker dependencies
+        run: python3 -m pip install --upgrade pip pyyaml jsonschema cryptography
+      - name: Candidate identity, declared digests, and full pre-tag gate
+        env:
+          CRINKL_PROTOCOL_ADOPTED_REPO: ${{ github.workspace }}/adopted-protocol
+          CANDIDATE_REF: ${{ inputs.candidate_ref }}
+          HISTORICAL_REPLAY: ${{ inputs.historical_replay }}
+        run: |
+          set -euo pipefail
+          printf '%s' "$CANDIDATE_REF" | grep -Eq '^[0-9a-f]{40}$'
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_REF"
+          release_tag="$(python3 -c 'import json; print(json.load(open("versions/release.json", encoding="utf-8"))["requiredTag"])')"
+          origin_tag_target="$(git ls-remote --tags origin "refs/tags/${release_tag}^{}" | awk '{print $1}')"
+          case "$HISTORICAL_REPLAY" in
+            true) test -n "$origin_tag_target" ;;
+            false) test -z "$origin_tag_target" ;;
+            *) echo 'historical_replay must be true or false' >&2; exit 1 ;;
+          esac
+          git tag -d "$release_tag" || true
+          test -z "$(git show-ref --verify --hash "refs/tags/${release_tag}" 2>/dev/null || true)"
+          test "$(git ls-remote --tags origin "refs/tags/${release_tag}^{}" | awk '{print $1}')" = "$origin_tag_target"
+          python3 scripts/check_successor_release_finalization.py --mode candidate --self-test | tee "$RUNNER_TEMP/candidate-identity.txt"
+          python3 scripts/check_release_registry.py --adopted-repo "$CRINKL_PROTOCOL_ADOPTED_REPO"
+          python3 scripts/check_drift.py
+          node scripts/verify_conformance.mjs
+          python3 - <<'PY' > "$RUNNER_TEMP/released-artifact-declared-digests.tsv"
+          import json
+          from pathlib import Path
+          plan = json.loads(Path('versions/v1.0.0-rc.7/finalization.json').read_text(encoding='utf-8'))
+          artifacts = plan['releasedArtifactDigests']
+          assert len(artifacts) == 11
+          for artifact in artifacts:
+              print(f"{artifact['path']}\t{artifact['sha256']}")
+          PY
+          while IFS=$'\t' read -r path declared; do
+            observed="sha256:$(sha256sum "$path" | awk '{print $1}')"
+            printf '%s\tdeclared=%s\tobserved=%s\n' "$path" "$declared" "$observed"
+          done < "$RUNNER_TEMP/released-artifact-declared-digests.tsv" > "$RUNNER_TEMP/candidate-observed-digests.tsv"
+          printf 'candidate_head=%s\ncandidate_tree=%s\nrelease_tag=%s\norigin_tag_target=%s\n' \
+            "$(git rev-parse HEAD)" "$(git rev-parse 'HEAD^{tree}')" "$release_tag" "$origin_tag_target" \
+            > "$RUNNER_TEMP/release-validation-receipt.txt"
+          cat "$RUNNER_TEMP/released-artifact-declared-digests.tsv" "$RUNNER_TEMP/candidate-observed-digests.tsv" >> "$RUNNER_TEMP/release-validation-receipt.txt"
+      - name: Materialize and commit the release transition locally
+        env:
+          CRINKL_PROTOCOL_ADOPTED_REPO: ${{ runner.temp }}/adopted-protocol
+        run: |
+          set -euo pipefail
+          mv adopted-protocol "$CRINKL_PROTOCOL_ADOPTED_REPO"
+          python3 scripts/check_successor_release_finalization.py --mode released --write-materialized-release
+          git diff --check
+          git diff --name-only -z | xargs -0 git add --
+          git diff --cached --check
+          git -c user.name='release-validation' -c user.email='release-validation@invalid' commit -m 'release validation materialization'
+          while IFS=$'\t' read -r path declared; do
+            observed="sha256:$(sha256sum "$path" | awk '{print $1}')"
+            test "$observed" = "$declared"
+            printf '%s\tdeclared=%s\tobserved=%s\n' "$path" "$declared" "$observed"
+          done < "$RUNNER_TEMP/released-artifact-declared-digests.tsv" > "$RUNNER_TEMP/materialized-observed-digests.tsv"
+          cat "$RUNNER_TEMP/materialized-observed-digests.tsv" >> "$RUNNER_TEMP/release-validation-receipt.txt"
+      - name: Full pre-tag gate on clean committed release bytes
+        env:
+          CRINKL_PROTOCOL_ADOPTED_REPO: ${{ runner.temp }}/adopted-protocol
+        run: |
+          set -euo pipefail
+          release_tag="$(python3 -c 'import json; print(json.load(open("versions/release.json", encoding="utf-8"))["requiredTag"])')"
+          test -z "$(git show-ref --verify --hash "refs/tags/${release_tag}" 2>/dev/null || true)"
+          test -z "$(git status --porcelain)"
+          python3 scripts/check_successor_release_finalization.py --mode released
+          python3 scripts/check_release_registry.py --adopted-repo "$CRINKL_PROTOCOL_ADOPTED_REPO"
+          python3 scripts/check_living_version_claims.py
+          node scripts/verify_conformance.mjs --require-released --require-kind token.spendAttestation.portableV1.zkCommitmentGeography
+          python3 scripts/check_drift.py
+      - name: Local-only tag, exact tag-target gate, and post-tag conformance
+        env:
+          CRINKL_PROTOCOL_ADOPTED_REPO: ${{ runner.temp }}/adopted-protocol
+        run: |
+          set -euo pipefail
+          release_tag="$(python3 -c 'import json; print(json.load(open("versions/release.json", encoding="utf-8"))["requiredTag"])')"
+          git tag -a "$release_tag" -m 'local release-validation tag; never push'
+          test "$(git rev-parse "${release_tag}^{}")" = "$(git rev-parse HEAD)"
+          python3 scripts/check_successor_release_finalization.py --mode released --require-tag
+          python3 scripts/check_release_registry.py --adopted-repo "$CRINKL_PROTOCOL_ADOPTED_REPO" --require-tag
+          node scripts/verify_conformance.mjs --require-released --require-kind token.spendAttestation.portableV1.zkCommitmentGeography
+          printf 'materialized_head=%s\nmaterialized_tree=%s\nlocal_tag_target=%s\n' \
+            "$(git rev-parse HEAD)" "$(git rev-parse 'HEAD^{tree}')" "$(git rev-parse "${release_tag}^{}")" \
+            >> "$RUNNER_TEMP/release-validation-receipt.txt"
+      - name: Fresh-checkout reconstruction
+        env:
+          CRINKL_PROTOCOL_ADOPTED_REPO: ${{ runner.temp }}/adopted-protocol
+        run: |
+          set -euo pipefail
+          release_tag="$(python3 -c 'import json; print(json.load(open("versions/release.json", encoding="utf-8"))["requiredTag"])')"
+          clean_checkout="$RUNNER_TEMP/clean-release-checkout"
+          git clone --no-local "$GITHUB_WORKSPACE" "$clean_checkout"
+          git -C "$clean_checkout" checkout "$release_tag"
+          cd "$clean_checkout"
+          python3 scripts/check_successor_release_finalization.py --mode released --require-tag
+          python3 scripts/check_release_registry.py --adopted-repo "$CRINKL_PROTOCOL_ADOPTED_REPO" --require-tag
+          node scripts/verify_conformance.mjs --require-released --require-kind token.spendAttestation.portableV1.zkCommitmentGeography
+          while IFS=$'\t' read -r path declared; do
+            observed="sha256:$(sha256sum "$path" | awk '{print $1}')"
+            test "$observed" = "$declared"
+            printf '%s\tdeclared=%s\tobserved=%s\n' "$path" "$declared" "$observed"
+          done < "$RUNNER_TEMP/released-artifact-declared-digests.tsv" > "$RUNNER_TEMP/clean-observed-digests.tsv"
+          cat "$RUNNER_TEMP/clean-observed-digests.tsv" >> "$RUNNER_TEMP/release-validation-receipt.txt"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-validation-receipt
+          path: |
+            ${{ runner.temp }}/candidate-identity.txt
+            ${{ runner.temp }}/released-artifact-declared-digests.tsv
+            ${{ runner.temp }}/candidate-observed-digests.tsv
+            ${{ runner.temp }}/materialized-observed-digests.tsv
+            ${{ runner.temp }}/clean-observed-digests.tsv
+            ${{ runner.temp }}/release-validation-receipt.txt
+          if-no-files-found: error
