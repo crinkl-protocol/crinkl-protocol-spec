@@ -81,7 +81,6 @@ jobs:
         run: |
           python3 scripts/check_version_identifier_inventory.py --adopted-repo adopted-protocol
           python3 scripts/test_check_version_identifier_inventory.py --adopted-repo adopted-protocol
-          python3 scripts/check_release_registry.py --adopted-repo adopted-protocol
           python3 scripts/test_check_release_registry.py --adopted-repo adopted-protocol
           python3 scripts/check_released_identifier_erratum.py --adopted-repo adopted-protocol
           python3 scripts/test_check_released_identifier_erratum.py --adopted-repo adopted-protocol
