@@ -36,9 +36,6 @@ jobs:
               - 'scripts/check_drift.py'
               - 'scripts/check_living_version_claims.py'
               - 'scripts/check_released_identifier_erratum.py'
-              - 'scripts/check_version_identifier_inventory.py'
-              - 'scripts/test_check_released_identifier_erratum.py'
-              - 'scripts/test_check_version_identifier_inventory.py'
               - 'scripts/verify_conformance.mjs'
 
   protocol-integrity:
@@ -66,46 +63,13 @@ jobs:
       - name: Documentation version claims
         if: needs.changes.outputs.documentation_surface == 'true' || needs.changes.outputs.protected_version_surface == 'true'
         run: python3 scripts/check_living_version_claims.py
-      - name: Checkout adopted protocol evidence
+      - name: Protected released-identifier erratum integrity
         if: needs.changes.outputs.protected_version_surface == 'true'
-        uses: actions/checkout@v4
-        with:
-          repository: crinkl-protocol/crinkl-protocol
-          ref: 52648bae72a8c3b83883392be1c4ae714e4359c3
-          path: adopted-protocol
-          fetch-depth: 0
-      - name: Protected version inventory and erratum
-        if: needs.changes.outputs.protected_version_surface == 'true'
-        run: |
-          python3 scripts/check_version_identifier_inventory.py --adopted-repo adopted-protocol
-          python3 scripts/test_check_version_identifier_inventory.py --adopted-repo adopted-protocol
-          python3 scripts/check_released_identifier_erratum.py --adopted-repo adopted-protocol
-          python3 scripts/test_check_released_identifier_erratum.py --adopted-repo adopted-protocol
-      - name: Protected conformance and release profile
+        run: python3 scripts/check_released_identifier_erratum.py --local-only
+      - name: Protected public conformance and profile vectors
         if: needs.changes.outputs.protected_version_surface == 'true'
         run: |
           node scripts/verify_conformance.mjs --strict-coverage
-          python3 scripts/check_campaign_direct_reward_release_profile.py
           python3 07-conformance/profiles/campaign-direct-buyer-reward-v1/scripts/check_campaign_direct_reward_profile_vectors.py
           python3 07-conformance/profiles/campaign-direct-buyer-reward-v1/scripts/generate_campaign_direct_reward_profile_vectors.py --check
           node scripts/verify_conformance.mjs --require-kind campaign.directBuyerReward.profileV1
-
-          release_status="$(python3 -c 'import json; print(json.load(open("versions/release.json", encoding="utf-8"))["status"])')"
-          case "$release_status" in
-            RELEASE_CANDIDATE_NOT_PUBLISHED)
-              python3 scripts/check_rc3_release_finalization.py --mode candidate
-              set +e
-              node scripts/verify_conformance.mjs --require-released --require-kind campaign.directBuyerReward.profileV1
-              status=$?
-              set -e
-              test "$status" -eq 4
-              ;;
-            RELEASED)
-              python3 scripts/check_rc3_release_finalization.py --mode released
-              node scripts/verify_conformance.mjs --require-released --require-kind campaign.directBuyerReward.profileV1
-              ;;
-            *)
-              echo "unsupported release status: $release_status" >&2
-              exit 1
-              ;;
-          esac

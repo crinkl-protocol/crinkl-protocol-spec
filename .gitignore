@@ -1,6 +1,8 @@
 dist/
 *.pdf
 .DS_Store
+__pycache__/
+*.py[cod]
 
 # Internal audit documents
 docs/MANDATORY_PROPERTIES_AUDIT.md
