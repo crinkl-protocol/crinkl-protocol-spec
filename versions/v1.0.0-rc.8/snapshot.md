@@ -4,7 +4,7 @@ Status: `RELEASE_CANDIDATE_NOT_PUBLISHED`
 
 This suite-5 source candidate is based on public-spec
 `8ed9b6314c88728de325c2905589f5d84e502379` and pins adopted candidate
-`crinkl-protocol@4a9dff4002a4016638e213d2f6dce71c4d371515`. It preserves the
+`crinkl-protocol@329c3711002bc84769fa2fc509bfc828225106d6`. It preserves the
 immutable released `v1.0.0-rc.7` tag, record, and snapshot while adding the
 rc.7 reward-commitment publication-defect erratum and its distinct successor
 conformance identity.

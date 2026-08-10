@@ -46,8 +46,8 @@
   ],
   "adoptedCandidate": {
     "repository": "crinkl-protocol",
-    "commit": "4a9dff4002a4016638e213d2f6dce71c4d371515",
-    "tree": "e9a45ea98f346ddadd395af593de7eddded36a2b",
+    "commit": "329c3711002bc84769fa2fc509bfc828225106d6",
+    "tree": "9a6315a9be142a43e4c0de27e26a4c2fd6af6737",
     "artifacts": [
       {
         "path": "protocol/portability/TOKENS.md",
@@ -61,8 +61,13 @@
       },
       {
         "path": "conformance/reward-commitment-presentation/v1/vectors/two-token.v1.json",
-        "gitBlob": "62ee4064e9ecec56eb13478964ff0f9d6c6368ad",
-        "sha256": "sha256:dc14f3dfecbbb2b4fc9b7844ef363dd6dd360c4dfa4f4c96997a4e8e5f5ff11e"
+        "gitBlob": "c9eea347eb5f22209db5083572171c5acb0a929e",
+        "sha256": "sha256:375ad582c4d014de7ccb96b332843da8b2522e6bafaff232671ba5b062fc3c1a"
+      },
+      {
+        "path": "conformance/reward-commitment-presentation/v1/manifest.json",
+        "gitBlob": "6437af5efa35994762acec74ce2bdfc33c08fb74",
+        "sha256": "sha256:1f2196201f2902ad8ad4948ac4206a442a5d624b724daa1945391bfa65b03811"
       }
     ],
     "state": "CANDIDATE_SOURCE_ONLY_NOT_PUBLIC_RELEASE_RUNTIME_OR_DEPLOYMENT"

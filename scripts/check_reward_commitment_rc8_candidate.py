@@ -12,13 +12,14 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 BASE = "8ed9b6314c88728de325c2905589f5d84e502379"
 BASE_TREE = "c7ac02cadcdd2fa662c521ab1599ea3fbb2d9215"
-ADOPTED = "4a9dff4002a4016638e213d2f6dce71c4d371515"
+ADOPTED = "329c3711002bc84769fa2fc509bfc828225106d6"
 RC7 = "d45560e679c12298ee25fad6e0e7948b03e5a7c5"
-ADOPTED_TREE = "e9a45ea98f346ddadd395af593de7eddded36a2b"
+ADOPTED_TREE = "9a6315a9be142a43e4c0de27e26a4c2fd6af6737"
 ADOPTED_ARTIFACTS = {
     "protocol/portability/TOKENS.md": "sha256:e094a25cb91ba43053c7deeb8299c7e544268a6155a5d7e83ab324eac694df34",
     "protocol/portability/COMMITMENT_LAYER.md": "sha256:fcea079a78df09808b0ec11e26819481d404a9df8d1058c0136889b46a6ab2b7",
-    "conformance/reward-commitment-presentation/v1/vectors/two-token.v1.json": "sha256:dc14f3dfecbbb2b4fc9b7844ef363dd6dd360c4dfa4f4c96997a4e8e5f5ff11e",
+    "conformance/reward-commitment-presentation/v1/vectors/two-token.v1.json": "sha256:375ad582c4d014de7ccb96b332843da8b2522e6bafaff232671ba5b062fc3c1a",
+    "conformance/reward-commitment-presentation/v1/manifest.json": "sha256:1f2196201f2902ad8ad4948ac4206a442a5d624b724daa1945391bfa65b03811",
 }
 
 

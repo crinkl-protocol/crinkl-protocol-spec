@@ -3,7 +3,7 @@
   "profileVersion": 2,
   "adoptedCandidate": {
     "repository": "crinkl-protocol",
-    "commit": "4a9dff4002a4016638e213d2f6dce71c4d371515",
+    "commit": "329c3711002bc84769fa2fc509bfc828225106d6",
     "artifact": {
       "path": "protocol/portability/TOKENS.md",
       "sha256": "sha256:e094a25cb91ba43053c7deeb8299c7e544268a6155a5d7e83ab324eac694df34"
