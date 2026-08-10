@@ -108,15 +108,15 @@ def main() -> int:
     rejected("rc.5 promoted to current", altered)
     altered = copy.deepcopy(documents)
     expected_rc8_versioning = (
-        "`v1.0.0-rc.7` remains the latest released public package. Current public\n"
-        "repository source candidate: **1.0.0-rc.8**\n"
-        "(`RELEASE_CANDIDATE_NOT_PUBLISHED`), conformance suite 5; it is unreviewed,\n"
-        "unpublished, not publishable, and does not inherit rc.5 review."
+        "`v1.0.0-rc.7` is the latest released public package. Current public repository\n"
+        "source candidate: **1.0.0-rc.8** (`RELEASE_CANDIDATE_NOT_PUBLISHED`),\n"
+        "conformance suite 5; it is unreviewed, unpublished, not publishable, and does\n"
+        "not inherit rc.5 review."
     )
     if expected_rc8_versioning not in altered["08-governance/versioning.md"]:
         raise AssertionError("rc.8 versioning source-candidate fixture missing")
     altered["08-governance/versioning.md"] = altered["08-governance/versioning.md"].replace(
-        "not publishable, and does not inherit rc.5 review.",
+        "not publishable, and does\nnot inherit rc.5 review.",
         "publishable and inherits rc.5 review.",
         1,
     )

@@ -157,8 +157,13 @@ def main() -> int:
     readme_candidates = readme[readme.find(readme_section) :]
     if readme_section not in readme:
         return die("README.md missing '## Release and source state' section")
+    repository_state_label = (
+        "source candidate"
+        if release_status == "RELEASE_CANDIDATE_NOT_PUBLISHED"
+        else "release"
+    )
     m = re.search(
-        r"Current public repository.*release:\s+\*\*v?(\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?)\*\*",
+        rf"Current public repository\s+{repository_state_label}:\s+\*\*v?(\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?)\*\*",
         readme_candidates,
         flags=re.S,
     )
@@ -177,7 +182,7 @@ def main() -> int:
 
     evolution = read_text(repo_root / "08-governance" / "versioning.md")
     m2 = re.search(
-        r"Current public repository (source candidate|release):\s+"
+        r"Current public repository\s+(source candidate|release):\s+"
         r"\*\*(\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?)\*\*",
         evolution,
     )
