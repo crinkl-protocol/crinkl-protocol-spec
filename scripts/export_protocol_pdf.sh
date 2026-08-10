@@ -28,9 +28,9 @@ subtitle: "$SUBTITLE"
 EOF
 
 DOCS=(
-  "00-purpose/what-crinkl-proves.md"
-  "00-purpose/non-goals.md"
-  "00-purpose/threat-model.md"
+  "protocol/purpose/what-crinkl-proves.md"
+  "protocol/purpose/non-goals.md"
+  "protocol/purpose/threat-model.md"
   "protocol/core/evidence.md"
   "protocol/core/spend-event.md"
   "protocol/core/verification-state.md"
@@ -58,23 +58,23 @@ DOCS=(
   "protocol/applications/economics/gmv-token.md"
   "protocol/applications/economics/distribution-token.md"
   "protocol/applications/economics/settlement-bindings.md"
-  "06-extensions/zk-proof-extension.md"
-  "06-extensions/zk-foundation.md"
-  "06-extensions/zk-circuit-catalog.md"
-  "06-extensions/agent-query-extension.md"
-  "06-extensions/mcp-rest-bindings.md"
-  "06-extensions/solana-commitment-binding.md"
-  "06-extensions/offer-delivery-profile.md"
-  "06-extensions/encryption-envelopes.md"
-  "06-extensions/store-registry.md"
-  "07-conformance/vectors.md"
-  "07-conformance/verifier-test-suite.md"
-  "07-conformance/compatibility.md"
-  "08-governance/glossary.md"
-  "08-governance/protocol-v1-index.md"
-  "08-governance/versioning.md"
-  "08-governance/change-process.md"
-  "08-governance/authority-hierarchy.md"
+  "protocol/extensions/zk-proof-extension.md"
+  "protocol/extensions/zk-foundation.md"
+  "protocol/extensions/zk-circuit-catalog.md"
+  "protocol/extensions/agent-query-extension.md"
+  "protocol/extensions/mcp-rest-bindings.md"
+  "protocol/extensions/solana-commitment-binding.md"
+  "protocol/extensions/offer-delivery-profile.md"
+  "protocol/extensions/encryption-envelopes.md"
+  "protocol/extensions/store-registry.md"
+  "conformance/vectors.md"
+  "conformance/verifier-test-suite.md"
+  "conformance/compatibility.md"
+  "governance/glossary.md"
+  "governance/protocol-v1-index.md"
+  "governance/versioning.md"
+  "governance/change-process.md"
+  "governance/authority-hierarchy.md"
 )
 
 for doc in "${DOCS[@]}"; do
@@ -92,7 +92,7 @@ for doc in "${DOCS[@]}"; do
   } >>"$TMP_MD"
 done
 
-RESOURCE_PATH=".:00-purpose:protocol/core:protocol/portability:protocol/applications:06-extensions:07-conformance:08-governance:diagrams:formal"
+RESOURCE_PATH=".:protocol/purpose:protocol/core:protocol/portability:protocol/applications:protocol/extensions:conformance:governance:diagrams:formal"
 
 IMAGE="crinkl-protocol/pandoc-latex:latest"
 if ! docker image inspect "$IMAGE" >/dev/null 2>&1; then

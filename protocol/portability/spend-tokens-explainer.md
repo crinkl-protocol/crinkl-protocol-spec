@@ -14,8 +14,8 @@ Status: Working draft / canonical explainer
 Last updated: 2026-01-03
 
 This document is a non-normative explainer aligned with Crinkl Protocol v1.0.0-rc.2.
-Normative rules live in `../00-purpose/what-crinkl-proves.md`, `spend-attestation-token.md`,
-`../protocol/core/verification-state.md`, `../00-purpose/threat-model.md`, and related references.
+Normative rules live in `../purpose/what-crinkl-proves.md`, `spend-attestation-token.md`,
+`../core/verification-state.md`, `../purpose/threat-model.md`, and related references.
 
 If this explainer uses MUST/SHOULD/MAY, it mirrors normative requirements in those
 core documents; it does not introduce new requirements.

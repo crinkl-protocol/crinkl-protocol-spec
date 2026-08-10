@@ -71,7 +71,7 @@ Core protocol validity does not depend on campaigns, rewards, Solana, ZK, MCP, R
 
 Complete inventory of thirteen protocol-level artifacts, spanning all three
 layers (Core, Portability, Applications); anything not on this list is prose
-at the protocol level (defined in the [glossary](08-governance/glossary.md),
+at the protocol level (defined in the [glossary](governance/glossary.md),
 not a schema or a table row here) — see the note below the table for
 dependent artifacts that profiles and extensions define with their own
 schemas. `VerificationPolicy`, `IssuerRegistrySnapshot`, `AttestationStatus`,
@@ -100,7 +100,7 @@ These thirteen are the protocol-level artifact inventory. Serialization
 profiles and extensions define dependent artifacts documented in their own
 homes — the W3C representation's `W3CIssuerKeyHistoryV1` and Bitstring
 Status List credential, and extension artifacts such as
-`MerchantClaimAttestationV1` in [`06-extensions/`](06-extensions/) — which do
+`MerchantClaimAttestationV1` in [`protocol/extensions/`](protocol/extensions/) — which do
 not appear in this table.
 
 ## Privacy Boundary
@@ -123,25 +123,25 @@ Downstream layers consume spend proof; they do not define it.
 |---|---|
 | Spend Predicate rules and CampaignEpochs | [`protocol/applications/conditions/`](protocol/applications/conditions/) |
 | Reward and settlement | [`protocol/applications/economics/`](protocol/applications/economics/) including [`campaign-settlement-gcd.md`](protocol/applications/economics/campaign-settlement-gcd.md) |
-| ZK, Campaign experiments, direct buyer rewards, merchant authority, agent, REST/MCP, Solana, offer delivery | [`06-extensions/`](06-extensions/) including the public-draft [`campaign-experiment-profile.md`](06-extensions/campaign-experiment-profile.md), released [`campaign-direct-buyer-reward-profile.md`](06-extensions/campaign-direct-buyer-reward-profile.md), [`merchant-authority.md`](06-extensions/merchant-authority.md), [`zk-external-verifier-integration-guide.md`](06-extensions/zk-external-verifier-integration-guide.md), and [`solana-campaign-settlement-binding.md`](06-extensions/solana-campaign-settlement-binding.md) |
-| Conformance | [`07-conformance/`](07-conformance/) |
-| ZK beta release checklist | [`08-governance/zk-beta-release-checklist.md`](08-governance/zk-beta-release-checklist.md) |
-| ZK beta audit package | [`08-governance/zk-beta-audit-package.md`](08-governance/zk-beta-audit-package.md) |
-| Governance | [`08-governance/`](08-governance/), including the required [`protocol/business/onchain boundary`](08-governance/protocol-business-boundary.md) for spec and requirements changes |
+| ZK, Campaign experiments, direct buyer rewards, merchant authority, agent, REST/MCP, Solana, offer delivery | [`protocol/extensions/`](protocol/extensions/) including the public-draft [`campaign-experiment-profile.md`](protocol/extensions/campaign-experiment-profile.md), released [`campaign-direct-buyer-reward-profile.md`](protocol/extensions/campaign-direct-buyer-reward-profile.md), [`merchant-authority.md`](protocol/extensions/merchant-authority.md), [`zk-external-verifier-integration-guide.md`](protocol/extensions/zk-external-verifier-integration-guide.md), and [`solana-campaign-settlement-binding.md`](protocol/extensions/solana-campaign-settlement-binding.md) |
+| Conformance | [`conformance/`](conformance/) |
+| ZK beta release checklist | [`governance/zk-beta-release-checklist.md`](governance/zk-beta-release-checklist.md) |
+| ZK beta audit package | [`governance/zk-beta-audit-package.md`](governance/zk-beta-audit-package.md) |
+| Governance | [`governance/`](governance/), including the required [`protocol/business/onchain boundary`](governance/protocol-business-boundary.md) for spec and requirements changes |
 
 ## Repository Structure
 
 | Directory | Role |
 |---|---|
-| [`00-purpose/`](00-purpose/) | Purpose, non-goals, and threat model. |
+| [`protocol/purpose/`](protocol/purpose/) | Purpose, non-goals, and threat model. |
 | [`protocol/core/`](protocol/core/) | Evidence, Spend Events, verification states, canonicalization, signatures, privacy boundaries. |
 | [`protocol/core/`](protocol/core/) | Ingestion, normalization, soft/hard verification, correction, attestation issuance. |
 | [`protocol/portability/`](protocol/portability/) | Spend Attestation Tokens, verifier requirements, identity exclusion, replay/auditability. |
 | [`protocol/applications/conditions/`](protocol/applications/conditions/) | Spend Predicates, predicate evaluation, proof of match, campaign commitment. |
 | [`protocol/applications/economics/`](protocol/applications/economics/) | Reward Commitment, GMV, distribution, settlement bindings. |
-| [`06-extensions/`](06-extensions/) | Optional ZK, merchant authority, agent query, transport, Solana, offer-delivery, and registry profiles. |
-| [`07-conformance/`](07-conformance/) | Vectors, verifier test suite, compatibility notes. |
-| [`08-governance/`](08-governance/) | Versioning, change process, authority hierarchy, and shared glossary. |
+| [`protocol/extensions/`](protocol/extensions/) | Optional ZK, merchant authority, agent query, transport, Solana, offer-delivery, and registry profiles. |
+| [`conformance/`](conformance/) | Vectors, verifier test suite, compatibility notes. |
+| [`governance/`](governance/) | Versioning, change process, authority hierarchy, and shared glossary. |
 | [`schemas/experimental/`](schemas/experimental/) | Candidate non-core extension schemas; not required for Core Spend Attestation validity. |
 
 ## Release and source state
@@ -184,8 +184,8 @@ is selected only by a separately reviewed candidate identity.
 ```bash
 python3 scripts/check_drift.py
 node scripts/verify_conformance.mjs
-python3 07-conformance/profiles/campaign-direct-buyer-reward-v1/scripts/check_campaign_direct_reward_profile_vectors.py
-node 07-conformance/profiles/spend-token-v2-holder-binding/scripts/check_holder_binding_vectors.mjs
+python3 conformance/profiles/campaign-direct-buyer-reward-v1/scripts/check_campaign_direct_reward_profile_vectors.py
+node conformance/profiles/spend-token-v2-holder-binding/scripts/check_holder_binding_vectors.mjs
 ```
 
 Verify the rc.7 candidate transition locally:
@@ -201,4 +201,4 @@ PDF export:
 ```
 
 The governed record for this lifecycle refactor is in
-[`08-governance/refactor-record.md`](08-governance/refactor-record.md).
+[`governance/refactor-record.md`](governance/refactor-record.md).

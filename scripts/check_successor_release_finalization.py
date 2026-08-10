@@ -31,12 +31,12 @@ TAG_TARGET = {
 }
 CONTROL_PATHS = {
     "versions/release.json",
-    "07-conformance/vectors/v1/manifest.json",
-    "07-conformance/profiles/spend-token-v1-v2-geography-commitments/manifest.json",
-    "07-conformance/profiles/w3c-vc-2.0-spend-attestation-v1/manifest.json",
-    "07-conformance/profiles/object-model-v1/manifest.json",
+    "conformance/vectors/v1/manifest.json",
+    "conformance/profiles/spend-token-v1-v2-geography-commitments/manifest.json",
+    "conformance/profiles/w3c-vc-2.0-spend-attestation-v1/manifest.json",
+    "conformance/profiles/object-model-v1/manifest.json",
     "versions/release-registry.json",
-    "07-conformance/compatibility.md",
+    "conformance/compatibility.md",
     "versions/identifier-inventory.json",
     "versions/errata/released-schema-identifier-collisions-v1.json",
 }
@@ -53,7 +53,7 @@ DOCUMENTATION_TRANSITIONS = [
         "releasedMarker": "- `v1.0.0-rc.7` is the released public package and conformance suite 4;\n  release status does not activate runtime, validator, authority, or\n  production behavior.",
     },
     {
-        "path": "08-governance/versioning.md",
+        "path": "governance/versioning.md",
         "candidateMarker": "`v1.0.0-rc.4` is the latest released public package. Current public repository source candidate: **1.0.0-rc.7** (`RELEASE_CANDIDATE_NOT_PUBLISHED`), conformance suite 4; it is unreviewed, unpublished, not publishable, and does not inherit rc.5 review.",
         "releasedMarker": "`v1.0.0-rc.7` is the latest released public package. Current public repository release: **1.0.0-rc.7** (`RELEASED`), conformance suite 4; it does not promote candidate profiles or activate runtime, validator, authority, or production behavior.",
     },
@@ -78,27 +78,27 @@ DOCUMENTATION_TRANSITIONS = [
         "releasedMarker": "This release supersedes `v1.0.0-rc.4` as the latest immutable public package. Historical rc.5 review applies only to its recorded exact commit/tree. Historical rc.6 review remains permanently bound to `fe23ebe959254de095973943698cb6bb4ead6455` / tree `7f3013ff8a8cddcd854cbdfa16a94f69741dac05`; it is not retargeted. Candidate profile maturity and all runtime, validator, authority, deployment, and production states remain separately governed.",
     },
     {
-        "path": "07-conformance/vectors/v1/README.md",
+        "path": "conformance/vectors/v1/README.md",
         "candidateMarker": "status: release-candidate",
         "releasedMarker": "status: released",
     },
     {
-        "path": "07-conformance/verifier-test-suite.md",
+        "path": "conformance/verifier-test-suite.md",
         "candidateMarker": "status: release-candidate",
         "releasedMarker": "status: released",
     },
     {
-        "path": "07-conformance/verifier-test-suite.md",
+        "path": "conformance/verifier-test-suite.md",
         "candidateMarker": "The current rc.7 source candidate uses conformance suite 4 and includes the\ngeography-commitment profile as a required manifest-bound kind.",
         "releasedMarker": "The released rc.7 package uses conformance suite 4 and includes the\ngeography-commitment profile as a required manifest-bound kind; that profile\nremains candidate maturity unless separately released.",
     },
     {
-        "path": "07-conformance/compatibility.md",
+        "path": "conformance/compatibility.md",
         "candidateMarker": "`v1.0.0-rc.4` is the latest released public package",
         "releasedMarker": "`v1.0.0-rc.7` is the latest released public package",
     },
     {
-        "path": "07-conformance/compatibility.md",
+        "path": "conformance/compatibility.md",
         "candidateMarker": "| `v1.0.0-rc.7` source candidate | Current suite-4 source candidate; unreviewed, unpublished, and not publishable. | It does not inherit the rc.5 review and requires a new exact candidate identity and independent review. |",
         "releasedMarker": "| `v1.0.0-rc.7` public release | Latest released suite-4 public package. | It preserves historical rc.5 review boundaries, candidate profile maturity, and separate runtime/production governance. |",
     },
@@ -116,13 +116,13 @@ INVARIANTS = [
     {"path": "versions/release.json", "pointer": "/profiles/4/maturity", "value": "CANDIDATE"},
     {"path": "versions/release.json", "pointer": "/profiles/5/kind", "value": "token.spendAttestation.portableV1.zkCommitmentGeography"},
     {"path": "versions/release.json", "pointer": "/profiles/5/maturity", "value": "CANDIDATE"},
-    {"path": "07-conformance/vectors/v1/manifest.json", "pointer": "/releaseVersion", "value": RELEASE_VERSION},
-    {"path": "07-conformance/vectors/v1/manifest.json", "pointer": "/suiteVersion", "value": 4},
-    {"path": "07-conformance/profiles/w3c-vc-2.0-spend-attestation-v1/manifest.json", "pointer": "/maturity", "value": "candidate"},
-    {"path": "07-conformance/profiles/w3c-vc-2.0-spend-attestation-v1/manifest.json", "pointer": "/releasedConformance", "value": False},
-    {"path": "07-conformance/profiles/w3c-vc-2.0-spend-attestation-v1/manifest.json", "pointer": "/claims/release", "value": False},
-    {"path": "07-conformance/profiles/spend-token-v1-v2-geography-commitments/manifest.json", "pointer": "/maturity", "value": "candidate"},
-    {"path": "07-conformance/profiles/spend-token-v1-v2-geography-commitments/manifest.json", "pointer": "/conformanceManifestEntry/status", "value": "PRESENT_IN_RC7_SUITE_4_SOURCE_CANDIDATE"},
+    {"path": "conformance/vectors/v1/manifest.json", "pointer": "/releaseVersion", "value": RELEASE_VERSION},
+    {"path": "conformance/vectors/v1/manifest.json", "pointer": "/suiteVersion", "value": 4},
+    {"path": "conformance/profiles/w3c-vc-2.0-spend-attestation-v1/manifest.json", "pointer": "/maturity", "value": "candidate"},
+    {"path": "conformance/profiles/w3c-vc-2.0-spend-attestation-v1/manifest.json", "pointer": "/releasedConformance", "value": False},
+    {"path": "conformance/profiles/w3c-vc-2.0-spend-attestation-v1/manifest.json", "pointer": "/claims/release", "value": False},
+    {"path": "conformance/profiles/spend-token-v1-v2-geography-commitments/manifest.json", "pointer": "/maturity", "value": "candidate"},
+    {"path": "conformance/profiles/spend-token-v1-v2-geography-commitments/manifest.json", "pointer": "/conformanceManifestEntry/status", "value": "PRESENT_IN_RC7_SUITE_4_SOURCE_CANDIDATE"},
 ]
 
 REQUIRED_CANDIDATE_GATES = [
@@ -130,7 +130,7 @@ REQUIRED_CANDIDATE_GATES = [
     "python3 scripts/check_release_registry.py --adopted-repo <crinkl-protocol>",
     "python3 scripts/check_living_version_claims.py",
     "python3 scripts/check_released_identifier_erratum.py --adopted-repo <crinkl-protocol>",
-    "node 07-conformance/profiles/spend-token-v1-v2-geography-commitments/scripts/check_spend_token_geography_commitments.mjs",
+    "node conformance/profiles/spend-token-v1-v2-geography-commitments/scripts/check_spend_token_geography_commitments.mjs",
     "node scripts/verify_conformance.mjs --require-kind token.spendAttestation.portableV1.zkCommitmentGeography",
     "python3 scripts/check_drift.py",
 ]
@@ -264,7 +264,7 @@ def release_record(release_digest: str, conformance_digest: str) -> dict[str, An
         "role": "RELEASE_MANIFEST",
     }
     conformance_artifact = {
-        "path": "07-conformance/vectors/v1/manifest.json",
+        "path": "conformance/vectors/v1/manifest.json",
         "digestAlgorithm": "sha256",
         "digestBasis": "EXACT_GIT_BLOB_BYTES",
         "digest": conformance_digest,
@@ -285,7 +285,7 @@ def release_record(release_digest: str, conformance_digest: str) -> dict[str, An
         "conformance": {
             "suite": "crinkl-protocol-conformance",
             "suiteVersion": 4,
-            "manifest": "07-conformance/vectors/v1/manifest.json",
+            "manifest": "conformance/vectors/v1/manifest.json",
             "manifestDigest": conformance_digest,
         },
         "adoptedSources": [
@@ -310,10 +310,10 @@ def expected_machine_transitions(plan: dict[str, Any]) -> list[dict[str, Any]]:
     digests = digest_map(plan)
     return [
         {"path": "versions/release.json", "pointer": "/status", "candidate": "RELEASE_CANDIDATE_NOT_PUBLISHED", "released": "RELEASED"},
-        {"path": "07-conformance/vectors/v1/manifest.json", "pointer": "/releaseStatus", "candidate": "RELEASE_CANDIDATE_NOT_PUBLISHED", "released": "RELEASED"},
+        {"path": "conformance/vectors/v1/manifest.json", "pointer": "/releaseStatus", "candidate": "RELEASE_CANDIDATE_NOT_PUBLISHED", "released": "RELEASED"},
         {"path": "versions/release-registry.json", "pointer": "/latestReleasedVersion", "candidate": LATEST_RELEASED, "released": RELEASE_VERSION},
         {"path": "versions/release-registry.json", "pointer": "/candidateState", "candidate": "SOURCE_CANDIDATE_AWAITING_REVIEW_NOT_PUBLISHABLE", "released": "NO_ACTIVE_OR_PUBLISHABLE_CANDIDATE"},
-        {"path": "versions/release-registry.json", "pointer": "/releases/1.0.0-rc.7", "candidate": ABSENT, "released": release_record(digests["versions/release.json"], digests["07-conformance/vectors/v1/manifest.json"])},
+        {"path": "versions/release-registry.json", "pointer": "/releases/1.0.0-rc.7", "candidate": ABSENT, "released": release_record(digests["versions/release.json"], digests["conformance/vectors/v1/manifest.json"])},
     ]
 
 
@@ -329,7 +329,7 @@ def digest_map(plan: dict[str, Any]) -> dict[str, str]:
         result[path] = digest
     expected_paths = {item["path"] for item in DOCUMENTATION_TRANSITIONS} | {
         "versions/release.json",
-        "07-conformance/vectors/v1/manifest.json",
+        "conformance/vectors/v1/manifest.json",
         "versions/release-registry.json",
     }
     require(set(result) == expected_paths, "released artifact digest path set drift")
@@ -366,7 +366,7 @@ def validate_plan(plan: dict[str, Any]) -> None:
 
 def validate_candidate_runtime(root: Path, plan: dict[str, Any]) -> dict[str, str]:
     release = read_json(root / "versions/release.json")
-    manifest = read_json(root / "07-conformance/vectors/v1/manifest.json")
+    manifest = read_json(root / "conformance/vectors/v1/manifest.json")
     require(release.get("releaseVersion") == RELEASE_VERSION and release.get("status") == "RELEASE_CANDIDATE_NOT_PUBLISHED", "release manifest candidate drift")
     require(release.get("requiredTag") == REQUIRED_TAG and release.get("supportedWireProtocolVersions") == ["1.0.0-rc.1", "1.0.0-rc.2"], "release manifest wire/tag drift")
     require(release.get("conformance", {}).get("suiteVersion") == 4, "release manifest suite drift")
@@ -381,8 +381,8 @@ def validate_candidate_runtime(root: Path, plan: dict[str, Any]) -> dict[str, st
     require(git(adopted, "rev-parse", f"{P1_CANDIDATE}^{{tree}}") == P1_TREE, "P1 candidate tree drift")
     require(git(adopted, "rev-parse", f"{ADOPTED_MAIN}^{{tree}}") == P1_TREE, "adopted main tree drift")
     for relative, kind in {
-        "07-conformance/profiles/w3c-vc-2.0-spend-attestation-v1/manifest.json": "credential.spendAttestation.vcdm2.eddsaJcs2022",
-        "07-conformance/profiles/spend-token-v1-v2-geography-commitments/manifest.json": "token.spendAttestation.portableV1.zkCommitmentGeography",
+        "conformance/profiles/w3c-vc-2.0-spend-attestation-v1/manifest.json": "credential.spendAttestation.vcdm2.eddsaJcs2022",
+        "conformance/profiles/spend-token-v1-v2-geography-commitments/manifest.json": "token.spendAttestation.portableV1.zkCommitmentGeography",
     }.items():
         profile = read_json(root / relative)
         require(profile.get("engineeringSource") == {

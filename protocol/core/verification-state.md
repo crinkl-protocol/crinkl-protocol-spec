@@ -9,7 +9,7 @@ normative: true
 
 This document defines the Core verification state machine for Spend Events. Reward state is downstream and lives in `../protocol/applications/economics/reward-layer.md`.
 
-Terms are defined in ../08-governance/glossary.md and used normatively throughout this specification.
+Terms are defined in ../../governance/glossary.md and used normatively throughout this specification.
 
 ## Verification State Machine
 
@@ -77,4 +77,4 @@ Replaying all ledger events in causal order (respecting `prevHash` chains) MUST 
 
 Tokens are derived outputs—they represent ledger state in portable form but don't introduce new state transitions:
 
-- A **Spend Attestation Token** is derivable once a spend head class is `HARD_VERIFIED`, `CORRECTED`, or `INVALIDATED` and consists of a privacy-safe, portable **snapshot** of that head (see `../protocol/portability/spend-attestation-token.md`). If later events change the head (e.g., `SPEND_CORRECTED`), a new token MUST be issued; old tokens remain valid historical artifacts but no longer represent the latest head.
+- A **Spend Attestation Token** is derivable once a spend head class is `HARD_VERIFIED`, `CORRECTED`, or `INVALIDATED` and consists of a privacy-safe, portable **snapshot** of that head (see `../portability/spend-attestation-token.md`). If later events change the head (e.g., `SPEND_CORRECTED`), a new token MUST be issued; old tokens remain valid historical artifacts but no longer represent the latest head.

@@ -45,4 +45,4 @@ When verification rules change, the protocol increments `verificationVersion`. O
 - Verifiers MUST reject events whose `protocolVersion` they do not support (`VersionMismatch`).
 - Within a single spend-stream (`spendId`) or system-stream (`chainId`), `protocolVersion` SHOULD be non-decreasing over time; downgrades SHOULD be rejected as `VersionMismatch` to avoid ambiguous semantics.
 
-See ../08-governance/versioning.md for upgrade semantics.
+See ../../governance/versioning.md for upgrade semantics.

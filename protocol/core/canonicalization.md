@@ -26,7 +26,7 @@ Unless a section explicitly defines a non-JSON preimage, **all hashes and signat
 
 Examples:
 - `eventHash` is computed from the canonical JSON of an event envelope (excluding `eventHash` and `signature`).
-- `tokenHash` is computed from the canonical JSON of an unsigned token object (see `../protocol/portability/spend-attestation-token.md`).
+- `tokenHash` is computed from the canonical JSON of an unsigned token object (see `../portability/spend-attestation-token.md`).
 
 Implementations MAY use alternative internal encodings, but the canonical hash/signature preimages MUST be RFC 8785 canonical JSON as specified in this document.
 
@@ -55,12 +55,12 @@ The protocol uses domain separation to prevent cross-artifact ambiguity. Domain 
 | Artifact | Digest name | Preimage type | Domain separation mechanism | Where defined |
 |---|---|---|---|---|
 | Event integrity | `eventHash` | RFC 8785 canonical JSON | Structural (envelope includes `eventName`, stream key, `protocolVersion`) | `canonicalization.md#integrity-envelope` + `spend-event.md` |
-| Token signature digest | `tokenHash` | RFC 8785 canonical JSON | Structural (unsigned token includes `tokenType`, `schemaVersion`) | `../protocol/portability/spend-attestation-token.md` |
-| Store hash (token field) | `storeHash` | bytes | ASCII prefix `"crinkl.store.v1:"` + canonical `storeId` | `../protocol/portability/spend-attestation-token.md#spend-attestation-token` |
+| Token signature digest | `tokenHash` | RFC 8785 canonical JSON | Structural (unsigned token includes `tokenType`, `schemaVersion`) | `../portability/spend-attestation-token.md` |
+| Store hash (token field) | `storeHash` | bytes | ASCII prefix `"crinkl.store.v1:"` + canonical `storeId` | `../portability/spend-attestation-token.md#spend-attestation-token` |
 | Commitment-layer Merkle leaf | (binary hash) | bytes | Prefix `0x00` | `../protocol/applications/economics/settlement-bindings.md#merkle-tree` |
 | Commitment-layer Merkle internal | (binary hash) | bytes | Prefix `0x01` | `../protocol/applications/economics/settlement-bindings.md#merkle-tree` |
 | Blinded recipient id | `recipientId` | bytes | ASCII prefix `"crinkl.recipient.v1:"` + context | `../protocol/applications/economics/settlement-bindings.md#recipient-blinding` |
-| ZK statement identity (extension) | `statementId` | RFC 8785 canonical JSON | Structural (statement object is type-tagged) | `../06-extensions/zk-foundation.md`, `../06-extensions/zk-proof-extension.md` |
+| ZK statement identity (extension) | `statementId` | RFC 8785 canonical JSON | Structural (statement object is type-tagged) | `../extensions/zk-foundation.md`, `../extensions/zk-proof-extension.md` |
 
 ### Privacy note on low-entropy fields (normative)
 
@@ -421,7 +421,7 @@ Verifiers MUST apply the following rules to prevent forked behavior:
 
 ## Token Bundles
 
-Token bundles (see ../protocol/portability/spend-attestation-token.md) are composed of existing protocol objects (events, leaves, proofs). When a token bundle includes protocol events or leaves, verifiers MUST treat them as the canonical inputs to hashing/signature verification:
+Token bundles (see ../portability/spend-attestation-token.md) are composed of existing protocol objects (events, leaves, proofs). When a token bundle includes protocol events or leaves, verifiers MUST treat them as the canonical inputs to hashing/signature verification:
 
 - Recompute hashes from the embedded objects (do not trust precomputed hashes without checking).
 - Verify signatures against the correct trust root for the embedded object’s `protocolVersion` / authority registry validity windows.

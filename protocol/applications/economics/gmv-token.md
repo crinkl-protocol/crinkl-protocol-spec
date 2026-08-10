@@ -12,7 +12,7 @@ Verified GMV Tokens are downstream aggregate accounting artifacts derived from S
 ## Verified GMV Token
 
 > “Aggregate economic throughput must be provable, append-only, correction-aware, and privacy-preserving.”
-**Identity prohibition:** Per the Identity Minimization Invariant (../00-purpose/what-crinkl-proves.md), Verified GMV Tokens MUST NOT include wallet identifiers, recipient references, or any data that would enable reconstruction of per-user spend patterns. Spends are referenced only via `spendId` within the committed `spendHeadSetRoot`; aggregates expose only totals and Merkle roots.
+**Identity prohibition:** Per the Identity Minimization Invariant (../protocol/purpose/what-crinkl-proves.md), Verified GMV Tokens MUST NOT include wallet identifiers, recipient references, or any data that would enable reconstruction of per-user spend patterns. Spends are referenced only via `spendId` within the committed `spendHeadSetRoot`; aggregates expose only totals and Merkle roots.
 
 ### Explicit non-claims (normative)
 
@@ -48,7 +48,7 @@ GMV commitments preserve user privacy by committing only to aggregate totals and
 
 ### How a Receipt Becomes Verified GMV
 
-A receipt contributes to Verified GMV only after **Hard Verification** (or subsequent **Correction**) produces a finalized spend (see ../protocol/core/verification-state.md)—a canonical spend record with total amount, currency, and timestamp. Rewards and economic backing (e.g., BTC moving) are separate: they may happen around the same time, but they do not define Verified GMV.
+A receipt contributes to Verified GMV only after **Hard Verification** (or subsequent **Correction**) produces a finalized spend (see ../../core/verification-state.md)—a canonical spend record with total amount, currency, and timestamp. Rewards and economic backing (e.g., BTC moving) are separate: they may happen around the same time, but they do not define Verified GMV.
 
 Verified GMV is included when an issuer **publishes a Verified GMV Token** for a specific UTC day. To compute it, the issuer picks an “as-of” time (`asOf.computedAt`), selects all finalized spends whose finalized timestamp falls in that UTC day and are not `INVALIDATED`, and sums their totals into `verifiedGMV`.
 
@@ -114,7 +114,7 @@ VerifiedGmvTokenV1 {
 #### Bucketing and time semantics
 
 - `window` is defined in UTC (`window.type = UTC_DAY`).
-- A spend is included in a GMV window according to the canonical spend attestation timestamp produced by the spend-stream state machine (../protocol/core/verification-state.md), not raw receipt-local timestamps.
+- A spend is included in a GMV window according to the canonical spend attestation timestamp produced by the spend-stream state machine (../../core/verification-state.md), not raw receipt-local timestamps.
 - If the canonical timestamp for a spend changes due to correction, the spend MAY move between windows in subsequent GMV tokens; this is expressed only by publishing new GMV commitment artifacts.
 
 #### `issuedGMV` semantics
@@ -170,7 +170,7 @@ To verify a Verified GMV Token, a verifier MUST:
 
 1. Verify required fields and supported versions (`schemaVersion`); reject on unsupported versions.
 2. Recompute `tokenHash` from the unsigned token and verify `signatures.signature` against `signatures.publicKey`.
-3. Verify that `signatures.publicKey` is an authorized issuer key for `signatures.issuedBy` under the applicable trust root mapping (Authority Registry or configured issuer set); reject if unauthorized (see `../00-purpose/threat-model.md#trust-roots`).
+3. Verify that `signatures.publicKey` is an authorized issuer key for `signatures.issuedBy` under the applicable trust root mapping (Authority Registry or configured issuer set); reject if unauthorized (see `../protocol/purpose/threat-model.md#trust-roots`).
 4. Apply local acceptance policy:
    - treat `verifiedGMV` as an "as-of" snapshot that may be superseded by later GMV tokens for the same window, and
    - treat `issuedGMV` (when present) as a statement about issued rewards, not about spend attestation.

@@ -21,18 +21,18 @@
   "controllingArtifacts": [
     {
       "path": "versions/release.json",
-      "sha256": "sha256:d41ea0ed4e7e4c2a9d48401dd16320d21a156ab4f3211bbd6b8f91d481cc4353"
+      "sha256": "sha256:1456649c11cba634720a981439d08a8cd7da98e3ce5e8127f261d6e602e1ddf2"
     },
     {
       "path": "versions/release-registry.json",
       "sha256": "sha256:4b26d11605c3832aa910262d325c78f8898be5ce16f78fdb8ff3bbf5afa194c5"
     },
     {
-      "path": "07-conformance/vectors/v1/manifest.json",
+      "path": "conformance/vectors/v1/manifest.json",
       "sha256": "sha256:15cbd8ee7d0c4d49e5a1ddbd92709642d31119ab58855d64d8f38436249a51b8"
     },
     {
-      "path": "07-conformance/vectors/v1/vectors/token.spendAttestation.portableV1.fromSpendStream.v2.json",
+      "path": "conformance/vectors/v1/vectors/token.spendAttestation.portableV1.fromSpendStream.v2.json",
       "sha256": "sha256:0723c8907c8c5602ed52a9fba5e232a94c84bfce4f59fd655fc1c568569c2d51"
     },
     {
@@ -45,14 +45,14 @@
     },
     {
       "path": "protocol/portability/spend-attestation-token.md",
-      "sha256": "sha256:bb7d82eb43344ec253651d69737675262b7bfc4c41a21b4d619ca60925a4373e"
+      "sha256": "sha256:7898a81d5ee4cd30e731f1d9db51aba00fd51466493936056c87dddf9f04eedc"
     },
     {
       "path": "protocol/applications/economics/settlement-bindings.md",
-      "sha256": "sha256:00433d1439bc174fc3f325637ce95a5269aa2091b03c157a2a2f44ee103c35a7"
+      "sha256": "sha256:e9457845baeeac94cf7c1184e320046b7b90fe3beefb7b27ad704e2d9cfb6160"
     },
     {
-      "path": "07-conformance/compatibility.md",
+      "path": "conformance/compatibility.md",
       "sha256": "sha256:ab9daf5d623c19e8472c8209eac3aef79bc6e7b02ebe29c7c91d84c8e27b55be"
     },
     {

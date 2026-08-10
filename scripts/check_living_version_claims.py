@@ -15,12 +15,12 @@ REVIEWED_COMMIT = "81237937833ab32e5ce92d3b5ceed72854baecef"
 REVIEWED_TREE = "9121bdfbfc428f73557e993f1bd6e295ba733a12"
 LIVING_PATHS = (
     "README.md", "SECURITY.md", "protocol/portability/spend-attestation-token.md",
-    "06-extensions/campaign-experiment-profile.md", "06-extensions/merchant-authority.md",
-    "07-conformance/compatibility.md", "07-conformance/vectors.md", "07-conformance/vectors/v1/README.md",
-    "07-conformance/verifier-test-suite.md",
-    "07-conformance/profiles/w3c-vc-2.0-spend-attestation-v1/README.md",
-    "08-governance/glossary.md", "08-governance/protocol-v1-index.md",
-    "08-governance/versioning.md", "08-governance/zk-beta-release-checklist.md",
+    "protocol/extensions/campaign-experiment-profile.md", "protocol/extensions/merchant-authority.md",
+    "conformance/compatibility.md", "conformance/vectors.md", "conformance/vectors/v1/README.md",
+    "conformance/verifier-test-suite.md",
+    "conformance/profiles/w3c-vc-2.0-spend-attestation-v1/README.md",
+    "governance/glossary.md", "governance/protocol-v1-index.md",
+    "governance/versioning.md", "governance/zk-beta-release-checklist.md",
     "versions/CHANGELOG.md",
 )
 READ_ONLY_OVERLAP = (
@@ -89,7 +89,7 @@ def validate_registry(registry: dict[str, Any], release_manifest: dict[str, Any]
 
 
 def validate_documents(documents: dict[str, str], release_status: str = "RELEASE_CANDIDATE_NOT_PUBLISHED") -> None:
-    compatibility = documents["07-conformance/compatibility.md"]
+    compatibility = documents["conformance/compatibility.md"]
     for marker in (
         "`v1.0.0-rc.1`, `v1.0.0-rc.3`, and `v1.0.0-rc.4` are released immutable tags",
         REVIEWED_COMMIT, REVIEWED_TREE, "Any later tree remains unassigned unless a new exact candidate identity and independent review record it.",
@@ -105,30 +105,30 @@ def validate_documents(documents: dict[str, str], release_status: str = "RELEASE
             "compatibility": "| `v1.0.0-rc.7` source candidate | Current suite-4 source candidate; unreviewed, unpublished, and not publishable. | It does not inherit the rc.5 review and requires a new exact candidate identity and independent review. |",
             "README.md": "`v1.0.0-rc.4` is the latest released public package. Current public repository\nsource candidate: **v1.0.0-rc.7** (`RELEASE_CANDIDATE_NOT_PUBLISHED`),\nconformance suite 4; it is unreviewed, unpublished, not publishable, and does\nnot inherit rc.5 review.",
             "SECURITY.md": "- `v1.0.0-rc.7` is the current unreviewed source candidate and conformance\n  suite 4 (`RELEASE_CANDIDATE_NOT_PUBLISHED`); it is unpublished and not\n  publishable until separately reviewed.",
-            "08-governance/versioning.md": "`v1.0.0-rc.4` is the latest released public package. Current public repository source candidate: **1.0.0-rc.7** (`RELEASE_CANDIDATE_NOT_PUBLISHED`), conformance suite 4; it is unreviewed, unpublished, not publishable, and does not inherit rc.5 review.",
+            "governance/versioning.md": "`v1.0.0-rc.4` is the latest released public package. Current public repository source candidate: **1.0.0-rc.7** (`RELEASE_CANDIDATE_NOT_PUBLISHED`), conformance suite 4; it is unreviewed, unpublished, not publishable, and does not inherit rc.5 review.",
             "versions/CHANGELOG.md": "`v1.0.0-rc.4` is the latest released public package. Current public repository\nsource candidate: **1.0.0-rc.7** (`RELEASE_CANDIDATE_NOT_PUBLISHED`),\nconformance suite 4; it is unreviewed, unpublished, not publishable, and does\nnot inherit rc.5 review.",
-            "07-conformance/verifier-test-suite.md": "status: release-candidate",
-            "07-conformance/vectors/v1/README.md": "status: release-candidate",
+            "conformance/verifier-test-suite.md": "status: release-candidate",
+            "conformance/vectors/v1/README.md": "status: release-candidate",
         },
         "RELEASED": {
             "latest": "`v1.0.0-rc.7` is the latest released public package",
             "compatibility": "| `v1.0.0-rc.7` public release | Latest released suite-4 public package. | It preserves historical rc.5 review boundaries, candidate profile maturity, and separate runtime/production governance. |",
             "README.md": "`v1.0.0-rc.7` is the latest released public package. Current public repository\nrelease: **v1.0.0-rc.7** (`RELEASED`), conformance suite 4; it preserves the\nexplicit rc.1/rc.2 wire support set and remains independent from runtime,\nvalidator, authority, and production activation.",
             "SECURITY.md": "- `v1.0.0-rc.7` is the released public package and conformance suite 4;\n  release status does not activate runtime, validator, authority, or\n  production behavior.",
-            "08-governance/versioning.md": "`v1.0.0-rc.7` is the latest released public package. Current public repository release: **1.0.0-rc.7** (`RELEASED`), conformance suite 4; it does not promote candidate profiles or activate runtime, validator, authority, or production behavior.",
+            "governance/versioning.md": "`v1.0.0-rc.7` is the latest released public package. Current public repository release: **1.0.0-rc.7** (`RELEASED`), conformance suite 4; it does not promote candidate profiles or activate runtime, validator, authority, or production behavior.",
             "versions/CHANGELOG.md": "`v1.0.0-rc.7` is the latest released public package. Current public repository\nrelease: **1.0.0-rc.7** (`RELEASED`), conformance suite 4; it does not promote\ncandidate profiles or activate runtime, validator, authority, deployment, or\nproduction behavior.",
-            "07-conformance/verifier-test-suite.md": "status: released",
-            "07-conformance/vectors/v1/README.md": "status: released",
+            "conformance/verifier-test-suite.md": "status: released",
+            "conformance/vectors/v1/README.md": "status: released",
         },
         "RC8_SOURCE_CANDIDATE": {
             "latest": "`v1.0.0-rc.7` is the latest released public package",
             "compatibility": "| `v1.0.0-rc.7` public release | Latest released suite-4 public package. | It preserves historical rc.5 review boundaries, candidate profile maturity, and separate runtime/production governance. |",
             "README.md": "`v1.0.0-rc.7` is the latest released public package. Current public repository\nsource candidate: **v1.0.0-rc.8** (`RELEASE_CANDIDATE_NOT_PUBLISHED`),\nconformance suite 5; it is unreviewed, unpublished, not publishable, and does\nnot inherit rc.5 review.",
             "SECURITY.md": "- `v1.0.0-rc.7` is the released public package and conformance suite 4;\n  release status does not activate runtime, validator, authority, or\n  production behavior.",
-            "08-governance/versioning.md": "`v1.0.0-rc.7` is the latest released public package. Current public repository\nsource candidate: **1.0.0-rc.8** (`RELEASE_CANDIDATE_NOT_PUBLISHED`),\nconformance suite 5; it is unreviewed, unpublished, not publishable, and does\nnot inherit rc.5 review.",
+            "governance/versioning.md": "`v1.0.0-rc.7` is the latest released public package. Current public repository\nsource candidate: **1.0.0-rc.8** (`RELEASE_CANDIDATE_NOT_PUBLISHED`),\nconformance suite 5; it is unreviewed, unpublished, not publishable, and does\nnot inherit rc.5 review.",
             "versions/CHANGELOG.md": "`v1.0.0-rc.7` is the latest released public package. Current public repository\nrelease: **1.0.0-rc.7** (`RELEASED`), conformance suite 4; it does not promote\ncandidate profiles or activate runtime, validator, authority, deployment, or\nproduction behavior.",
-            "07-conformance/verifier-test-suite.md": "status: released",
-            "07-conformance/vectors/v1/README.md": "status: released",
+            "conformance/verifier-test-suite.md": "status: released",
+            "conformance/vectors/v1/README.md": "status: released",
         },
     }
     require(release_status in release_markers, f"unsupported public package status: {release_status}")
@@ -146,22 +146,22 @@ def validate_documents(documents: dict[str, str], release_status: str = "RELEASE
         "README.md": ("## Release and source state", state["README.md"], "**v1.0.0-rc.5** historical exact reviewed source candidate — not published.", "P4.4 and P9 remain blockers."),
         "SECURITY.md": (REVIEWED_COMMIT, REVIEWED_TREE, "later source is unassigned", state["SECURITY.md"]),
         "protocol/portability/spend-attestation-token.md": ("SpendAttestationTokenV1` and `SpendAttestationTokenV2` are both supported", "no protocol-wide token issuance default"),
-        "06-extensions/campaign-experiment-profile.md": ("supported embedded wire/source/binding history, not an observed public tag or public release",),
-        "06-extensions/merchant-authority.md": ("supported embedded wire/source/binding history", "not an\nobserved public tag or public release classification"),
-        "07-conformance/vectors.md": ("included in released `v1.0.0-rc.3` / suite 2",),
-        "07-conformance/verifier-test-suite.md": (state["07-conformance/verifier-test-suite.md"], "The rc.5 candidate\nintentionally fails that gate until P4.4/P9 complete the governed release.", REVIEWED_COMMIT, "later source is unassigned"),
-        "07-conformance/profiles/w3c-vc-2.0-spend-attestation-v1/README.md": ("This is a source-only candidate bundle", REVIEWED_COMMIT, "later source is unassigned"),
-        "08-governance/glossary.md": ("V2 `holderBinding` is\nOPTIONAL, so a V2 token without it remains valid",),
-        "08-governance/protocol-v1-index.md": ("released `v1.0.0-rc.3` / conformance suite 2", REVIEWED_COMMIT),
-        "08-governance/versioning.md": (state["08-governance/versioning.md"], "Historical exact reviewed source candidate: **1.0.0-rc.5** (`REVIEWED_CANDIDATE_NOT_PUBLISHED`)", versioning_release_history),
-        "08-governance/zk-beta-release-checklist.md": ("embedded wire/source/binding history label, not an observed\npublic tag or public-release classification",),
+        "protocol/extensions/campaign-experiment-profile.md": ("supported embedded wire/source/binding history, not an observed public tag or public release",),
+        "protocol/extensions/merchant-authority.md": ("supported embedded wire/source/binding history", "not an\nobserved public tag or public release classification"),
+        "conformance/vectors.md": ("included in released `v1.0.0-rc.3` / suite 2",),
+        "conformance/verifier-test-suite.md": (state["conformance/verifier-test-suite.md"], "The rc.5 candidate\nintentionally fails that gate until P4.4/P9 complete the governed release.", REVIEWED_COMMIT, "later source is unassigned"),
+        "conformance/profiles/w3c-vc-2.0-spend-attestation-v1/README.md": ("This is a source-only candidate bundle", REVIEWED_COMMIT, "later source is unassigned"),
+        "governance/glossary.md": ("V2 `holderBinding` is\nOPTIONAL, so a V2 token without it remains valid",),
+        "governance/protocol-v1-index.md": ("released `v1.0.0-rc.3` / conformance suite 2", REVIEWED_COMMIT),
+        "governance/versioning.md": (state["governance/versioning.md"], "Historical exact reviewed source candidate: **1.0.0-rc.5** (`REVIEWED_CANDIDATE_NOT_PUBLISHED`)", versioning_release_history),
+        "governance/zk-beta-release-checklist.md": ("embedded wire/source/binding history label, not an observed\npublic tag or public-release classification",),
         "versions/CHANGELOG.md": (state["versions/CHANGELOG.md"], "The historical exact reviewed source candidate is **v1.0.0-rc.5**, an\nunpublished SemVer prerelease.", "## v1.0.0-rc.5 release candidate (not published)", "does not promote the W3C profile beyond candidate maturity."),
     }
     for rel, markers in required.items():
         for marker in markers:
             require(marker in documents[rel], f"{rel}: required living wording missing: {marker}")
-    require(state["07-conformance/vectors/v1/README.md"] in documents["07-conformance/vectors/v1/README.md"], "conformance README release-state marker missing")
-    for rel in ("README.md", "08-governance/versioning.md", "versions/CHANGELOG.md"):
+    require(state["conformance/vectors/v1/README.md"] in documents["conformance/vectors/v1/README.md"], "conformance README release-state marker missing")
+    for rel in ("README.md", "governance/versioning.md", "versions/CHANGELOG.md"):
         text = documents[rel]
         require(REVIEWED_COMMIT in text and REVIEWED_TREE in text, f"{rel}: historical rc.5 identity missing")
         require("historical" in text.lower() and "reviewed" in text.lower(), f"{rel}: rc.5 must be explicitly historical and reviewed")
@@ -185,7 +185,7 @@ def validate(root: Path, documents: dict[str, str] | None = None, registry: dict
     documents_to_validate = load_documents(root) if documents is None else documents
     validate_documents(documents_to_validate, document_status)
     if release.get("releaseVersion") == "1.0.0-rc.8":
-        require("| `v1.0.0-rc.8` source candidate | Unreviewed suite-5 successor candidate." in documents_to_validate["07-conformance/compatibility.md"], "rc.8 compatibility marker missing")
+        require("| `v1.0.0-rc.8` source candidate | Unreviewed suite-5 successor candidate." in documents_to_validate["conformance/compatibility.md"], "rc.8 compatibility marker missing")
         require("## Reward-commitment rc.7 publication defect erratum candidate (not published)" in documents_to_validate["versions/CHANGELOG.md"], "rc.8 changelog marker missing")
 
 
