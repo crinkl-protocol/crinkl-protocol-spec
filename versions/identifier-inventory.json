@@ -7,13 +7,8 @@
       "repository": "crinkl-protocol-spec",
       "rules": [
         { "prefix": "01-core/", "surface": "objectSchema" },
-        { "prefix": "02-proof-lifecycle/", "surface": "objectSchema" },
-        { "prefix": "03-portability/", "surface": "objectSchema" },
         { "prefix": "04-condition-layer/", "surface": "objectSchema" },
         { "prefix": "05-reward-and-settlement/", "surface": "objectSchema" },
-        { "prefix": "protocol/core/", "surface": "objectSchema" },
-        { "prefix": "protocol/portability/", "surface": "objectSchema" },
-        { "prefix": "protocol/applications/", "surface": "objectSchema" },
         { "prefix": "06-extensions/schemas/", "surface": "objectSchema" },
         { "prefix": "06-extensions/examples/", "surface": "externalOwnership" },
         { "prefix": "07-conformance/", "surface": "profileConformanceSuite" },
@@ -42,7 +37,7 @@
   "requiredAliases": [
     {
       "repository": "public",
-      "path": "protocol/core/schemas/verification_policy_v1.schema.json",
+      "path": "01-core/schemas/verification_policy_v1.schema.json",
       "surface": "objectSchema",
       "filename": "verification_policy_v1.schema.json",
       "$id": "crinkl://protocol/schemas/verification_policy_v1",
