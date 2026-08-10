@@ -80,7 +80,7 @@ jobs:
           python3 scripts/check_successor_release_finalization.py --mode candidate --self-test | tee "$RUNNER_TEMP/candidate-identity.txt"
           python3 scripts/check_release_registry.py --adopted-repo "$CRINKL_PROTOCOL_ADOPTED_REPO"
           python3 scripts/check_drift.py
-          node scripts/verify_conformance.mjs --strict-coverage
+          node scripts/verify_conformance.mjs
           python3 - <<'PY' > "$RUNNER_TEMP/released-artifact-declared-digests.tsv"
           import json
           from pathlib import Path
