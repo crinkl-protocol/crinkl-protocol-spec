@@ -70,8 +70,12 @@ def main() -> int:
     manifest = load_json(bundle_root / "manifest.json")
     release = load_json(repo_root / "versions/release.json")
     release_status = release.get("status")
-    if release.get("releaseVersion") != "1.0.0-rc.7" or release_status not in {"RELEASE_CANDIDATE_NOT_PUBLISHED", "RELEASED"}:
-        fail("rc.7 release boundary drift")
+    release_boundary = (release.get("releaseVersion"), release_status)
+    if release_boundary not in {
+        ("1.0.0-rc.7", "RELEASED"),
+        ("1.0.0-rc.8", "RELEASE_CANDIDATE_NOT_PUBLISHED"),
+    }:
+        fail("public release/candidate boundary drift")
     expected_bundle_state = {
         "maturity": "candidate",
         "releasedConformance": False,
@@ -156,10 +160,20 @@ def main() -> int:
             "file": "../../profiles/w3c-vc-2.0-spend-attestation-v1/scripts/check_w3c_spend_attestation_credential_vectors.mjs",
         },
     }
-    if current_manifest.get("releaseVersion") != "1.0.0-rc.7" or current_manifest.get("releaseStatus") != release_status or current_manifest.get("suiteVersion") != 4:
-        fail("rc.7 candidate suite boundary drift")
+    suite_boundary = (
+        current_manifest.get("releaseVersion"),
+        current_manifest.get("releaseStatus"),
+        current_manifest.get("suiteVersion"),
+    )
+    expected_suite_boundary = (
+        ("1.0.0-rc.7", "RELEASED", 4)
+        if release_boundary == ("1.0.0-rc.7", "RELEASED")
+        else ("1.0.0-rc.8", "RELEASE_CANDIDATE_NOT_PUBLISHED", 5)
+    )
+    if suite_boundary != expected_suite_boundary:
+        fail("current release/candidate suite boundary drift")
     if sum(entry == expected_entry for entry in current_manifest.get("vectors") or []) != 1:
-        fail("rc.7 candidate suite must contain exactly one manifest-bound W3C entry")
+        fail("current suite must contain exactly one manifest-bound W3C entry")
     frozen_rc4 = subprocess.run(
         ["git", "show", "v1.0.0-rc.4:07-conformance/vectors/v1/manifest.json"],
         cwd=repo_root,
