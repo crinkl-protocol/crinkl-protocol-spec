@@ -12,6 +12,12 @@
         { "prefix": "06-extensions/schemas/", "surface": "objectSchema" },
         { "prefix": "06-extensions/examples/", "surface": "externalOwnership" },
         { "prefix": "07-conformance/", "surface": "profileConformanceSuite" },
+        { "prefix": "protocol/core/schemas/", "surface": "objectSchema" },
+        { "prefix": "protocol/portability/schemas/", "surface": "objectSchema" },
+        { "prefix": "protocol/applications/", "surface": "objectSchema" },
+        { "prefix": "protocol/extensions/schemas/", "surface": "objectSchema" },
+        { "prefix": "protocol/extensions/examples/", "surface": "externalOwnership" },
+        { "prefix": "conformance/", "surface": "profileConformanceSuite" },
         { "prefix": "bindings/", "surface": "bindingContextCryptographicDomain" },
         { "prefix": "schemas/", "surface": "objectSchema" },
         { "prefix": "versions/", "surface": "specificationRelease" }

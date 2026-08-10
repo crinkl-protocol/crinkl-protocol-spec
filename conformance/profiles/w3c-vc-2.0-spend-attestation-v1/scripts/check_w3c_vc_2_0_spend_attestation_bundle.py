@@ -175,7 +175,7 @@ def main() -> int:
     if sum(entry == expected_entry for entry in current_manifest.get("vectors") or []) != 1:
         fail("current suite must contain exactly one manifest-bound W3C entry")
     frozen_rc4 = subprocess.run(
-        ["git", "show", "v1.0.0-rc.4:conformance/vectors/v1/manifest.json"],
+        ["git", "show", "v1.0.0-rc.4:07-conformance/vectors/v1/manifest.json"],
         cwd=repo_root,
         check=True,
         text=True,
