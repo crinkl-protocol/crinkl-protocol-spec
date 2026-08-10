@@ -579,9 +579,15 @@ def validate_release(
             error(errors, location, f"{name} must appear exactly once in artifactInventory with matching path, digest, role, and basis")
     commit = source.get("commit")
     if not isinstance(commit, str) and isinstance(tag_target, dict):
-        commit = git(root, "rev-parse", "HEAD")
+        tag = tag_target.get("tag")
+        if isinstance(tag, str):
+            commit = git(root, "rev-parse", f"refs/tags/{tag}^{{commit}}")
     if isinstance(commit, str):
-        documents_for_record = materialized_documents if isinstance(tag_target, dict) else None
+        # An immutable release with tag-target authority must be reproduced
+        # from that tag, not from a descendant candidate's HEAD.  A caller
+        # explicitly materializing the historical package can still supply
+        # its rendered bytes for the pre-tag transition test.
+        documents_for_record = materialized_documents if isinstance(tag_target, dict) and materialized_documents is not None else None
         for index, artifact in enumerate(inventory):
             verify_artifact_blob(
                 root,
@@ -756,7 +762,7 @@ def validate_registry(
     if registry.get("candidateState") == "SOURCE_CANDIDATE_AWAITING_REVIEW_NOT_PUBLISHABLE" and reviewed is not None and isinstance(latest, str):
         try:
             if compare_semver(reviewed, latest) <= 0:
-                error(errors, "reviewedCandidateVersion", "must be later than latestReleasedVersion")
+                error(errors, "reviewedCandidateVersion", "source candidate state must use a reviewed candidate later than latestReleasedVersion, or null for an unreviewed candidate")
         except ValueError as exc:
             error(errors, "reviewedCandidateVersion", str(exc))
     if registry.get("candidateState") == "NO_ACTIVE_OR_PUBLISHABLE_CANDIDATE":
@@ -770,8 +776,8 @@ def validate_registry(
             if isinstance(record, dict) and record.get("status") == "REVIEWED_CANDIDATE_NOT_PUBLISHED" and record.get("actualTag") is not None:
                 error(errors, f"releases[{version}]", "no-active candidate state forbids an actual tag")
     elif registry.get("candidateState") == "SOURCE_CANDIDATE_AWAITING_REVIEW_NOT_PUBLISHABLE":
-        if reviewed != "1.0.0-rc.5":
-            error(errors, "reviewedCandidateVersion", "source candidate state preserves the historical exact reviewed candidate")
+        if reviewed is not None:
+            error(errors, "reviewedCandidateVersion", "unreviewed source candidate state must leave reviewedCandidateVersion null")
         if not isinstance(release_manifest, dict):
             error(errors, "releaseManifest", "source candidate state requires an object release manifest")
         else:
@@ -786,7 +792,7 @@ def validate_registry(
                     error(errors, "releaseManifest.requiredTag", "must equal v${releaseVersion} for source candidate state")
                 if current_version in releases:
                     error(errors, "releaseManifest.releaseVersion", "source candidate must not already appear in releases")
-                for earlier_name, earlier in (("latestReleasedVersion", latest), ("reviewedCandidateVersion", reviewed)):
+                for earlier_name, earlier in (("latestReleasedVersion", latest),):
                     if not isinstance(earlier, str):
                         error(errors, earlier_name, "must be a SemVer version for source candidate comparison")
                     else:

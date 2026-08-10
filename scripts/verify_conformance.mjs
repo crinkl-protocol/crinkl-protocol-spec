@@ -335,6 +335,55 @@ function main() {
       continue;
     }
 
+    if (kind === "token.spendAttestation.portableV1.fromSpendStream.v2") {
+      executedKinds.push(kind);
+      const adopted = vector.adoptedCandidate || {};
+      checks += 1;
+      if (adopted.repository !== "crinkl-protocol" || adopted.commit !== "093b37db3e78bdd4253d7864ae4eb5398ce7cc25" || adopted.artifact?.path !== "protocol/portability/TOKENS.md" || adopted.artifact?.sha256 !== "sha256:e094a25cb91ba43053c7deeb8299c7e544268a6155a5d7e83ab324eac694df34") {
+        fail(failures, kind, "adopted-candidate", "adopted candidate pin mismatch");
+      }
+      const compatibility = vector.compatibility || {};
+      checks += 1;
+      if (compatibility.legacyVectorKind !== "token.spendAttestation.portableV1.fromSpendStream" || compatibility.legacyVectorState !== "IMMUTABLE_RELEASED_RC7_EVIDENCE" || compatibility.signedTokenSchemaChange !== false || compatibility.wireProtocolChange !== false) {
+        fail(failures, kind, "compatibility", "legacy/signed-wire boundary mismatch");
+      }
+      const supersessionCases = vector.supersessionCases;
+      const referenceInclusionCases = vector.referenceInclusionCases;
+      checks += 1;
+      if (!Array.isArray(supersessionCases) || supersessionCases.length !== 3) fail(failures, kind, "supersession-cases", "requires exactly three nonempty issuer-scope cases");
+      checks += 1;
+      if (!Array.isArray(referenceInclusionCases) || referenceInclusionCases.length !== 2) fail(failures, kind, "reference-inclusion-cases", "requires exactly two nonempty audit-independence cases");
+      for (const c of supersessionCases || []) {
+        const [first, second] = c.tokens || [];
+        const wellFormed = [first, second].every((token) => token && typeof token.signatures?.issuedBy === "string" && token.signatures.issuedBy.length > 0 && typeof token.spendId === "string" && Number.isInteger(token.eventCount) && /^[0-9a-f]{64}$/.test(token.headEventHash) && typeof token.status === "string");
+        checks += 1;
+        if (!wellFormed) fail(failures, kind, c.id, "supersession token shape mismatch");
+        if (c.id === "issuer-scoped-newest") {
+          checks += 1;
+          if (first.signatures.issuedBy !== second.signatures.issuedBy || first.spendId !== second.spendId || second.eventCount <= first.eventCount || c.expected !== "SECOND_TOKEN_NEWEST") fail(failures, kind, c.id, "issuer-scoped newest mismatch");
+        } else if (c.id === "different-issuers-do-not-compete") {
+          checks += 1;
+          if (first.signatures.issuedBy === second.signatures.issuedBy || first.spendId !== second.spendId || c.expected !== "TWO_DISTINCT_SUPERSESSION_SETS") fail(failures, kind, c.id, "cross-issuer scope mismatch");
+        } else if (c.id === "issuer-scoped-equal-count-fork") {
+          checks += 1;
+          if (first.signatures.issuedBy !== second.signatures.issuedBy || first.spendId !== second.spendId || first.eventCount !== second.eventCount || (first.headEventHash === second.headEventHash && first.status === second.status) || c.expected !== "ORDERING_VIOLATION") fail(failures, kind, c.id, "issuer-scoped fork mismatch");
+        } else {
+          fail(failures, kind, c.id || "unknown", "unknown supersession case");
+        }
+      }
+      for (const c of referenceInclusionCases || []) {
+        const proof = c.proof || {};
+        const leaf = proof.leaf || {};
+        const canonical = canonicalizeJson(leaf);
+        const leafHash = sha256HexBytes(Buffer.concat([Buffer.from([0]), Buffer.from(canonical, "utf8")]));
+        checks += 1;
+        if (Object.keys(leaf).sort().join(",") !== "rewardEventHash,spendId" || !/^[0-9a-f]{64}$/.test(leaf.rewardEventHash) || leafHash !== proof.leafHash || proof.rewardEventsRoot !== proof.leafHash) fail(failures, kind, c.id, "reference inclusion proof mismatch");
+        checks += 1;
+        if (c.expected?.referenceInclusion !== true || !["ABSENT", "INVALID"].includes(c.audit) || c.expected?.auditOutcome !== (c.audit === "ABSENT" ? "UNAVAILABLE" : "INVALID")) fail(failures, kind, c.id, "independent audit outcome mismatch");
+      }
+      continue;
+    }
+
     if (kind === "token.verifiedSpendDistribution.v1") {
       executedKinds.push(kind);
       for (const c of vector.cases) {

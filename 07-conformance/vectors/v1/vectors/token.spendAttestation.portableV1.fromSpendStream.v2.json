@@ -1,0 +1,114 @@
+{
+  "kind": "token.spendAttestation.portableV1.fromSpendStream.v2",
+  "profileVersion": 2,
+  "adoptedCandidate": {
+    "repository": "crinkl-protocol",
+    "commit": "093b37db3e78bdd4253d7864ae4eb5398ce7cc25",
+    "artifact": {
+      "path": "protocol/portability/TOKENS.md",
+      "sha256": "sha256:e094a25cb91ba43053c7deeb8299c7e544268a6155a5d7e83ab324eac694df34"
+    }
+  },
+  "compatibility": {
+    "legacyVectorKind": "token.spendAttestation.portableV1.fromSpendStream",
+    "legacyVectorState": "IMMUTABLE_RELEASED_RC7_EVIDENCE",
+    "signedTokenSchemaChange": false,
+    "wireProtocolChange": false
+  },
+  "supersessionCases": [
+    {
+      "id": "issuer-scoped-newest",
+      "tokens": [
+        {
+          "signatures": { "issuedBy": "did:key:z6MkauthorityA" },
+          "spendId": "spend-shared",
+          "eventCount": 2,
+          "headEventHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "status": "HARD_VERIFIED"
+        },
+        {
+          "signatures": { "issuedBy": "did:key:z6MkauthorityA" },
+          "spendId": "spend-shared",
+          "eventCount": 3,
+          "headEventHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "status": "CORRECTED"
+        }
+      ],
+      "expected": "SECOND_TOKEN_NEWEST"
+    },
+    {
+      "id": "different-issuers-do-not-compete",
+      "tokens": [
+        {
+          "signatures": { "issuedBy": "did:key:z6MkauthorityA" },
+          "spendId": "spend-shared",
+          "eventCount": 3,
+          "headEventHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "status": "CORRECTED"
+        },
+        {
+          "signatures": { "issuedBy": "did:key:z6MkauthorityB" },
+          "spendId": "spend-shared",
+          "eventCount": 99,
+          "headEventHash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "status": "HARD_VERIFIED"
+        }
+      ],
+      "expected": "TWO_DISTINCT_SUPERSESSION_SETS"
+    },
+    {
+      "id": "issuer-scoped-equal-count-fork",
+      "tokens": [
+        {
+          "signatures": { "issuedBy": "did:key:z6MkauthorityA" },
+          "spendId": "spend-fork",
+          "eventCount": 3,
+          "headEventHash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "status": "CORRECTED"
+        },
+        {
+          "signatures": { "issuedBy": "did:key:z6MkauthorityA" },
+          "spendId": "spend-fork",
+          "eventCount": 3,
+          "headEventHash": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "status": "INVALIDATED"
+        }
+      ],
+      "expected": "ORDERING_VIOLATION"
+    }
+  ],
+  "referenceInclusionCases": [
+    {
+      "id": "reference-only-audit-absent",
+      "proof": {
+        "leaf": {
+          "spendId": "spend-link-1",
+          "rewardEventHash": "1111111111111111111111111111111111111111111111111111111111111111"
+        },
+        "leafHash": "3b3224deccaaefec9582f9cca04a935053bdf3c072809649cb9e207b672a2119",
+        "rewardEventsRoot": "3b3224deccaaefec9582f9cca04a935053bdf3c072809649cb9e207b672a2119"
+      },
+      "audit": "ABSENT",
+      "expected": {
+        "referenceInclusion": true,
+        "auditOutcome": "UNAVAILABLE"
+      }
+    },
+    {
+      "id": "reference-only-audit-invalid",
+      "proof": {
+        "leaf": {
+          "spendId": "spend-link-2",
+          "rewardEventHash": "2222222222222222222222222222222222222222222222222222222222222222"
+        },
+        "leafHash": "729de18108f137c674e10179959d21e4cf96e8bb52ec2adbbdc3710a8f20c2e3",
+        "rewardEventsRoot": "729de18108f137c674e10179959d21e4cf96e8bb52ec2adbbdc3710a8f20c2e3"
+      },
+      "audit": "INVALID",
+      "expected": {
+        "referenceInclusion": true,
+        "auditOutcome": "INVALID"
+      }
+    }
+  ]
+}

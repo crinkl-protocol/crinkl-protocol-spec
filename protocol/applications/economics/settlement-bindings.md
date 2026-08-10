@@ -412,10 +412,16 @@ RewardInclusionProof {
 
 A verifier MUST:
 
-1. Verify the reward event (`REWARD_*_ISSUED`) integrity envelope and recompute its `eventHash`.
-2. Verify the reward inclusion proof against `rewardEventsRoot`, where `leaf.rewardEventHash` MUST equal the reward event’s `eventHash`.
-3. Verify the batch inclusion proof for the recipient aggregated leaf against the on-chain `CommitmentRecord.root`.
-4. Verify that the aggregated leaf’s `rewardEventsRoot` equals the `rewardEventsRoot` used in step 2.
+1. Verify the reward inclusion proof against `rewardEventsRoot`; this establishes only that the exact `(spendId, rewardEventHash)` reference is committed under that recipient leaf.
+2. Verify the batch inclusion proof for the recipient aggregated leaf against the on-chain `CommitmentRecord.root`.
+3. Verify that the aggregated leaf’s `rewardEventsRoot` equals the `rewardEventsRoot` used in step 1.
+
+A supplied `REWARD_*_ISSUED` envelope is optional, independently reported audit
+material. When it is supplied, a verifier MUST validate its envelope, recompute
+its `eventHash`, and compare that recomputation to the committed reference. An absent,
+indeterminate, or failed audit result does not alter the compact
+reference-inclusion result; a relying policy may require that separately
+reported audit before accepting a broader claim.
 
 ## Security Properties
 

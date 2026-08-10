@@ -110,7 +110,7 @@ Verifiers MUST distinguish:
 - **Freshness:** whether the token represents the latest head/state for its scope (an acceptance policy decision).
 
 If multiple valid tokens are presented for the same scope:
-- **Spend Attestation Tokens:** scope key is `spendId`. The token with the greatest `lineage.eventCount` MUST be treated as the newest snapshot. If two tokens share the same `spendId` and `lineage.eventCount` but differ in `lineage.headEventHash` or `canonical.status`, verifiers MUST treat this as an error (`OrderingViolation` / fork or issuer equivocation) and MUST NOT pick a winner.
+- **Spend Attestation Tokens:** scope key is `(signatures.issuedBy, spendId)`. The token with the greatest `lineage.eventCount` MUST be treated as the newest snapshot. If two tokens share that issuer-scoped key and `lineage.eventCount` but differ in `lineage.headEventHash` or `canonical.status`, verifiers MUST treat this as an error (`OrderingViolation` / fork or issuer equivocation) and MUST NOT pick a winner. Tokens issued by different authorities are not one supersession set unless an explicitly adopted cross-issuer policy says otherwise.
 - **Verified GMV Tokens:** scope key is `(window.type, window.date)`. Verifiers SHOULD select the token with the greatest `asOf.computedAt` they trust; `prevGMVTokenHash` may be used to audit continuity.
 - **Reward Commitment Tokens:** scope key is `(chainId, batch.batchId, recipientId)`. These tokens refer to a specific committed batch; they are not superseded by later spend corrections. If two valid tokens share the same scope key but disagree on committed root/leaf/proof, verifiers MUST treat this as an error and MUST NOT pick a winner.
 
@@ -257,7 +257,7 @@ The issuer MUST validate the field shape and sign the commitment as part of
 the complete unsigned token. The issuer does not need the holder private key.
 Once signed, `holderBinding` is immutable for that token and Spend head.
 Correction follows the normal supersession rule and MUST preserve the same
-holder binding for the same `(issuedBy, spendId)` scope. It MUST NOT rotate
+holder binding for the same `(signatures.issuedBy, spendId)` scope. It MUST NOT rotate
 ownership by substituting another commitment.
 
 #### Holder challenge
@@ -451,7 +451,9 @@ Spend tokens are snapshots and may be superseded by later spend-stream heads
 spendId)`. If presented with multiple valid spend tokens for the same scope, a
 verifier MUST treat the token with the greatest `lineage.eventCount` as newest.
 Tokens with equal `lineage.eventCount` but different `headEventHash` MUST be
-treated as invalid/ambiguous (fork or equivocation).
+treated as invalid/ambiguous (fork or equivocation). A token from another
+issuer is independently valid or invalid under its own trust policy; it does
+not supersede this issuer-scoped sequence.
 
 If a spend is corrected/invalidated and the head changes:
 - A new Spend Attestation Token MUST be issued for the new head.

@@ -147,11 +147,17 @@ Downstream layers consume spend proof; they do not define it.
 ## Release and source state
 
 `v1.0.0-rc.7` is the latest released public package. Current public repository
-release: **v1.0.0-rc.7** (`RELEASED`), conformance suite 4; it preserves the
-explicit rc.1/rc.2 wire support set and remains independent from runtime,
-validator, authority, and production activation. Its current machine-readable
-release manifest is
-[`versions/release.json`](versions/release.json), and its source controls are in
+source candidate: **v1.0.0-rc.8** (`RELEASE_CANDIDATE_NOT_PUBLISHED`),
+conformance suite 5; it is unreviewed, unpublished, not publishable, and does
+not inherit rc.5 review. The candidate corrects
+the rc.7 reward-linkage and Spend-supersession publication defect without
+changing the rc.1/rc.2 wire support set, any Spend Token schema, or runtime,
+validator, authority, and production state. Its machine-readable candidate
+manifest is [`versions/release.json`](versions/release.json), and its source
+controls are in
+[`versions/v1.0.0-rc.8/finalization.json`](versions/v1.0.0-rc.8/finalization.json).
+The immutable rc.7 release remains available at tag `v1.0.0-rc.7` with its
+historical controls in
 [`versions/v1.0.0-rc.7/finalization.json`](versions/v1.0.0-rc.7/finalization.json).
 The following preserved
 rc.5 transition text applies only to public-spec commit

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import copy
+import hashlib
 import json
 import os
 import subprocess
@@ -11,7 +12,6 @@ import tempfile
 from pathlib import Path
 
 import check_release_registry as checker
-import check_successor_release_finalization as finalizer
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -87,106 +87,27 @@ def main() -> int:
         raise AssertionError(f"valid registry rejected: {valid_errors}")
     print(f"[release-registry-test] accepted: current registry (adopted repo: {adopted_root})")
 
-    finalization = finalizer.read_json(ROOT / "versions/v1.0.0-rc.7/finalization.json")
-    finalizer.validate_plan(finalization)
-    released_documents, _, rendered = finalizer.materialize_released(ROOT, finalization)
-    released_registry = released_documents["versions/release-registry.json"]
-    released_manifest = released_documents["versions/release.json"]
-    released_errors = checker.validate_registry(
-        ROOT,
-        schema,
-        released_registry,
-        released_manifest,
-        adopted_root,
-        materialized_documents=rendered,
-    )
-    if released_errors:
-        raise AssertionError(f"materialized release registry rejected: {released_errors}")
-    print("[release-registry-test] accepted: materialized rc.7 release tag-target state")
+    # A successor workspace cannot materialize an older release by overwriting
+    # its immutable package. Verify that tag directly, then continue through
+    # every hostile source-candidate regression below.
+    if release_manifest.get("releaseVersion") != "1.0.0-rc.8":
+        raise AssertionError("unexpected successor candidate version")
+    if checker.git(ROOT, "rev-parse", "v1.0.0-rc.7^{commit}") != "d45560e679c12298ee25fad6e0e7948b03e5a7c5":
+        raise AssertionError("immutable rc.7 tag target drift")
+    print("[release-registry-test] accepted: immutable rc.7 tag target; continuing rc.8 hostile regressions")
 
-    assert_materialized_rejected(
-        "materialized release missing required tag",
-        copy.deepcopy(released_registry),
-        copy.deepcopy(released_manifest),
-        adopted_root,
-        rendered,
-        require_tag=True,
-    )
+    rc7_manifest = checker.git(ROOT, "cat-file", "blob", "v1.0.0-rc.7:versions/release.json", binary=True)
+    head_manifest = checker.git(ROOT, "cat-file", "blob", "HEAD:versions/release.json", binary=True)
+    if rc7_manifest == head_manifest:
+        raise AssertionError("test fixture no longer distinguishes rc.7 release bytes from candidate HEAD")
+    rc7_digest = "sha256:" + hashlib.sha256(rc7_manifest).hexdigest()
+    if registry["releases"]["1.0.0-rc.7"]["artifactInventory"][0]["digest"] != rc7_digest:
+        raise AssertionError("rc.7 release inventory is not pinned to its immutable tag bytes")
+    print("[release-registry-test] accepted: released artifact inventory resolves from rc.7 tag, not rc.8 HEAD")
 
-    original_tag_ref_exists = checker.tag_ref_exists
-    original_git = checker.git
-    head = original_git(ROOT, "rev-parse", "HEAD")
-    tree = original_git(ROOT, "rev-parse", "HEAD^{tree}")
-    try:
-        checker.tag_ref_exists = lambda root, tag: tag == "v1.0.0-rc.7" or original_tag_ref_exists(root, tag)
-        def exact_head_tag(root, *args, binary=False):
-            if args == ("rev-parse", "refs/tags/v1.0.0-rc.7^{commit}"):
-                return head
-            if args == ("rev-parse", "refs/tags/v1.0.0-rc.7^{tree}"):
-                return tree
-            return original_git(root, *args, binary=binary)
-        checker.git = exact_head_tag
-        errors = checker.validate_registry(
-            ROOT,
-            schema,
-            copy.deepcopy(released_registry),
-            copy.deepcopy(released_manifest),
-            adopted_root,
-            require_tag=True,
-            materialized_documents=rendered,
-        )
-        if errors:
-            raise AssertionError(f"exact-HEAD tag target was rejected: {errors}")
-        print("[release-registry-test] accepted: exact-HEAD tag-target authority")
-
-        def wrong_head_tag(root, *args, binary=False):
-            if args == ("rev-parse", "refs/tags/v1.0.0-rc.7^{commit}"):
-                return "0" * 40
-            if args == ("rev-parse", "refs/tags/v1.0.0-rc.7^{tree}"):
-                return tree
-            return original_git(root, *args, binary=binary)
-        checker.git = wrong_head_tag
-        assert_materialized_rejected(
-            "tag-target resolves away from current HEAD",
-            copy.deepcopy(released_registry),
-            copy.deepcopy(released_manifest),
-            adopted_root,
-            rendered,
-            require_tag=True,
-        )
-    finally:
-        checker.git = original_git
-        checker.tag_ref_exists = original_tag_ref_exists
-
-    mutated = copy.deepcopy(released_registry)
-    mutated["releases"]["1.0.0-rc.7"]["source"]["tagTarget"]["preTagTarget"] = "ARBITRARY_COMMIT"
-    assert_materialized_rejected(
-        "tag-target authority mutation",
-        mutated,
-        copy.deepcopy(released_manifest),
-        adopted_root,
-        rendered,
-    )
-
-    mutated = copy.deepcopy(released_registry)
-    mutated["releases"]["1.0.0-rc.7"]["previousRelease"] = "1.0.0-rc.5"
-    assert_materialized_rejected(
-        "released predecessor points to historical candidate",
-        mutated,
-        copy.deepcopy(released_manifest),
-        adopted_root,
-        rendered,
-    )
-
-    manifest = copy.deepcopy(released_manifest)
-    manifest["profiles"][2]["maturity"] = "RELEASED"
-    assert_materialized_rejected(
-        "materialized package silently promotes candidate profile",
-        copy.deepcopy(released_registry),
-        manifest,
-        adopted_root,
-        rendered,
-    )
+    mutated = copy.deepcopy(registry)
+    mutated["releases"]["1.0.0-rc.7"]["artifactInventory"][0]["digest"] = "sha256:" + hashlib.sha256(head_manifest).hexdigest()
+    assert_rejected("released artifact inventory substituted candidate HEAD bytes", mutated, adopted_root)
 
     mutated = copy.deepcopy(registry)
     mutated["latestReleasedVersion"] = "1.0.0-rc.99"
@@ -199,6 +120,10 @@ def main() -> int:
     mutated = copy.deepcopy(registry)
     mutated["reviewedCandidateVersion"] = "1.0.0-rc.99"
     assert_rejected("dangling reviewed candidate", mutated, adopted_root)
+
+    mutated = copy.deepcopy(registry)
+    mutated["reviewedCandidateVersion"] = "1.0.0-rc.5"
+    assert_rejected("unreviewed rc.8 reuses historical reviewed candidate", mutated, adopted_root)
 
     mutated = copy.deepcopy(registry)
     mutated["releases"]["1.0.0-rc.7"] = copy.deepcopy(mutated["releases"]["1.0.0-rc.5"])

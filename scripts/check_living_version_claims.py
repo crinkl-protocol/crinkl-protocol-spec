@@ -56,7 +56,6 @@ def load_documents(root: Path) -> dict[str, str]:
 def validate_registry(registry: dict[str, Any], release_manifest: dict[str, Any]) -> None:
     releases = registry.get("releases")
     require(isinstance(releases, dict), "release registry releases missing")
-    require(registry.get("reviewedCandidateVersion") == "1.0.0-rc.5", "reviewed candidate version drift")
     for version in ("1.0.0-rc.1", "1.0.0-rc.3", "1.0.0-rc.4"):
         require(isinstance(releases.get(version), dict) and releases[version].get("status") == "RELEASED", f"{version} must be released")
     candidate = releases.get("1.0.0-rc.5")
@@ -65,17 +64,23 @@ def validate_registry(registry: dict[str, Any], release_manifest: dict[str, Any]
     require(isinstance(source, dict) and source.get("commit") == REVIEWED_COMMIT and source.get("tree") == REVIEWED_TREE, "rc.5 reviewed commit/tree drift")
     observed = registry.get("embeddedWireVersionObservations", {}).get("1.0.0-rc.2", {})
     require(observed.get("classification") == "EMBEDDED_WIRE_LABEL_NOT_A_PUBLIC_RELEASE_CLASSIFICATION_PENDING", "rc.2 public-release classification drift")
-    require(release_manifest.get("releaseVersion") == "1.0.0-rc.7", "current public package version drift")
-    require(release_manifest.get("requiredTag") == "v1.0.0-rc.7", "current public package tag drift")
-    require(release_manifest.get("conformance", {}).get("suiteVersion") == 4, "current public package suite drift")
     if release_manifest.get("status") == "RELEASE_CANDIDATE_NOT_PUBLISHED":
-        require(registry.get("latestReleasedVersion") == "1.0.0-rc.4", "candidate latest released version drift")
-        require(registry.get("candidateState") == "SOURCE_CANDIDATE_AWAITING_REVIEW_NOT_PUBLISHABLE", "rc.7 source candidate state drift")
-        require("1.0.0-rc.7" not in releases, "current source candidate must not be registered as released or reviewed")
+        require(release_manifest.get("releaseVersion") == "1.0.0-rc.8", "rc.8 source candidate version drift")
+        require(release_manifest.get("requiredTag") == "v1.0.0-rc.8", "rc.8 source candidate tag drift")
+        require(release_manifest.get("conformance", {}).get("suiteVersion") == 5, "rc.8 source candidate suite drift")
+        require(registry.get("latestReleasedVersion") == "1.0.0-rc.7", "rc.8 candidate latest released version drift")
+        require(registry.get("candidateState") == "SOURCE_CANDIDATE_AWAITING_REVIEW_NOT_PUBLISHABLE", "rc.8 candidate state drift")
+        require(registry.get("reviewedCandidateVersion") is None, "unreviewed rc.8 source candidate must not set reviewedCandidateVersion")
+        released = releases.get("1.0.0-rc.7")
+        require(isinstance(released, dict) and released.get("status") == "RELEASED", "rc.7 released registry entry missing")
     elif release_manifest.get("status") == "RELEASED":
+        require(release_manifest.get("releaseVersion") == "1.0.0-rc.7", "current public package version drift")
+        require(release_manifest.get("requiredTag") == "v1.0.0-rc.7", "current public package tag drift")
+        require(release_manifest.get("conformance", {}).get("suiteVersion") == 4, "current public package suite drift")
         released = releases.get("1.0.0-rc.7")
         require(registry.get("latestReleasedVersion") == "1.0.0-rc.7", "released latest version drift")
         require(registry.get("candidateState") == "NO_ACTIVE_OR_PUBLISHABLE_CANDIDATE", "released candidate state drift")
+        require(registry.get("reviewedCandidateVersion") == "1.0.0-rc.5", "released package reviewed candidate pointer drift")
         require(isinstance(released, dict) and released.get("status") == "RELEASED", "rc.7 released registry entry missing")
         require(released.get("previousRelease") == "1.0.0-rc.4", "rc.7 released predecessor drift")
         require(released.get("source", {}).get("tagTarget", {}).get("tag") == "v1.0.0-rc.7", "rc.7 tag-target authority drift")
@@ -115,9 +120,24 @@ def validate_documents(documents: dict[str, str], release_status: str = "RELEASE
             "07-conformance/verifier-test-suite.md": "status: released",
             "07-conformance/vectors/v1/README.md": "status: released",
         },
+        "RC8_SOURCE_CANDIDATE": {
+            "latest": "`v1.0.0-rc.7` is the latest released public package",
+            "compatibility": "| `v1.0.0-rc.7` public release | Latest released suite-4 public package. | It preserves historical rc.5 review boundaries, candidate profile maturity, and separate runtime/production governance. |",
+            "README.md": "`v1.0.0-rc.7` is the latest released public package. Current public repository\nsource candidate: **v1.0.0-rc.8** (`RELEASE_CANDIDATE_NOT_PUBLISHED`),\nconformance suite 5; it is unreviewed, unpublished, not publishable, and does\nnot inherit rc.5 review.",
+            "SECURITY.md": "- `v1.0.0-rc.7` is the released public package and conformance suite 4;\n  release status does not activate runtime, validator, authority, or\n  production behavior.",
+            "08-governance/versioning.md": "`v1.0.0-rc.7` is the latest released public package. Current public repository\nsource candidate: **1.0.0-rc.8** (`RELEASE_CANDIDATE_NOT_PUBLISHED`),\nconformance suite 5; it is unreviewed, unpublished, not publishable, and does\nnot inherit rc.5 review.",
+            "versions/CHANGELOG.md": "`v1.0.0-rc.7` is the latest released public package. Current public repository\nrelease: **1.0.0-rc.7** (`RELEASED`), conformance suite 4; it does not promote\ncandidate profiles or activate runtime, validator, authority, deployment, or\nproduction behavior.",
+            "07-conformance/verifier-test-suite.md": "status: released",
+            "07-conformance/vectors/v1/README.md": "status: released",
+        },
     }
     require(release_status in release_markers, f"unsupported public package status: {release_status}")
     state = release_markers[release_status]
+    versioning_release_history = (
+        "`v1.0.0-rc.3`, `v1.0.0-rc.4`, and `v1.0.0-rc.7` are released public packages;\nrc.7 is the latest released package."
+        if release_status == "RC8_SOURCE_CANDIDATE"
+        else "`v1.0.0-rc.3` and `v1.0.0-rc.4` are released public packages; rc.4 is the\nlatest released package."
+    )
     require(state["latest"] in compatibility, "compatibility record latest-release marker missing")
     require(state["compatibility"] in compatibility, "compatibility record release-state marker missing")
     require(not re.search(r"\bN(?:-1|\+1)?\b", compatibility), "generic adjacent-version compatibility heuristic remains")
@@ -133,7 +153,7 @@ def validate_documents(documents: dict[str, str], release_status: str = "RELEASE
         "07-conformance/profiles/w3c-vc-2.0-spend-attestation-v1/README.md": ("This is a source-only candidate bundle", REVIEWED_COMMIT, "later source is unassigned"),
         "08-governance/glossary.md": ("V2 `holderBinding` is\nOPTIONAL, so a V2 token without it remains valid",),
         "08-governance/protocol-v1-index.md": ("released `v1.0.0-rc.3` / conformance suite 2", REVIEWED_COMMIT),
-        "08-governance/versioning.md": (state["08-governance/versioning.md"], "Historical exact reviewed source candidate: **1.0.0-rc.5** (`REVIEWED_CANDIDATE_NOT_PUBLISHED`)", "`v1.0.0-rc.3` and `v1.0.0-rc.4` are released public packages; rc.4 is the\nlatest released package."),
+        "08-governance/versioning.md": (state["08-governance/versioning.md"], "Historical exact reviewed source candidate: **1.0.0-rc.5** (`REVIEWED_CANDIDATE_NOT_PUBLISHED`)", versioning_release_history),
         "08-governance/zk-beta-release-checklist.md": ("embedded wire/source/binding history label, not an observed\npublic tag or public-release classification",),
         "versions/CHANGELOG.md": (state["versions/CHANGELOG.md"], "The historical exact reviewed source candidate is **v1.0.0-rc.5**, an\nunpublished SemVer prerelease.", "## v1.0.0-rc.5 release candidate (not published)", "does not promote the W3C profile beyond candidate maturity."),
     }
@@ -161,7 +181,12 @@ def validate_documents(documents: dict[str, str], release_status: str = "RELEASE
 def validate(root: Path, documents: dict[str, str] | None = None, registry: dict[str, Any] | None = None, release_manifest: dict[str, Any] | None = None) -> None:
     release = read_json(root / "versions/release.json") if release_manifest is None else release_manifest
     validate_registry(read_json(root / REGISTRY) if registry is None else registry, release)
-    validate_documents(load_documents(root) if documents is None else documents, str(release.get("status")))
+    document_status = "RC8_SOURCE_CANDIDATE" if release.get("status") == "RELEASE_CANDIDATE_NOT_PUBLISHED" and release.get("releaseVersion") == "1.0.0-rc.8" else str(release.get("status"))
+    documents_to_validate = load_documents(root) if documents is None else documents
+    validate_documents(documents_to_validate, document_status)
+    if release.get("releaseVersion") == "1.0.0-rc.8":
+        require("| `v1.0.0-rc.8` source candidate | Unreviewed suite-5 successor candidate." in documents_to_validate["07-conformance/compatibility.md"], "rc.8 compatibility marker missing")
+        require("## Reward-commitment rc.7 publication defect erratum candidate (not published)" in documents_to_validate["versions/CHANGELOG.md"], "rc.8 changelog marker missing")
 
 
 def main() -> int:

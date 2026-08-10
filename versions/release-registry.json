@@ -3,8 +3,8 @@
   "ledgerVersion": 1,
   "registryGateState": "SHAPE_VALIDATED_CROSS_REFERENCES_AND_APPEND_ONLY_PENDING",
   "latestReleasedVersion": "1.0.0-rc.7",
-  "reviewedCandidateVersion": "1.0.0-rc.5",
-  "candidateState": "NO_ACTIVE_OR_PUBLISHABLE_CANDIDATE",
+  "reviewedCandidateVersion": null,
+  "candidateState": "SOURCE_CANDIDATE_AWAITING_REVIEW_NOT_PUBLISHABLE",
   "releases": {
     "1.0.0-rc.1": {
       "status": "RELEASED",
