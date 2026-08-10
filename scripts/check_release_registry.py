@@ -579,9 +579,15 @@ def validate_release(
             error(errors, location, f"{name} must appear exactly once in artifactInventory with matching path, digest, role, and basis")
     commit = source.get("commit")
     if not isinstance(commit, str) and isinstance(tag_target, dict):
-        commit = git(root, "rev-parse", "HEAD")
+        tag = tag_target.get("tag")
+        if isinstance(tag, str):
+            commit = git(root, "rev-parse", f"refs/tags/{tag}^{{commit}}")
     if isinstance(commit, str):
-        documents_for_record = materialized_documents if isinstance(tag_target, dict) else None
+        # An immutable release with tag-target authority must be reproduced
+        # from that tag, not from a descendant candidate's HEAD.  A caller
+        # explicitly materializing the historical package can still supply
+        # its rendered bytes for the pre-tag transition test.
+        documents_for_record = materialized_documents if isinstance(tag_target, dict) and materialized_documents is not None else None
         for index, artifact in enumerate(inventory):
             verify_artifact_blob(
                 root,

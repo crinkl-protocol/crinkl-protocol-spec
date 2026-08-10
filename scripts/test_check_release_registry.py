@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import copy
+import hashlib
 import json
 import os
 import subprocess
@@ -94,6 +95,19 @@ def main() -> int:
     if checker.git(ROOT, "rev-parse", "v1.0.0-rc.7^{commit}") != "d45560e679c12298ee25fad6e0e7948b03e5a7c5":
         raise AssertionError("immutable rc.7 tag target drift")
     print("[release-registry-test] accepted: immutable rc.7 tag target; continuing rc.8 hostile regressions")
+
+    rc7_manifest = checker.git(ROOT, "cat-file", "blob", "v1.0.0-rc.7:versions/release.json", binary=True)
+    head_manifest = checker.git(ROOT, "cat-file", "blob", "HEAD:versions/release.json", binary=True)
+    if rc7_manifest == head_manifest:
+        raise AssertionError("test fixture no longer distinguishes rc.7 release bytes from candidate HEAD")
+    rc7_digest = "sha256:" + hashlib.sha256(rc7_manifest).hexdigest()
+    if registry["releases"]["1.0.0-rc.7"]["artifactInventory"][0]["digest"] != rc7_digest:
+        raise AssertionError("rc.7 release inventory is not pinned to its immutable tag bytes")
+    print("[release-registry-test] accepted: released artifact inventory resolves from rc.7 tag, not rc.8 HEAD")
+
+    mutated = copy.deepcopy(registry)
+    mutated["releases"]["1.0.0-rc.7"]["artifactInventory"][0]["digest"] = "sha256:" + hashlib.sha256(head_manifest).hexdigest()
+    assert_rejected("released artifact inventory substituted candidate HEAD bytes", mutated, adopted_root)
 
     mutated = copy.deepcopy(registry)
     mutated["latestReleasedVersion"] = "1.0.0-rc.99"
