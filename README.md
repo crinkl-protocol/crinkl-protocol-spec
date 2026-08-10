@@ -146,9 +146,10 @@ Downstream layers consume spend proof; they do not define it.
 
 ## Release and source state
 
-`v1.0.0-rc.7` remains the latest released public package. Current public
-repository source candidate: **v1.0.0-rc.8**
-(`RELEASE_CANDIDATE_NOT_PUBLISHED`), conformance suite 5. The candidate corrects
+`v1.0.0-rc.7` is the latest released public package. Current public repository
+source candidate: **v1.0.0-rc.8** (`RELEASE_CANDIDATE_NOT_PUBLISHED`),
+conformance suite 5; it is unreviewed, unpublished, not publishable, and does
+not inherit rc.5 review. The candidate corrects
 the rc.7 reward-linkage and Spend-supersession publication defect without
 changing the rc.1/rc.2 wire support set, any Spend Token schema, or runtime,
 validator, authority, and production state. Its machine-readable candidate
