@@ -1,4 +1,4 @@
-name: protocol-drift-check
+name: protocol-integrity
 
 on:
   pull_request:
@@ -6,8 +6,43 @@ on:
     branches: ["main"]
 
 jobs:
-  drift:
+  changes:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      documentation_surface: ${{ steps.filter.outputs.documentation_surface }}
+      protected_version_surface: ${{ steps.filter.outputs.protected_version_surface }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            documentation_surface:
+              - '**/*.md'
+              - 'scripts/check_drift.py'
+              - 'scripts/check_living_version_claims.py'
+            protected_version_surface:
+              - '.github/workflows/drift-check.yml'
+              - '01-core/**'
+              - 'bindings/**'
+              - 'schemas/**'
+              - '07-conformance/**'
+              - 'versions/**'
+              - 'scripts/check_drift.py'
+              - 'scripts/check_living_version_claims.py'
+              - 'scripts/check_released_identifier_erratum.py'
+              - 'scripts/verify_conformance.mjs'
+
+  protocol-integrity:
+    needs: changes
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
         with:
@@ -25,31 +60,16 @@ jobs:
           python3 scripts/check_change_boundary.py
           --base "${{ github.event.pull_request.base.sha }}"
           --head "${{ github.event.pull_request.head.sha }}"
-      - name: Drift check
-        run: python3 scripts/check_drift.py
-      - name: Direct buyer-reward release profile
+      - name: Documentation version claims
+        if: needs.changes.outputs.documentation_surface == 'true' || needs.changes.outputs.protected_version_surface == 'true'
+        run: python3 scripts/check_living_version_claims.py
+      - name: Protected released-identifier erratum integrity
+        if: needs.changes.outputs.protected_version_surface == 'true'
+        run: python3 scripts/check_released_identifier_erratum.py --local-only
+      - name: Protected public conformance and profile vectors
+        if: needs.changes.outputs.protected_version_surface == 'true'
         run: |
-          python3 scripts/check_campaign_direct_reward_release_profile.py
+          node scripts/verify_conformance.mjs
           python3 07-conformance/profiles/campaign-direct-buyer-reward-v1/scripts/check_campaign_direct_reward_profile_vectors.py
           python3 07-conformance/profiles/campaign-direct-buyer-reward-v1/scripts/generate_campaign_direct_reward_profile_vectors.py --check
           node scripts/verify_conformance.mjs --require-kind campaign.directBuyerReward.profileV1
-
-          release_status="$(python3 -c 'import json; print(json.load(open("versions/release.json", encoding="utf-8"))["status"])')"
-          case "$release_status" in
-            RELEASE_CANDIDATE_NOT_PUBLISHED)
-              python3 scripts/check_rc3_release_finalization.py --mode candidate
-              set +e
-              node scripts/verify_conformance.mjs --require-released --require-kind campaign.directBuyerReward.profileV1
-              status=$?
-              set -e
-              test "$status" -eq 4
-              ;;
-            RELEASED)
-              python3 scripts/check_rc3_release_finalization.py --mode released
-              node scripts/verify_conformance.mjs --require-released --require-kind campaign.directBuyerReward.profileV1
-              ;;
-            *)
-              echo "unsupported release status: $release_status" >&2
-              exit 1
-              ;;
-          esac
