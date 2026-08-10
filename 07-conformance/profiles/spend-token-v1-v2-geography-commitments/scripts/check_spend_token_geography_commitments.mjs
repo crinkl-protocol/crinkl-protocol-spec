@@ -60,10 +60,19 @@ assert(
   createHash("sha256").update(vectorBytes).digest("hex") === vectorArtifact.sha256,
   "geography vector hash does not match manifest"
 );
-assert(
+const releasedRc7Boundary =
   release.releaseVersion === "1.0.0-rc.7" &&
-    ["RELEASE_CANDIDATE_NOT_PUBLISHED", "RELEASED"].includes(release.status),
-  "rc.7 public-package release boundary drift"
+  release.status === "RELEASED" &&
+  suiteManifest.releaseVersion === "1.0.0-rc.7" &&
+  suiteManifest.suiteVersion === 4;
+const unpublishedRc8Boundary =
+  release.releaseVersion === "1.0.0-rc.8" &&
+  release.status === "RELEASE_CANDIDATE_NOT_PUBLISHED" &&
+  suiteManifest.releaseVersion === "1.0.0-rc.8" &&
+  suiteManifest.suiteVersion === 5;
+assert(
+  releasedRc7Boundary || unpublishedRc8Boundary,
+  "public-package release/candidate boundary drift"
 );
 assert(manifest.publicRepositoryVersion === "1.0.0-rc.7", "geography public repository version drift");
 assert(
@@ -76,9 +85,8 @@ assert(
   "geography engineering source anchor drift"
 );
 assert(manifest.conformanceManifestEntry.status === "PRESENT_IN_RC7_SUITE_4_SOURCE_CANDIDATE", "geography suite status drift");
-assert(suiteManifest.releaseVersion === "1.0.0-rc.7" && suiteManifest.suiteVersion === 4, "suite-4 manifest boundary drift");
-assert(suiteManifest.vectors.some((entry) => entry.kind === vector.kind), "suite-4 manifest omits geography profile");
-assert(suiteManifest.vectors.some((entry) => entry.kind === "token.spendAttestation.holderBinding.v2"), "suite-4 manifest omits retained holder-binding profile");
+assert(suiteManifest.vectors.some((entry) => entry.kind === vector.kind), "current suite manifest omits geography profile");
+assert(suiteManifest.vectors.some((entry) => entry.kind === "token.spendAttestation.holderBinding.v2"), "current suite manifest omits retained holder-binding profile");
 
 function evaluate(caseDefinition) {
   const token = caseDefinition.token;
