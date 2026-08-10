@@ -46,7 +46,7 @@
   ],
   "adoptedCandidate": {
     "repository": "crinkl-protocol",
-    "commit": "c80760a0b8cac76b8aff137fe31b6ecbc6951954",
+    "commit": "093b37db3e78bdd4253d7864ae4eb5398ce7cc25",
     "tree": "d4cb3a9af00c3bc55134ccdb342e7a806400c2e9",
     "artifacts": [
       {

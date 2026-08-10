@@ -11,7 +11,7 @@ pins in the [machine-readable erratum](reward-commitment-rc7-publication-defect-
 not by a mutable branch or an identifier alone.
 
 The erratum pins adopted candidate
-`crinkl-protocol@c80760a0b8cac76b8aff137fe31b6ecbc6951954` as candidate-source
+`crinkl-protocol@093b37db3e78bdd4253d7864ae4eb5398ce7cc25` as candidate-source
 evidence. A later `v1.0.0-rc.8` / suite-5 successor must preserve the legacy
 vector and use a distinct successor identity. Publication, runtime consumption,
 deployment, validator support, and authority activation remain separate and

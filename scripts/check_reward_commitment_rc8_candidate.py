@@ -12,7 +12,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 BASE = "8ed9b6314c88728de325c2905589f5d84e502379"
 BASE_TREE = "c7ac02cadcdd2fa662c521ab1599ea3fbb2d9215"
-ADOPTED = "c80760a0b8cac76b8aff137fe31b6ecbc6951954"
+ADOPTED = "093b37db3e78bdd4253d7864ae4eb5398ce7cc25"
 RC7 = "d45560e679c12298ee25fad6e0e7948b03e5a7c5"
 ADOPTED_TREE = "d4cb3a9af00c3bc55134ccdb342e7a806400c2e9"
 ADOPTED_ARTIFACTS = {

@@ -14,7 +14,7 @@
     },
     "adoptedCandidate": {
       "repository": "crinkl-protocol",
-      "commit": "c80760a0b8cac76b8aff137fe31b6ecbc6951954",
+      "commit": "093b37db3e78bdd4253d7864ae4eb5398ce7cc25",
       "tree": "d4cb3a9af00c3bc55134ccdb342e7a806400c2e9"
     }
   },
@@ -33,15 +33,15 @@
     },
     {
       "path": "07-conformance/vectors/v1/vectors/token.spendAttestation.portableV1.fromSpendStream.v2.json",
-      "sha256": "sha256:5bbaa805d42e115e765f1ee2e58aa96761000346dcaede5100ce9d87074ae31f"
+      "sha256": "sha256:0723c8907c8c5602ed52a9fba5e232a94c84bfce4f59fd655fc1c568569c2d51"
     },
     {
       "path": "versions/errata/reward-commitment-rc7-publication-defect-v1.json",
-      "sha256": "sha256:d8694fe10ac81259aea13e0e950169accc12257180808bbd04c47cb3acea69ec"
+      "sha256": "sha256:6cd57a0a418589e23db7e8cff488104e1a6ef3fd4e3adadb2b8a93bfccfb1f26"
     },
     {
       "path": "versions/v1.0.0-rc.8/snapshot.md",
-      "sha256": "sha256:c0558edf018200f74c27c8ae9f56a76a019b8cdedb2a617fbbd0d7a6cb2d3533"
+      "sha256": "sha256:fcdc59778ff1da86f3405e083bd5ae81328efbafb53fe47ab8f6c6b4a3d4a71c"
     },
     {
       "path": "protocol/portability/spend-attestation-token.md",

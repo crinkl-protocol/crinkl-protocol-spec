@@ -339,7 +339,7 @@ function main() {
       executedKinds.push(kind);
       const adopted = vector.adoptedCandidate || {};
       checks += 1;
-      if (adopted.repository !== "crinkl-protocol" || adopted.commit !== "c80760a0b8cac76b8aff137fe31b6ecbc6951954" || adopted.artifact?.path !== "protocol/portability/TOKENS.md" || adopted.artifact?.sha256 !== "sha256:e094a25cb91ba43053c7deeb8299c7e544268a6155a5d7e83ab324eac694df34") {
+      if (adopted.repository !== "crinkl-protocol" || adopted.commit !== "093b37db3e78bdd4253d7864ae4eb5398ce7cc25" || adopted.artifact?.path !== "protocol/portability/TOKENS.md" || adopted.artifact?.sha256 !== "sha256:e094a25cb91ba43053c7deeb8299c7e544268a6155a5d7e83ab324eac694df34") {
         fail(failures, kind, "adopted-candidate", "adopted candidate pin mismatch");
       }
       const compatibility = vector.compatibility || {};
