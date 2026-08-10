@@ -1,8 +1,8 @@
 {
   "suite": "crinkl-protocol-conformance",
-  "suiteVersion": 4,
-  "releaseVersion": "1.0.0-rc.7",
-  "releaseStatus": "RELEASED",
+  "suiteVersion": 5,
+  "releaseVersion": "1.0.0-rc.8",
+  "releaseStatus": "RELEASE_CANDIDATE_NOT_PUBLISHED",
   "protocolVersion": "1.0.0-rc.2",
   "supportedWireProtocolVersions": [
     "1.0.0-rc.1",
@@ -40,6 +40,10 @@
     {
       "kind": "token.spendAttestation.portableV1.fromSpendStream",
       "file": "vectors/token.spendAttestation.portableV1.fromSpendStream.json"
+    },
+    {
+      "kind": "token.spendAttestation.portableV1.fromSpendStream.v2",
+      "file": "vectors/token.spendAttestation.portableV1.fromSpendStream.v2.json"
     },
     {
       "kind": "token.verifiedSpendDistribution.v1",

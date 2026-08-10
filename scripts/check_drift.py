@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import os
 import re
 import subprocess
 import sys
@@ -235,12 +236,20 @@ def main() -> int:
     if manifest.get("suiteVersion") != release_conformance.get("suiteVersion"):
         return die("07-conformance manifest suiteVersion mismatch with release manifest")
 
-    successor_finalizer = repo_root / "scripts" / "check_successor_release_finalization.py"
-    if not successor_finalizer.is_file():
-        return die("missing successor release finalization verifier")
-    finalizer_mode = "released" if release_status == "RELEASED" else "candidate"
-    if subprocess.run([sys.executable, str(successor_finalizer), "--mode", finalizer_mode], cwd=repo_root).returncode != 0:
-        return die("successor release finalization verifier failed")
+    if release_status == "RELEASE_CANDIDATE_NOT_PUBLISHED" and release_version == "1.0.0-rc.8":
+        rc8_checker = repo_root / "scripts" / "check_reward_commitment_rc8_candidate.py"
+        if not rc8_checker.is_file():
+            return die("missing rc.8 reward-commitment candidate verifier")
+        adopted_repo = os.environ.get("CRINKL_PROTOCOL_ADOPTED_REPO", "/home/azureuser/crinkl-protocol")
+        if subprocess.run([sys.executable, str(rc8_checker), "--adopted-repo", adopted_repo], cwd=repo_root).returncode != 0:
+            return die("rc.8 reward-commitment candidate verifier failed")
+    else:
+        successor_finalizer = repo_root / "scripts" / "check_successor_release_finalization.py"
+        if not successor_finalizer.is_file():
+            return die("missing successor release finalization verifier")
+        finalizer_mode = "released" if release_status == "RELEASED" else "candidate"
+        if subprocess.run([sys.executable, str(successor_finalizer), "--mode", finalizer_mode], cwd=repo_root).returncode != 0:
+            return die("successor release finalization verifier failed")
 
     released_identifier_erratum = repo_root / "scripts" / "check_released_identifier_erratum.py"
     if not released_identifier_erratum.is_file():

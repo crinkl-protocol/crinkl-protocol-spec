@@ -1,0 +1,75 @@
+{
+  "kind": "crinkl.protocol.rewardCommitmentRc7PublicationDefectErratumV1",
+  "status": "SOURCE_CANDIDATE_NOT_PUBLISHED_OR_RELEASED",
+  "affectedRelease": {
+    "tag": "v1.0.0-rc.7",
+    "commit": "d45560e679c12298ee25fad6e0e7948b03e5a7c5",
+    "tree": "9bbc61fc791ef6390cf0c0d07cb9d2b0b1329ec5"
+  },
+  "standing": {
+    "releasedHistory": "IMMUTABLE",
+    "releaseInterpretation": "AMBIGUOUS_FOR_THE_NAMED_CONFLICTS",
+    "repair": "ADDITIVE_SUCCESSOR_REQUIRED",
+    "runtimeImplication": "NONE"
+  },
+  "conflicts": [
+    {
+      "id": "spend-supersession-scope",
+      "releasedArtifact": {
+        "path": "03-portability/spend-attestation-token.md",
+        "gitBlob": "4e8611f067f918d090b1912b0bfe011db0c92e89",
+        "sha256": "sha256:f83ab825030565bd3ed676da825a3297ee6952dad109b1588bdfa61b1484f492"
+      },
+      "releasedMeaning": "Spend-token supersession is keyed by bare spendId.",
+      "successorMeaning": "Spend-token supersession is keyed by (signatures.issuedBy, spendId)."
+    },
+    {
+      "id": "reward-inclusion-audit-boundary",
+      "releasedArtifact": {
+        "path": "05-reward-and-settlement/settlement-bindings.md",
+        "gitBlob": "30a69295b72d161190225a93d239d5410a29e962",
+        "sha256": "sha256:a04baa3d7dfef7015fc1fe39822256993db3800a01a61b2b73c800041cf4bbc2"
+      },
+      "releasedMeaning": "Compact reward inclusion requires a supplied reward-event envelope.",
+      "successorMeaning": "Compact inclusion proves only the (spendId, rewardEventHash) reference; a supplied envelope is separately reported audit material."
+    },
+    {
+      "id": "portable-spend-vector-identity",
+      "releasedArtifact": {
+        "path": "07-conformance/vectors/v1/vectors/token.spendAttestation.portableV1.fromSpendStream.json",
+        "gitBlob": "5885ab39367cd83d111bf66352e3124bc103088d",
+        "sha256": "sha256:e70faf645bf875b4e4136e90dd5df857f8eb5b7f902865e0fe7c070c4b1ca623"
+      },
+      "releasedMeaning": "Legacy portable Spend V1 vector identity remains immutable rc.7 evidence.",
+      "successorMeaning": "A later suite must use a distinct successor vector identity."
+    }
+  ],
+  "adoptedCandidate": {
+    "repository": "crinkl-protocol",
+    "commit": "4a9dff4002a4016638e213d2f6dce71c4d371515",
+    "tree": "e9a45ea98f346ddadd395af593de7eddded36a2b",
+    "artifacts": [
+      {
+        "path": "protocol/portability/TOKENS.md",
+        "gitBlob": "b4e837b33f03992dff34babfc4ef12b6348318d0",
+        "sha256": "sha256:e094a25cb91ba43053c7deeb8299c7e544268a6155a5d7e83ab324eac694df34"
+      },
+      {
+        "path": "protocol/portability/COMMITMENT_LAYER.md",
+        "gitBlob": "84793496acc1582589d508e5442e562a21c114a3",
+        "sha256": "sha256:fcea079a78df09808b0ec11e26819481d404a9df8d1058c0136889b46a6ab2b7"
+      },
+      {
+        "path": "conformance/reward-commitment-presentation/v1/vectors/two-token.v1.json",
+        "gitBlob": "62ee4064e9ecec56eb13478964ff0f9d6c6368ad",
+        "sha256": "sha256:dc14f3dfecbbb2b4fc9b7844ef363dd6dd360c4dfa4f4c96997a4e8e5f5ff11e"
+      }
+    ],
+    "state": "CANDIDATE_SOURCE_ONLY_NOT_PUBLIC_RELEASE_RUNTIME_OR_DEPLOYMENT"
+  },
+  "successorRequirement": {
+    "minimumReleaseVersion": "1.0.0-rc.8",
+    "minimumConformanceSuiteVersion": 5,
+    "legacyVectorPreservation": "REQUIRED"
+  }
+}

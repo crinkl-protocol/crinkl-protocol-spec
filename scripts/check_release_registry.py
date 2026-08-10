@@ -756,7 +756,7 @@ def validate_registry(
     if registry.get("candidateState") == "SOURCE_CANDIDATE_AWAITING_REVIEW_NOT_PUBLISHABLE" and reviewed is not None and isinstance(latest, str):
         try:
             if compare_semver(reviewed, latest) <= 0:
-                error(errors, "reviewedCandidateVersion", "must be later than latestReleasedVersion")
+                error(errors, "reviewedCandidateVersion", "source candidate state must use a reviewed candidate later than latestReleasedVersion, or null for an unreviewed candidate")
         except ValueError as exc:
             error(errors, "reviewedCandidateVersion", str(exc))
     if registry.get("candidateState") == "NO_ACTIVE_OR_PUBLISHABLE_CANDIDATE":
@@ -770,8 +770,8 @@ def validate_registry(
             if isinstance(record, dict) and record.get("status") == "REVIEWED_CANDIDATE_NOT_PUBLISHED" and record.get("actualTag") is not None:
                 error(errors, f"releases[{version}]", "no-active candidate state forbids an actual tag")
     elif registry.get("candidateState") == "SOURCE_CANDIDATE_AWAITING_REVIEW_NOT_PUBLISHABLE":
-        if reviewed != "1.0.0-rc.5":
-            error(errors, "reviewedCandidateVersion", "source candidate state preserves the historical exact reviewed candidate")
+        if reviewed is not None:
+            error(errors, "reviewedCandidateVersion", "unreviewed source candidate state must leave reviewedCandidateVersion null")
         if not isinstance(release_manifest, dict):
             error(errors, "releaseManifest", "source candidate state requires an object release manifest")
         else:
@@ -786,7 +786,7 @@ def validate_registry(
                     error(errors, "releaseManifest.requiredTag", "must equal v${releaseVersion} for source candidate state")
                 if current_version in releases:
                     error(errors, "releaseManifest.releaseVersion", "source candidate must not already appear in releases")
-                for earlier_name, earlier in (("latestReleasedVersion", latest), ("reviewedCandidateVersion", reviewed)):
+                for earlier_name, earlier in (("latestReleasedVersion", latest),):
                     if not isinstance(earlier, str):
                         error(errors, earlier_name, "must be a SemVer version for source candidate comparison")
                     else:

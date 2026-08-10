@@ -40,6 +40,12 @@ new exact candidate identity and independent review record it.
   successors without making any migration, public release, runtime, or
   deployment claim.
 
+## Reward-commitment rc.7 publication defect erratum candidate (not published)
+
+- Adds an [immutable rc.7 publication-defect erratum](errata/reward-commitment-rc7-publication-defect-v1.md) that pins the released tag, tree, affected paths, and exact byte digests.
+- Adds the suite-5 successor identity `token.spendAttestation.portableV1.fromSpendStream.v2`; it preserves Spend-token schema and wire identities while making issuer-scoped supersession executable.
+- Pins adopted candidate `crinkl-protocol@4a9dff4002a4016638e213d2f6dce71c4d371515` as source evidence only. No public release, runtime consumption, deployment, or authority activation follows from this candidate.
+
 ## Unreleased governance update
 
 - Requires every spec or requirements change to classify business policy,

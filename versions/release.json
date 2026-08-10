@@ -1,7 +1,7 @@
 {
-  "releaseVersion": "1.0.0-rc.7",
-  "status": "RELEASED",
-  "requiredTag": "v1.0.0-rc.7",
+  "releaseVersion": "1.0.0-rc.8",
+  "status": "RELEASE_CANDIDATE_NOT_PUBLISHED",
+  "requiredTag": "v1.0.0-rc.8",
   "defaultBindingProtocolVersion": "1.0.0-rc.2",
   "supportedWireProtocolVersions": [
     "1.0.0-rc.1",
@@ -9,7 +9,7 @@
   ],
   "conformance": {
     "suite": "crinkl-protocol-conformance",
-    "suiteVersion": 4,
+    "suiteVersion": 5,
     "manifest": "07-conformance/vectors/v1/manifest.json"
   },
   "releaseAuthority": {

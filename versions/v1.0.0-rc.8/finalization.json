@@ -1,0 +1,75 @@
+{
+  "kind": "crinkl.protocol.releaseFinalizationPlanV1",
+  "planVersion": 2,
+  "releaseVersion": "1.0.0-rc.8",
+  "requiredTag": "v1.0.0-rc.8",
+  "latestReleasedVersion": "1.0.0-rc.7",
+  "previousRelease": "1.0.0-rc.7",
+  "requiredProductionAuthorization": "PRODUCTION-OPS OK",
+  "candidateState": "SOURCE_CANDIDATE_AWAITING_REVIEW_NOT_PUBLISHABLE",
+  "sourceComposition": {
+    "publicSpecBase": {
+      "commit": "8ed9b6314c88728de325c2905589f5d84e502379",
+      "tree": "c7ac02cadcdd2fa662c521ab1599ea3fbb2d9215"
+    },
+    "adoptedCandidate": {
+      "repository": "crinkl-protocol",
+      "commit": "4a9dff4002a4016638e213d2f6dce71c4d371515",
+      "tree": "e9a45ea98f346ddadd395af593de7eddded36a2b"
+    }
+  },
+  "controllingArtifacts": [
+    {
+      "path": "versions/release.json",
+      "sha256": "sha256:d41ea0ed4e7e4c2a9d48401dd16320d21a156ab4f3211bbd6b8f91d481cc4353"
+    },
+    {
+      "path": "versions/release-registry.json",
+      "sha256": "sha256:4b26d11605c3832aa910262d325c78f8898be5ce16f78fdb8ff3bbf5afa194c5"
+    },
+    {
+      "path": "07-conformance/vectors/v1/manifest.json",
+      "sha256": "sha256:15cbd8ee7d0c4d49e5a1ddbd92709642d31119ab58855d64d8f38436249a51b8"
+    },
+    {
+      "path": "07-conformance/vectors/v1/vectors/token.spendAttestation.portableV1.fromSpendStream.v2.json",
+      "sha256": "sha256:188333fbaf4aff9f0f234a34fe9ccc6c5242ec4127420250de017ca096a86370"
+    },
+    {
+      "path": "versions/errata/reward-commitment-rc7-publication-defect-v1.json",
+      "sha256": "sha256:1f9374b99eb1fe9ebd858282839227a9d09d4ad9f20abf162b6b1e374e556fe2"
+    },
+    {
+      "path": "versions/v1.0.0-rc.8/snapshot.md",
+      "sha256": "sha256:c19b240cd213fce24ded38fc813dcaaf4137267f226c4de3313d9bf943a76875"
+    },
+    {
+      "path": "protocol/portability/spend-attestation-token.md",
+      "sha256": "sha256:bb7d82eb43344ec253651d69737675262b7bfc4c41a21b4d619ca60925a4373e"
+    },
+    {
+      "path": "protocol/applications/economics/settlement-bindings.md",
+      "sha256": "sha256:00433d1439bc174fc3f325637ce95a5269aa2091b03c157a2a2f44ee103c35a7"
+    },
+    {
+      "path": "07-conformance/compatibility.md",
+      "sha256": "sha256:ab9daf5d623c19e8472c8209eac3aef79bc6e7b02ebe29c7c91d84c8e27b55be"
+    },
+    {
+      "path": "versions/CHANGELOG.md",
+      "sha256": "sha256:b085f4e65f782a1ec58c83f4c75a68b3a95af7440bd7b420b5290810cba2ff04"
+    }
+  ],
+  "preconditions": [
+    "independent exact-candidate review",
+    "local release, living-claims, drift, conformance, and erratum gates",
+    "fresh explicit production authorization before immutable tag or publication"
+  ],
+  "nonActivation": [
+    "public release",
+    "runtime consumption",
+    "validator adoption",
+    "authority activation",
+    "deployment"
+  ]
+}
