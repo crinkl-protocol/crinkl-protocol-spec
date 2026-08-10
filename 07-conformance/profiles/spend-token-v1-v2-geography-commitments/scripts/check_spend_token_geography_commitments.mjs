@@ -8,8 +8,8 @@ const vectorUrl = new URL(
   import.meta.url
 );
 const manifestUrl = new URL("../manifest.json", import.meta.url);
-const spendTokenDocUrl = new URL("../../../../03-portability/spend-attestation-token.md", import.meta.url);
-const verifierDocUrl = new URL("../../../../03-portability/verifier-requirements.md", import.meta.url);
+const spendTokenDocUrl = new URL("../../../../protocol/portability/spend-attestation-token.md", import.meta.url);
+const verifierDocUrl = new URL("../../../../protocol/portability/verifier-requirements.md", import.meta.url);
 const zkDocUrl = new URL("../../../../06-extensions/zk-proof-extension.md", import.meta.url);
 const releaseUrl = new URL("../../../../versions/release.json", import.meta.url);
 const suiteManifestUrl = new URL("../../../vectors/v1/manifest.json", import.meta.url);

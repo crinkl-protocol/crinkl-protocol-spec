@@ -75,7 +75,7 @@ their immutable bytes are covered by the token signature.
 
 ### Binding and derivation (normative)
 
-ZK commitments are carried inside a signed `SpendAttestationTokenV1` (see `../03-portability/spend-attestation-token.md`). Verifiers treat commitments as **opaque values** unless accompanied by a proof; the primary security requirement is that any proof claiming something about a commitment is replay-safe and unambiguous about what the commitment commits to.
+ZK commitments are carried inside a signed `SpendAttestationTokenV1` (see `../protocol/portability/spend-attestation-token.md`). Verifiers treat commitments as **opaque values** unless accompanied by a proof; the primary security requirement is that any proof claiming something about a commitment is replay-safe and unambiguous about what the commitment commits to.
 
 All ZK commitments MUST:
 
@@ -193,11 +193,11 @@ Statement definitions MUST be pure predicates over committed Spend fields and re
 
 **Circuit specifications:** To be defined.
 
-Proof artifacts MUST reference unambiguous, versioned circuit identifiers and verification keys (see ../03-portability/spend-attestation-token.md for a portable proof shape).
+Proof artifacts MUST reference unambiguous, versioned circuit identifiers and verification keys (see ../protocol/portability/spend-attestation-token.md for a portable proof shape).
 
 **Minimum proof metadata (normative):** portable ZK proof bundles MUST carry enough metadata for an independent verifier to reproduce exactly what was verified:
 
-- proof system identifier (e.g., Groth16/PLONK/STARK; carried as `proofSystem` in `../03-portability/spend-attestation-token.md`)
+- proof system identifier (e.g., Groth16/PLONK/STARK; carried as `proofSystem` in `../protocol/portability/spend-attestation-token.md`)
 - a versioned `circuitId`
 - a `verifyingKeyId` that identifies the exact verifier parameters / verifying key bytes (scheme-specific hash identifier)
 - the `statementId` being proven

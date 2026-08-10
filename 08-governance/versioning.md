@@ -44,7 +44,7 @@ authority-state version.
 | Surface | Identifies | Resolution rule |
 | --- | --- | --- |
 | Specification release | One exact public package and its declared artifacts | Resolve the SemVer label with its manifest, commit/tree, and conformance suite. A source candidate is not a release merely because it has a version-like label. |
-| Wire protocol | Signed envelope and event/token interoperability | `protocolVersion` is compared against the receiver's explicitly supported wire set. Unknown values MUST be rejected (see `../01-core/canonicalization.md#schema-evolution`). |
+| Wire protocol | Signed envelope and event/token interoperability | `protocolVersion` is compared against the receiver's explicitly supported wire set. Unknown values MUST be rejected (see `../protocol/core/canonicalization.md#schema-evolution`). |
 | Object schema | The shape and meaning of one object family | The schema version is scoped to that family; it is not a global protocol version. Unknown portable schema versions MUST be rejected. |
 | Profile and conformance suite | An optional behavior profile and its executable checks | The profile or suite declares the object and wire versions it composes. |
 | Binding, context, and cryptographic domain | A transport mapping, signing context, hash construction, or domain separator | Each has its own identity and successor rules; compatibility is never inferred from a nearby schema label. |
@@ -119,7 +119,7 @@ Where SemVer is used, format is `MAJOR.MINOR.PATCH`:
 
 ## Compatibility rules (normative)
 
-Verifiers MUST follow `../01-core/canonicalization.md#schema-evolution`. In particular:
+Verifiers MUST follow `../protocol/core/canonicalization.md#schema-evolution`. In particular:
 
 - Unknown `protocolVersion` ⇒ reject.
 - Known `protocolVersion` with unknown additional fields ⇒ include fields in hash/signature verification and ignore semantics unless explicitly defined; do not drop fields prior to hashing.

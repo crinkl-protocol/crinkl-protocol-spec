@@ -46,7 +46,7 @@ Until a public release vendors those exact artifacts:
 
 ## Legacy public CampaignEpoch disambiguation
 
-The conceptual `CampaignEpochV1` shape in `../04-condition-layer/campaign-commitment.md` and `../schemas/experimental/campaign-epoch.v1.schema.json` is an earlier public experimental candidate. It uses fields such as `epochId`, `ruleSetHash`, `fundingTrancheId`, `issuerAuthority`, and `claimLevel`. It is not the exact signed adopted engineering `CampaignEpochV1` referenced by `CampaignExperimentPolicyV1`.
+The conceptual `CampaignEpochV1` shape in `../protocol/applications/conditions/campaign-commitment.md` and `../schemas/experimental/campaign-epoch.v1.schema.json` is an earlier public experimental candidate. It uses fields such as `epochId`, `ruleSetHash`, `fundingTrancheId`, `issuerAuthority`, and `claimLevel`. It is not the exact signed adopted engineering `CampaignEpochV1` referenced by `CampaignExperimentPolicyV1`.
 
 For this profile:
 

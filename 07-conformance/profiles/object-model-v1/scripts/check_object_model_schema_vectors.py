@@ -59,10 +59,10 @@ CANONICAL_KINDS = frozenset(
 )
 
 SCHEMA_PATH_TO_KIND = {
-    "01-core/schemas/verification_policy_v1.schema.json": "VerificationPolicy",
-    "01-core/schemas/issuer_registry_snapshot_v1.schema.json": "IssuerRegistrySnapshot",
-    "01-core/schemas/attestation_status_v1.schema.json": "AttestationStatus",
-    "04-condition-layer/schemas/spend_predicate_v1.schema.json": "SpendPredicate",
+    "protocol/core/schemas/verification_policy_v1.schema.json": "VerificationPolicy",
+    "protocol/core/schemas/issuer_registry_snapshot_v1.schema.json": "IssuerRegistrySnapshot",
+    "protocol/core/schemas/attestation_status_v1.schema.json": "AttestationStatus",
+    "protocol/applications/conditions/schemas/spend_predicate_v1.schema.json": "SpendPredicate",
 }
 KIND_TO_SCHEMA_PATH = {kind: path for path, kind in SCHEMA_PATH_TO_KIND.items()}
 

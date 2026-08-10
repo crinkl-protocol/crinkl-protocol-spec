@@ -9,7 +9,7 @@ normative: true
 
 > **Status:** v1 (optional extension; non-core)
 >
-> This document defines a **portable, publicly replicable** way to standardize store and store-location identifiers across implementations without changing the core token set in `../03-portability/spend-attestation-token.md`.
+> This document defines a **portable, publicly replicable** way to standardize store and store-location identifiers across implementations without changing the core token set in `../protocol/portability/spend-attestation-token.md`.
 
 ## Goals
 
@@ -32,9 +32,9 @@ normative: true
 
 ### `storeId` (canonical merchant identifier)
 
-`storeId` is an **Identifier string** (see `../01-core/canonicalization.md#identifier`) representing a merchant family identity (typically chain/brand-level).
+`storeId` is an **Identifier string** (see `../protocol/core/canonicalization.md#identifier`) representing a merchant family identity (typically chain/brand-level).
 
-**Normative recommendation (namespacing):** `storeId` SHOULD be namespaced to avoid collisions and to allow multiple authorities to interoperate. Because core `Spend.storeId` is a normalized identifier (see `../01-core/canonicalization.md#spend`), prefer **prefix-style namespacing** using the same character set (e.g., lowercase + digits + hyphens).
+**Normative recommendation (namespacing):** `storeId` SHOULD be namespaced to avoid collisions and to allow multiple authorities to interoperate. Because core `Spend.storeId` is a normalized identifier (see `../protocol/core/canonicalization.md#spend`), prefer **prefix-style namespacing** using the same character set (e.g., lowercase + digits + hyphens).
 
 - `crinkl-store-<slug>` (Crinkl-curated namespace)
 - `gs1-gcp-<id>` (GS1 Company Prefix / party identifiers when available)
@@ -54,7 +54,7 @@ Otherwise, a namespaced operator identifier MAY be used:
 
 ### Hashes (portable primitives)
 
-**Store hash (core, already in `../03-portability/spend-attestation-token.md`):**
+**Store hash (core, already in `../protocol/portability/spend-attestation-token.md`):**
 
 - `storeHash = "sha256:" + SHA-256( UTF8("crinkl.store.v1:") || UTF8(storeId) )`
 
@@ -95,8 +95,8 @@ StoreRegistrySnapshotTokenV1 {
 
 **Derivation rules (normative):**
 
-- `tokenHash` and signature rules match `../03-portability/spend-attestation-token.md` (`tokenHash = sha256(RFC8785(unsignedToken))`).
-- `entriesRoot` MUST be computed using the Merkle rules in `../05-reward-and-settlement/settlement-bindings.md#merkle-tree`:
+- `tokenHash` and signature rules match `../protocol/portability/spend-attestation-token.md` (`tokenHash = sha256(RFC8785(unsignedToken))`).
+- `entriesRoot` MUST be computed using the Merkle rules in `../protocol/applications/economics/settlement-bindings.md#merkle-tree`:
   - leaf hash: `SHA-256(0x00 || RFC8785(leaf))`
   - internal hash: `SHA-256(0x01 || min(left,right) || max(left,right))`
   - leaves sorted by `storeId` in lexicographic UTF-8 byte order
@@ -134,7 +134,7 @@ ExternalIdV1 {
 
 **Array ordering (normative):**
 
-- `categories` MUST be sorted lexicographically (UTF-16 code units) before hashing (see RFC 8785 array rules note in `../01-core/canonicalization.md`).
+- `categories` MUST be sorted lexicographically (UTF-16 code units) before hashing (see RFC 8785 array rules note in `../protocol/core/canonicalization.md`).
 - `aliases` MUST be sorted lexicographically.
 - `externalIds` MUST be sorted by `(namespace, type, value)` lexicographically.
 
@@ -149,7 +149,7 @@ StoreLocationEntryV1 {
   storeLocationId: Identifier,      // canonical key (namespaced)
   storeId: Identifier,              // parent store identity
   geoRegion?: RegionCode,           // e.g. "US-CA" (ISO 3166-2 subdivision)
-  cbsaCode?: CBSACode,              // e.g. "12420" (OMB CBSA metro area) — see ../01-core/canonicalization.md
+  cbsaCode?: CBSACode,              // e.g. "12420" (OMB CBSA metro area) — see ../protocol/core/canonicalization.md
   label?: String,                   // e.g. "Store #001"
   externalIds?: [ExternalIdV1]      // optional; sorted deterministically
 }
@@ -177,7 +177,7 @@ equivalent deployment-defined authority proof.
 
 ## Inclusion proofs (portable)
 
-This extension reuses the Merkle proof structure from `../05-reward-and-settlement/settlement-bindings.md` (siblings are hashes; direction bits unnecessary due to sorted-pair hashing).
+This extension reuses the Merkle proof structure from `../protocol/applications/economics/settlement-bindings.md` (siblings are hashes; direction bits unnecessary due to sorted-pair hashing).
 
 ```text
 RegistryInclusionProofV1 {

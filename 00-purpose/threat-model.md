@@ -27,8 +27,8 @@ For a given `protocolVersion`, implementations MUST treat the following as fixed
 - **Canonicalization:** RFC 8785 JSON canonicalization (JCS) is the sole source of truth for hash preimages.
 - **Hash function:** SHA-256 with lowercase-hex encoding for `Hash` fields.
 - **Signature scheme:** Ed25519 over the raw 32-byte SHA-256 digest.
-- **Integrity envelope construction:** exactly as defined in `../01-core/canonicalization.md#integrity-envelope`.
-- **Commitment-layer Merkle hashing rules:** domain separation + ordering rules as defined in `../05-reward-and-settlement/settlement-bindings.md`.
+- **Integrity envelope construction:** exactly as defined in `../protocol/core/canonicalization.md#integrity-envelope`.
+- **Commitment-layer Merkle hashing rules:** domain separation + ordering rules as defined in `../protocol/applications/economics/settlement-bindings.md`.
 
 The following parameters are versioned/evolvable and MUST be treated as data (not implicit assumptions):
 
@@ -40,7 +40,7 @@ Changing a fixed invariant requires a protocol MAJOR version bump (see `../08-go
 
 ## Integrity Envelope
 
-**Normative source:** `../01-core/canonicalization.md#integrity-envelope` is authoritative. This section is a security-focused restatement; in case of conflict, `../01-core/canonicalization.md` wins.
+**Normative source:** `../protocol/core/canonicalization.md#integrity-envelope` is authoritative. This section is a security-focused restatement; in case of conflict, `../protocol/core/canonicalization.md` wins.
 
 Every event MUST include:
 - `eventHash` — SHA-256 of RFC 8785 canonical JSON excluding `eventHash` and `signature`
@@ -64,15 +64,15 @@ The protocol assumes trust in the following categories of roots. Each has a boun
 
 | Trust root category | What it is trusted to assert | What it is NOT trusted to assert | Where defined |
 |---|---|---|---|
-| Spend-stream signing keys | Authenticity/integrity of spend-stream events for a given `protocolVersion` | Ground truth of receipts; user ownership; fraud intent | `../01-core/spend-event.md` + deployment configuration (v1), evolvable via `protocolVersion` |
-| System-stream authority keys (Authority Registry) | Authenticity/integrity of system-stream events (commitments, authority changes) for a `chainId` | Correctness of off-chain reward policy; spend truth beyond what is committed | `../01-core/spend-event.md`, `../05-reward-and-settlement/settlement-bindings.md` |
+| Spend-stream signing keys | Authenticity/integrity of spend-stream events for a given `protocolVersion` | Ground truth of receipts; user ownership; fraud intent | `../protocol/core/spend-event.md` + deployment configuration (v1), evolvable via `protocolVersion` |
+| System-stream authority keys (Authority Registry) | Authenticity/integrity of system-stream events (commitments, authority changes) for a `chainId` | Correctness of off-chain reward policy; spend truth beyond what is committed | `../protocol/core/spend-event.md`, `../protocol/applications/economics/settlement-bindings.md` |
 | External chain consensus (when used) | Immutability/finality of published commitment records and authority registry transactions | Economic backing correctness; issuer honesty; availability of off-chain proofs | Chain bindings + deployment assumptions |
-| Token issuer authorization | That a token signature key is an authorized issuer key for the referenced `issuedBy` | That the token’s claim corresponds to external reality beyond the claim definition | `../03-portability/spend-attestation-token.md` + the applicable trust root mapping (Authority Registry or configured issuer set) |
+| Token issuer authorization | That a token signature key is an authorized issuer key for the referenced `issuedBy` | That the token’s claim corresponds to external reality beyond the claim definition | `../protocol/portability/spend-attestation-token.md` + the applicable trust root mapping (Authority Registry or configured issuer set) |
 | Merchant-claim verifier authorization (optional extension) | That a merchant claim verifier issued a signed claim attestation for a bounded store identity scope | Spend truth; payment settlement; merchant intent for any spend; correctness of private evidence beyond the attestation semantics | `../06-extensions/merchant-authority.md` + deployment authorization mapping |
-| Proof-validator finality certificates | That a quorum of selected, registered proof validators independently recomputed a deterministic public statement from committed material and co-signed the identical result | Ground truth of receipts; honesty of the verification service beyond its committed output; payout authority; production chain finality | `../02-proof-lifecycle/admission.md` + authority-signed registry/assignment artifacts |
+| Proof-validator finality certificates | That a quorum of selected, registered proof validators independently recomputed a deterministic public statement from committed material and co-signed the identical result | Ground truth of receipts; honesty of the verification service beyond its committed output; payout authority; production chain finality | `../protocol/core/admission.md` + authority-signed registry/assignment artifacts |
 
 Proof-validator registry and quorum consumers MUST enforce
-[`validator-signing-key-independence.md`](../02-proof-lifecycle/validator-signing-key-independence.md).
+[`validator-signing-key-independence.md`](../protocol/core/validator-signing-key-independence.md).
 An authority signature authenticates registry bytes but does not turn two
 active rows sharing one Ed25519 public key into two independent actors.
 
@@ -99,7 +99,7 @@ This does not introduce a new trust root category; it is a distribution mechanis
 ### Key formats, rotation, and revocation (normative)
 
 - **Key format:** Ed25519 public keys are 32 bytes and MUST be encoded as base64 when carried in protocol artifacts (`publicKey`). Ed25519 signatures are 64 bytes and MUST be encoded as base64 (`signature`).
-- **Authority rotation (system-stream):** system-stream events MUST be verified against the Authority Registry validity window at the event-effective time (see `../01-core/spend-event.md` and `../05-reward-and-settlement/settlement-bindings.md`).
+- **Authority rotation (system-stream):** system-stream events MUST be verified against the Authority Registry validity window at the event-effective time (see `../protocol/core/spend-event.md` and `../protocol/applications/economics/settlement-bindings.md`).
 - **Revocation semantics:** events/commitments signed by an authority during its validity window remain valid historical artifacts; verifiers MUST reject events whose effective time falls outside the signer’s validity window (including after revocation).
 
 ## Verification Checklist
@@ -107,16 +107,16 @@ This does not introduce a new trust root category; it is a distribution mechanis
 Checklist items MUST be implementable as boolean checks with reject conditions.
 
 For every ingested event, a verifier MUST:
-1. **Schema presence:** require all required envelope fields for the stream type (`../01-core/spend-event.md`); reject if missing.
+1. **Schema presence:** require all required envelope fields for the stream type (`../protocol/core/spend-event.md`); reject if missing.
 2. **Protocol version:** require `protocolVersion`; reject if missing or unsupported.
-3. **Integrity:** recompute `eventHash` per `../01-core/canonicalization.md#integrity-envelope`; reject on mismatch.
+3. **Integrity:** recompute `eventHash` per `../protocol/core/canonicalization.md#integrity-envelope`; reject on mismatch.
 4. **Signature:** verify the Ed25519 signature over the raw digest; reject on failure.
 5. **Trust root:** verify the signing key is authorized under the applicable trust root; reject if unauthorized/expired/revoked.
 6. **Ordering/linkage:** verify `prevHash` matches the prior canonical event in the same stream (spend-stream keyed by `spendId`, system-stream keyed by `chainId`); reject forks and gaps. If local history is incomplete, the verifier MAY return “indeterminate” until it has sufficient history to decide.
 
 ## Token Verification
 
-Tokens are verification-ready bundles built from the same primitives: signed events and (optionally) committed Merkle roots. Token verification MUST reduce to the event and commitment verification rules defined in this document and in ../05-reward-and-settlement/settlement-bindings.md (see ../03-portability/spend-attestation-token.md).
+Tokens are verification-ready bundles built from the same primitives: signed events and (optionally) committed Merkle roots. Token verification MUST reduce to the event and commitment verification rules defined in this document and in ../protocol/applications/economics/settlement-bindings.md (see ../protocol/portability/spend-attestation-token.md).
 
 At minimum, a verifier MUST:
 - Recompute the token hash (`tokenHash`) from the unsigned token and verify its signature.
@@ -159,7 +159,7 @@ These are testable “MUST NOT” constraints intended to prevent protocol drift
 **Hard boundary (normative):** the protocol does not adjudicate intent or “fraud”. It records verifiable events, commitments, and corrections under well-defined semantics.
 
 Application layer may determine fraud and emit `FRAUD_FLAGGED`:
-- `FRAUD_FLAGGED` is observational and MUST NOT participate in attestation state transitions (`../01-core/spend-event.md`).
+- `FRAUD_FLAGGED` is observational and MUST NOT participate in attestation state transitions (`../protocol/core/spend-event.md`).
 - `FRAUD_FLAGGED` MUST NOT modify the Reward Ledger (no clawback / no reward adjustments).
 - `FRAUD_FLAGGED` MUST NOT retroactively invalidate signatures, hashes, or commitments already published.
 - Protocol-canonical changes to spend state occur only via `SPEND_INVALIDATED` or `SPEND_CORRECTED` in the Attestation Ledger.

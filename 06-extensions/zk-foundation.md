@@ -20,7 +20,7 @@ Example v1 promo predicates:
 - “If `canonical.totalCents >= 1000`, grant promo”
 - “If `canonical.storeHash ∈ allowlist` AND `canonical.timestamp ≥ now - 30 days`, grant promo”
 
-It is intentionally **not** a complex campaign DSL. It defines the proof spine we can build on, while keeping v1 statement types closed and interoperable. Campaign rule composition is defined separately in `../04-condition-layer/campaign-commitment.md`.
+It is intentionally **not** a complex campaign DSL. It defines the proof spine we can build on, while keeping v1 statement types closed and interoperable. Campaign rule composition is defined separately in `../protocol/applications/conditions/campaign-commitment.md`.
 
 For the normative offer-delivery wire formats (campaign message, eligibility claim, encrypted delivery), see `offer-delivery-profile.md` and `encryption-envelopes.md`.
 
@@ -76,7 +76,7 @@ The demo can use scripts to act as PWA and verifier simulators. Those scripts ar
 
 ### 1) Spend Attestation Token (portable)
 
-Already defined in `../03-portability/spend-attestation-token.md`:
+Already defined in `../protocol/portability/spend-attestation-token.md`:
 - `SpendAttestationTokenV1` MAY include `zk.commitments`
 - portable tokens MUST remain receipt-private
 
@@ -144,7 +144,7 @@ published verifier registry manifest.
 
 Routing/distribution predicates MAY reference `statementId` via a separate predicate definition and `predicateId` (see `offer-delivery-profile.md`); this does not alter statement verification semantics.
 
-This document does not standardize campaign types. Campaign rule composition is defined in `../04-condition-layer/campaign-commitment.md`.
+This document does not standardize campaign types. Campaign rule composition is defined in `../protocol/applications/conditions/campaign-commitment.md`.
 
 ### 4) Proof binding rules (tighten what must be bound)
 
@@ -177,7 +177,7 @@ For portability and replay-resistance, verifiers MUST treat the following as req
   - `scopeId`
   - a verifier-storable, scope-specific `nullifier` (see §5) so the verifier can enforce “only once”
 
-See `../03-portability/spend-attestation-token.md#optional-zk-statement-proof-normative` for the portable proof bundle shape and verification steps.
+See `../protocol/portability/spend-attestation-token.md#optional-zk-statement-proof-normative` for the portable proof bundle shape and verification steps.
 
 ### 5) Anti-replay for redemption (defer, but reserve)
 

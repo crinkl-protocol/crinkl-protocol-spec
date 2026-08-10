@@ -11,7 +11,7 @@ normative: true
 >
 > This document defines the **message formats** and **verifier rules** for delivering brand offers to wallets and unlocking them using Crinkl protocol artifacts.
 >
-> It is intentionally minimal: it standardizes *how wallets and brands interoperate*, without defining a full campaign rule or settlement layer. Campaign rule composition is defined by `../04-condition-layer/campaign-commitment.md`.
+> It is intentionally minimal: it standardizes *how wallets and brands interoperate*, without defining a full campaign rule or settlement layer. Campaign rule composition is defined by `../protocol/applications/conditions/campaign-commitment.md`.
 >
 > Implementation status: the message/profile boundary is normative. The demo
 > profile and private rollout proof interface are explicitly transitional until
@@ -21,7 +21,7 @@ normative: true
 
 This document is an offer-delivery profile. It is not the campaign primitive.
 
-Use `../04-condition-layer/campaign-commitment.md` for:
+Use `../protocol/applications/conditions/campaign-commitment.md` for:
 
 - composing campaign rules from Spend Validity, Buyer State, Frequency / Intensity, Category / Competitive Relationship, Market / Context, and Outcome / Conversion
 - audience qualification and verified conversion terminology
@@ -54,9 +54,9 @@ This offer-delivery profile aims to make the following true:
 
 - No “user” object or protocol identity graph (wallets only).
 - No full campaign language with arbitrary composition (beyond statement registry).
-- No verified conversion settlement. See `../04-condition-layer/campaign-commitment.md`.
+- No verified conversion settlement. See `../protocol/applications/conditions/campaign-commitment.md`.
 - No promise that campaigns are broadcast end-to-end encrypted (delivery encryption is specified; broadcast privacy is deferred).
-- No reward policy math in-protocol (reward math is a Reward Layer concern; see `../05-reward-and-settlement/reward-layer.md` + `../05-reward-and-settlement/policy-layer.md`).
+- No reward policy math in-protocol (reward math is a Reward Layer concern; see `../protocol/applications/economics/reward-layer.md` + `../protocol/applications/economics/policy-layer.md`).
 
 ## 4) Actors and trust boundaries
 
@@ -316,8 +316,8 @@ Given a decrypted `PromoEligibilityClaimV1`, a brand verifier MUST:
    - the verifier MUST support the campaign’s declared `PromoCampaignV1.protocolVersion`
    - `spendToken.protocol.protocolVersion` MUST equal `PromoCampaignV1.protocolVersion`
    - `spendProof.statement.protocolVersion` MUST equal `PromoCampaignV1.protocolVersion`  
-3) Verify `spendToken` per `../03-portability/spend-attestation-token.md` (signature + issuer authorization + acceptance policy).
-4) Verify `spendProof` per `../03-portability/spend-attestation-token.md` and verify it proves `statementId` for the referenced spend token.
+3) Verify `spendToken` per `../protocol/portability/spend-attestation-token.md` (signature + issuer authorization + acceptance policy).
+4) Verify `spendProof` per `../protocol/portability/spend-attestation-token.md` and verify it proves `statementId` for the referenced spend token.
 5) Enforce scope binding:
    - verify `spendProof.statementId` equals `scope.statementId`
    - verify `spendProof.publicInputs.scopeId` equals `scopeId`
@@ -403,10 +403,10 @@ Recommended `rejection.code` values (non-exhaustive):
 Offer eligibility and delivery are distinct from reward issuance:
 
 - This offer-delivery profile MUST NOT require `RewardCommitmentTokenV1` as an eligibility input.
-- Reward issuance is an economic consequence recorded by Reward Ledger events and (optionally) anchored by the Commitment Layer (`../05-reward-and-settlement/reward-layer.md`, `../01-core/spend-event.md`, `../05-reward-and-settlement/settlement-bindings.md`).
+- Reward issuance is an economic consequence recorded by Reward Ledger events and (optionally) anchored by the Commitment Layer (`../protocol/applications/economics/reward-layer.md`, `../protocol/core/spend-event.md`, `../protocol/applications/economics/settlement-bindings.md`).
 - `RewardCommitmentTokenV1` exists to provide **verifiable proof that rewards were actually issued** (economic non-repudiation), and MAY be used for:
   - brand reconciliation/invoicing,
   - audit, and
   - partner reporting.
 
-**Privacy note (normative intent):** reward commitment tokens are recipient-scoped (`recipientId` is required). If brands receive reward commitment tokens, deployments SHOULD prefer blinded recipient schemas (`"1b"`/`"2b"`) to avoid creating a brand-visible wallet identity graph (see `../05-reward-and-settlement/settlement-bindings.md#recipient-blinding`).
+**Privacy note (normative intent):** reward commitment tokens are recipient-scoped (`recipientId` is required). If brands receive reward commitment tokens, deployments SHOULD prefer blinded recipient schemas (`"1b"`/`"2b"`) to avoid creating a brand-visible wallet identity graph (see `../protocol/applications/economics/settlement-bindings.md#recipient-blinding`).

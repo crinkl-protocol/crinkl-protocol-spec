@@ -146,13 +146,13 @@ The protocol MUST NOT encode operator-specific learning logic into protocol rule
 
 | Primitive | Location | Improvement It Enables |
 |-----------|----------|----------------------|
-| `verificationVersion` | ../02-proof-lifecycle/ingestion.md | Rule evolution without breaking old verifications |
-| `SPEND_CORRECTED` | ../01-core/spend-event.md | Labeled error examples for model training |
+| `verificationVersion` | ../protocol/core/ingestion.md | Rule evolution without breaking old verifications |
+| `SPEND_CORRECTED` | ../protocol/core/spend-event.md | Labeled error examples for model training |
 | `StoreEntryV1.aliases` | store-registry.md | Taxonomy expansion from OCR mismatches |
-| `softExtractedFields` | ../02-proof-lifecycle/ingestion.md | Soft vs hard comparison for calibration |
-| `riskFlags` | ../01-core/canonicalization.md | Predictive signal for deferral/review |
-| Merkle batching | ../05-reward-and-settlement/settlement-bindings.md | Cost amortization at scale |
-| Append-only event stream | ../01-core/verification-state.md | Replayable labeled dataset |
+| `softExtractedFields` | ../protocol/core/ingestion.md | Soft vs hard comparison for calibration |
+| `riskFlags` | ../protocol/core/canonicalization.md | Predictive signal for deferral/review |
+| Merkle batching | ../protocol/applications/economics/settlement-bindings.md | Cost amortization at scale |
+| Append-only event stream | ../protocol/core/verification-state.md | Replayable labeled dataset |
 
 ---
 
@@ -267,9 +267,9 @@ Fewer false-positive provisional rewards
 
 ## Relationship to Other Specifications
 
-- **../02-proof-lifecycle/ingestion.md** — Defines two-tier verification, `verificationVersion`, normalization rules
-- **../01-core/spend-event.md** — Defines `SPEND_CORRECTED`, `correctedFields`, append-only semantics
+- **../protocol/core/ingestion.md** — Defines two-tier verification, `verificationVersion`, normalization rules
+- **../protocol/core/spend-event.md** — Defines `SPEND_CORRECTED`, `correctedFields`, append-only semantics
 - **store-registry.md** — Defines alias expansion, `StoreEntryV1`, registry versioning
-- **../01-core/canonicalization.md** — Defines `riskFlags`, field schemas
-- **../05-reward-and-settlement/settlement-bindings.md** — Defines Merkle batching, `leafCount`
-- **../01-core/verification-state.md** — Defines append-only event stream, replay semantics
+- **../protocol/core/canonicalization.md** — Defines `riskFlags`, field schemas
+- **../protocol/applications/economics/settlement-bindings.md** — Defines Merkle batching, `leafCount`
+- **../protocol/core/verification-state.md** — Defines append-only event stream, replay semantics

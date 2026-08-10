@@ -9,7 +9,7 @@ normative: true
 
 > **Status: non-normative API appendix**
 >
-> This document lists example endpoint surfaces for serving already-defined protocol artifacts. It is not part of core protocol validity, and deployments MAY expose different paths or authentication policies as long as token/proof verification follows the normative procedures in `../03-portability/spend-attestation-token.md`, `../05-reward-and-settlement/settlement-bindings.md`, and `../03-portability/verifier-requirements.md`.
+> This document lists example endpoint surfaces for serving already-defined protocol artifacts. It is not part of core protocol validity, and deployments MAY expose different paths or authentication policies as long as token/proof verification follows the normative procedures in `../protocol/portability/spend-attestation-token.md`, `../protocol/applications/economics/settlement-bindings.md`, and `../protocol/portability/verifier-requirements.md`.
 
 Any public proof endpoint MUST avoid PII and MUST NOT become a lookup oracle over receipt history, wallet identity, campaign participation, or campaign-scoped audience membership.
 

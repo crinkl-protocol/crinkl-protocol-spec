@@ -152,7 +152,21 @@ def main() -> int:
 
     # Spec/docs release-version consistency.
     readme = read_text(repo_root / "README.md")
-    m = re.search(r"\*\*v(\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?)\*\*", readme)
+    readme_section = "## Release and source state"
+    readme_candidates = readme[readme.find(readme_section) :]
+    if readme_section not in readme:
+        return die("README.md missing '## Release and source state' section")
+    m = re.search(
+        r"Current public repository.*release:\s+\*\*v?(\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?)\*\*",
+        readme_candidates,
+        flags=re.S,
+    )
+    if not m:
+        m = re.search(
+            r"release:\s+\*\*v?(\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?)\*\*",
+            readme_candidates,
+            flags=re.S,
+        )
     if not m:
         return die("README.md missing version marker '**vX.Y.Z**'")
     if m.group(1) != release_version:
@@ -185,7 +199,7 @@ def main() -> int:
         )
 
     # spend-event.md must mention every bound protocol/system event name.
-    events_md = read_text(repo_root / "01-core" / "spend-event.md")
+    events_md = read_text(repo_root / "protocol" / "core" / "spend-event.md")
     bound_event_names = {
         subject_to_event_name(v)
         for v in protocol_subjects.values()
@@ -194,15 +208,15 @@ def main() -> int:
     present = set(re.findall(r"\|\s*([A-Z0-9_]+)\s*\|", events_md))
     missing = sorted([n for n in bound_event_names if n and n not in present])
     if missing:
-        return die(f"01-core/spend-event.md missing event(s): {', '.join(missing)}")
+        return die(f"protocol/core/spend-event.md missing event(s): {', '.join(missing)}")
 
-    # 01-core/schemas/event.schema.json must cover all spend-stream event names.
-    ref_schema = read_json(repo_root / "01-core" / "schemas" / "event.schema.json")
+    # protocol/core/schemas/event.schema.json must cover all spend-stream event names.
+    ref_schema = read_json(repo_root / "protocol" / "core" / "schemas" / "event.schema.json")
     ref_enum = set(((ref_schema.get("properties") or {}).get("eventName") or {}).get("enum") or [])
     spend_names = {subject_to_event_name(v) for v in protocol_subjects.values() if v.startswith("event.")}
     spend_missing = sorted([n for n in spend_names if n and n not in ref_enum])
     if spend_missing:
-        return die(f"01-core/schemas/event.schema.json missing eventName enum(s): {', '.join(spend_missing)}")
+        return die(f"protocol/core/schemas/event.schema.json missing eventName enum(s): {', '.join(spend_missing)}")
 
     # Conformance manifest version must match the binding (catches half-applied version bumps).
     manifest = read_json(repo_root / "07-conformance" / "vectors" / "v1" / "manifest.json")

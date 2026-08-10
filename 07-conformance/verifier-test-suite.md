@@ -8,9 +8,8 @@ normative: true
 # Conformance Verification
 
 This document describes the executable verifier for `vectors/v1`.
-The released rc.7 package uses conformance suite 4 and includes the
-geography-commitment profile as a required manifest-bound kind; that profile
-remains candidate maturity unless separately released.
+The current rc.7 source candidate uses conformance suite 4 and includes the
+geography-commitment profile as a required manifest-bound kind.
 
 ## Run
 

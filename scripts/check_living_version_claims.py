@@ -14,7 +14,7 @@ REGISTRY = "versions/release-registry.json"
 REVIEWED_COMMIT = "81237937833ab32e5ce92d3b5ceed72854baecef"
 REVIEWED_TREE = "9121bdfbfc428f73557e993f1bd6e295ba733a12"
 LIVING_PATHS = (
-    "README.md", "SECURITY.md", "03-portability/spend-attestation-token.md",
+    "README.md", "SECURITY.md", "protocol/portability/spend-attestation-token.md",
     "06-extensions/campaign-experiment-profile.md", "06-extensions/merchant-authority.md",
     "07-conformance/compatibility.md", "07-conformance/vectors.md", "07-conformance/vectors/v1/README.md",
     "07-conformance/verifier-test-suite.md",
@@ -24,8 +24,8 @@ LIVING_PATHS = (
     "versions/CHANGELOG.md",
 )
 READ_ONLY_OVERLAP = (
-    "03-portability/spend-tokens-explainer.md",
-    "04-condition-layer/campaign-commitment.md",
+    "protocol/portability/spend-tokens-explainer.md",
+    "protocol/applications/conditions/campaign-commitment.md",
 )
 
 
@@ -125,7 +125,7 @@ def validate_documents(documents: dict[str, str], release_status: str = "RELEASE
     required = {
         "README.md": ("## Release and source state", state["README.md"], "**v1.0.0-rc.5** historical exact reviewed source candidate — not published.", "P4.4 and P9 remain blockers."),
         "SECURITY.md": (REVIEWED_COMMIT, REVIEWED_TREE, "later source is unassigned", state["SECURITY.md"]),
-        "03-portability/spend-attestation-token.md": ("SpendAttestationTokenV1` and `SpendAttestationTokenV2` are both supported", "no protocol-wide token issuance default"),
+        "protocol/portability/spend-attestation-token.md": ("SpendAttestationTokenV1` and `SpendAttestationTokenV2` are both supported", "no protocol-wide token issuance default"),
         "06-extensions/campaign-experiment-profile.md": ("supported embedded wire/source/binding history, not an observed public tag or public release",),
         "06-extensions/merchant-authority.md": ("supported embedded wire/source/binding history", "not an\nobserved public tag or public release classification"),
         "07-conformance/vectors.md": ("included in released `v1.0.0-rc.3` / suite 2",),

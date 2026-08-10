@@ -8,7 +8,7 @@ normative: true
 # Solana Campaign Settlement Binding
 
 This document maps the campaign settlement GCD in
-`../05-reward-and-settlement/campaign-settlement-gcd.md` to a Solana Anchor
+`../protocol/applications/economics/campaign-settlement-gcd.md` to a Solana Anchor
 program. It defines implementation names, PDA seeds, instruction bindings, event
 bindings, `txRef` shape, and deployment registry requirements.
 

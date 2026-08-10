@@ -78,7 +78,7 @@ def main() -> int:
         ("rc.5 reviewed tree changed", "07-conformance/compatibility.md", checker.REVIEWED_TREE, "0" * 40),
         ("later tree inherits review", "07-conformance/compatibility.md", "Any later tree remains unassigned unless a new exact candidate identity and independent review record it.", "Any later tree inherits this review."),
         ("latest release wrong", "07-conformance/compatibility.md", "`v1.0.0-rc.4` is the latest released public package", "`v1.0.0-rc.3` is the latest released public package"),
-        ("read-only overlap false rc.3 classification", "03-portability/spend-tokens-explainer.md", "\n", "\nv1.0.0-rc.3 is an unpublished release candidate.\n"),
+        ("read-only overlap false rc.3 classification", "protocol/portability/spend-tokens-explainer.md", "\n", "\nv1.0.0-rc.3 is an unpublished release candidate.\n"),
     ]
     for name, path, old, new in mutations:
         altered = copy.deepcopy(documents)
