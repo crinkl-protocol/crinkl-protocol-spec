@@ -13,7 +13,7 @@ Density Burn is a supply-accounting mechanism that consumes CRINKL tokens from t
 
 This shared-reserve property is load-bearing and MUST NOT be weakened: a burn drawn from a reserve with no alternative fate carries no economic information. The burn is credible precisely because it consumes the protocol's own emission budget.
 
-**Identity prohibition:** Per the Identity Minimization Invariant (../00-purpose/what-crinkl-proves.md), Density Burn artifacts MUST NOT include wallet identifiers, recipient references, or any data enabling reconstruction of per-user spend patterns. Spends are referenced only via the committed `spendHeadSetRoot` inherited from Verified GMV Token semantics (gmv-token.md).
+**Identity prohibition:** Per the Identity Minimization Invariant (../protocol/purpose/what-crinkl-proves.md), Density Burn artifacts MUST NOT include wallet identifiers, recipient references, or any data enabling reconstruction of per-user spend patterns. Spends are referenced only via the committed `spendHeadSetRoot` inherited from Verified GMV Token semantics (gmv-token.md).
 
 ## Explicit non-claims (normative)
 
@@ -104,7 +104,7 @@ Reference magnitudes under calibrated parameters (verified on-chain in the local
 A versioned, hash-pinned rule set defining which finalized spends count toward `QG`. It MUST cover, at minimum:
 
 - duplicate-leaf rejection (a spend head contributes to `A` at most once, ever, across all epochs);
-- eligibility (structural validity per ../protocol/core/verification-state.md);
+- eligibility (structural validity per ../../core/verification-state.md);
 - fraud/enforcement holds (spends under active enforcement at the finality cutoff are excluded; if later cleared they roll forward);
 - finality (only spends whose canonical head is older than the epoch's `finalityCutoff` are countable);
 - high-total policy (today an inline platform policy; it MUST be expressed here as versioned rules with conformance vectors before any epoch is consumed on-chain).
@@ -303,7 +303,7 @@ documented adoption level. Canonical v5 calibration: `c = 5,633,706.605995`,
 `K = $2,008,032.13`, pinned by `D($1B) = 50%` and `D($500B) = 100%` of the 70M
 reserve. Any later recalibration travels through the gatekeeper above.
 
-Golden vectors at `A ∈ {0, $250M, $290M, $1B, $5B, $500B}` plus both crossover-adjacent points MUST be generated from the reference fixed-point implementation and added to ../07-conformance/vectors.md before any on-chain consumption.
+Golden vectors at `A ∈ {0, $250M, $290M, $1B, $5B, $500B}` plus both crossover-adjacent points MUST be generated from the reference fixed-point implementation and added to ../../../conformance/vectors.md before any on-chain consumption.
 
 ## Interaction with reward emission (non-normative)
 
@@ -322,7 +322,7 @@ Density Burn supersedes the GMV-indexed supply release model (80M escrow, rate-b
 - The DDR is funded only after the program is audited and golden vectors pass.
 - Public tokenomics surfaces describing the release model MUST be replaced before the first epoch is consumed.
 
-## Conformance (to be added to 07-conformance)
+## Conformance
 
 - Curve vectors: `B(A)` at the golden inputs, bit-exact.
 - Epoch chain vectors: valid chain, forked-chain rejection, duplicate-window rejection, cumulative-state mismatch rejection.

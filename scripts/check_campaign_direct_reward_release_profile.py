@@ -31,7 +31,7 @@ def main() -> int:
     repo_root = Path(__file__).resolve().parents[1]
     profile_root = (
         repo_root
-        / "07-conformance"
+        / "conformance"
         / "profiles"
         / "campaign-direct-buyer-reward-v1"
     )
@@ -92,7 +92,7 @@ def main() -> int:
         "conformance": {
             "suite": "crinkl-protocol-conformance",
             "suiteVersion": 2,
-            "manifest": "07-conformance/vectors/v1/manifest.json",
+            "manifest": "conformance/vectors/v1/manifest.json",
         },
         "releaseAuthority": {
             "acceptedReleaseIdentity": "AUTHORITY_ACCEPTED_TAG_AND_RELEASE_MANIFEST_DIGEST",
@@ -109,7 +109,7 @@ def main() -> int:
         raise ValueError("public release manifest drift")
 
     conformance_manifest = read_json(
-        repo_root / "07-conformance" / "vectors" / "v1" / "manifest.json"
+        repo_root / "conformance" / "vectors" / "v1" / "manifest.json"
     )
     if conformance_manifest.get("protocolVersion") != "1.0.0-rc.2":
         raise ValueError("default binding wire protocol version drift")

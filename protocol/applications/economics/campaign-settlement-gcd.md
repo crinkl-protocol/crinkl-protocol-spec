@@ -32,9 +32,9 @@ settlement. It relies on:
 - `CampaignRuleV1` and `CampaignEpochV1` from
   `../protocol/applications/conditions/campaign-commitment.md`
 - reward and commitment conventions from `settlement-bindings.md`
-- system-stream event envelope rules from `../protocol/core/spend-event.md`
+- system-stream event envelope rules from `../../core/spend-event.md`
 - chain-specific anchoring rules from extension bindings such as
-  `../06-extensions/solana-campaign-settlement-binding.md`
+  `../../extensions/solana-campaign-settlement-binding.md`
 
 It does not define:
 
@@ -47,7 +47,7 @@ It does not define:
 - arbitrary campaign DSL composition
 
 When a campaign includes `CampaignAuthorityV1` from
-`../06-extensions/merchant-authority.md`, this GCD does define the public hash
+`../../extensions/merchant-authority.md`, this GCD does define the public hash
 binding required to prove the frozen campaign rule carried that authority. It
 does not define how the private evidence behind a merchant claim was reviewed.
 
@@ -182,7 +182,7 @@ A verifier MUST:
 3. Verify `CampaignRuleV1.hashes.ruleSetHash` matches the selected epoch.
 4. If the campaign carries `CampaignAuthorityV1`, verify the authority proof
    hash and merchant claim attestation under
-   `../06-extensions/merchant-authority.md`.
+   `../../extensions/merchant-authority.md`.
 5. Verify each `CampaignSettlementLeafV1` binds to the same campaign, epoch,
    rule set, and campaign params.
 6. Verify the settlement root from the included leaf hashes.

@@ -18,7 +18,7 @@ Crinkl spend tokens are correction-aware—canonical truth may evolve via
 append-only corrections—and support optional ZK predicates for
 privacy-preserving selective disclosure.
 
-Terms are defined in ../08-governance/glossary.md and used normatively throughout this specification.
+Terms are defined in ../../governance/glossary.md and used normatively throughout this specification.
 
 ## Definitions
 
@@ -127,9 +127,9 @@ The protocol defines four v1 token outputs, each derived from existing protocol 
 `SPEND_ATTESTATION`, `REWARD_COMMITMENT`, `VERIFIED_GMV`, `VERIFIED_SPEND_DISTRIBUTION`.
 New token types require an explicit specification update (and potentially a protocol version bump); experimental/extension tokens MUST be clearly labeled and MUST NOT be required for Core Spend Attestation verification.
 
-See the Economic Reinforcement Invariant in ../00-purpose/what-crinkl-proves.md for the relationship between epistemic and economic commitments.
+See the Economic Reinforcement Invariant in ../purpose/what-crinkl-proves.md for the relationship between epistemic and economic commitments.
 
-Per the Identity Minimization Invariant (../00-purpose/what-crinkl-proves.md), wallet exposure follows token-specific rules:
+Per the Identity Minimization Invariant (../purpose/what-crinkl-proves.md), wallet exposure follows token-specific rules:
 - **Spend Attestation** — wallet is optional; canonical spend truth does not require identity disclosure
 - **Reward Commitment** — `recipientId` is required (scoped to unique recipient); representation is schema-defined (WalletRef or Commitment)
 - **Verified GMV** — wallet MUST NOT appear; aggregate claims are privacy-preserving
@@ -193,7 +193,7 @@ SpendAttestationTokenV1 {
   },
   lineage: { headEventHash: Hash, eventCount: Integer },
   protocol: { protocolVersion: Version },
-  zk?: { commitments?: ZKCommitments }, // optional; see ../06-extensions/zk-proof-extension.md
+  zk?: { commitments?: ZKCommitments }, // optional; see ../extensions/zk-proof-extension.md
   signatures: { issuedBy: AuthorityId, publicKey: Base64, tokenHash: Hash, signature: Base64 }
 }
 ```
@@ -386,15 +386,15 @@ When `wallet` is omitted from Spend Attestation Tokens:
 
 If a user intentionally discloses `wallet` or uses the same wallet-included token across multiple verifiers, correlation becomes identity-linked. This is a deliberate user action, not a protocol leak.
 
-- `canonical` MUST be derived deterministically from the spend-stream state machine (../protocol/core/verification-state.md).
+- `canonical` MUST be derived deterministically from the spend-stream state machine (../core/verification-state.md).
 - `canonical.status` MUST reflect the final spend attestation state at the time of issuance.
 - `canonical.storeHash` MUST be computed deterministically from the canonical store identifier (when available) as:
   - `storeHash = "sha256:" + SHA-256( UTF8("crinkl.store.v1:") || UTF8(storeId) )`, where the `Hash` portion is lowercase hex.
 - `canonical.geoRegion` is OPTIONAL. When present, it MUST equal the `geoRegion` from the canonical spend-stream head, expressed as an ISO 3166-2 subdivision code (e.g., `US-CA`) or ISO 3166-1 alpha-2 country code.
-- `canonical.cbsaCode` is OPTIONAL. When present, it MUST equal the `cbsaCode` from the canonical spend-stream head, derived from the store's physical location via the OMB CBSA crosswalk (see `../protocol/core/canonicalization.md#cbsacode`).
+- `canonical.cbsaCode` is OPTIONAL. When present, it MUST equal the `cbsaCode` from the canonical spend-stream head, derived from the store's physical location via the OMB CBSA crosswalk (see `../core/canonicalization.md#cbsacode`).
 - `lineage.headEventHash` MUST equal the `eventHash` of the last spend-stream event at issuance time.
 - `lineage.eventCount` MUST equal the number of spend-stream events included in the canonical replay up to `headEventHash`.
-- `zk` is OPTIONAL. If `zk.commitments` is present, it MUST contain `C_store`, `C_total`, and `C_dayIndex`; `C_currency`, `C_geoRegion`, and `C_cbsaCode` are independently OPTIONAL. Each present commitment MUST commit to canonical Spend fields at `lineage.headEventHash` and MUST be cryptographically bound to `spendId` and `lineage.headEventHash` (see `../06-extensions/zk-proof-extension.md`). Commitments are treated as opaque unless accompanied by a proof; the protocol does not require public recomputation of commitment values.
+- `zk` is OPTIONAL. If `zk.commitments` is present, it MUST contain `C_store`, `C_total`, and `C_dayIndex`; `C_currency`, `C_geoRegion`, and `C_cbsaCode` are independently OPTIONAL. Each present commitment MUST commit to canonical Spend fields at `lineage.headEventHash` and MUST be cryptographically bound to `spendId` and `lineage.headEventHash` (see `../extensions/zk-proof-extension.md`). Commitments are treated as opaque unless accompanied by a proof; the protocol does not require public recomputation of commitment values.
 - ZK commitments and proofs do not strengthen or supersede the verification tier of the underlying Spend; they only enable selective disclosure about already-verified fields.
 - **Selective disclosure rule (normative intent):** if a field is intended to be proven via ZK (e.g., `totalCents`, `timestamp`, `storeHash`), portable tokens SHOULD omit that field and rely on `zk.commitments` + proof instead, unless explicit disclosure is required by verifier policy.
 - **Privacy-preserving portable issuance (normative):** newly issued privacy-preserving portable `SpendAttestationTokenV1` and `SpendAttestationTokenV2` tokens MUST omit plaintext `canonical.geoRegion` and `canonical.cbsaCode`. Geographic predicates use `C_geoRegion` and `C_cbsaCode` only when the issuer includes those optional commitments. This issuance rule does not change immutable signed tokens: verifiers MUST continue to accept a valid legacy V1 or V2 token that contains either plaintext canonical geography field under the ordinary verification procedure. V2 retains this complete V1 commitment and disclosure contract; `holderBinding` is separate optional signed data.
@@ -408,7 +408,7 @@ To verify a Spend Attestation Token, a verifier MUST:
 
 1. Verify required fields and supported versions (`schemaVersion`, `protocol.protocolVersion`); reject on unsupported versions.
 2. Recompute `tokenHash` from the unsigned token (RFC 8785 canonical JSON) and verify `signatures.signature` against `signatures.publicKey`.
-3. Verify that `signatures.publicKey` is an authorized issuer key for `signatures.issuedBy` under the applicable trust root mapping (Authority Registry or configured issuer set); reject if unauthorized (see `../00-purpose/threat-model.md#trust-roots`).
+3. Verify that `signatures.publicKey` is an authorized issuer key for `signatures.issuedBy` under the applicable trust root mapping (Authority Registry or configured issuer set); reject if unauthorized (see `../purpose/threat-model.md#trust-roots`).
 4. Apply local acceptance policy to `canonical.status` (and any other included canonical fields).
 
 > Verifying `lineage.headEventHash` against the full spend-stream is optional for most consumers and is primarily used for deep audit.

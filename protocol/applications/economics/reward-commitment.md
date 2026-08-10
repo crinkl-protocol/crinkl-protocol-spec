@@ -83,7 +83,7 @@ RewardCommitmentTokenV1 {
 
 To verify a Reward Commitment Token, a verifier MUST:
 
-1. Verify `systemEvents` as a contiguous, fork-free system-stream for `chainId` (integrity envelope + `prevHash` chaining) and verify authority validity per `../protocol/core/spend-event.md` and `settlement-bindings.md#authority-registry`.
+1. Verify `systemEvents` as a contiguous, fork-free system-stream for `chainId` (integrity envelope + `prevHash` chaining) and verify authority validity per `../../core/spend-event.md` and `settlement-bindings.md#authority-registry`.
 2. Verify `commitmentEvent` is included in `systemEvents`, and verify `batch` equals `commitmentEvent.payload`.
 3. Verify the Merkle inclusion proof (`proof`) against `batch.root` per `settlement-bindings.md#verification-algorithm` (including leaf canonicalization and domain separation).
 4. If `economicTier = "COMMITTED_BACKED"`, verify `backingEvent` integrity + authority validity and verify it references the same `batch.batchId`.

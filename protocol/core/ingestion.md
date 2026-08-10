@@ -11,7 +11,7 @@ normative: true
 
 The Crinkl Protocol transforms a ReceiptUpload into a canonical Spend through a two-tier verification pipeline. The protocol defines **event schemas, state transitions, and normalization rules**—not OCR models, confidence thresholds, or extraction heuristics (those are implementation details).
 
-Terms are defined in ../08-governance/glossary.md and used normatively throughout this specification.
+Terms are defined in ../../governance/glossary.md and used normatively throughout this specification.
 
 ## Ingestion Validation
 
@@ -19,7 +19,7 @@ Every incoming event MUST pass before any verification logic executes:
 
 1. Recompute `eventHash` from RFC 8785 canonical serialization; reject on mismatch.
 2. Verify `prevHash` chaining per `../protocol/core/spend-event.md#ordering-rules`; reject forks, and treat missing history as `IncompleteHistory` for verification purposes.
-3. Verify Ed25519 `signature` against the spend-stream trust root for that `protocolVersion` (see `../00-purpose/threat-model.md#trust-roots`).
+3. Verify Ed25519 `signature` against the spend-stream trust root for that `protocolVersion` (see `../purpose/threat-model.md#trust-roots`).
 4. Validate schema for `eventName` and `protocolVersion` support.
 
 **Rejection semantics:** If any check fails, the event is dropped and does not enter the stream. No state transition occurs.

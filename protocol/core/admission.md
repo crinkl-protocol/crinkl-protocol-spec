@@ -13,7 +13,7 @@ Verification is private. Admission is public.
 
 A Verification Service reads commerce evidence inside the privacy boundary and signs attestations. Proof Validators admit the resulting claims to the record without reading evidence. Neither party holds both powers.
 
-Terms are defined in `../08-governance/glossary.md`.
+Terms are defined in `../../governance/glossary.md`.
 
 ## Roles
 
@@ -21,7 +21,7 @@ Terms are defined in `../08-governance/glossary.md`.
 
 The party that receives commerce evidence, evaluates it under protocol rules inside the privacy boundary, and signs Spend Attestations and Spend Attestation Tokens.
 
-The Verification Service role names the operator of the existing spend-stream and token-issuer trust roots (`../00-purpose/threat-model.md`). It does not introduce a new trust root category.
+The Verification Service role names the operator of the existing spend-stream and token-issuer trust roots (`../purpose/threat-model.md`). It does not introduce a new trust root category.
 
 - A Verification Service MUST terminate raw evidence at its own privacy boundary (`../protocol/core/privacy-boundaries.md`).
 - A Verification Service MUST sign attestations under keys authorized by the applicable trust root mapping.
@@ -68,11 +68,11 @@ A Spend Attestation is **admitted** when a validator-finalized statement covers 
 1. A public statement (for example `QUALIFIED_GMV_BURN_EPOCH_V1`) commits to a leaf set of canonical spend heads (`spendHeadSetRoot` or the statement's equivalent committed leaf root).
 2. Selected Proof Validators independently recompute the statement from its committed public leaves — roots, totals, eligibility hashes, and nullifier scope — and reject on any mismatch or replay.
 3. A Finality Certificate aggregates the quorum of identical signed results.
-4. Every attestation whose canonical head is included in the finalized statement's committed leaf set is admitted, with inclusion provable by Merkle path against the committed root (`../protocol/portability/verifier-requirements.md`).
+4. Every attestation whose canonical head is included in the finalized statement's committed leaf set is admitted, with inclusion provable by Merkle path against the committed root (`../portability/verifier-requirements.md`).
 
 Admission coverage is checkpoint-granular by design: one certificate admits the batch of claims the statement commits to. Per-token streaming admission is not required by v1 and MUST NOT be presumed by downstream consumers.
 
-Uniqueness is an admission constraint. A statement MUST carry nullifier domain and scope bindings, and validators MUST enforce replay protection before signing, so that the same purchase cannot be admitted more than once within a scope (`../08-governance/glossary.md#nullifier`).
+Uniqueness is an admission constraint. A statement MUST carry nullifier domain and scope bindings, and validators MUST enforce replay protection before signing, so that the same purchase cannot be admitted more than once within a scope (`../../governance/glossary.md#nullifier`).
 
 ## What Admission Asserts (Bounded Scope)
 
@@ -87,7 +87,7 @@ Admission is NOT trusted to assert:
 - payout authority, production chain finality, legal settlement, or economic backing;
 - the honesty of a Verification Service beyond what its committed output reveals.
 
-This boundary follows the same bounded-scope discipline as every trust root in `../00-purpose/threat-model.md`.
+This boundary follows the same bounded-scope discipline as every trust root in `../purpose/threat-model.md`.
 
 ## Downstream Consumption (Normative)
 
@@ -118,6 +118,6 @@ Until these surfaces exist, deployments operate a single configured Verification
 ## Related
 
 - `attestation-issuance.md` — the stage before admission.
-- `../00-purpose/threat-model.md` — trust roots and bounded scopes.
+- `../purpose/threat-model.md` — trust roots and bounded scopes.
 - `../protocol/applications/economics/density-burn.md` — the finality trust root and joint-root consumption rules.
-- `../protocol/portability/verifier-requirements.md` — Merkle inclusion procedure for coverage proofs.
+- `../portability/verifier-requirements.md` — Merkle inclusion procedure for coverage proofs.

@@ -64,7 +64,7 @@ VerifiedSpendDistributionTokenV1 {
 ### Derivation rules (normative)
 
 - `asOf.spendHeadSetRoot` MUST be computed identically to the Verified GMV Token for the same window and as-of time. Implementations SHOULD derive both tokens from the same snapshot computation.
-- `byCategory` keys MUST be canonical store category identifiers as defined by the store registry (see `../06-extensions/store-registry.md`). Spends whose store cannot be resolved to a category MUST be bucketed under the key `"Unknown"`.
+- `byCategory` keys MUST be canonical store category identifiers as defined by the store registry (see `../../extensions/store-registry.md`). Spends whose store cannot be resolved to a category MUST be bucketed under the key `"Unknown"`.
 - `byGeoRegion` keys MUST be canonical region bucket values derived from the canonical spend head. Implementations MAY use ISO 3166-2 subdivisions, ISO 3166-1 alpha-2 country codes, CBSA numeric codes, or non-metro fallbacks when those are the canonical region buckets emitted by the verifier. Spends with no resolvable geographic data MUST be bucketed under `"Unknown"`.
 - `byCategory` and `byGeoRegion` record keys MUST be sorted lexicographically (UTF-8 byte order) for canonical serialization.
 - `verifiedDistribution.totalCents` MUST equal the sum of all `byCategory` values' `totalCents`. The same holds for `spendCount`.

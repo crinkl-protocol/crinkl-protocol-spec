@@ -6,11 +6,11 @@ protocol behavior; it is not an implementation backlog or a release channel.
 ## Before opening a change
 
 Read the applicable normative material first. When sources disagree, use the
-authority order in [`08-governance/change-process.md`](08-governance/change-process.md):
+authority order in [`governance/change-process.md`](governance/change-process.md):
 external standards, normative protocol specification, formal invariants,
 bindings and schemas, reference material, generated artifacts, then
 implementations. The proof-lifecycle order in
-[`08-governance/authority-hierarchy.md`](08-governance/authority-hierarchy.md)
+[`governance/authority-hierarchy.md`](governance/authority-hierarchy.md)
 also applies: downstream profiles cannot redefine Core behavior.
 
 Classify the proposal before writing it:
@@ -18,7 +18,7 @@ Classify the proposal before writing it:
 - Normative changes affect portable semantics, validity, canonical bytes,
   hashes, signatures, state transitions, schemas, bindings, or verifier rules.
   They require the complete Boundary impact record from
-  [`08-governance/protocol-business-boundary.md`](08-governance/protocol-business-boundary.md),
+  [`governance/protocol-business-boundary.md`](governance/protocol-business-boundary.md),
   appropriate versioning analysis, and conformance updates where behavior
   changes.
 - Non-normative changes clarify or correct explanatory material without
@@ -26,7 +26,7 @@ Classify the proposal before writing it:
   use it to imply a release, runtime availability, or adoption state.
 
 A branch, draft, README, or candidate manifest is not a released protocol
-identity. Follow [`08-governance/versioning.md`](08-governance/versioning.md)
+identity. Follow [`governance/versioning.md`](governance/versioning.md)
 for the accepted release and compatibility rules.
 
 ## Pull requests

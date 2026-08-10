@@ -16,4 +16,4 @@ A hard-verified or corrected Spend Event may produce a Spend Attestation. That a
 - Corrections produce new attestations; signed tokens are immutable historical artifacts.
 - Portable tokens SHOULD omit wallet unless recipient binding is explicitly required.
 
-See `../protocol/portability/spend-attestation-token.md` for the portable token shape and verifier procedure.
+See `../portability/spend-attestation-token.md` for the portable token shape and verifier procedure.
