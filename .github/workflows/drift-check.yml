@@ -33,7 +33,7 @@ jobs:
               - 'protocol/applications/**'
               - 'bindings/**'
               - 'schemas/**'
-              - '07-conformance/**'
+              - 'conformance/**'
               - 'versions/**'
               - 'scripts/check_drift.py'
               - 'scripts/check_living_version_claims.py'
@@ -72,6 +72,6 @@ jobs:
         if: needs.changes.outputs.protected_version_surface == 'true'
         run: |
           node scripts/verify_conformance.mjs
-          python3 07-conformance/profiles/campaign-direct-buyer-reward-v1/scripts/check_campaign_direct_reward_profile_vectors.py
-          python3 07-conformance/profiles/campaign-direct-buyer-reward-v1/scripts/generate_campaign_direct_reward_profile_vectors.py --check
+          python3 conformance/profiles/campaign-direct-buyer-reward-v1/scripts/check_campaign_direct_reward_profile_vectors.py
+          python3 conformance/profiles/campaign-direct-buyer-reward-v1/scripts/generate_campaign_direct_reward_profile_vectors.py --check
           node scripts/verify_conformance.mjs --require-kind campaign.directBuyerReward.profileV1
