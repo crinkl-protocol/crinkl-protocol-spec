@@ -84,12 +84,12 @@ Core validity, and do not add fields to `SpendAttestation`,
 |---|---|---|
 | `SpendStreamEvent` | Record | The serialized append-only atom. |
 | `SpendAttestation` | Record | Issuer's signed statement about the stream head, under a named policy. |
-| [`VerificationPolicy`](01-core/schemas/verification_policy_v1.schema.json) | Trust | Content-addressed rules defining what "verified" means. (untagged candidate, OM4r) |
-| [`IssuerRegistrySnapshot`](01-core/schemas/issuer_registry_snapshot_v1.schema.json) | Trust | Immutable authority set at a point in time, including retired keys and validity windows. (untagged candidate, OM4r) |
-| [`AttestationStatus`](01-core/schemas/attestation_status_v1.schema.json) | Trust | Revocation and supersession. (untagged candidate, OM4r) |
+| [`VerificationPolicy`](protocol/core/schemas/verification_policy_v1.schema.json) | Trust | Content-addressed rules defining what "verified" means. (untagged candidate, OM4r) |
+| [`IssuerRegistrySnapshot`](protocol/core/schemas/issuer_registry_snapshot_v1.schema.json) | Trust | Immutable authority set at a point in time, including retired keys and validity windows. (untagged candidate, OM4r) |
+| [`AttestationStatus`](protocol/core/schemas/attestation_status_v1.schema.json) | Trust | Revocation and supersession. (untagged candidate, OM4r) |
 | `SpendAttestationToken` | Portability | Native identity-minimized form. |
 | `SpendAttestationCredential` | Portability | W3C VC 2.0 serialization. |
-| [`SpendPredicate`](04-condition-layer/schemas/spend_predicate_v1.schema.json) | Rule | Reusable rule over one or more Spend Attestations. (untagged candidate, OM4r) |
+| [`SpendPredicate`](protocol/applications/conditions/schemas/spend_predicate_v1.schema.json) | Rule | Reusable rule over one or more Spend Attestations. (untagged candidate, OM4r) |
 | `ProofOfMatch` | Rule | Result of evaluating a predicate. |
 | `CampaignEpoch` | Campaign | Immutable, append-only funded rule window. |
 | `FinalityCertificate` | Finality/Settlement | Quorum acceptance of a specific statement. |
@@ -121,8 +121,8 @@ Downstream layers consume spend proof; they do not define it.
 
 | Layer | Documents |
 |---|---|
-| Spend Predicate rules and CampaignEpochs | [`04-condition-layer/`](04-condition-layer/) |
-| Reward and settlement | [`05-reward-and-settlement/`](05-reward-and-settlement/) including [`campaign-settlement-gcd.md`](05-reward-and-settlement/campaign-settlement-gcd.md) |
+| Spend Predicate rules and CampaignEpochs | [`protocol/applications/conditions/`](protocol/applications/conditions/) |
+| Reward and settlement | [`protocol/applications/economics/`](protocol/applications/economics/) including [`campaign-settlement-gcd.md`](protocol/applications/economics/campaign-settlement-gcd.md) |
 | ZK, Campaign experiments, direct buyer rewards, merchant authority, agent, REST/MCP, Solana, offer delivery | [`06-extensions/`](06-extensions/) including the public-draft [`campaign-experiment-profile.md`](06-extensions/campaign-experiment-profile.md), released [`campaign-direct-buyer-reward-profile.md`](06-extensions/campaign-direct-buyer-reward-profile.md), [`merchant-authority.md`](06-extensions/merchant-authority.md), [`zk-external-verifier-integration-guide.md`](06-extensions/zk-external-verifier-integration-guide.md), and [`solana-campaign-settlement-binding.md`](06-extensions/solana-campaign-settlement-binding.md) |
 | Conformance | [`07-conformance/`](07-conformance/) |
 | ZK beta release checklist | [`08-governance/zk-beta-release-checklist.md`](08-governance/zk-beta-release-checklist.md) |
@@ -134,11 +134,11 @@ Downstream layers consume spend proof; they do not define it.
 | Directory | Role |
 |---|---|
 | [`00-purpose/`](00-purpose/) | Purpose, non-goals, and threat model. |
-| [`01-core/`](01-core/) | Evidence, Spend Events, verification states, canonicalization, signatures, privacy boundaries. |
-| [`02-proof-lifecycle/`](02-proof-lifecycle/) | Ingestion, normalization, soft/hard verification, correction, attestation issuance. |
-| [`03-portability/`](03-portability/) | Spend Attestation Tokens, verifier requirements, identity exclusion, replay/auditability. |
-| [`04-condition-layer/`](04-condition-layer/) | Spend Predicates, predicate evaluation, proof of match, campaign commitment. |
-| [`05-reward-and-settlement/`](05-reward-and-settlement/) | Reward Commitment, GMV, distribution, settlement bindings. |
+| [`protocol/core/`](protocol/core/) | Evidence, Spend Events, verification states, canonicalization, signatures, privacy boundaries. |
+| [`protocol/core/`](protocol/core/) | Ingestion, normalization, soft/hard verification, correction, attestation issuance. |
+| [`protocol/portability/`](protocol/portability/) | Spend Attestation Tokens, verifier requirements, identity exclusion, replay/auditability. |
+| [`protocol/applications/conditions/`](protocol/applications/conditions/) | Spend Predicates, predicate evaluation, proof of match, campaign commitment. |
+| [`protocol/applications/economics/`](protocol/applications/economics/) | Reward Commitment, GMV, distribution, settlement bindings. |
 | [`06-extensions/`](06-extensions/) | Optional ZK, merchant authority, agent query, transport, Solana, offer-delivery, and registry profiles. |
 | [`07-conformance/`](07-conformance/) | Vectors, verifier test suite, compatibility notes. |
 | [`08-governance/`](08-governance/) | Versioning, change process, authority hierarchy, and shared glossary. |
@@ -149,9 +149,10 @@ Downstream layers consume spend proof; they do not define it.
 `v1.0.0-rc.7` is the latest released public package. Current public repository
 release: **v1.0.0-rc.7** (`RELEASED`), conformance suite 4; it preserves the
 explicit rc.1/rc.2 wire support set and remains independent from runtime,
-validator, authority, and production activation. Its current machine-readable release manifest is
-[`versions/release.json`](versions/release.json), and its candidate controls
-are in [`versions/v1.0.0-rc.7/finalization.json`](versions/v1.0.0-rc.7/finalization.json).
+validator, authority, and production activation. Its current machine-readable
+release manifest is
+[`versions/release.json`](versions/release.json), and its source controls are in
+[`versions/v1.0.0-rc.7/finalization.json`](versions/v1.0.0-rc.7/finalization.json).
 The following preserved
 rc.5 transition text applies only to public-spec commit
 `81237937833ab32e5ce92d3b5ceed72854baecef` / tree

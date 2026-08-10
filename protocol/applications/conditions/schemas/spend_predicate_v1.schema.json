@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "crinkl://protocol/schemas/spend_predicate_v1",
+  "title": "SpendPredicateV1",
+  "description": "Reusable rule over one or more Spend Attestations. A Spend Predicate is downstream of attestation truth and does not mint a Spend Attestation Token.",
+  "$comment": "Derived from protocol/applications/conditions/condition.md and protocol/applications/conditions/condition-evaluation.md. parameters and ruleExpression are non-empty profile-defined objects. evaluationContext binds scope, verifier policy, and replay/nullifier rules. predicateHash covers the complete predicate with only predicateHash omitted.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["predicateId", "predicateHash", "predicateVersion", "parameters", "evaluationContext", "ruleExpression"],
+  "properties": {
+    "predicateId": { "type": "string", "minLength": 1 },
+    "predicateHash": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$",
+      "description": "sha256: plus lowercaseHex(SHA-256(RFC8785_canonicalize(predicate with only predicateHash omitted)))."
+    },
+    "predicateVersion": { "type": "string", "minLength": 1 },
+    "parameters": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": { "minLength": 1 },
+      "additionalProperties": true,
+      "description": "Profile-defined values bound into the predicate and its content hash."
+    },
+    "evaluationContext": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["scopeId", "verifierPolicyRef", "replayNullifierRules"],
+      "properties": {
+        "scopeId": { "type": "string", "minLength": 1 },
+        "verifierPolicyRef": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Profile-defined verifier-policy reference. Its target semantics are defined by the governing evaluation profile."
+        },
+        "replayNullifierRules": {
+          "type": "object",
+          "minProperties": 1,
+          "propertyNames": { "minLength": 1 },
+          "additionalProperties": true,
+          "description": "Profile-defined replay and nullifier requirements bound into the evaluation context."
+        }
+      }
+    },
+    "ruleExpression": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": { "minLength": 1 },
+      "additionalProperties": true,
+      "description": "Non-empty profile-defined rule expression. Its complete structure participates in predicateHash."
+    }
+  }
+}

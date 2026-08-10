@@ -11,11 +11,11 @@ from pathlib import Path
 
 RELEVANT_PREFIXES = (
     "00-purpose/",
-    "01-core/",
-    "02-proof-lifecycle/",
-    "03-portability/",
-    "04-condition-layer/",
-    "05-reward-and-settlement/",
+    "protocol/core/",
+    "protocol/core/",
+    "protocol/portability/",
+    "protocol/applications/conditions/",
+    "protocol/applications/economics/",
     "06-extensions/",
     "07-conformance/",
     "08-governance/",

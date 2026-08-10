@@ -13,7 +13,7 @@ normative: false
 
 | Surface | Exact supported or observed state | Compatibility / authority boundary |
 | --- | --- | --- |
-| Public specification releases | `v1.0.0-rc.1`, `v1.0.0-rc.3`, and `v1.0.0-rc.4` are released immutable tags; `v1.0.0-rc.7` is the latest released public package. | Resolve a release by its tag, exact commit/tree, and release-manifest digest. |
+| Public specification releases | `v1.0.0-rc.1`, `v1.0.0-rc.3`, and `v1.0.0-rc.4` are released immutable tags, and `v1.0.0-rc.7` is also a released immutable tag; `v1.0.0-rc.7` is the latest released public package. | Resolve a release by its tag, exact commit/tree, and release-manifest digest. |
 | `v1.0.0-rc.5` source candidate | Reviewed only at `81237937833ab32e5ce92d3b5ceed72854baecef` / tree `9121bdfbfc428f73557e993f1bd6e295ba733a12`; it is not published or released. | Any later tree remains unassigned unless a new exact candidate identity and independent review record it. |
 | `v1.0.0-rc.7` public release | Latest released suite-4 public package. | It preserves historical rc.5 review boundaries, candidate profile maturity, and separate runtime/production governance. |
 | Embedded wire and binding history | `1.0.0-rc.1` and `1.0.0-rc.2` are supported embedded wire values; `1.0.0-rc.2` is not an observed public tag or public release. | A verifier accepts only its explicitly supported wire values; a wire label does not classify a public release. |

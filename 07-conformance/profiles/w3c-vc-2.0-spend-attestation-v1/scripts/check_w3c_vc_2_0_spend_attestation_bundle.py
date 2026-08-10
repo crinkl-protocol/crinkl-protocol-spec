@@ -143,7 +143,7 @@ def main() -> int:
             fail(f"artifact hash drift: {file_path}")
 
     adopted_binding = (bundle_root / "protocol/W3C_VC_2_0_BINDING.md").read_text(encoding="utf-8")
-    public_binding = (repo_root / "03-portability/w3c-vc-2.0-binding.md").read_text(encoding="utf-8")
+    public_binding = (repo_root / "protocol/portability/w3c-vc-2.0-binding.md").read_text(encoding="utf-8")
     if public_binding != PUBLIC_FRONTMATTER + adopted_binding:
         fail("public binding is not the controlled-frontmatter transform of adopted binding")
 

@@ -36,10 +36,10 @@ The bundle binds:
 The four schemas themselves live at their canonical spec locations, not
 inside this profile directory:
 
-- `01-core/schemas/verification_policy_v1.schema.json`
-- `01-core/schemas/issuer_registry_snapshot_v1.schema.json`
-- `01-core/schemas/attestation_status_v1.schema.json`
-- `04-condition-layer/schemas/spend_predicate_v1.schema.json`
+- `protocol/core/schemas/verification_policy_v1.schema.json`
+- `protocol/core/schemas/issuer_registry_snapshot_v1.schema.json`
+- `protocol/core/schemas/attestation_status_v1.schema.json`
+- `protocol/applications/conditions/schemas/spend_predicate_v1.schema.json`
 
 None of the four schemas is required for Core Spend Attestation, Token, or
 Credential validity. The separate OM5 wire slice governs the

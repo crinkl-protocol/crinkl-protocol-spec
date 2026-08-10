@@ -43,23 +43,23 @@
       "sha256": "1390244964207012a56def9c9c9ce3d98a4b94a6bb247ae2321fe33b33574f34"
     },
     {
-      "sourcePath": "../../../01-core/schemas/verification_policy_v1.schema.json",
-      "file": "../../../01-core/schemas/verification_policy_v1.schema.json",
+      "sourcePath": "../../../protocol/core/schemas/verification_policy_v1.schema.json",
+      "file": "../../../protocol/core/schemas/verification_policy_v1.schema.json",
       "sha256": "f11ca76b7f4a29a680dad9f02765e904e42aa082cfe03308c097f8e24fedb8c3"
     },
     {
-      "sourcePath": "../../../01-core/schemas/issuer_registry_snapshot_v1.schema.json",
-      "file": "../../../01-core/schemas/issuer_registry_snapshot_v1.schema.json",
+      "sourcePath": "../../../protocol/core/schemas/issuer_registry_snapshot_v1.schema.json",
+      "file": "../../../protocol/core/schemas/issuer_registry_snapshot_v1.schema.json",
       "sha256": "f2c33c4c9387a2e315f4e94b5d928498baa225b0b7128cdecc4df7fdc86cf6d9"
     },
     {
-      "sourcePath": "../../../01-core/schemas/attestation_status_v1.schema.json",
-      "file": "../../../01-core/schemas/attestation_status_v1.schema.json",
+      "sourcePath": "../../../protocol/core/schemas/attestation_status_v1.schema.json",
+      "file": "../../../protocol/core/schemas/attestation_status_v1.schema.json",
       "sha256": "719a7c7eb3800cd334514f4aea12cb0310a8b157792b8c259cb9f003e7ea5a8e"
     },
     {
-      "sourcePath": "../../../04-condition-layer/schemas/spend_predicate_v1.schema.json",
-      "file": "../../../04-condition-layer/schemas/spend_predicate_v1.schema.json",
+      "sourcePath": "../../../protocol/applications/conditions/schemas/spend_predicate_v1.schema.json",
+      "file": "../../../protocol/applications/conditions/schemas/spend_predicate_v1.schema.json",
       "sha256": "0a8fb908d60c20f2e33d07e64fef1b14555ef3e5a5f6989e39cb377378215211"
     }
   ],

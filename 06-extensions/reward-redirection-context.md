@@ -41,16 +41,16 @@ Rewards are gated by verification tier:
 - **Provisional rewards** may issue after Soft Verification
 - **Final rewards** may issue after Hard Verification
 
-The Reward Ledger is append-only; the protocol does not define clawback events. Reward amounts, formulas, and payout rules are application-layer (see ../05-reward-and-settlement/reward-layer.md).
+The Reward Ledger is append-only; the protocol does not define clawback events. Reward amounts, formulas, and payout rules are application-layer (see ../protocol/applications/economics/reward-layer.md).
 
 ## Outputs
 
 The protocol emits portable, privacy-preserving tokens for downstream composition:
 
-- **Spend Attestation Token** — canonical spend claim; wallet optional (../03-portability/spend-attestation-token.md)
-- **Reward Commitment Token** — inclusion proof under committed batch; `recipientId` required, representation schema-defined (../03-portability/spend-attestation-token.md, ../05-reward-and-settlement/settlement-bindings.md)
-- **Verified GMV Token** — aggregate spend commitment; wallet prohibited (../03-portability/spend-attestation-token.md)
-- **Verified Spend Distribution Token** — aggregate category and region distribution; wallet prohibited (../03-portability/spend-attestation-token.md)
+- **Spend Attestation Token** — canonical spend claim; wallet optional (../protocol/portability/spend-attestation-token.md)
+- **Reward Commitment Token** — inclusion proof under committed batch; `recipientId` required, representation schema-defined (../protocol/portability/spend-attestation-token.md, ../protocol/applications/economics/settlement-bindings.md)
+- **Verified GMV Token** — aggregate spend commitment; wallet prohibited (../protocol/portability/spend-attestation-token.md)
+- **Verified Spend Distribution Token** — aggregate category and region distribution; wallet prohibited (../protocol/portability/spend-attestation-token.md)
 
 ## Business Context (non-normative)
 

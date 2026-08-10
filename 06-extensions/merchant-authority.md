@@ -21,11 +21,11 @@ This extension composes:
 
 - `storeId`, `storeHash`, `storeLocationId`, and `storeLocationHash` from
   `store-registry.md`
-- system-stream envelope rules from `../01-core/spend-event.md`
+- system-stream envelope rules from `../protocol/core/spend-event.md`
 - campaign rule and epoch bindings from
-  `../04-condition-layer/campaign-commitment.md`
+  `../protocol/applications/conditions/campaign-commitment.md`
 - settlement commitment bindings from
-  `../05-reward-and-settlement/campaign-settlement-gcd.md`
+  `../protocol/applications/economics/campaign-settlement-gcd.md`
 
 This extension does **not**:
 

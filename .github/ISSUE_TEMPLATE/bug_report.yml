@@ -19,7 +19,7 @@ body:
     attributes:
       label: Affected artifact
       description: Name the document, schema, vector, binding, or section.
-      placeholder: "03-portability/example.md#section"
+      placeholder: "protocol/portability/example.md#section"
     validations:
       required: true
   - type: textarea

@@ -13,7 +13,7 @@ normative: true
 > - a brand campaign’s **eligibility rule** (`statementId`), and
 > - the **proof artifact** a verifier expects (`proofSystem`, `circuitId`, `verifyingKeyId`).
 >
-> The offer-delivery profile in `offer-delivery-profile.md` does not define arbitrary campaign rules. Campaign rule composition uses `../04-condition-layer/campaign-commitment.md`; this catalog maps referenced **statement types** to supported proof circuits.
+> The offer-delivery profile in `offer-delivery-profile.md` does not define arbitrary campaign rules. Campaign rule composition uses `../protocol/applications/conditions/campaign-commitment.md`; this catalog maps referenced **statement types** to supported proof circuits.
 >
 > Implementation status: `H2_PROMO_OPEN_MIN_V1` is the current public beta
 > profile. Additional private-witness proof profiles are release-reserved until
@@ -36,7 +36,7 @@ All portable proofs MUST carry:
 - `circuitId`
 - `verifyingKeyId`
 
-This triad is what a verifier pins and what conformance tests target. See `../03-portability/spend-attestation-token.md` for the portable proof container `SpendZkStatementProofV1`.
+This triad is what a verifier pins and what conformance tests target. See `../protocol/portability/spend-attestation-token.md` for the portable proof container `SpendZkStatementProofV1`.
 
 ### 2.1 `verifyingKeyId` for systems without “verifying key bytes”
 
@@ -57,7 +57,7 @@ Verifiers MUST recompute `verifyingKeyId` from the same canonical JSON and rejec
 
 ## 3) Spend eligibility circuits (statement proofs)
 
-Spend eligibility is proven with `SpendZkStatementProofV1` (see `../03-portability/spend-attestation-token.md`), where `statementId` identifies the rule being proven.
+Spend eligibility is proven with `SpendZkStatementProofV1` (see `../protocol/portability/spend-attestation-token.md`), where `statementId` identifies the rule being proven.
 
 **Positioning note:** Bulletproofs are suitable for **single-field range
 checks** (e.g., total >= threshold). Public beta acceptance is limited to

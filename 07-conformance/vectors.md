@@ -86,7 +86,7 @@ Comprehensive test vectors for protocol implementers. Total: 60+ cases.
 ```
 
 **eventHash computation:**
-1. Remove `eventHash` and `signature` fields (per ../01-core/canonicalization.md)
+1. Remove `eventHash` and `signature` fields (per ../protocol/core/canonicalization.md)
 2. Canonicalize per RFC 8785 (keys sorted lexicographically)
 
 **Canonical JSON (RFC 8785):**

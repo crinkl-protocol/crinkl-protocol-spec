@@ -24,11 +24,11 @@ When two artifacts disagree, the higher authority wins and the lower one is cons
    - RFC 8785 (JCS), SHA-256, Ed25519 (RFC 8032), ISO 8601 / RFC 3339 timestamps.
 2. **Normative protocol spec**
    - `crinkl-protocol-spec/00-purpose/*.md`
-   - `crinkl-protocol-spec/01-core/*.md`
-   - `crinkl-protocol-spec/02-proof-lifecycle/*.md`
-   - `crinkl-protocol-spec/03-portability/*.md`
-   - `crinkl-protocol-spec/04-condition-layer/*.md`
-   - `crinkl-protocol-spec/05-reward-and-settlement/*.md`
+   - `crinkl-protocol-spec/protocol/core/*.md`
+   - `crinkl-protocol-spec/protocol/core/*.md`
+   - `crinkl-protocol-spec/protocol/portability/*.md`
+   - `crinkl-protocol-spec/protocol/applications/conditions/*.md`
+   - `crinkl-protocol-spec/protocol/applications/economics/*.md`
    - Defines semantics, invariants, canonicalization rules, hashing/signing rules, state machines.
 3. **Formal model (invariants check)**
    - `crinkl-protocol-spec/formal/*`
@@ -50,10 +50,10 @@ When two artifacts disagree, the higher authority wins and the lower one is cons
 
 ## Source-of-Truth Map (What Each Directory Owns)
 
-- `00-purpose/`, `01-core/`, `02-proof-lifecycle/`, `03-portability/`
+- `00-purpose/`, `protocol/core/`, `protocol/core/`, `protocol/portability/`
   - Canonical proof semantics + invariants (what the protocol *means*).
   - Canonical byte rules (what is hashed/signed and how).
-- `04-condition-layer/`, `05-reward-and-settlement/`, `06-extensions/`
+- `protocol/applications/conditions/`, `protocol/applications/economics/`, `06-extensions/`
   - Downstream profiles that consume spend proof without redefining Core.
 - `bindings/`
   - Canonical transport mapping (subjects/streams for NATS, schema selection, binding version).
@@ -113,7 +113,7 @@ CI is part of the protocol. If CI doesn’t enforce it, it’s not real.
 1. **Governance consistency**
    - Pull requests that change spec or requirements surfaces include a complete Boundary impact record.
    - No contradictory versions between `README.md` and `versions/CHANGELOG.md`.
-   - Commitment Layer event payloads in `../01-core/spend-event.md` match `../05-reward-and-settlement/settlement-bindings.md`.
+   - Commitment Layer event payloads in `../protocol/core/spend-event.md` match `../protocol/applications/economics/settlement-bindings.md`.
    - Reference “test vectors” do not contradict the normative event envelope; if they are illustrative, they must be labeled non-normative.
 2. **Binding/schema integrity**
    - Every referenced schema has a `$id`.

@@ -9,7 +9,7 @@ normative: true
 
 This glossary defines protocol terms used **normatively** across the specification. Implementations and documents MUST use these terms consistently.
 
-Normative keywords (MUST/SHOULD/MAY) in this glossary define **term semantics and invariants only**. Behavioral requirements and verification procedures are specified in the relevant protocol sections (e.g., `../01-core/canonicalization.md`, `../01-core/spend-event.md`, `../03-portability/spend-attestation-token.md`, `../05-reward-and-settlement/settlement-bindings.md`).
+Normative keywords (MUST/SHOULD/MAY) in this glossary define **term semantics and invariants only**. Behavioral requirements and verification procedures are specified in the relevant protocol sections (e.g., `../protocol/core/canonicalization.md`, `../protocol/core/spend-event.md`, `../protocol/portability/spend-attestation-token.md`, `../protocol/applications/economics/settlement-bindings.md`).
 
 ## Attestation
 
@@ -32,7 +32,7 @@ An attestation produced at **Hard Verification**. It is a final statement that p
 
 ## Token
 
-A signed, portable verification artifact with an explicit claim and verification procedure (see `../03-portability/spend-attestation-token.md`).
+A signed, portable verification artifact with an explicit claim and verification procedure (see `../protocol/portability/spend-attestation-token.md`).
 
 Crinkl tokens follow the **verifiable credential** model: they are issuer-signed claims that holders can present to verifiers for local validation without requiring trust in an API or database query. Unlike static credentials, Crinkl spend tokens are correction-aware—canonical truth may evolve via append-only corrections.
 
@@ -60,7 +60,7 @@ Unlike W3C VCs, Crinkl tokens are specialized for correction-aware commerce clai
 
 ## Verification Service
 
-The party that receives commerce evidence, evaluates it under protocol rules inside the privacy boundary, and signs Spend Attestations and Spend Attestation Tokens. The role names the operator of the spend-stream and token-issuer trust roots; it is not a new trust root category (see `../00-purpose/threat-model.md`, `../02-proof-lifecycle/admission.md`).
+The party that receives commerce evidence, evaluates it under protocol rules inside the privacy boundary, and signs Spend Attestations and Spend Attestation Tokens. The role names the operator of the spend-stream and token-issuer trust roots; it is not a new trust root category (see `../00-purpose/threat-model.md`, `../protocol/core/admission.md`).
 
 **Verification Service is:** the reader of evidence and signer of claims; the origination trust root for spend truth.
 **Verification Service is not:** an admission authority; its signature is a proposal toward the record, never network acceptance.
@@ -69,7 +69,7 @@ The party that receives commerce evidence, evaluates it under protocol rules ins
 
 Proof validator: a Crinkl protocol role that checks attestation admissibility, proof integrity, uniqueness, and settlement, and finalizes verified GMV. Unrelated to Solana consensus validators.
 
-A party that independently re-verifies deterministic public protocol statements from committed material and co-signs the exact result it checked, so that claims can be admitted to the shared record (see `../02-proof-lifecycle/admission.md`).
+A party that independently re-verifies deterministic public protocol statements from committed material and co-signs the exact result it checked, so that claims can be admitted to the shared record (see `../protocol/core/admission.md`).
 
 **Proof Validator is:** a public-plane checker of correctness — schema, signatures, key authorization, commitments, roots, totals, nullifier replay scope.
 **Proof Validator is not:** a reader of receipts, a prover of ground truth, or a payout authority.
@@ -89,7 +89,7 @@ Quorum evidence of network acceptance: an aggregation of valid selected-validato
 
 ## Admission
 
-The lifecycle stage where a signed claim becomes part of the shared record. A Spend Attestation is **Attested** when the Verification Service signs it and **Admitted** when a validator-finalized statement covers its canonical head (statement-coverage granularity in v1; see `../02-proof-lifecycle/admission.md`).
+The lifecycle stage where a signed claim becomes part of the shared record. A Spend Attestation is **Attested** when the Verification Service signs it and **Admitted** when a validator-finalized statement covers its canonical head (statement-coverage granularity in v1; see `../protocol/core/admission.md`).
 
 ## Attestation Ledger
 
@@ -130,7 +130,7 @@ The per-`chainId` event stream of protocol system events (e.g., authority regist
 
 An aggregate sum of spend totals over a specified time window.
 
-In this protocol, GMV is always defined with explicit window and “as-of” semantics (see the Verified GMV Token in ../03-portability/spend-attestation-token.md).
+In this protocol, GMV is always defined with explicit window and “as-of” semantics (see the Verified GMV Token in ../protocol/portability/spend-attestation-token.md).
 
 ## Verified GMV
 
@@ -204,7 +204,7 @@ A stable identifier for a predicate definition used by routing/distribution, com
 
 A finite proof family used to express campaign rules over identity-free Spend Attestation Tokens. The v1 campaign primitive families are Spend Validity, Buyer State, Frequency / Intensity, Category / Competitive Relationship, Market / Context, and Outcome / Conversion.
 
-Campaign Spend Proof Primitives are defined in `../04-condition-layer/campaign-commitment.md`. They compose existing token, proof, scope, nullifier, reward, and commitment surfaces; they do not introduce a new core token type.
+Campaign Spend Proof Primitives are defined in `../protocol/applications/conditions/campaign-commitment.md`. They compose existing token, proof, scope, nullifier, reward, and commitment surfaces; they do not introduce a new core token type.
 
 ## Campaign
 
@@ -359,7 +359,7 @@ The `eventHash` of the current terminal head of a spend’s canonical spend-stre
 
 ## tokenHash
 
-The SHA-256 hash of an unsigned token’s RFC 8785 canonical JSON (the bytes that are signed), as defined in `../03-portability/spend-attestation-token.md`.
+The SHA-256 hash of an unsigned token’s RFC 8785 canonical JSON (the bytes that are signed), as defined in `../protocol/portability/spend-attestation-token.md`.
 
 **tokenHash is:** the signing/verification digest for portable tokens.  
 **tokenHash is not:** an `eventHash` and does not imply anything about the spend-stream beyond what the token claims.
@@ -367,7 +367,7 @@ The SHA-256 hash of an unsigned token’s RFC 8785 canonical JSON (the bytes tha
 ## leafHash
 
 The SHA-256 digest of a Merkle leaf preimage under the protocol’s Merkle conventions:
-- `leafHash = SHA-256(0x00 || leafBytes)` (see `../05-reward-and-settlement/settlement-bindings.md#merkle-tree` and `../03-portability/spend-attestation-token.md#spendheadsetroot-construction-normative`).
+- `leafHash = SHA-256(0x00 || leafBytes)` (see `../protocol/applications/economics/settlement-bindings.md#merkle-tree` and `../protocol/portability/spend-attestation-token.md#spendheadsetroot-construction-normative`).
 
 **leafHash is:** the domain-separated digest of a canonical leaf object.  
 **leafHash is not:** an `eventHash` or `tokenHash`, and does not carry stream linkage semantics.
@@ -375,7 +375,7 @@ The SHA-256 digest of a Merkle leaf preimage under the protocol’s Merkle conve
 ## emptyLeafHash
 
 The fixed padding hash used to pad Merkle trees to a power of two:
-- `emptyLeafHash = SHA-256(0x00 || "")` (see `../05-reward-and-settlement/settlement-bindings.md#merkle-tree`).
+- `emptyLeafHash = SHA-256(0x00 || "")` (see `../protocol/applications/economics/settlement-bindings.md#merkle-tree`).
 
 **emptyLeafHash is:** padding only.  
 **emptyLeafHash is not:** an admissible “real leaf”.

@@ -176,6 +176,31 @@ def sha256(path: Path) -> str:
     return sha256_bytes(path.read_bytes())
 
 
+def released_bytes(root: Path, relative: str) -> bytes:
+    """Read immutable released bytes from the release tag when available.
+
+    A later source candidate may reorganize living documentation and source
+    paths.  The released-artifact check must continue to validate the exact
+    tagged package, not reinterpret that candidate layout as a rewrite of the
+    released package.
+    """
+    tagged = subprocess.run(
+        ["git", "-C", str(root), "cat-file", "-e", f"{REQUIRED_TAG}:{relative}"],
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    if tagged.returncode == 0:
+        shown = subprocess.run(
+            ["git", "-C", str(root), "show", f"{REQUIRED_TAG}:{relative}"],
+            capture_output=True,
+            check=False,
+        )
+        require(shown.returncode == 0, f"unable to read released tag path: {relative}")
+        return shown.stdout
+    return (root / relative).read_bytes()
+
+
 def render_json(document: dict[str, Any]) -> bytes:
     return (json.dumps(document, indent=2, ensure_ascii=False) + "\n").encode("utf-8")
 
@@ -446,14 +471,20 @@ def validate_materialized_release(
 def validate_materialized_workspace(root: Path, plan: dict[str, Any], *, require_tag: bool) -> tuple[dict[str, dict[str, Any]], dict[str, bytes]]:
     require(git(root, "status", "--porcelain") == "", "materialized release verification requires a clean committed workspace")
     json_paths = {str(transition["path"]) for transition in plan["machineTransitions"]}
-    json_documents = {path: read_json(root / path) for path in json_paths}
+    json_documents = {
+        path: json.loads(released_bytes(root, path).decode("utf-8"))
+        for path in json_paths
+    }
     for transition in plan["machineTransitions"]:
         path = str(transition["path"])
         require(
             pointer_get(json_documents[path], str(transition["pointer"])) == transition["released"],
             f"released machine transition mismatch: {path}{transition['pointer']}",
         )
-    texts = {str(transition["path"]): (root / str(transition["path"])).read_text(encoding="utf-8") for transition in plan["documentationTransitions"]}
+    texts = {
+        str(transition["path"]): released_bytes(root, str(transition["path"])).decode("utf-8")
+        for transition in plan["documentationTransitions"]
+    }
     check_documentation(root, plan, "released", texts)
     rendered = {path: render_json(document) for path, document in json_documents.items()}
     rendered.update({path: text.encode("utf-8") for path, text in texts.items()})
