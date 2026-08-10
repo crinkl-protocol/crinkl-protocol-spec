@@ -14,7 +14,7 @@ Comprehensive evaluation producing the canonical Spend.
 
 *If SoftSpend is present, Hard Verification MAY use it as a hint but MUST be able to derive canonical Spend from ReceiptUpload alone.*
 
-Hard verification produces the canonical Spend record, which can be packaged as a Spend Attestation Token for downstream verification (see ../protocol/portability/spend-attestation-token.md).
+Hard verification produces the canonical Spend record, which can be packaged as a Spend Attestation Token for downstream verification (see ../portability/spend-attestation-token.md).
 
 **Requirements:**
 - Derive all required Spend fields (storeId, totalCents, currency, timestamp)

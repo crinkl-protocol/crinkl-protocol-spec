@@ -3,7 +3,7 @@
   "$id": "crinkl://protocol/schemas/issuer_registry_snapshot_v1",
   "title": "IssuerRegistrySnapshotV1",
   "description": "Immutable authority set at a point in time, including retired keys and validity windows, used to verify historical Spend Attestation issuer signatures.",
-  "$comment": "Derived from README.md#protocol-objects, the AUTHORITY_REGISTERED and AUTHORITY_REVOKED payloads in protocol/core/spend-event.md, and the signed-snapshot convention in 06-extensions/schemas/store-registry/store_registry_snapshot_token_v1.schema.json. The protocol snapshot is distinct from the W3C profile's dependent W3CIssuerKeyHistoryV1 serialization.",
+  "$comment": "Derived from README.md#protocol-objects, the AUTHORITY_REGISTERED and AUTHORITY_REVOKED payloads in protocol/core/spend-event.md, and the signed-snapshot convention in protocol/extensions/schemas/store-registry/store_registry_snapshot_token_v1.schema.json. The protocol snapshot is distinct from the W3C profile's dependent W3CIssuerKeyHistoryV1 serialization.",
   "type": "object",
   "additionalProperties": true,
   "required": ["registryId", "sequence", "asOf", "previousSnapshotRef", "keys", "signatures"],

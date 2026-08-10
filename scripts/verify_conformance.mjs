@@ -10,7 +10,7 @@ import { fileURLToPath } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..");
-const conformanceRoot = path.join(repoRoot, "07-conformance", "vectors", "v1");
+const conformanceRoot = path.join(repoRoot, "conformance", "vectors", "v1");
 const strictCoverage = process.argv.includes("--strict-coverage");
 const requireReleased = process.argv.includes("--require-released");
 const requiredKinds = new Set();
@@ -128,7 +128,7 @@ function runExternalVerifier(vectorMeta) {
     throw new Error(`unsupported external verifier descriptor for ${vectorMeta.kind}`);
   }
 
-  const profilesRoot = path.resolve(repoRoot, "07-conformance", "profiles");
+  const profilesRoot = path.resolve(repoRoot, "conformance", "profiles");
   const verifierPath = path.resolve(conformanceRoot, verifier.file);
   if (!isWithin(profilesRoot, verifierPath)) {
     throw new Error(`external verifier escapes released profile root: ${verifier.file}`);
@@ -170,7 +170,7 @@ function main() {
   for (const vectorMeta of manifest.vectors) {
     const kind = vectorMeta.kind;
     const vectorPath = path.resolve(conformanceRoot, vectorMeta.file);
-    const profilesRoot = path.resolve(repoRoot, "07-conformance", "profiles");
+    const profilesRoot = path.resolve(repoRoot, "conformance", "profiles");
     if (!isWithin(conformanceRoot, vectorPath) && !isWithin(profilesRoot, vectorPath)) {
       fail(failures, kind, "manifest", `vector escapes conformance roots: ${vectorMeta.file}`);
       continue;
