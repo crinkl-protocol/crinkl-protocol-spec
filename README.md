@@ -83,9 +83,9 @@ The target inventory contains fifteen protocol-level artifact families across
 Core, Portability, and Applications. Campaign vNext entries are adopted
 engineering objects mirrored here as additive `SPECIFIED_NOT_IMPLEMENTED`
 public candidates outside every released manifest. Their adopted source is
-`crinkl-protocol@184133e64bae81c614cc30283ca34382b3b089de`.
+`crinkl-protocol@bdac6d3f9f32a312544b3adadbb379f98607198f`.
 The exact
-[`PROOF_OF_MATCH_VERIFICATION` procedure profile](protocol/applications/artifacts/campaign_proof_of_match_procedure_profile_v1.json)
+[`PROOF_OF_MATCH_VERIFICATION` procedure profile](protocol/applications/artifacts/campaign_proof_of_match_procedure_profile_v2.json)
 is selected by its version and content reference, not by the procedure-family
 name alone.
 Anything not listed is prose, a role, state, deterministic procedure, or

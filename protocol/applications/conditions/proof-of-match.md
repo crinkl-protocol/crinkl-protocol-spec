@@ -102,6 +102,11 @@ proof-verifier inputs. A validator MUST reject any disagreement among the
 profile encoding, verifier inputs, named envelope entries, or
 `publicInputsCommitment`.
 
+The ProcedureProfile defines validator execution and certification semantics.
+The ProofProfile defines the cryptographic statement, witness relation, and
+proof-system relation. A ProcedureProfile that accepts a ProofProfile MUST bind
+it by content reference and MUST NOT redefine its cryptographic relation.
+
 ## Private witness categories
 
 Permitted category labels are:
@@ -196,10 +201,14 @@ The Epoch and proof profile define derivation and registry scope for each
 nullifier. `proofReplayNullifier` and `proofReplayRegistryRef` are always
 present. Entitlement nullifier and registry references are both present or both
 null; they are required when the committed Campaign policy can create or reserve
-an economic entitlement. A validator verifies the declared nullifier derivation
-and checks the required registry view. Issuing a `ValidatorCertificate` does
-not update that registry. The relying runtime or ledger must perform the named
-atomic write before it claims replay finality or economic admission.
+an economic entitlement. When derivation uses only public data, a validator
+recomputes it directly. When derivation uses private witness data, the verified
+proof relation establishes correct derivation; the validator verifies the
+exposed nullifier binding and checks that value against the required registry
+view. The validator does not fetch the private witness. Issuing a
+`ValidatorCertificate` does not update that registry. The relying runtime or
+ledger must perform the named atomic write before it claims replay finality or
+economic admission.
 
 ## Deterministic validator procedure
 

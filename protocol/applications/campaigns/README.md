@@ -17,7 +17,7 @@ The schemas and procedure profile in
 and
 [`protocol/applications/artifacts/`](../artifacts/)
 mirror the adopted engineering source at
-`crinkl-protocol@184133e64bae81c614cc30283ca34382b3b089de`. They remain
+`crinkl-protocol@bdac6d3f9f32a312544b3adadbb379f98607198f`. They remain
 unreleased public source candidates for this unimplemented Campaign family.
 They are not in a released public manifest and do not establish runtime
 support. Discarded Campaign drafts are not supported
@@ -273,6 +273,13 @@ Proof Validators verify a `ProofOfMatch` against its declared proof profile,
 public inputs, `CampaignEpoch` bindings, registry dependencies, and
 replay/nullifier rules. If the required quorum accepts the proof, they issue a
 `ValidatorCertificate` identifying the exact proof hash and procedure.
+
+The current
+[`ProcedureProfile V2`](../artifacts/campaign_proof_of_match_procedure_profile_v2.json)
+defines validator processing and certification, including the authenticated
+assignment timestamp used for `issuedAt`. The accepted ProofProfile defines the
+cryptographic statement and proof-system relation. The ProcedureProfile binds
+that ProofProfile by content reference and does not redefine its relation.
 
 The certificate establishes quorum acceptance of that subject under the
 declared procedure. It does not, by itself:
@@ -608,7 +615,7 @@ campaign are specified in
   boundaries; missing required evidence fails closed.
 - **Maturity and adoption:** the architecture, schemas, and exact procedure
   profile are adopted engineering objects at
-  `crinkl-protocol@184133e64bae81c614cc30283ca34382b3b089de` and remain
+  `crinkl-protocol@bdac6d3f9f32a312544b3adadbb379f98607198f` and remain
   `SPECIFIED_NOT_IMPLEMENTED`. This public source is not a released package,
   validator-network behavior, runtime support, deployment, or production
   state.
