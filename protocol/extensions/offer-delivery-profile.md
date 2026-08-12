@@ -11,7 +11,7 @@ normative: true
 >
 > This document defines the **message formats** and **verifier rules** for delivering brand offers to wallets and unlocking them using Crinkl protocol artifacts.
 >
-> It is intentionally minimal: it standardizes *how wallets and brands interoperate*, without defining a full campaign rule or settlement layer. Campaign rule composition is defined by `../applications/conditions/campaign-commitment.md`.
+> It is intentionally minimal: it standardizes *how wallets and brands interoperate*, without defining a full campaign rule or settlement layer. Target campaign composition is defined by `../applications/campaigns/README.md`; the older `campaign-commitment.md` page is a compatibility redirect.
 >
 > Implementation status: the message/profile boundary is normative. The demo
 > profile and private rollout proof interface are explicitly transitional until
@@ -21,12 +21,14 @@ normative: true
 
 This document is an offer-delivery profile. It is not the campaign primitive.
 
-Use `../applications/conditions/campaign-commitment.md` for:
+Use `../applications/campaigns/README.md` and
+`../applications/conditions/proof-of-match.md` for:
 
 - composing campaign rules from Spend Validity, Buyer State, Frequency / Intensity, Category / Competitive Relationship, Market / Context, and Outcome / Conversion
-- audience qualification and verified conversion terminology
-- verifier-signed conversion approval
-- settlement binding requirements
+- audience and conversion `ProofOfMatch` terminology
+- exact `CampaignEpoch` and rule-commitment bindings
+- `ValidatorCertificate`, `CampaignOutcome`, `RewardObligation`, and
+  `SettlementRecord` boundaries
 
 Use this document for:
 
@@ -54,7 +56,7 @@ This offer-delivery profile aims to make the following true:
 
 - No “user” object or protocol identity graph (wallets only).
 - No full campaign language with arbitrary composition (beyond statement registry).
-- No verified conversion settlement. See `../applications/conditions/campaign-commitment.md`.
+- No verified conversion settlement. See `../applications/campaigns/README.md`.
 - No promise that campaigns are broadcast end-to-end encrypted (delivery encryption is specified; broadcast privacy is deferred).
 - No reward policy math in-protocol (reward math is a Reward Layer concern; see `../applications/economics/reward-layer.md` + `../applications/economics/policy-layer.md`).
 
@@ -398,15 +400,24 @@ Recommended `rejection.code` values (non-exhaustive):
 **Encryption (normative):**
 - The brand MUST return `PromoRejectionV1` inside an encrypted envelope to `deliveryPublicKeySpkiBase64` (see `encryption-envelopes.md`).
 
-## 10) Reward issuance and Reward Commitment Tokens
+## 10) Reward issuance and legacy Reward Commitment Tokens
 
 Offer eligibility and delivery are distinct from reward issuance:
 
 - This offer-delivery profile MUST NOT require `RewardCommitmentTokenV1` as an eligibility input.
-- Reward issuance is an economic consequence recorded by Reward Ledger events and (optionally) anchored by the Commitment Layer (`../applications/economics/reward-layer.md`, `../core/spend-event.md`, `../applications/economics/settlement-bindings.md`).
+- In the target campaign architecture, an eligible `CampaignOutcome` creates a
+  `RewardObligation`; a `SettlementRecord` later records payment, reversal,
+  expiry, dispute, or another defined resolution. Reward Ledger events and the
+  Commitment Layer may remain supporting implementation evidence
+  (`../applications/economics/reward-layer.md`, `../core/spend-event.md`,
+  `../applications/economics/settlement-bindings.md`).
 - `RewardCommitmentTokenV1` exists to provide **verifiable proof that rewards were actually issued** (economic non-repudiation), and MAY be used for:
   - brand reconciliation/invoicing,
   - audit, and
   - partner reporting.
 
 **Privacy note (normative intent):** reward commitment tokens are recipient-scoped (`recipientId` is required). If brands receive reward commitment tokens, deployments SHOULD prefer blinded recipient schemas (`"1b"`/`"2b"`) to avoid creating a brand-visible wallet identity graph (see `../applications/economics/settlement-bindings.md#recipient-blinding`).
+
+`RewardCommitmentTokenV1` is a preserved legacy artifact, not the target
+`RewardObligationV1`. Offer delivery does not create either object, and a Proof
+Validator certificate over a match does not authorize payment.

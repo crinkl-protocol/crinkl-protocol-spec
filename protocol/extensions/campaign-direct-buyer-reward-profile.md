@@ -119,6 +119,28 @@ digest identify this `RELEASED` manifest. The release still provides no compiler
 or runtime implementation.
 
 Publication and launch remain separate. Even after publication, a Campaign
-cannot launch until its runtime, evidence sources, distributed Proof Validator
-profile, selected-validator finality policy, funding, and settlement gates are
-independently available.
+cannot launch until its runtime, evidence sources, any proof profile and
+`ValidatorCertificate` policy required by that runtime, funding, and settlement
+gates are independently available. This released profile does not establish a
+generic Proof Validator campaign-admission requirement.
+
+## Target campaign-architecture mapping
+
+The released V1 package and identifiers remain unchanged. For the additive
+target architecture, the closest direct-promotion composition is:
+
+```text
+CampaignEpoch
+-> SpendToken
+-> ProofOfMatch(CONVERSION)
+-> ValidatorCertificate
+-> CampaignOutcome
+-> RewardObligation
+-> SettlementRecord
+```
+
+There is no audience proof, assignment, or experiment arm unless a separate
+campaign policy requires it. A valid conversion creates an obligation directly
+only when the Epoch's committed economic policy does not require capacity,
+budget, inventory, FIFO, or other deterministic economic admission. The mapping
+does not claim that the released V1 objects already conform to the new schemas.

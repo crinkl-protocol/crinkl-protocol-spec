@@ -1,0 +1,285 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "crinkl://protocol/schemas/campaign_outcome_v1",
+  "title": "CampaignOutcomeV1",
+  "description": "Narrow deterministic composition of accepted Campaign facts and optional economic admission.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "tokenType",
+    "schemaVersion",
+    "protocol",
+    "outcomeId",
+    "campaignId",
+    "campaignEpochRef",
+    "audienceMatch",
+    "assignment",
+    "exposureRef",
+    "conversionMatch",
+    "conversionVerified",
+    "economicAdmission",
+    "experimentArm",
+    "nullifiers",
+    "measurement",
+    "rewardObligation",
+    "legacyEvidenceRefs",
+    "decidedAt",
+    "outcomeAuthorityRef",
+    "signatures"
+  ],
+  "properties": {
+    "tokenType": { "const": "CAMPAIGN_OUTCOME" },
+    "schemaVersion": { "const": 1 },
+    "protocol": { "$ref": "#/$defs/protocol" },
+    "outcomeId": { "$ref": "#/$defs/identifier" },
+    "campaignId": { "$ref": "#/$defs/identifier" },
+    "campaignEpochRef": { "$ref": "#/$defs/hashRef" },
+    "audienceMatch": { "$ref": "#/$defs/nullableAcceptedMatch" },
+    "assignment": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode", "assignmentRef"],
+          "properties": {
+            "mode": { "enum": ["ASSIGNMENT_RECORD", "APPLICATION_STATE"] },
+            "assignmentRef": { "$ref": "#/$defs/hashRef" }
+          }
+        }
+      ]
+    },
+    "exposureRef": { "$ref": "#/$defs/nullableHashRef" },
+    "conversionMatch": { "$ref": "#/$defs/acceptedMatch" },
+    "conversionVerified": { "const": true },
+    "economicAdmission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "required",
+        "policyRef",
+        "decision",
+        "authoritativeStateRef",
+        "evidenceRef",
+        "recordedAt"
+      ],
+      "properties": {
+        "required": { "type": "boolean" },
+        "policyRef": { "$ref": "#/$defs/nullableHashRef" },
+        "decision": { "enum": ["NOT_REQUIRED", "ADMITTED", "REJECTED"] },
+        "authoritativeStateRef": { "$ref": "#/$defs/nullableHashRef" },
+        "evidenceRef": { "$ref": "#/$defs/nullableHashRef" },
+        "recordedAt": { "oneOf": [{ "$ref": "#/$defs/timestamp" }, { "type": "null" }] }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "required": { "const": false } }, "required": ["required"] },
+          "then": {
+            "properties": {
+              "policyRef": { "type": "null" },
+              "decision": { "const": "NOT_REQUIRED" },
+              "authoritativeStateRef": { "type": "null" },
+              "evidenceRef": { "type": "null" },
+              "recordedAt": { "type": "null" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "required": { "const": true } }, "required": ["required"] },
+          "then": {
+            "properties": {
+              "policyRef": { "$ref": "#/$defs/hashRef" },
+              "decision": { "enum": ["ADMITTED", "REJECTED"] },
+              "authoritativeStateRef": { "$ref": "#/$defs/hashRef" },
+              "evidenceRef": { "$ref": "#/$defs/hashRef" },
+              "recordedAt": { "$ref": "#/$defs/timestamp" }
+            }
+          }
+        }
+      ]
+    },
+    "experimentArm": {
+      "oneOf": [{ "$ref": "#/$defs/identifier" }, { "type": "null" }]
+    },
+    "nullifiers": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["outcomeNullifier", "entitlementNullifier", "purchaseReuseNullifiers"],
+      "properties": {
+        "outcomeNullifier": { "$ref": "#/$defs/hashRef" },
+        "entitlementNullifier": { "$ref": "#/$defs/nullableHashRef" },
+        "purchaseReuseNullifiers": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 256,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/hashRef" }
+        }
+      }
+    },
+    "measurement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contributes", "measurementPolicyRef"],
+      "properties": {
+        "contributes": { "type": "boolean" },
+        "measurementPolicyRef": { "$ref": "#/$defs/nullableHashRef" }
+      }
+    },
+    "rewardObligation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["created", "rewardPolicyRef", "recipientBinding", "reward"],
+      "properties": {
+        "created": { "type": "boolean" },
+        "rewardPolicyRef": { "$ref": "#/$defs/nullableHashRef" },
+        "recipientBinding": {
+          "oneOf": [{ "$ref": "#/$defs/recipientBinding" }, { "type": "null" }]
+        },
+        "reward": {
+          "oneOf": [{ "$ref": "#/$defs/reward" }, { "type": "null" }]
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "created": { "const": true } }, "required": ["created"] },
+          "then": {
+            "properties": {
+              "rewardPolicyRef": { "$ref": "#/$defs/hashRef" },
+              "recipientBinding": { "$ref": "#/$defs/recipientBinding" },
+              "reward": { "$ref": "#/$defs/reward" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "created": { "const": false } }, "required": ["created"] },
+          "then": {
+            "properties": {
+              "rewardPolicyRef": { "type": "null" },
+              "recipientBinding": { "type": "null" },
+              "reward": { "type": "null" }
+            }
+          }
+        }
+      ]
+    },
+    "legacyEvidenceRefs": {
+      "type": "array",
+      "maxItems": 64,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/hashRef" }
+    },
+    "decidedAt": { "$ref": "#/$defs/timestamp" },
+    "outcomeAuthorityRef": { "$ref": "#/$defs/hashRef" },
+    "signatures": { "$ref": "#/$defs/signatures" }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "rewardObligation": {
+            "properties": { "created": { "const": true } },
+            "required": ["created"]
+          }
+        },
+        "required": ["rewardObligation"]
+      },
+      "then": {
+        "properties": {
+          "nullifiers": {
+            "properties": {
+              "entitlementNullifier": { "$ref": "#/$defs/hashRef" }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "rewardObligation": {
+            "properties": { "created": { "const": true } },
+            "required": ["created"]
+          }
+        },
+        "required": ["rewardObligation"]
+      },
+      "then": {
+        "properties": {
+          "economicAdmission": {
+            "properties": {
+              "decision": { "enum": ["NOT_REQUIRED", "ADMITTED"] }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "protocol": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["protocolVersion"],
+      "properties": { "protocolVersion": { "const": "1.0.0-rc.1" } }
+    },
+    "hashRef": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "nullableHashRef": { "oneOf": [{ "$ref": "#/$defs/hashRef" }, { "type": "null" }] },
+    "identifier": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$" },
+    "timestamp": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$" },
+    "acceptedMatch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["proofOfMatchRef", "validatorCertificateRef"],
+      "properties": {
+        "proofOfMatchRef": { "$ref": "#/$defs/hashRef" },
+        "validatorCertificateRef": { "$ref": "#/$defs/hashRef" }
+      }
+    },
+    "nullableAcceptedMatch": {
+      "oneOf": [{ "$ref": "#/$defs/acceptedMatch" }, { "type": "null" }]
+    },
+    "recipientBinding": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode", "recipientRef"],
+          "properties": {
+            "mode": { "const": "RECIPIENT_REFERENCE" },
+            "recipientRef": { "$ref": "#/$defs/hashRef" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode", "recipientCommitment"],
+          "properties": {
+            "mode": { "const": "RECIPIENT_COMMITMENT" },
+            "recipientCommitment": { "$ref": "#/$defs/hashRef" }
+          }
+        }
+      ]
+    },
+    "reward": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["amountBaseUnits", "assetRef"],
+      "properties": {
+        "amountBaseUnits": { "type": "string", "pattern": "^[1-9][0-9]{0,38}$" },
+        "assetRef": { "$ref": "#/$defs/hashRef" }
+      }
+    },
+    "signatures": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["issuedBy", "keyId", "publicKey", "objectHash", "signature"],
+      "properties": {
+        "issuedBy": { "$ref": "#/$defs/identifier" },
+        "keyId": { "$ref": "#/$defs/identifier" },
+        "publicKey": { "type": "string", "pattern": "^[A-Za-z0-9+/]{43}=$" },
+        "objectHash": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "signature": { "type": "string", "pattern": "^[A-Za-z0-9+/]{86}==$" }
+      }
+    }
+  }
+}

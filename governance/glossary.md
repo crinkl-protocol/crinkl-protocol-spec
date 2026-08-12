@@ -67,12 +67,18 @@ The party that receives commerce evidence, evaluates it under protocol rules ins
 
 ## Proof Validator
 
-Proof validator: a Crinkl protocol role that checks attestation admissibility, proof integrity, uniqueness, and settlement, and finalizes verified GMV. Unrelated to Solana consensus validators.
+A Crinkl protocol role, unrelated to Solana consensus validators, that
+independently verifies an exact public protocol subject under an exact named
+procedure and signs the canonical decision it reached.
 
-A party that independently re-verifies deterministic public protocol statements from committed material and co-signs the exact result it checked, so that claims can be admitted to the shared record (see `../protocol/core/admission.md`).
+**Proof Validator is:** a public-plane checker of schema, signatures, key
+authorization, proof profiles, public inputs, commitments, roots, arithmetic,
+and declared replay/nullifier registry views.
 
-**Proof Validator is:** a public-plane checker of correctness — schema, signatures, key authorization, commitments, roots, totals, nullifier replay scope.
-**Proof Validator is not:** a reader of receipts, a prover of ground truth, or a payout authority.
+**Proof Validator is not:** a reader of private receipts or witnesses unless a
+profile explicitly discloses them; a prover of ground truth; a Campaign
+authority; an assignment, economic-admission, Outcome, Reward Ledger, escrow,
+or payout authority.
 
 The role is open by conformance and economic exposure through the authority registry. PriceChain Labs is currently the sole reference operator on the alpha network. The alpha quorum is identity/threshold based, not economically bonded or staked; economic bonding, staking, and slashing are deferred to Phase 5 and are not live.
 
@@ -80,12 +86,26 @@ The role is open by conformance and economic exposure through the authority regi
 
 The bounded subset of registered proof validators assigned to one statement by an authority-signed assignment artifact. Only selected validators verify, sign, and count toward quorum for that statement; non-selected validators observe and replay certificates asynchronously. Eligibility is not duty.
 
+## ValidatorCertificate
+
+A Proof Validator quorum certificate over one exact `subjectType` and
+`subjectHash` under one exact `procedureId`, validator-set reference, and
+quorum-policy reference. Target `ValidatorCertificateV1` is restricted to
+`PROOF_OF_MATCH_VERIFICATION` and declares `stateTransition = NONE`.
+
+**ValidatorCertificate is:** quorum acceptance of the exact subject under the
+declared procedure.
+
+**ValidatorCertificate is not:** global immutability, a canonical nullifier
+write, Campaign assignment, an Outcome, a Reward Obligation, payout authority,
+production-chain finality, or proof that a purchase occurred in the world.
+
 ## Finality Certificate
 
-Quorum evidence of network acceptance: an aggregation of valid selected-validator signatures over the identical deterministic result, under a named registry snapshot, assignment, and quorum rule (`floor(2N/3) + 1` over the selected committee in v1).
-
-**Finality Certificate is:** the only artifact that represents network acceptance of a statement.
-**Finality Certificate is not:** payout authority, production chain finality, or proof that covered purchases occurred in the world.
+A legacy generic term for exact historical certificate families. It MUST NOT be
+used as an alias for `ValidatorCertificateV1` without a versioned adapter that
+proves identical subject, procedure, registry, quorum, decision, and signer
+semantics.
 
 ## Admission
 
@@ -202,9 +222,9 @@ A stable identifier for a predicate definition used by routing/distribution, com
 
 ## Campaign Spend Proof Primitive
 
-A finite proof family used to express campaign rules over identity-free Spend Attestation Tokens. The v1 campaign primitive families are Spend Validity, Buyer State, Frequency / Intensity, Category / Competitive Relationship, Market / Context, and Outcome / Conversion.
-
-Campaign Spend Proof Primitives are defined in `../protocol/applications/conditions/campaign-commitment.md`. They compose existing token, proof, scope, nullifier, reward, and commitment surfaces; they do not introduce a new core token type.
+Deprecated legacy grouping for Campaign rule features such as Spend validity,
+buyer state, frequency, category, market, and conversion. The canonical proof
+mechanism is one `ProofOfMatch` whose committed rule may compose those features.
 
 ## Campaign
 
@@ -228,9 +248,16 @@ The reviewed set of EligibleMerchant entries bound to a CampaignEpoch by `target
 
 ## CampaignEpoch
 
-An immutable, append-only, funded rule window. A CampaignEpoch binds `campaignId`, `epochId`, `epochVersion`, effective window, timing rule, predicate hash, RuleSetHash, TargetMerchantSet reference, reward rule hash, FundingTranche, claim level, previous epoch reference when present, issuer authority, and creation time.
+The immutable, signed version of a Campaign's rules and economic terms. It
+binds or commits audience rule when present, conversion rule, assignment policy
+when present, reward policy, economic-admission/capacity/budget/allocation/reuse
+constraints, timing and observation windows, resolution and dispute policies,
+required proof profiles, Campaign authority, and applicable registries.
 
-**Publication boundary:** this is the earlier public `v1.0.0-rc.2` conceptual/experimental CampaignEpoch candidate. It is not wire-compatible with the exact signed adopted engineering `CampaignEpochV1` used by the Campaign Experiment Profile or the adopted-engineering dependency in the Direct Buyer Reward release-candidate package. See `../protocol/extensions/campaign-experiment-profile.md` and `../protocol/extensions/campaign-direct-buyer-reward-profile.md`.
+`CampaignEpochV2` is an additive `SPECIFIED_NOT_IMPLEMENTED` target. Both
+incompatible historical `CampaignEpochV1` schemas remain preserved and must be
+resolved by exact ID and digest. A generic `CampaignCommitment` is not a second
+canonical Campaign object.
 
 ## CampaignAmendment
 
@@ -271,11 +298,59 @@ runtime, deployment, or production availability.
 
 ## ProofOfMatch
 
-The campaign-facing spelling of Proof of Match. A ProofOfMatch evaluates spend against exactly one CampaignEpoch and is downstream of Spend Attestation.
+One standardized Crinkl ZK statement establishing that one or more
+authenticated private commerce facts satisfy the audience or conversion rule
+committed by exactly one Campaign Epoch. Purpose is `AUDIENCE` or `CONVERSION`;
+it does not select a different proof family.
+
+## AssignmentRecord
+
+Optional portable evidence of deterministic experimental-arm assignment under
+the Epoch policy. It is a protocol object only when assignment crosses a system
+or authority boundary, supports a dispute, or has an independent consumer;
+otherwise assignment remains application state. Assignment does not prove
+exposure.
+
+## Economic Admission
+
+The deterministic, auditable decision that an accepted match receives capacity
+under the Epoch's budget, inventory, FIFO/allocation, or recipient-limit policy.
+It is runtime or ledger state by default, not a ZK proof and not automatically a
+standalone object. Proof validity alone does not establish entitlement when the
+Epoch makes admission capacity-dependent.
+
+## CampaignOutcome
+
+The narrow application-level composition of the applicable Epoch, accepted
+audience and conversion matches, optional assignment/exposure, optional
+economic admission, and nullifiers. It determines measurement contribution and
+whether committed policy creates an exact Reward Obligation. It is not a ZK
+primitive or discretionary payout approval.
+
+## RewardObligation
+
+A recipient-scoped reward liability deterministically created by an eligible
+Campaign Outcome. It records what is owed under an exact resolution policy and
+does not prove payment.
 
 ## RewardCommitment
 
-The campaign-facing spelling of Reward Commitment. A RewardCommitment is produced only after valid proof material such as ProofOfMatch and records downstream economic consequence without changing spend truth.
+Legacy exact object/token-family terminology. Adopted `RewardCommitmentV1` and
+`RewardCommitmentTokenV1` retain their published meanings. The canonical target
+liability term is `RewardObligation`; do not call an obligation a cryptographic
+commitment unless its construction actually uses commitment semantics.
+
+## SettlementRecord
+
+Evidence that one Reward Obligation was paid, reversed, expired, disputed,
+cancelled, or otherwise resolved. It is separate from liability creation and
+does not establish proof validity or Campaign entitlement.
+
+## CampaignReport
+
+Derived application output over assignments, exposure coverage, economic
+admissions, and Campaign Outcomes under a frozen measurement method. It is not
+a cryptographic primitive, Validator Certificate, or per-user causal claim.
 
 ## Eligibility Rule
 
@@ -283,7 +358,8 @@ The audience-side criteria a campaign uses to admit a holder into a campaign flo
 
 ## Eligibility Proof
 
-Evidence that a holder satisfies a campaign's Eligibility Rule. Eligibility Proof is a role a ProofOfMatch plays inside a campaign, not a distinct object type.
+Legacy/business alias for `ProofOfMatch(purpose = AUDIENCE)`, not a distinct
+proof type.
 
 ## Conversion Rule
 
@@ -291,25 +367,27 @@ The outcome-side criteria a campaign uses to determine that its required commerc
 
 ## Conversion Proof
 
-Evidence that a holder satisfied a campaign's Conversion Rule. Conversion Proof is a role a ProofOfMatch plays inside a campaign, not a distinct object type.
+Legacy/business alias for `ProofOfMatch(purpose = CONVERSION)`, not a distinct
+proof type.
 
 ## Audience Qualification
 
-A campaign-scoped proof that a holder satisfies the audience side of a Campaign Rule. Audience Qualification is a marketing-facing term for qualification proof over Campaign Spend Proof Primitives.
-
-Audience Qualification MUST NOT mint a Spend Attestation Token. It only proves campaign qualification within an explicit scope and time window.
+Business term for an accepted `ProofOfMatch(AUDIENCE)`. It does not mint a
+Spend Token, assign an experimental arm, prove exposure, or create economic
+entitlement.
 
 ## Verified Conversion
 
-A campaign-scoped proof that the required commerce outcome occurred. In payout-bearing campaigns, a Verified Conversion references a Spend Attestation Token produced by the normal verification pipeline.
-
-Verified Conversion is a marketing-facing term for an Outcome / Conversion proof. It is not a new token type.
+Business term for an accepted `ProofOfMatch(CONVERSION)` over one or more Spend
+Tokens produced by the normal verification pipeline. It is not a new token,
+Campaign Outcome, or economic-admission decision.
 
 ## Conversion Approval
 
-A ProofOfMatch that has reached finality for a campaign flow: the state in which Audience Qualification and Verified Conversion have satisfied a Campaign Rule and settlement may proceed. Conversion Approval is a state, not a distinct object type.
-
-The finalized state binds the campaign parameters, qualification proof, conversion Spend Token hash, payout terms, settlement scope, and settlement nullifier.
+Deprecated legacy state name. It MUST NOT represent post-conversion payout
+discretion. The target composes an accepted conversion match and any required
+economic admission into `CampaignOutcome`; only an eligible admitted Outcome
+creates a Reward Obligation.
 
 ## Issuer Key History
 
@@ -317,9 +395,11 @@ The sequence of an issuer's key registrations and revocations over time. Issuer 
 
 ## Campaign Settlement Commitment
 
-A public settlement commitment for cleared campaign conversions. It is represented by `CAMPAIGN_SETTLEMENT_COMMITTED` plus a Merkle root over `CampaignSettlementLeafV1` leaves.
-
-Campaign Settlement Commitment is not a token and does not publish raw audience proofs, raw Spend Tokens, wallet identities, raw receipt data, or sensitive market details. It binds campaign settlement to campaign parameters, verifier approval, conversion Spend Token hash, payout totals, authority signature, and public chain anchoring.
+Legacy public batch/root evidence represented by
+`CAMPAIGN_SETTLEMENT_COMMITTED` and `CampaignSettlementLeafV1`. It is not a
+Reward Obligation, Settlement Record, proof certificate, or evidence that one
+recipient liability was paid. Exact historical privacy and root semantics
+remain preserved by the legacy settlement profile.
 
 ## ZK Witness
 

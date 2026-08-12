@@ -5,9 +5,18 @@ version: v1
 normative: true
 ---
 
-# Reward Commitment
+# Reward Commitment legacy artifacts
 
-Reward Commitment is downstream of valid spend proof. It records economic consequence and recipient-scoped inclusion; it does not define spend truth.
+This page preserves exact historical `RewardCommitmentV1` and
+`RewardCommitmentTokenV1` meanings. The canonical target Campaign liability is
+[`RewardObligation`](../campaigns/README.md#39-rewardobligation), named for what
+it does rather than implying a separate cryptographic commitment construction.
+
+`RewardCommitmentV1` is an adopted Applications obligation with an Epoch,
+reward policy, `proofOfMatchRef`, recipient, reward, funding lineage,
+authorization, and signature. `RewardCommitmentTokenV1` is separate portable
+recipient-scoped batch-inclusion evidence. Neither name may be generalized to
+mean Outcome construction or completed payment.
 
 ## Reward Commitment Token
 
@@ -27,11 +36,21 @@ A Reward Commitment Token:
 
 Reward commitments are batch-level, recipient-scoped, and derive from Reward Ledger events (REWARD_*_ISSUED) plus a system-stream commitment event (REWARD_BATCH_COMMITTED and related).
 
-## Campaign Epoch Binding
+## Target Campaign mapping
 
-For campaign flows, a Reward Commitment is produced only after a valid ProofOfMatch for exactly one CampaignEpoch. The Reward Commitment or campaign settlement leaf MUST bind directly or by hash reference to the selected `campaignId`, `epochId`, `ruleSetHash`, approval artifact, and payout terms.
+For the target Campaign architecture, an accepted `ProofOfMatch` alone does not
+always create economic entitlement. A capacity-limited Campaign also requires
+deterministic economic admission. `CampaignOutcome` composes those facts, and
+only an eligible admitted Outcome creates `RewardObligationV1`.
 
-A CampaignAmendment MUST NOT lower, remove, or invalidate rewards already earned under an earlier epoch. Earned rewards are immutable once committed. Later epochs may change reward rules only prospectively through a new `rewardRuleHash`; they do not alter prior Reward Commitment validity.
+An adapter from adopted `RewardCommitmentV1` to `RewardObligationV1` MUST supply
+and verify the exact `campaignOutcomeRef`, entitlement nullifier, and resolution
+policy that the older object does not carry. It MUST NOT infer those bindings
+from a similar Campaign ID, proof name, or payout amount.
+
+A Campaign authority cannot lower, remove, or alter a liability already created
+under committed terms. A Validator Certificate establishes proof acceptance; it
+does not authorize the Obligation or payment.
 
 **Recipient scoping:** Reward Commitment Tokens require recipient binding for verification of economic issuance. The `recipientId` field is REQUIRED. The representation of `recipientId` is schema-defined:
 - `WalletRef` (transparent, schema v1a/v2a)

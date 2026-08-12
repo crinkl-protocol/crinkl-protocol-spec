@@ -20,7 +20,7 @@ Example v1 promo predicates:
 - “If `canonical.totalCents >= 1000`, grant promo”
 - “If `canonical.storeHash ∈ allowlist` AND `canonical.timestamp ≥ now - 30 days`, grant promo”
 
-It is intentionally **not** a complex campaign DSL. It defines the proof spine we can build on, while keeping v1 statement types closed and interoperable. Campaign rule composition is defined separately in `../applications/conditions/campaign-commitment.md`.
+It is intentionally **not** a complex campaign DSL. It defines the proof spine we can build on, while keeping v1 statement types closed and interoperable. Target campaign rule composition and generalized match-proof semantics are defined separately in `../applications/campaigns/README.md` and `../applications/conditions/proof-of-match.md`.
 
 For the normative offer-delivery wire formats (campaign message, eligibility claim, encrypted delivery), see `offer-delivery-profile.md` and `encryption-envelopes.md`.
 
@@ -144,7 +144,7 @@ published verifier registry manifest.
 
 Routing/distribution predicates MAY reference `statementId` via a separate predicate definition and `predicateId` (see `offer-delivery-profile.md`); this does not alter statement verification semantics.
 
-This document does not standardize campaign types. Campaign rule composition is defined in `../applications/conditions/campaign-commitment.md`.
+This document does not standardize campaign types. Target campaign rule composition is defined in `../applications/campaigns/README.md`; legacy V1 statement identifiers remain unchanged until a versioned migration adopts the target proof profiles.
 
 ### 4) Proof binding rules (tighten what must be bound)
 

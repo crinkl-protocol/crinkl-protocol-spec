@@ -5,7 +5,15 @@ version: v1
 normative: true
 ---
 
-# Campaign Settlement GCD
+# Campaign Settlement GCD (legacy public commitment profile)
+
+> **Compatibility status:** this document preserves the published
+> `CampaignSettlementLeafV1`, `CampaignSettlementBatchV1`, and
+> `CAMPAIGN_SETTLEMENT_COMMITTED` shapes. Those artifacts are legacy public
+> commitments; they are not the target `CampaignOutcome`, `RewardObligation`,
+> or `SettlementRecord` objects defined by the
+> [canonical campaign architecture](../campaigns/README.md). No field or hash
+> rule below is silently changed by the campaign architecture refactor.
 
 Campaign settlement on-chain means public commitments, not full campaign
 operations.
@@ -15,10 +23,10 @@ the fact, did not publish a settlement root detached from that rule, did not
 expose private buyer data on-chain, and did not let random actors mutate the
 record.
 
-The minimum primitive is:
+The legacy minimum primitive is:
 
 ```text
-frozen campaign rule -> verified conversions -> settlement leaves -> settlement root -> public settlement anchor
+frozen campaign rule -> legacy approved-conversion evidence -> settlement leaves -> settlement root -> public settlement anchor
 ```
 
 This GCD is not the verifier. It is the public object that the verifier,
@@ -26,11 +34,11 @@ signature system, or future proof system MUST bind to.
 
 ## Scope
 
-This document freezes the public settlement commitment standard for campaign
-settlement. It relies on:
+This document preserves the public settlement commitment standard for the
+legacy profile. It relies on:
 
-- `CampaignRuleV1` and `CampaignEpochV1` from
-  `../protocol/applications/conditions/campaign-commitment.md`
+- the deprecated `CampaignRuleV1` and legacy `CampaignEpochV1` description
+  retained at `../conditions/campaign-commitment.md`
 - reward and commitment conventions from `settlement-bindings.md`
 - system-stream event envelope rules from `../../core/spend-event.md`
 - chain-specific anchoring rules from extension bindings such as
@@ -46,6 +54,10 @@ It does not define:
 - raw conversion storage
 - arbitrary campaign DSL composition
 
+It also does not define proof-verification quorum acceptance, economic
+admission, reward-obligation creation, payment execution, or liability
+resolution. A public settlement anchor is not proof that a liability was paid.
+
 When a campaign includes `CampaignAuthorityV1` from
 `../../extensions/merchant-authority.md`, this GCD does define the public hash
 binding required to prove the frozen campaign rule carried that authority. It
@@ -53,7 +65,7 @@ does not define how the private evidence behind a merchant claim was reviewed.
 
 ## Canonical Public Objects
 
-The campaign settlement GCD is composed from these named objects:
+The legacy campaign settlement GCD is composed from these named objects:
 
 ```text
 CampaignRuleV1
@@ -81,8 +93,10 @@ hashes: {
 
 ## Settlement Leaf
 
-`CampaignSettlementLeafV1` is the stable public commitment shape for one
-approved conversion settlement.
+`CampaignSettlementLeafV1` is the preserved public commitment shape for one
+legacy approved-conversion settlement entry. The field name `approvalHash` is
+an exact V1 wire field. It MUST NOT be interpreted as target validator payout
+authority or as a post-conversion discretionary `ConversionApproval`.
 
 ```text
 CampaignSettlementLeafV1 {
@@ -111,6 +125,14 @@ CampaignSettlementLeafV1 {
 
 The leaf MUST NOT contain raw receipt data, wallet identity, OCR text, line-item
 details, or private buyer history.
+
+For target campaign implementations, an adapter that emits this legacy leaf
+MUST identify the exact `CampaignOutcome` and `RewardObligation` from which the
+entry was derived. If entitlement was capacity-dependent, the adapter MUST also
+bind the economic-admission evidence referenced by the outcome. Because V1 has
+no canonical fields for those target references, this adapter is not defined by
+this document and no implementation may claim lossless target conformance from
+`approvalHash` alone.
 
 For merchant-official campaigns, `campaignAuthorityHash` is REQUIRED and MUST
 match the `CampaignRuleV1.hashes.campaignAuthorityHash` value. The referenced
@@ -173,6 +195,12 @@ CAMPAIGN_SETTLEMENT_COMMITTED {
 The event signer MUST be authorized for the campaign settlement commitment
 surface at `committedAt`.
 
+The signer publishes the legacy batch commitment. It does not act as a Proof
+Validator, accept a `ProofOfMatch`, create a `RewardObligation`, or prove that a
+payment rail resolved one. A target `SettlementRecord` requires authoritative
+resolution evidence for the obligation and may reference this event only as
+supporting or anchoring evidence.
+
 ## Verification Requirements
 
 A verifier MUST:
@@ -189,6 +217,10 @@ A verifier MUST:
 7. Verify the settlement batch matches the frozen campaign rule and epoch.
 8. Verify the `CAMPAIGN_SETTLEMENT_COMMITTED` signer authority and `txRef`.
 9. Reject private buyer data in public commitment artifacts.
+
+These checks verify the legacy commitment profile only. They do not substitute
+for `PROOF_OF_MATCH_VERIFICATION`, economic admission, or verification of a
+target `SettlementRecord`.
 
 ## Required Security Test Classes
 

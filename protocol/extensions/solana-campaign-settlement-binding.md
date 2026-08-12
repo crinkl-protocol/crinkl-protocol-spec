@@ -7,6 +7,13 @@ normative: true
 
 # Solana Campaign Settlement Binding
 
+> **Compatibility status:** this V1 extension binds the legacy campaign
+> settlement GCD and preserves its Anchor account, instruction, event, and PDA
+> names. In particular, the on-chain account named `CampaignCommitment` is not
+> the target canonical campaign object and does not compete with
+> `CampaignEpoch`. This extension does not yet define a target
+> `SettlementRecord` binding.
+
 This document maps the campaign settlement GCD in
 `../applications/economics/campaign-settlement-gcd.md` to a Solana Anchor
 program. It defines implementation names, PDA seeds, instruction bindings, event
@@ -24,9 +31,15 @@ CampaignSettlementBatchV1
 CAMPAIGN_SETTLEMENT_COMMITTED
 ```
 
-The Solana binding defines only how those objects are committed on Solana. It
-does not define campaign creation policy, sponsor funding, FIFO matching,
-promoter queues, payout rails, creator eligibility, or token-holder rules.
+The Solana binding defines only how those legacy objects are committed on
+Solana. It does not define campaign creation policy, sponsor funding, economic
+admission, FIFO matching, promoter queues, payout rails, creator eligibility,
+or token-holder rules.
+
+Neither `publish_campaign_commitment` nor `commit_settlement_batch` verifies a
+`ProofOfMatch`, issues a `ValidatorCertificate`, creates a
+`RewardObligation`, or proves its payment. Solana transaction finality is chain
+finality for the named account write, not Proof Validator quorum acceptance.
 
 ## Interface Artifacts
 
@@ -128,6 +141,11 @@ bump: u8
 commitments, or commit settlement batches.
 
 ### CampaignCommitment
+
+`CampaignCommitment` below is an immutable V1 Anchor account type and instruction
+surface. It MUST remain named as published for compatibility. New portable
+campaign specifications MUST use `CampaignEpoch`; an adapter must state the
+exact Epoch fields and hashes represented by this legacy account.
 
 Required fields:
 
@@ -234,6 +252,11 @@ Mapping:
 `SettlementBatchCommitted` is the Solana evidence for
 `CAMPAIGN_SETTLEMENT_COMMITTED`.
 
+It is supporting evidence for a target `SettlementRecord` only when a later
+adopted binding also identifies the exact `RewardObligation`, resolution status,
+amount, asset, authoritative settlement rail, and any successor or dispute
+record. The V1 event alone does not provide that mapping.
+
 The System-Stream event payload MUST include:
 
 ```text
@@ -335,3 +358,12 @@ The Solana binding MUST NOT encode:
 - raw conversion data
 - private buyer data
 - arbitrary campaign DSL composition
+
+## Target migration boundary
+
+This V1 extension remains usable for its exact published commitment purpose.
+Target conformance requires a new version or separate adopted profile that maps
+`CampaignEpoch`, `CampaignOutcome`, `RewardObligation`, and
+`SettlementRecord` without renaming or repurposing the V1 accounts. The target
+profile must also distinguish economic-admission state from settlement and must
+not assign Proof Validators authority to reserve or move funds.

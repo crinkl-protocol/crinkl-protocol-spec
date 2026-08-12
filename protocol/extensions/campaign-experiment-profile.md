@@ -46,7 +46,14 @@ Until a public release vendors those exact artifacts:
 
 ## Legacy public CampaignEpoch disambiguation
 
-The conceptual `CampaignEpochV1` shape in `../applications/conditions/campaign-commitment.md` and `../schemas/experimental/campaign-epoch.v1.schema.json` is an earlier public experimental candidate. It uses fields such as `epochId`, `ruleSetHash`, `fundingTrancheId`, `issuerAuthority`, and `claimLevel`. It is not the exact signed adopted engineering `CampaignEpochV1` referenced by `CampaignExperimentPolicyV1`.
+The conceptual `CampaignEpochV1` shape retained by the deprecated compatibility
+page at `../applications/conditions/campaign-commitment.md` and by
+`../schemas/experimental/campaign-epoch.v1.schema.json` is an earlier public
+experimental candidate. It uses fields such as `epochId`, `ruleSetHash`,
+`fundingTrancheId`, `issuerAuthority`, and `claimLevel`. It is not the exact
+signed adopted engineering `CampaignEpochV1` referenced by
+`CampaignExperimentPolicyV1`, and neither V1 shape silently conforms to the
+target `CampaignEpochV2` source candidate.
 
 For this profile:
 
@@ -104,7 +111,13 @@ accept exact policy, Epoch, context, authority, and publication evidence
 -> return or perform the arm-specific action
 ```
 
-The durable assignment is implementation-local. This publication draft does not adopt a portable assignment object, storage schema, API, table, route, service, queue, cloud, or chain.
+The durable assignment is implementation-local in this V1 publication draft.
+The target campaign architecture introduces an `AssignmentRecordV1` source
+candidate only for deployments where assignment crosses a system or authority
+boundary, has an independent consumer, or must support a dispute. This profile
+does not silently adopt that wire object; an adapter or later profile version
+must bind the exact experiment policy, assignment scope, nullifier, deterministic
+inputs, arm, and persistence reference.
 
 An identical retry may return the committed assignment. A retry that would change the policy reference, bucket, or arm for the same scope/nullifier pair must fail closed; it must not overwrite or select a convenient arm. The nullifier remains scope-specific and must not become a stable participant or cross-experiment correlation identifier.
 
@@ -119,6 +132,12 @@ These are separate facts:
 - missing or positive-only exposure data is `INDETERMINATE`, not control;
 - an accepted commerce outcome remains bounded by the Epoch's conversion, timing, attribution, evidence, correction, and deduplication rules; and
 - incrementality is a cohort- or market-level result under the frozen measurement method, never a field on one receipt, Spend Attestation, assignment, conversion, reward, settlement, or payout.
+
+Under the target vocabulary, an accepted conversion is composed into a
+`CampaignOutcome`; a treatment outcome may create a `RewardObligation`, while
+both eligible treatment and holdout outcomes may feed a derived
+`CampaignReport`. These names do not mutate the adopted V1 policy bytes or make
+assignment, exposure, outcome, obligation, or report interchangeable.
 
 Observed conversion, modeled or estimated lift, and controlled incrementality must not be represented as interchangeable claim strengths. Cryptographic validity does not upgrade evidence completeness or causal strength; estimator and report semantics remain governed by the frozen method and business/offchain reporting contract.
 

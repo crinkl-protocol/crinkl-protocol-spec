@@ -13,7 +13,7 @@ normative: true
 > - a brand campaign’s **eligibility rule** (`statementId`), and
 > - the **proof artifact** a verifier expects (`proofSystem`, `circuitId`, `verifyingKeyId`).
 >
-> The offer-delivery profile in `offer-delivery-profile.md` does not define arbitrary campaign rules. Campaign rule composition uses `../applications/conditions/campaign-commitment.md`; this catalog maps referenced **statement types** to supported proof circuits.
+> The offer-delivery profile in `offer-delivery-profile.md` does not define arbitrary campaign rules. Target campaign rule composition uses `../applications/campaigns/README.md` and `../applications/conditions/proof-of-match.md`; this catalog maps referenced **statement types** to supported proof circuits. Existing identifiers remain legacy implementation evidence until explicitly mapped to a target proof profile and version.
 >
 > Implementation status: `H2_PROMO_OPEN_MIN_V1` is the current public beta
 > profile. Additional private-witness proof profiles are release-reserved until

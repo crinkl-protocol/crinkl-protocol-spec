@@ -1,0 +1,175 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "crinkl://protocol/schemas/campaign_epoch_v2",
+  "title": "CampaignEpochV2",
+  "description": "Immutable signed Campaign rules and economic terms with optional audience, assignment, and economic-admission composition.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "tokenType",
+    "schemaVersion",
+    "protocol",
+    "epochSeriesId",
+    "epochVersion",
+    "previousEpochRef",
+    "campaignNamespaceRef",
+    "campaignId",
+    "lockedAt",
+    "effectiveFrom",
+    "effectiveTo",
+    "issuedAt",
+    "audienceRuleRef",
+    "conversionRuleRef",
+    "assignmentPolicyRef",
+    "rewardPolicyRef",
+    "economicAdmissionPolicyRef",
+    "capacityPolicyRef",
+    "budgetPolicyRef",
+    "inventoryPolicyRef",
+    "allocationPolicyRef",
+    "reusePolicyRef",
+    "timingPolicyRef",
+    "observationPolicyRef",
+    "settlementResolutionPolicyRef",
+    "disputePolicyRef",
+    "requiredProofProfiles",
+    "campaignAuthorityRef",
+    "registryRefs",
+    "signatures"
+  ],
+  "properties": {
+    "tokenType": { "const": "CAMPAIGN_EPOCH" },
+    "schemaVersion": { "const": 2 },
+    "protocol": { "$ref": "#/$defs/protocol" },
+    "epochSeriesId": { "$ref": "#/$defs/identifier" },
+    "epochVersion": { "type": "integer", "minimum": 1, "maximum": 9007199254740991 },
+    "previousEpochRef": { "$ref": "#/$defs/nullableHashRef" },
+    "campaignNamespaceRef": { "$ref": "#/$defs/hashRef" },
+    "campaignId": { "$ref": "#/$defs/identifier" },
+    "lockedAt": { "$ref": "#/$defs/timestamp" },
+    "effectiveFrom": { "$ref": "#/$defs/timestamp" },
+    "effectiveTo": { "$ref": "#/$defs/timestamp" },
+    "issuedAt": { "$ref": "#/$defs/timestamp" },
+    "audienceRuleRef": { "$ref": "#/$defs/nullableHashRef" },
+    "conversionRuleRef": { "$ref": "#/$defs/hashRef" },
+    "assignmentPolicyRef": { "$ref": "#/$defs/nullableHashRef" },
+    "rewardPolicyRef": { "$ref": "#/$defs/nullableHashRef" },
+    "economicAdmissionPolicyRef": { "$ref": "#/$defs/nullableHashRef" },
+    "capacityPolicyRef": { "$ref": "#/$defs/nullableHashRef" },
+    "budgetPolicyRef": { "$ref": "#/$defs/nullableHashRef" },
+    "inventoryPolicyRef": { "$ref": "#/$defs/nullableHashRef" },
+    "allocationPolicyRef": { "$ref": "#/$defs/nullableHashRef" },
+    "reusePolicyRef": { "$ref": "#/$defs/hashRef" },
+    "timingPolicyRef": { "$ref": "#/$defs/hashRef" },
+    "observationPolicyRef": { "$ref": "#/$defs/hashRef" },
+    "settlementResolutionPolicyRef": { "$ref": "#/$defs/nullableHashRef" },
+    "disputePolicyRef": { "$ref": "#/$defs/hashRef" },
+    "requiredProofProfiles": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["audienceProofProfileRef", "conversionProofProfileRef"],
+      "properties": {
+        "audienceProofProfileRef": { "$ref": "#/$defs/nullableHashRef" },
+        "conversionProofProfileRef": { "$ref": "#/$defs/hashRef" }
+      }
+    },
+    "campaignAuthorityRef": { "$ref": "#/$defs/hashRef" },
+    "registryRefs": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 64,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/hashRef" }
+    },
+    "signatures": { "$ref": "#/$defs/signatures" }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "epochVersion": { "const": 1 } },
+        "required": ["epochVersion"]
+      },
+      "then": {
+        "properties": { "previousEpochRef": { "type": "null" } }
+      },
+      "else": {
+        "properties": { "previousEpochRef": { "$ref": "#/$defs/hashRef" } }
+      }
+    },
+    {
+      "if": {
+        "properties": { "audienceRuleRef": { "type": "null" } },
+        "required": ["audienceRuleRef"]
+      },
+      "then": {
+        "properties": {
+          "requiredProofProfiles": {
+            "properties": { "audienceProofProfileRef": { "type": "null" } }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "requiredProofProfiles": {
+            "properties": { "audienceProofProfileRef": { "$ref": "#/$defs/hashRef" } }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "anyOf": [
+          { "properties": { "capacityPolicyRef": { "$ref": "#/$defs/hashRef" } }, "required": ["capacityPolicyRef"] },
+          { "properties": { "budgetPolicyRef": { "$ref": "#/$defs/hashRef" } }, "required": ["budgetPolicyRef"] },
+          { "properties": { "inventoryPolicyRef": { "$ref": "#/$defs/hashRef" } }, "required": ["inventoryPolicyRef"] },
+          { "properties": { "allocationPolicyRef": { "$ref": "#/$defs/hashRef" } }, "required": ["allocationPolicyRef"] }
+        ]
+      },
+      "then": {
+        "properties": {
+          "economicAdmissionPolicyRef": { "$ref": "#/$defs/hashRef" }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "rewardPolicyRef": { "$ref": "#/$defs/hashRef" } },
+        "required": ["rewardPolicyRef"]
+      },
+      "then": {
+        "properties": {
+          "settlementResolutionPolicyRef": { "$ref": "#/$defs/hashRef" }
+        }
+      },
+      "else": {
+        "properties": {
+          "settlementResolutionPolicyRef": { "type": "null" }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "protocol": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["protocolVersion"],
+      "properties": { "protocolVersion": { "const": "1.0.0-rc.1" } }
+    },
+    "hashRef": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "nullableHashRef": { "oneOf": [{ "$ref": "#/$defs/hashRef" }, { "type": "null" }] },
+    "identifier": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$" },
+    "timestamp": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$" },
+    "signatures": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["issuedBy", "keyId", "publicKey", "objectHash", "signature"],
+      "properties": {
+        "issuedBy": { "$ref": "#/$defs/identifier" },
+        "keyId": { "$ref": "#/$defs/identifier" },
+        "publicKey": { "type": "string", "pattern": "^[A-Za-z0-9+/]{43}=$" },
+        "objectHash": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "signature": { "type": "string", "pattern": "^[A-Za-z0-9+/]{86}==$" }
+      }
+    }
+  }
+}
