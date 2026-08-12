@@ -84,6 +84,10 @@ Core, Portability, and Applications. Campaign vNext entries are adopted
 engineering objects mirrored here as additive `SPECIFIED_NOT_IMPLEMENTED`
 public candidates outside every released manifest. Their adopted source is
 `crinkl-protocol@184133e64bae81c614cc30283ca34382b3b089de`.
+The exact
+[`PROOF_OF_MATCH_VERIFICATION` procedure profile](protocol/applications/artifacts/campaign_proof_of_match_procedure_profile_v1.json)
+is selected by its version and content reference, not by the procedure-family
+name alone.
 Anything not listed is prose, a role, state, deterministic procedure, or
 off-protocol function unless an optional profile gives it a separate schema.
 `VerificationPolicy`, `IssuerRegistrySnapshot`, `AttestationStatus`, and
