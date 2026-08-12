@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "crinkl://protocol/schemas/campaigns/campaign_epoch_v1",
-  "title": "CampaignEpochV1",
+  "$id": "crinkl://protocol/schemas/campaigns/campaign_epoch_v2",
+  "title": "CampaignEpochV2",
   "description": "Immutable signed Campaign rules and economic terms with optional audience, assignment, and economic-admission composition.",
   "type": "object",
   "additionalProperties": false,
@@ -39,7 +39,7 @@
   ],
   "properties": {
     "tokenType": { "const": "CAMPAIGN_EPOCH" },
-    "schemaVersion": { "const": 1 },
+    "schemaVersion": { "const": 2 },
     "protocol": { "$ref": "#/$defs/protocol" },
     "epochSeriesId": { "$ref": "#/$defs/identifier" },
     "epochVersion": { "type": "integer", "minimum": 1, "maximum": 9007199254740991 },

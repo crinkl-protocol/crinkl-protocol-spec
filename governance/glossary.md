@@ -249,8 +249,9 @@ when present, reward policy, economic-admission/capacity/budget/allocation/reuse
 constraints, timing and observation windows, resolution and dispute policies,
 required proof profiles, Campaign authority, and applicable registries.
 
-`CampaignEpochV1` is the first canonical Campaign schema candidate and is
-`SPECIFIED_NOT_IMPLEMENTED`.
+`CampaignEpochV2` is the reduced-spine Campaign schema candidate and is
+`SPECIFIED_NOT_IMPLEMENTED`. Adopted `CampaignEpochV1` remains a distinct,
+immutable object-family version.
 
 ## ProofOfMatch
 

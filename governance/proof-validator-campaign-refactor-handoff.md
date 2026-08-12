@@ -14,12 +14,22 @@ runtime behavior.
 Exact validator source examined:
 `crinkl-proof-validator origin/main@e282562da6a2f1edac5a97d7ae4591023c8453a5`.
 
+Exact adopted protocol source:
+`crinkl-protocol main@184133e64bae81c614cc30283ca34382b3b089de`.
+
 ## 1. Required procedure
 
 ```text
 procedureId: PROOF_OF_MATCH_VERIFICATION
+procedureVersion: 1
+procedureProfileRef: sha256:5472a7d975a6abbc8c8b99b85e3007bb3d57a980d203d36898d91ed746a58fb0
 subjectType: PROOF_OF_MATCH
 ```
+
+The exact public profile artifact is
+[`campaign_proof_of_match_procedure_profile_v1.json`](../protocol/applications/artifacts/campaign_proof_of_match_procedure_profile_v1.json).
+The procedure ID names an unversioned family; executable behavior is selected
+only by the full triplet above.
 
 ### Subject hash
 
@@ -157,8 +167,8 @@ For an accepted subject, construct this exact JCS object:
   "subjectType": "PROOF_OF_MATCH",
   "subjectHash": "sha256:<64 lowercase hex>",
   "procedureId": "PROOF_OF_MATCH_VERIFICATION",
-  "procedureVersion": "<version>",
-  "procedureProfileRef": "sha256:<64 lowercase hex>",
+  "procedureVersion": "1",
+  "procedureProfileRef": "sha256:5472a7d975a6abbc8c8b99b85e3007bb3d57a980d203d36898d91ed746a58fb0",
   "applicableEpochRef": "sha256:<64 lowercase hex>",
   "validatorSetReference": "sha256:<64 lowercase hex>",
   "quorumPolicyReference": "sha256:<64 lowercase hex>",

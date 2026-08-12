@@ -24,7 +24,7 @@ Revision: 2026-08-12T14:53:00Z
 | CA-02 | Inventory objects, schemas, producers, consumers, hashes, signatures, certificates, and cross-references | Codex /root | complete | governance | complete inventory | migration inventory |
 | CA-03 | Record the collision table and select one canonical term per mechanism | Codex /root | complete | governance | collision dispositions | evidence document |
 | CA-04 | Establish canonical architecture, glossary, authority matrix, producer/consumer matrix, lifecycle, and economic-admission boundary | Codex /root | complete | protocol | required matrices and lifecycle | Campaign architecture document |
-| CA-05 | Add first canonical Campaign V1 schemas | Codex /root | complete | schemas | seven schema-valid object families | campaign schema directory |
+| CA-05 | Add the reduced Campaign schema families | Codex /root | complete | schemas | seven schema-valid object families | campaign schema directory |
 | CA-06 | Refactor Campaign commitment and ProofOfMatch pages | Codex /root | complete | protocol | one canonical composition | conditions documents |
 | CA-07 | Update settlement, admission, extension, glossary, index, and README references | Codex /root | complete | repository docs | living references resolve | cumulative diff |
 | CA-08 | Add Monster experiment, direct-promotion, and capacity-limited narratives | Codex /root | complete | conformance | three complete narratives | conformance narrative |

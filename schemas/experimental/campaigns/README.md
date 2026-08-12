@@ -1,24 +1,34 @@
-# Campaign V1 schema candidates
+# Campaign schema candidates
 
 Status: `SPECIFIED_NOT_IMPLEMENTED`.
 
-These are the first canonical schema candidates for the unimplemented Campaign
-object family. They are not listed in a released manifest and do not establish
-runtime support. No discarded Campaign draft is a supported predecessor, so
-these schemas require no aliases, adapters, or inherited version numbers.
+These are the public mirrors of the reduced-spine schemas adopted at
+`crinkl-protocol@184133e64bae81c614cc30283ca34382b3b089de` for the unimplemented
+Campaign object family. They are not listed in a released public manifest and
+do not establish runtime support. `CampaignEpochV2` has a successor identity because its
+required fields, signed bytes, and validation meaning differ from adopted
+`CampaignEpochV1`; the V1 schema and its released profile bindings remain
+unchanged. Prototype artifacts without compatibility standing require no
+aliases or adapters.
 
 Spend Token schemas and the SOFT-to-HARD verification pipeline are outside this
 directory and unchanged.
 
 | Schema | Family decision |
 |---|---|
-| `campaign_epoch_v1.schema.json` | first immutable signed Campaign rule and economic-policy object |
+| `campaign_epoch_v2.schema.json` | reduced-spine successor to the adopted signed Campaign Epoch V1 family |
 | `proof_of_match_v1.schema.json` | first canonical serialized ProofOfMatch envelope |
 | `validator_certificate_v1.schema.json` | first certificate restricted to `PROOF_OF_MATCH_VERIFICATION` |
 | `assignment_record_v1.schema.json` | portable only for a named cross-system, dispute, or independent-consumer use |
 | `campaign_outcome_v1.schema.json` | first narrow Outcome composition |
 | `reward_obligation_v1.schema.json` | first recipient-scoped Campaign liability family |
 | `settlement_record_v1.schema.json` | first liability-resolution record |
+| `campaign_proof_of_match_procedure_profile_v1.schema.json` | exact schema for the adopted content-addressed procedure profile |
+
+The matching artifact is
+[`campaign_proof_of_match_procedure_profile_v1.json`](../../../protocol/applications/artifacts/campaign_proof_of_match_procedure_profile_v1.json).
+Its canonical JSON content reference is
+`sha256:5472a7d975a6abbc8c8b99b85e3007bb3d57a980d203d36898d91ed746a58fb0`.
 
 ## Common content references and signatures
 

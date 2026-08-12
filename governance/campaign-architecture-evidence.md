@@ -18,7 +18,7 @@ guide.
 | Repository | Exact branch and commit | Authority used here |
 |---|---|---|
 | `crinkl-protocol-spec` | `origin/main@700be7942efecb5863acb764f004b122f9e3c5fa` | public source wording at the start of this refactor |
-| `crinkl-protocol` | `origin/main@47df2a1f6bdb7aa53d70060401cd0297e2547362` | adopted engineering experiments and escrow-profile evidence |
+| `crinkl-protocol` | `main@184133e64bae81c614cc30283ca34382b3b089de` | adopted reduced-spine schemas and exact procedure profile; historical experiments and escrow-profile evidence |
 | `crinkl-platform` | `origin/main@42d28cc06f8456cf293f9eded04c3726e1b706af` | current alpha source behavior |
 | `crinkl-proof-validator` | `origin/main@e282562da6a2f1edac5a97d7ae4591023c8453a5` | current validator procedure and certificate evidence |
 | `campaign-escrow-program` | `origin/main@8f29e539c2360b16fc2c08de20262ea5c289c324` | candidate escrow execution evidence |
@@ -65,7 +65,7 @@ artifacts.
 | Item | Kind | Producer / authority | Primary binding | Consumer | Status |
 |---|---|---|---|---|---|
 | SpendToken | issuer-authenticated user-held commerce fact | Verification Issuer | issuer key, verification policy, status, canonical head | prover and relying verifier | `IMPLEMENTED` |
-| CampaignEpochV1 | signed serialized Campaign definition | Campaign authority | rules, policies, economics, windows, proof profiles, registries | prover, validator, runtime, Reward Ledger, settlement | `SPECIFIED_NOT_IMPLEMENTED` |
+| CampaignEpochV2 | signed serialized Campaign definition | Campaign authority | rules, policies, economics, windows, proof profiles, registries | prover, validator, runtime, Reward Ledger, settlement | `SPECIFIED_NOT_IMPLEMENTED` |
 | ProofOfMatchV1 | standardized ZK statement envelope | holder or authorized prover | exact Epoch, rule, proof profile, Spend/head inputs, issuer/policy dependencies, nullifiers, result | Proof Validators | `SPECIFIED_NOT_IMPLEMENTED` |
 | PROOF_OF_MATCH_VERIFICATION | deterministic validator procedure | each selected Proof Validator independently | proof subject hash, procedure profile, public inputs, registries, replay rules | certificate assembler and Campaign runtime | `SPECIFIED_NOT_IMPLEMENTED` |
 | ValidatorCertificateV1 | quorum certificate over one exact proof subject | selected Proof Validators | subject, procedure, validator set, quorum policy, signatures | Campaign runtime and Outcome verifier | `SPECIFIED_NOT_IMPLEMENTED` |
@@ -142,7 +142,7 @@ Status applies to the exact row, not to a similarly named broader system.
 | Boost Halo2 proofs | `PROTOTYPE` | Rust proof service, circuits, routes, and tests exist; canonical V1 conformance is not claimed |
 | generalized ProofOfMatchV1 | `SPECIFIED_NOT_IMPLEMENTED` | first canonical envelope in this source candidate |
 | generalized Campaign-to-ZK compilation | `PLANNED` | no arbitrary Epoch rule compiler found |
-| Campaign-authority signing | `PROTOTYPE` | signed experiments exist; canonical CampaignEpochV1 support is not established |
+| Campaign-authority signing | `PROTOTYPE` | signed experiments exist; reduced-spine CampaignEpochV2 support is not established |
 | current profile-specific Campaign admission procedure | `PROTOTYPE` | validator and Platform producer/consumer code exists; it is not a canonical Campaign protocol predecessor, and later code removal requires an exact runtime and stored-payload inventory |
 | Campaign admission | `PLANNED` | not specified because no distinct security purpose is currently demonstrated |
 | PROOF_OF_MATCH_VERIFICATION | `SPECIFIED_NOT_IMPLEMENTED` | specification and validator handoff only |
@@ -162,16 +162,19 @@ Status applies to the exact row, not to a similarly named broader system.
 
 ## 8. Schema and release decision
 
-1. `CampaignEpochV1`, `ProofOfMatchV1`, `ValidatorCertificateV1`,
+1. `CampaignEpochV2`, `ProofOfMatchV1`, `ValidatorCertificateV1`,
    `AssignmentRecordV1`, `CampaignOutcomeV1`, `RewardObligationV1`, and
-   `SettlementRecordV1` are the first canonical families.
-   `CampaignEpochV1` uses the scoped schema ID
-   `crinkl://protocol/schemas/campaigns/campaign_epoch_v1` so it cannot collide
-   with an immutable vendored release payload that used an unscoped ID.
-2. The source candidates remain outside `versions/release.json` and every
-   released manifest.
-3. A future adopted version must add exact conformance vectors, independent
-   review, identifier inventory, maturity, and runtime acceptance evidence.
+   `SettlementRecordV1` form the reduced-spine Campaign schema set.
+   `CampaignEpochV2` uses the schema ID
+   `crinkl://protocol/schemas/campaigns/campaign_epoch_v2`. Its successor
+   identity preserves adopted `CampaignEpochV1`, whose required fields,
+   signed bytes, and released profile bindings remain distinct and immutable.
+2. The adopted engineering objects remain outside `versions/release.json` and
+   every released public manifest.
+3. Engineering adoption supplies exact conformance vectors and a
+   content-addressed procedure profile. A future public release still requires
+   its own review, identifier inventory, maturity, and release evidence;
+   runtime acceptance remains separately governed.
 4. No compatibility claim may be inferred from a similar object or field name
    in an implementation repository.
 5. Existing release tags are not rewritten. Their contents remain accessible
@@ -193,7 +196,7 @@ against public-spec base
 | `python3 scripts/check_repository_layout.py` | PASS; living links valid; immutable release payloads and the rc.8-pinned settlement document are checked at their release identity rather than used as living Campaign inputs |
 | `git diff --check` | PASS |
 | Draft 2020-12 `check_schema` over `schemas/experimental/campaigns/*.schema.json` | PASS; seven schemas |
-| repository-wide `$id` collision check for the seven Campaign schemas | PASS; seven unique IDs; canonical Epoch uses the scoped `.../campaigns/campaign_epoch_v1` ID |
+| repository-wide `$id` collision check for the seven Campaign schemas | PASS; seven unique IDs; reduced-spine Epoch uses the successor `.../campaigns/campaign_epoch_v2` ID |
 | positive instance validation for all seven Campaign schemas | PASS |
 | negative conditional vectors for Epoch audience/profile and succession; Proof entitlement pair, producer authority, and input mode; Outcome admission shape and rejected-admission reward; paid Settlement Record transaction binding | PASS; eight rejected |
 | `node scripts/verify_conformance.mjs` | PASS; 99 checks, 16 executable kinds, 3 data-only kinds |

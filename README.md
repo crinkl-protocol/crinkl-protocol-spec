@@ -80,8 +80,14 @@ Core protocol validity does not depend on campaigns, rewards, Solana, ZK, MCP, R
 ## Protocol Objects
 
 The target inventory contains fifteen protocol-level artifact families across
-Core, Portability, and Applications. Campaign vNext entries are additive
-`SPECIFIED_NOT_IMPLEMENTED` candidates outside every released manifest.
+Core, Portability, and Applications. Campaign vNext entries are adopted
+engineering objects mirrored here as additive `SPECIFIED_NOT_IMPLEMENTED`
+public candidates outside every released manifest. Their adopted source is
+`crinkl-protocol@184133e64bae81c614cc30283ca34382b3b089de`.
+The exact
+[`PROOF_OF_MATCH_VERIFICATION` procedure profile](protocol/applications/artifacts/campaign_proof_of_match_procedure_profile_v1.json)
+is selected by its version and content reference, not by the procedure-family
+name alone.
 Anything not listed is prose, a role, state, deterministic procedure, or
 off-protocol function unless an optional profile gives it a separate schema.
 `VerificationPolicy`, `IssuerRegistrySnapshot`, `AttestationStatus`, and
@@ -99,7 +105,7 @@ OM4/OM4r). None of this adds fields to `SpendAttestation`,
 | `SpendAttestationToken` | Portability | Native identity-minimized form. |
 | `SpendAttestationCredential` | Portability | W3C VC 2.0 serialization. |
 | [`SpendPredicate`](protocol/applications/conditions/schemas/spend_predicate_v1.schema.json) | Rule | Reusable rule over one or more Spend Attestations. (untagged candidate, OM4r) |
-| [`CampaignEpoch`](protocol/applications/campaigns/README.md#32-campaignepoch) | Campaign | Immutable signed Campaign rules and economic terms; first canonical V1 candidate. |
+| [`CampaignEpoch`](protocol/applications/campaigns/README.md#32-campaignepoch) | Campaign | Immutable signed Campaign rules and economic terms; reduced-spine V2 candidate. |
 | [`ProofOfMatch`](protocol/applications/conditions/proof-of-match.md) | Proof | Purpose-scoped ZK statement over authenticated commerce facts; target V1 candidate. |
 | [`ValidatorCertificate`](protocol/applications/campaigns/README.md#34-validatorcertificate) | Proof acceptance | Quorum acceptance of one exact proof subject under one exact procedure; target V1 candidate. |
 | [`AssignmentRecord`](protocol/applications/campaigns/README.md#35-assignmentrecord) | Experiment | Optional portable deterministic arm assignment when an independent consumer/dispute boundary requires it; target V1 candidate. |
