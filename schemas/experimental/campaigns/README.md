@@ -2,9 +2,10 @@
 
 Status: `SPECIFIED_NOT_IMPLEMENTED`.
 
-These are reduced-spine schema candidates for the unimplemented Campaign
-object family. They are not listed in a released manifest and do not establish
-runtime support. `CampaignEpochV2` has a successor identity because its
+These are the public mirrors of the reduced-spine schemas adopted at
+`crinkl-protocol@184133e64bae81c614cc30283ca34382b3b089de` for the unimplemented
+Campaign object family. They are not listed in a released public manifest and
+do not establish runtime support. `CampaignEpochV2` has a successor identity because its
 required fields, signed bytes, and validation meaning differ from adopted
 `CampaignEpochV1`; the V1 schema and its released profile bindings remain
 unchanged. Prototype artifacts without compatibility standing require no
@@ -22,6 +23,12 @@ directory and unchanged.
 | `campaign_outcome_v1.schema.json` | first narrow Outcome composition |
 | `reward_obligation_v1.schema.json` | first recipient-scoped Campaign liability family |
 | `settlement_record_v1.schema.json` | first liability-resolution record |
+| `campaign_proof_of_match_procedure_profile_v1.schema.json` | exact schema for the adopted content-addressed procedure profile |
+
+The matching artifact is
+[`campaign_proof_of_match_procedure_profile_v1.json`](../../../protocol/applications/artifacts/campaign_proof_of_match_procedure_profile_v1.json).
+Its canonical JSON content reference is
+`sha256:5472a7d975a6abbc8c8b99b85e3007bb3d57a980d203d36898d91ed746a58fb0`.
 
 ## Common content references and signatures
 

@@ -18,7 +18,7 @@ guide.
 | Repository | Exact branch and commit | Authority used here |
 |---|---|---|
 | `crinkl-protocol-spec` | `origin/main@700be7942efecb5863acb764f004b122f9e3c5fa` | public source wording at the start of this refactor |
-| `crinkl-protocol` | `origin/main@47df2a1f6bdb7aa53d70060401cd0297e2547362` | adopted engineering experiments and escrow-profile evidence |
+| `crinkl-protocol` | `main@184133e64bae81c614cc30283ca34382b3b089de` | adopted reduced-spine schemas and exact procedure profile; historical experiments and escrow-profile evidence |
 | `crinkl-platform` | `origin/main@42d28cc06f8456cf293f9eded04c3726e1b706af` | current alpha source behavior |
 | `crinkl-proof-validator` | `origin/main@e282562da6a2f1edac5a97d7ae4591023c8453a5` | current validator procedure and certificate evidence |
 | `campaign-escrow-program` | `origin/main@8f29e539c2360b16fc2c08de20262ea5c289c324` | candidate escrow execution evidence |
@@ -169,10 +169,12 @@ Status applies to the exact row, not to a similarly named broader system.
    `crinkl://protocol/schemas/campaigns/campaign_epoch_v2`. Its successor
    identity preserves adopted `CampaignEpochV1`, whose required fields,
    signed bytes, and released profile bindings remain distinct and immutable.
-2. The source candidates remain outside `versions/release.json` and every
-   released manifest.
-3. A future adopted version must add exact conformance vectors, independent
-   review, identifier inventory, maturity, and runtime acceptance evidence.
+2. The adopted engineering objects remain outside `versions/release.json` and
+   every released public manifest.
+3. Engineering adoption supplies exact conformance vectors and a
+   content-addressed procedure profile. A future public release still requires
+   its own review, identifier inventory, maturity, and release evidence;
+   runtime acceptance remains separately governed.
 4. No compatibility claim may be inferred from a similar object or field name
    in an implementation repository.
 5. Existing release tags are not rewritten. Their contents remain accessible

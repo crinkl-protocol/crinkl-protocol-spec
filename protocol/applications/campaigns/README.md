@@ -12,11 +12,15 @@ This document defines the target Campaign vocabulary. It composes existing
 Spend evidence without changing Spend Token issuance, verification-policy,
 issuer-key-history, attestation-status, or Spend Stream rules.
 
-The schemas in
+The schemas and procedure profile in
 [`schemas/experimental/campaigns/`](../../../schemas/experimental/campaigns/)
-are the first canonical, unreleased source candidates for this unimplemented
-Campaign family. They are not in a released conformance manifest and do not
-establish runtime support. Discarded Campaign drafts are not supported
+and
+[`protocol/applications/artifacts/`](../artifacts/)
+mirror the adopted engineering source at
+`crinkl-protocol@184133e64bae81c614cc30283ca34382b3b089de`. They remain
+unreleased public source candidates for this unimplemented Campaign family.
+They are not in a released public manifest and do not establish runtime
+support. Discarded Campaign drafts are not supported
 predecessors. This refactor does not change Spend Token or SOFT-to-HARD
 verification compatibility. That scoped protection is not a claim that those
 are the only wire- or production-sensitive Crinkl surfaces; each artifact is
@@ -602,7 +606,9 @@ campaign are specified in
   registry dependencies, nullifiers, admission state, Outcome composition, and
   liability resolution are independently checkable at their named authority
   boundaries; missing required evidence fails closed.
-- **Maturity and adoption:** the architecture and schemas are
-  `SPECIFIED_NOT_IMPLEMENTED` source candidates. They are not adopted
-  engineering objects, a released public package, validator-network behavior,
-  runtime support, deployment, or production state.
+- **Maturity and adoption:** the architecture, schemas, and exact procedure
+  profile are adopted engineering objects at
+  `crinkl-protocol@184133e64bae81c614cc30283ca34382b3b089de` and remain
+  `SPECIFIED_NOT_IMPLEMENTED`. This public source is not a released package,
+  validator-network behavior, runtime support, deployment, or production
+  state.

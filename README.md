@@ -80,8 +80,10 @@ Core protocol validity does not depend on campaigns, rewards, Solana, ZK, MCP, R
 ## Protocol Objects
 
 The target inventory contains fifteen protocol-level artifact families across
-Core, Portability, and Applications. Campaign vNext entries are additive
-`SPECIFIED_NOT_IMPLEMENTED` candidates outside every released manifest.
+Core, Portability, and Applications. Campaign vNext entries are adopted
+engineering objects mirrored here as additive `SPECIFIED_NOT_IMPLEMENTED`
+public candidates outside every released manifest. Their adopted source is
+`crinkl-protocol@184133e64bae81c614cc30283ca34382b3b089de`.
 Anything not listed is prose, a role, state, deterministic procedure, or
 off-protocol function unless an optional profile gives it a separate schema.
 `VerificationPolicy`, `IssuerRegistrySnapshot`, `AttestationStatus`, and

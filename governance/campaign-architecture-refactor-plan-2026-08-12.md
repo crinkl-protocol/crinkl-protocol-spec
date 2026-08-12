@@ -18,7 +18,7 @@ Campaign vocabulary. The controlling architecture is documented in
 | Source | Branch | Commit | Use in this slice |
 |---|---|---|---|
 | `crinkl-protocol-spec` | `origin/main` | `700be7942efecb5863acb764f004b122f9e3c5fa` | edited public specification |
-| `crinkl-protocol` | `origin/main` | `47df2a1f6bdb7aa53d70060401cd0297e2547362` | adopted object and escrow-profile evidence |
+| `crinkl-protocol` | `main` | `184133e64bae81c614cc30283ca34382b3b089de` | adopted reduced-spine objects and exact procedure profile; historical escrow-profile evidence |
 | `crinkl-platform` | `origin/main` | `42d28cc06f8456cf293f9eded04c3726e1b706af` | current alpha runtime evidence only |
 | `crinkl-proof-validator` | `origin/main` | `e282562da6a2f1edac5a97d7ae4591023c8453a5` | validator handoff gap evidence only |
 | `campaign-escrow-program` | `origin/main` | `8f29e539c2360b16fc2c08de20262ea5c289c324` | candidate escrow execution evidence only |
@@ -83,9 +83,10 @@ SpendToken
    Ed25519 object-reference construction. `ProofOfMatch` and
    `ValidatorCertificate` retain their separately defined subject/decision hash
    constructions.
-7. The new schemas remain `SPECIFIED_NOT_IMPLEMENTED` source candidates outside
-   every released manifest until separately adopted, reviewed, versioned,
-   published, and implemented.
+7. The new schemas and exact procedure profile are adopted engineering objects
+   at `crinkl-protocol@184133e64bae81c614cc30283ca34382b3b089de`. They remain
+   `SPECIFIED_NOT_IMPLEMENTED` public source candidates outside every released
+   manifest until separately reviewed, versioned, published, and implemented.
 8. `PROOF_OF_MATCH_VERIFICATION` is the only required validator procedure.
    Campaign admission is added only if a future design proves a distinct trust
    failure, consumer, and state transition.
