@@ -24,9 +24,8 @@ Canonical entrypoint for version 1 of the Crinkl Protocol specification. Each se
 - [../protocol/extensions/zk-proof-extension.md](../protocol/extensions/zk-proof-extension.md) — optional zero-knowledge extension layer
 - [../protocol/extensions/zk-foundation.md](../protocol/extensions/zk-foundation.md) — minimum viable promo flow (ZK spine)
 - [../protocol/extensions/zk-circuit-catalog.md](../protocol/extensions/zk-circuit-catalog.md) — mapping from statement types to proof circuits (optional extension)
-- [../protocol/applications/conditions/campaign-commitment.md](../protocol/applications/conditions/campaign-commitment.md) — campaign rule composition from finite spend proof primitives (optional extension)
-- [../protocol/extensions/campaign-experiment-profile.md](../protocol/extensions/campaign-experiment-profile.md) — public publication draft for the adopted engineering cross-vertical experiment profile; not released `v1.0.0-rc.2` conformance and runtime unavailable
-- [../protocol/extensions/campaign-direct-buyer-reward-profile.md](../protocol/extensions/campaign-direct-buyer-reward-profile.md) — released `v1.0.0-rc.3` / conformance suite 2 sponsor-neutral direct buyer-reward profile; byte-pinned package and executable verifier present, with runtime separately unavailable
+- [../protocol/applications/campaigns/README.md](../protocol/applications/campaigns/README.md) — canonical reduced Campaign architecture, authority model, economic-admission boundary, and first V1 schemas (`SPECIFIED_NOT_IMPLEMENTED`)
+- [../protocol/applications/conditions/proof-of-match.md](../protocol/applications/conditions/proof-of-match.md) — canonical `ProofOfMatch(AUDIENCE|CONVERSION)` envelope and verification procedure
 - [../protocol/extensions/merchant-authority.md](../protocol/extensions/merchant-authority.md) — optional merchant claim authority for official merchant actions
 - [../protocol/extensions/offer-delivery-profile.md](../protocol/extensions/offer-delivery-profile.md) — offer delivery profile + verifier rules (optional extension)
 - [../protocol/extensions/encryption-envelopes.md](../protocol/extensions/encryption-envelopes.md) — encrypted envelope formats for wallet/brand messages (optional extension)
@@ -36,6 +35,10 @@ Canonical entrypoint for version 1 of the Crinkl Protocol specification. Each se
 - [change-process.md](change-process.md) — authority, change-control, and CI requirements
 - [versioning.md](versioning.md) — governance and upgrade processes
 - [refactor-record.md](refactor-record.md) — non-normative proof-lifecycle refactor history and preserved tensions
+- [campaign-architecture-evidence.md](campaign-architecture-evidence.md) — source inventory, collision decisions, Boost mapping, deletion-test results, and current-versus-target status
+- [proof-validator-campaign-refactor-handoff.md](proof-validator-campaign-refactor-handoff.md) — exact non-implementing handoff for `PROOF_OF_MATCH_VERIFICATION`
+- [../conformance/narratives/campaign-acceptance.md](../conformance/narratives/campaign-acceptance.md) — Monster and capacity-limited Campaign acceptance narratives
+- [../diagrams/campaign-architecture.md](../diagrams/campaign-architecture.md) — canonical Campaign flow and authority-boundary diagram
 
 ## Protocol Requirements
 

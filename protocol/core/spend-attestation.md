@@ -77,7 +77,9 @@ Determinism is satisfied when LLM normalization is constrained to a closed choic
 Beyond internal event streams, the protocol can produce portable or downstream artifacts that systems verify without requiring raw receipt access or user identity:
 
 - **Spend Attestation Token:** portable, identity-excluded claim about canonical Spend attestation for a `spendId` (see `../portability/spend-attestation-token.md`)
-- **Reward Commitment Token:** downstream Merkle inclusion proof for committed rewards (see `../protocol/applications/economics/reward-commitment.md`)
+- **Reward artifacts:** downstream application-layer evidence; Campaign
+  liability and resolution use `RewardObligation` and `SettlementRecord` (see
+  `../applications/campaigns/README.md`)
 - **Verified GMV Token:** downstream aggregate spend snapshot (see `../protocol/applications/economics/gmv-token.md`)
 - **Verified Spend Distribution Token:** downstream dimensional aggregate snapshot (see `../protocol/applications/economics/distribution-token.md`)
 

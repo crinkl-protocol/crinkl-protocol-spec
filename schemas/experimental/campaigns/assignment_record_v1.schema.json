@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "crinkl://protocol/schemas/assignment_record_v1",
+  "title": "AssignmentRecordV1",
+  "description": "Portable deterministic experimental-arm assignment for a named cross-system, dispute, or independent-consumer use.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "tokenType",
+    "schemaVersion",
+    "protocol",
+    "assignmentId",
+    "campaignId",
+    "campaignEpochRef",
+    "assignmentPolicyRef",
+    "audienceValidatorCertificateRef",
+    "assignmentScopeRef",
+    "subjectNullifier",
+    "algorithm",
+    "arm",
+    "resultHash",
+    "assignedAt",
+    "assignmentAuthorityRef",
+    "signatures"
+  ],
+  "properties": {
+    "tokenType": { "const": "ASSIGNMENT_RECORD" },
+    "schemaVersion": { "const": 1 },
+    "protocol": { "$ref": "#/$defs/protocol" },
+    "assignmentId": { "$ref": "#/$defs/identifier" },
+    "campaignId": { "$ref": "#/$defs/identifier" },
+    "campaignEpochRef": { "$ref": "#/$defs/hashRef" },
+    "assignmentPolicyRef": { "$ref": "#/$defs/hashRef" },
+    "audienceValidatorCertificateRef": { "$ref": "#/$defs/nullableHashRef" },
+    "assignmentScopeRef": { "$ref": "#/$defs/hashRef" },
+    "subjectNullifier": { "$ref": "#/$defs/hashRef" },
+    "algorithm": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "profileRef",
+        "profileVersion",
+        "seedCommitment",
+        "seedMaterialRef",
+        "assignmentInputRef",
+        "assignmentDigest",
+        "modulus",
+        "bucket"
+      ],
+      "properties": {
+        "profileRef": { "$ref": "#/$defs/hashRef" },
+        "profileVersion": { "$ref": "#/$defs/identifier" },
+        "seedCommitment": { "$ref": "#/$defs/hashRef" },
+        "seedMaterialRef": { "$ref": "#/$defs/hashRef" },
+        "assignmentInputRef": { "$ref": "#/$defs/hashRef" },
+        "assignmentDigest": { "$ref": "#/$defs/hashRef" },
+        "modulus": { "type": "integer", "minimum": 2, "maximum": 4294967296 },
+        "bucket": { "type": "integer", "minimum": 0, "maximum": 4294967295 }
+      }
+    },
+    "arm": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["armId", "interventionPolicyRef"],
+      "properties": {
+        "armId": { "$ref": "#/$defs/identifier" },
+        "interventionPolicyRef": { "$ref": "#/$defs/nullableHashRef" }
+      }
+    },
+    "resultHash": { "$ref": "#/$defs/hashRef" },
+    "assignedAt": { "$ref": "#/$defs/timestamp" },
+    "assignmentAuthorityRef": { "$ref": "#/$defs/hashRef" },
+    "signatures": { "$ref": "#/$defs/signatures" }
+  },
+  "$defs": {
+    "protocol": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["protocolVersion"],
+      "properties": { "protocolVersion": { "const": "1.0.0-rc.1" } }
+    },
+    "hashRef": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "nullableHashRef": { "oneOf": [{ "$ref": "#/$defs/hashRef" }, { "type": "null" }] },
+    "identifier": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$" },
+    "timestamp": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$" },
+    "signatures": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["issuedBy", "keyId", "publicKey", "objectHash", "signature"],
+      "properties": {
+        "issuedBy": { "$ref": "#/$defs/identifier" },
+        "keyId": { "$ref": "#/$defs/identifier" },
+        "publicKey": { "type": "string", "pattern": "^[A-Za-z0-9+/]{43}=$" },
+        "objectHash": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "signature": { "type": "string", "pattern": "^[A-Za-z0-9+/]{86}==$" }
+      }
+    }
+  }
+}

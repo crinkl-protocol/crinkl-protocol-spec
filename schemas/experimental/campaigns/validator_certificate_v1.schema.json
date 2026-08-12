@@ -1,0 +1,136 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "crinkl://protocol/schemas/validator_certificate_v1",
+  "title": "ValidatorCertificateV1",
+  "description": "Proof Validator quorum acceptance of one exact ProofOfMatch under PROOF_OF_MATCH_VERIFICATION.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "tokenType",
+    "schemaVersion",
+    "protocol",
+    "certificateId",
+    "subjectType",
+    "subjectHash",
+    "procedureId",
+    "procedureVersion",
+    "procedureProfileRef",
+    "applicableEpochRef",
+    "validatorSetReference",
+    "quorumPolicyReference",
+    "registryDependencies",
+    "quorum",
+    "replayChecks",
+    "decision",
+    "stateTransition",
+    "decisionHash",
+    "signatureEvidence",
+    "issuedAt"
+  ],
+  "properties": {
+    "tokenType": { "const": "VALIDATOR_CERTIFICATE" },
+    "schemaVersion": { "const": 1 },
+    "protocol": { "$ref": "#/$defs/protocol" },
+    "certificateId": { "$ref": "#/$defs/identifier" },
+    "subjectType": { "const": "PROOF_OF_MATCH" },
+    "subjectHash": { "$ref": "#/$defs/hashRef" },
+    "procedureId": { "const": "PROOF_OF_MATCH_VERIFICATION" },
+    "procedureVersion": { "$ref": "#/$defs/identifier" },
+    "procedureProfileRef": { "$ref": "#/$defs/hashRef" },
+    "applicableEpochRef": { "$ref": "#/$defs/hashRef" },
+    "validatorSetReference": { "$ref": "#/$defs/hashRef" },
+    "quorumPolicyReference": { "$ref": "#/$defs/hashRef" },
+    "registryDependencies": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 64,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/hashRef" }
+    },
+    "quorum": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["selectedValidatorCount", "requiredSignatureCount", "acceptedSignatureCount"],
+      "properties": {
+        "selectedValidatorCount": { "type": "integer", "minimum": 1, "maximum": 1000000 },
+        "requiredSignatureCount": { "type": "integer", "minimum": 1, "maximum": 1000000 },
+        "acceptedSignatureCount": { "type": "integer", "minimum": 1, "maximum": 1000000 }
+      }
+    },
+    "replayChecks": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["registryRefs", "result"],
+      "properties": {
+        "registryRefs": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 16,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/hashRef" }
+        },
+        "result": { "const": "NO_CONFLICT_OBSERVED" }
+      }
+    },
+    "decision": { "const": "ACCEPT" },
+    "stateTransition": { "const": "NONE" },
+    "decisionHash": { "$ref": "#/$defs/hashRef" },
+    "signatureEvidence": {
+      "oneOf": [
+        { "$ref": "#/$defs/individualSignatureEvidence" },
+        { "$ref": "#/$defs/aggregateSignatureEvidence" }
+      ]
+    },
+    "issuedAt": { "$ref": "#/$defs/timestamp" }
+  },
+  "$defs": {
+    "protocol": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["protocolVersion"],
+      "properties": { "protocolVersion": { "const": "1.0.0-rc.1" } }
+    },
+    "hashRef": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "identifier": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$" },
+    "timestamp": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$" },
+    "publicKey": { "type": "string", "pattern": "^[A-Za-z0-9+/]{43}=$" },
+    "signature": { "type": "string", "pattern": "^[A-Za-z0-9+/]{86}==$" },
+    "individualSignatureEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "signatures"],
+      "properties": {
+        "mode": { "const": "INDIVIDUAL" },
+        "signatures": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1000000,
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["validatorId", "keyId", "publicKey", "signature"],
+            "properties": {
+              "validatorId": { "$ref": "#/$defs/identifier" },
+              "keyId": { "$ref": "#/$defs/identifier" },
+              "publicKey": { "$ref": "#/$defs/publicKey" },
+              "signature": { "$ref": "#/$defs/signature" }
+            }
+          }
+        }
+      }
+    },
+    "aggregateSignatureEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "scheme", "signerSetCommitment", "signerBitmap", "signature"],
+      "properties": {
+        "mode": { "const": "AGGREGATE" },
+        "scheme": { "$ref": "#/$defs/identifier" },
+        "signerSetCommitment": { "$ref": "#/$defs/hashRef" },
+        "signerBitmap": { "type": "string", "minLength": 2, "maxLength": 262144, "pattern": "^[A-Za-z0-9+/]+={0,2}$" },
+        "signature": { "type": "string", "minLength": 4, "maxLength": 4096, "pattern": "^[A-Za-z0-9+/]+={0,2}$" }
+      }
+    }
+  }
+}

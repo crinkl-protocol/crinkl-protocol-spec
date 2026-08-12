@@ -7,9 +7,15 @@ normative: true
 
 # Spend Predicate Evaluation
 
-Spend Predicate Evaluation consumes Spend Attestations or privacy-preserving proofs over Spend Attestations and returns whether the predicate is satisfied under an explicit scope and time window.
+Spend Predicate Evaluation consumes Spend Tokens or privacy-preserving proofs
+over Spend Tokens and returns whether the predicate is satisfied under an
+explicit scope and time window. `SpendToken` is the Campaign-layer short name
+for a supported Spend Attestation Token; no Spend wire is changed here.
 
-Evaluation MUST bind the predicate parameters, version, scope, verifier policy, and replay/nullifier rules where payment or settlement depends on the result. Evaluation MUST NOT require raw receipt access or user identity unless a downstream profile explicitly requires recipient binding.
+Evaluation MUST bind the predicate parameters, version, scope, verifier policy,
+and replay/nullifier rules where an Outcome or economic entitlement depends on
+the result. Evaluation MUST NOT require raw receipt access or user identity
+unless a downstream profile explicitly requires recipient binding.
 
 `SpendPredicateV1` carries those bindings as `parameters`,
 `predicateVersion`, `evaluationContext.scopeId`,
@@ -23,4 +29,16 @@ JCS is RFC 8785 canonical JSON and the top-level `predicateHash` member is the
 only omitted member. Verifiers MUST reject a predicate whose declared hash
 does not equal that recomputation.
 
-See `campaign-commitment.md` for the current draft campaign rule composition surface.
+For Campaign use, the predicate or private rule bytes are committed by one
+`CampaignEpoch`, and successful private evaluation is represented by one
+[`ProofOfMatch`](proof-of-match.md) with purpose `AUDIENCE` or `CONVERSION`.
+The proof relation MUST enforce:
+
+```text
+evaluatedRuleCommitment = CampaignEpoch rule commitment for the declared purpose
+```
+
+Multiple Spend inputs, purchase distinctness, aggregation, observable-history
+boundaries, and purchase/entitlement reuse rules are profile-defined proof
+requirements, not implied by a boolean predicate result. See the
+[`Campaign architecture`](../campaigns/README.md).

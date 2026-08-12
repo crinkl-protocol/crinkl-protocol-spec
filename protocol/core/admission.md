@@ -45,7 +45,12 @@ Validator membership, selection, and quorum are governed by authority-signed reg
 
 - The party that reads evidence MUST NOT unilaterally create network acceptance. A Verification Service signature is a proposal, never acceptance.
 - The parties that create network acceptance MUST NOT require raw evidence. Admission checks operate on signed public claims and commitments only.
-- Network acceptance exists only as a Finality Certificate: a quorum of valid selected-validator signatures over the identical deterministic result, under a named registry snapshot, assignment, and quorum rule.
+- For this v1 statement-coverage mechanism, network acceptance exists only as
+  its existing Finality Certificate: a quorum of valid selected-validator
+  signatures over the identical deterministic result, under a named registry
+  snapshot, validator assignment, and quorum rule. This does not define the
+  target Campaign `ValidatorCertificate` or give the word “finality” a global
+  state meaning.
 - The quorum rule for v1 finality is strict BFT supermajority over the selected committee: `floor(2N/3) + 1` signatures, where `N` is the selected-validator count.
 - Eligibility is not duty. Each statement is assigned to a bounded selected committee; no admission path may require all registered validators to coordinate for one statement. Non-selected validators observe and replay certificates asynchronously.
 - The Verification Service key set and the validator set MUST be disjoint, so the division of power cannot collapse to one key (root separation, `../protocol/applications/economics/density-burn.md`).
@@ -91,11 +96,42 @@ This boundary follows the same bounded-scope discipline as every trust root in `
 
 ## Downstream Consumption (Normative)
 
-- Record-level value movement — reserve depletion and burn, Verified GMV consumed as a protocol figure, campaign settlement against verified outcomes — MUST consume validator-finalized statements, never an operator counter (`../protocol/applications/economics/density-burn.md`).
+- Record-level reserve depletion, burn, and Verified GMV consumed as a protocol
+  figure MUST consume the exact validator-accepted evidence required by their
+  named procedures, never an operator counter
+  (`../protocol/applications/economics/density-burn.md`).
+- A target Campaign runtime MUST verify `ValidatorCertificateV1` for each
+  `ProofOfMatch` consumed by a `CampaignOutcome`. That certificate establishes
+  proof acceptance only. Economic admission, Reward Obligation creation, and
+  settlement each require their own committed policy and authoritative state;
+  the certificate does not authorize them.
 - Reward accrual MAY act on Attested claims under the active reward policy.
 - Reward claimability — the point where value leaves the system to a wallet — SHOULD be gated on admission coverage of the underlying attestation.
 
 **Deployment note (non-normative):** a deployment that holds rewards for a fixed fraud-review window satisfies the claimability gate by ensuring the hold window is not shorter than the admission checkpoint cadence, so that a claimable reward always rests on an admitted attestation.
+
+## Campaign target boundary
+
+The v1 admission of a Spend Attestation's canonical head, the verification of a
+`ProofOfMatch`, and any Campaign activation gate are different procedures.
+
+- A Campaign authority signature is the default authority for
+  `CampaignEpochV1`; this specification does not require a generic validator
+  vote over every Epoch.
+- Target `PROOF_OF_MATCH_VERIFICATION` produces a `ValidatorCertificate` over
+  one exact proof hash with `stateTransition = NONE`.
+- The certificate does not update a canonical nullifier registry. A relying
+  registry or ledger must name and execute any atomic replay transition.
+- The certificate does not perform assignment, economic admission, Outcome
+  construction, Reward Obligation creation, reserve, or settlement.
+- Existing campaign-specific validator procedures are implementation evidence,
+  not Campaign protocol predecessors. The validator refactor must remove or
+  narrow them unless it demonstrates a distinct activation/non-equivocation
+  consumer.
+
+See [`../applications/campaigns/README.md`](../applications/campaigns/README.md)
+and the
+[`validator handoff`](../../governance/proof-validator-campaign-refactor-handoff.md).
 
 ## Negative Invariants (Normative)
 

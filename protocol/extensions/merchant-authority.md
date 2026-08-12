@@ -22,10 +22,8 @@ This extension composes:
 - `storeId`, `storeHash`, `storeLocationId`, and `storeLocationHash` from
   `store-registry.md`
 - system-stream envelope rules from `../core/spend-event.md`
-- campaign rule and epoch bindings from
-  `../applications/conditions/campaign-commitment.md`
-- settlement commitment bindings from
-  `../applications/economics/campaign-settlement-gcd.md`
+- target Campaign Epoch and authority bindings from
+  `../applications/campaigns/README.md`
 
 This extension does **not**:
 
@@ -178,8 +176,10 @@ If carried in the system stream, the system-stream envelope supplies `chainId`,
 
 ## Campaign Authority
 
-`CampaignAuthorityV1` binds campaign creation authority to a campaign rule or
-epoch. It is not a marketing metadata field.
+`CampaignAuthorityV1` binds campaign creation authority to campaign rule
+material or an epoch. It is not a marketing metadata field. In the target
+campaign architecture, `CampaignEpoch` commits the applicable
+campaign-authority reference.
 
 ```text
 CampaignAuthorityV1 {
@@ -241,8 +241,8 @@ A verifier evaluating an official merchant action MUST:
 4. Verify status is `VERIFIED`.
 5. Reject expired or revoked claims.
 6. Verify the claim scope covers the action target.
-7. Verify `CampaignAuthorityV1` is included in the campaign rule or equivalent
-   immutable action material.
+7. Verify `CampaignAuthorityV1` is bound by the applicable `CampaignEpoch` or
+   equivalent immutable action material.
 8. Reject attempts to satisfy spend proof requirements with merchant authority
    artifacts. Merchant authority never substitutes for a valid Spend
    Attestation Token or ProofOfMatch.

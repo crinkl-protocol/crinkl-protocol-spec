@@ -8,8 +8,10 @@
 > - **Verification Policy** — the content-addressed rules defining what "verified" means.
 > - **Spend Predicate** — a reusable rule that evaluates one or more Spend Attestations without changing them.
 >
-> A successful predicate evaluation produces a **Proof of Match** that
-> campaigns, rewards, analytics and agents consume.
+> A Campaign binds an exact rule in a signed **Campaign Epoch**. A successful
+> private evaluation produces a purpose-scoped **Proof of Match**; Campaign
+> Outcomes may then create a **Reward Obligation** under the Epoch's committed
+> economic and admission policy.
 
 See the [full object inventory](#protocol-objects) for every artifact.
 
@@ -43,8 +45,14 @@ Crinkl proves that commerce evidence advanced through a defined proof lifecycle:
 5. The Spend Attestation may be packaged as a Spend Attestation Token.
 6. Selected proof validators may admit attestations to the shared record by finalizing statements over committed attestation sets.
 7. External systems may verify the attestation.
-8. Spend Predicates and CampaignEpochs may evaluate one or more attestations.
-9. Valid ProofOfMatch results may trigger rewards, settlement, campaigns, analytics, or agent responses.
+8. A signed CampaignEpoch may commit audience, conversion, assignment,
+   economic-admission, reward, timing, reuse, and dispute policy references.
+9. A purpose-scoped ProofOfMatch may prove that one or more Spend Tokens satisfy
+   the Epoch's audience or conversion rule.
+10. A Campaign runtime composes accepted proofs with optional assignment,
+    exposure, and economic admission into a CampaignOutcome.
+11. An eligible admitted Outcome may deterministically create a
+    RewardObligation, later resolved by a SettlementRecord.
 
 ## What Crinkl Does Not Prove
 
@@ -59,25 +67,26 @@ The spec follows this dependency order:
 ```text
 Evidence before claims.
 Claims before attestations.
-Attestations before predicates.
-Predicates before rewards.
-Rewards before campaigns.
-Campaigns before agents and markets.
+Attestations before predicates and Campaign proofs.
+Campaign rules before Campaign proofs.
+Accepted proofs before Campaign outcomes.
+Eligible admitted outcomes before reward obligations.
+Reward obligations before settlement records.
+Protocol facts before agents, reports, and markets.
 ```
 
 Core protocol validity does not depend on campaigns, rewards, Solana, ZK, MCP, REST, agents, ads, brand budgets, or promotion logic.
 
 ## Protocol Objects
 
-Complete inventory of thirteen protocol-level artifacts, spanning all three
-layers (Core, Portability, Applications); anything not on this list is prose
-at the protocol level (defined in the [glossary](governance/glossary.md),
-not a schema or a table row here) — see the note below the table for
-dependent artifacts that profiles and extensions define with their own
-schemas. `VerificationPolicy`, `IssuerRegistrySnapshot`, `AttestationStatus`,
-and `SpendPredicate` are untagged candidate schemas (object-model board steps
-OM4/OM4r). They sit below the release-candidate line, are not required for
-Core validity, and do not add fields to `SpendAttestation`,
+The target inventory contains fifteen protocol-level artifact families across
+Core, Portability, and Applications. Campaign vNext entries are additive
+`SPECIFIED_NOT_IMPLEMENTED` candidates outside every released manifest.
+Anything not listed is prose, a role, state, deterministic procedure, or
+off-protocol function unless an optional profile gives it a separate schema.
+`VerificationPolicy`, `IssuerRegistrySnapshot`, `AttestationStatus`, and
+`SpendPredicate` remain untagged candidate schemas (object-model board steps
+OM4/OM4r). None of this adds fields to `SpendAttestation`,
 `SpendAttestationToken`, or `SpendAttestationCredential`.
 
 | Object | Layer | Purpose |
@@ -90,18 +99,20 @@ Core validity, and do not add fields to `SpendAttestation`,
 | `SpendAttestationToken` | Portability | Native identity-minimized form. |
 | `SpendAttestationCredential` | Portability | W3C VC 2.0 serialization. |
 | [`SpendPredicate`](protocol/applications/conditions/schemas/spend_predicate_v1.schema.json) | Rule | Reusable rule over one or more Spend Attestations. (untagged candidate, OM4r) |
-| `ProofOfMatch` | Rule | Result of evaluating a predicate. |
-| `CampaignEpoch` | Campaign | Immutable, append-only funded rule window. |
-| `FinalityCertificate` | Finality/Settlement | Quorum acceptance of a specific statement. |
-| `RewardCommitment` | Finality/Settlement | Recipient-scoped inclusion. |
-| `CampaignSettlementCommitment` | Finality/Settlement | Campaign-scoped settlement. |
+| [`CampaignEpoch`](protocol/applications/campaigns/README.md#32-campaignepoch) | Campaign | Immutable signed Campaign rules and economic terms; first canonical V1 candidate. |
+| [`ProofOfMatch`](protocol/applications/conditions/proof-of-match.md) | Proof | Purpose-scoped ZK statement over authenticated commerce facts; target V1 candidate. |
+| [`ValidatorCertificate`](protocol/applications/campaigns/README.md#34-validatorcertificate) | Proof acceptance | Quorum acceptance of one exact proof subject under one exact procedure; target V1 candidate. |
+| [`AssignmentRecord`](protocol/applications/campaigns/README.md#35-assignmentrecord) | Experiment | Optional portable deterministic arm assignment when an independent consumer/dispute boundary requires it; target V1 candidate. |
+| [`CampaignOutcome`](protocol/applications/campaigns/README.md#38-campaignoutcome) | Campaign | Narrow composition of accepted matches, optional assignment/exposure/admission, and deterministic reward decision; target V1 candidate. |
+| [`RewardObligation`](protocol/applications/campaigns/README.md#39-rewardobligation) | Economics | Recipient-scoped liability created by an eligible admitted Outcome; target V1 candidate. |
+| [`SettlementRecord`](protocol/applications/campaigns/README.md#310-settlementrecord) | Economics | Evidence that an Obligation was paid, reversed, expired, disputed, cancelled, or otherwise resolved; target V1 candidate. |
 
-These thirteen are the protocol-level artifact inventory. Serialization
-profiles and extensions define dependent artifacts documented in their own
-homes — the W3C representation's `W3CIssuerKeyHistoryV1` and Bitstring
-Status List credential, and extension artifacts such as
-`MerchantClaimAttestationV1` in [`protocol/extensions/`](protocol/extensions/) — which do
-not appear in this table.
+These fifteen are the target protocol-level families. Exposure and economic
+admission remain application/ledger state unless a named cross-system profile
+proves a need for a portable artifact; `CampaignReport` is derived output.
+Discarded Campaign drafts have no aliases or adapters in the living
+specification. Exact source and implementation evidence is recorded in the
+[`Campaign evidence inventory`](governance/campaign-architecture-evidence.md).
 
 ## Privacy Boundary
 
@@ -121,9 +132,10 @@ Downstream layers consume spend proof; they do not define it.
 
 | Layer | Documents |
 |---|---|
-| Spend Predicate rules and CampaignEpochs | [`protocol/applications/conditions/`](protocol/applications/conditions/) |
-| Reward and settlement | [`protocol/applications/economics/`](protocol/applications/economics/) including [`campaign-settlement-gcd.md`](protocol/applications/economics/campaign-settlement-gcd.md) |
-| ZK, Campaign experiments, direct buyer rewards, merchant authority, agent, REST/MCP, Solana, offer delivery | [`protocol/extensions/`](protocol/extensions/) including the public-draft [`campaign-experiment-profile.md`](protocol/extensions/campaign-experiment-profile.md), released [`campaign-direct-buyer-reward-profile.md`](protocol/extensions/campaign-direct-buyer-reward-profile.md), [`merchant-authority.md`](protocol/extensions/merchant-authority.md), [`zk-external-verifier-integration-guide.md`](protocol/extensions/zk-external-verifier-integration-guide.md), and [`solana-campaign-settlement-binding.md`](protocol/extensions/solana-campaign-settlement-binding.md) |
+| Campaign architecture and V1 schemas | [`protocol/applications/campaigns/`](protocol/applications/campaigns/) |
+| Spend Predicate rules and ProofOfMatch | [`protocol/applications/conditions/`](protocol/applications/conditions/) |
+| Reward and settlement | [`protocol/applications/economics/`](protocol/applications/economics/); canonical Campaign liability and resolution are defined by the Campaign architecture |
+| ZK, merchant authority, agent, REST/MCP, Solana, and offer delivery | [`protocol/extensions/`](protocol/extensions/) including [`merchant-authority.md`](protocol/extensions/merchant-authority.md) and [`zk-external-verifier-integration-guide.md`](protocol/extensions/zk-external-verifier-integration-guide.md) |
 | Conformance | [`conformance/`](conformance/) |
 | ZK beta release checklist | [`governance/zk-beta-release-checklist.md`](governance/zk-beta-release-checklist.md) |
 | ZK beta audit package | [`governance/zk-beta-audit-package.md`](governance/zk-beta-audit-package.md) |
@@ -137,8 +149,9 @@ Downstream layers consume spend proof; they do not define it.
 | [`protocol/core/`](protocol/core/) | Evidence, Spend Events, verification states, canonicalization, signatures, privacy boundaries. |
 | [`protocol/core/`](protocol/core/) | Ingestion, normalization, soft/hard verification, correction, attestation issuance. |
 | [`protocol/portability/`](protocol/portability/) | Spend Attestation Tokens, verifier requirements, identity exclusion, replay/auditability. |
-| [`protocol/applications/conditions/`](protocol/applications/conditions/) | Spend Predicates, predicate evaluation, proof of match, campaign commitment. |
-| [`protocol/applications/economics/`](protocol/applications/economics/) | Reward Commitment, GMV, distribution, settlement bindings. |
+| [`protocol/applications/campaigns/`](protocol/applications/campaigns/) | Canonical Campaign architecture, authority boundaries, lifecycle, and first V1 schemas. |
+| [`protocol/applications/conditions/`](protocol/applications/conditions/) | Spend Predicates, evaluation, and ProofOfMatch. |
+| [`protocol/applications/economics/`](protocol/applications/economics/) | GMV, distribution, and general settlement-binding profiles; Campaign liability and resolution live under the Campaign architecture. |
 | [`protocol/extensions/`](protocol/extensions/) | Optional ZK, merchant authority, agent query, transport, Solana, offer-delivery, and registry profiles. |
 | [`conformance/`](conformance/) | Vectors, verifier test suite, compatibility notes. |
 | [`governance/`](governance/) | Versioning, change process, authority hierarchy, and shared glossary. |

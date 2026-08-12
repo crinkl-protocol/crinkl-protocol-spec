@@ -13,6 +13,6 @@ The binding MUST NOT redefine Spend Attestation validity. A chain transaction ca
 
 Current chain-binding rules and anti-replay requirements are specified in `../applications/economics/settlement-bindings.md#chain-bindings`.
 
-Campaign settlement has a narrower Solana binding with explicit Anchor program
-names, PDA seeds, instruction names, and deployment registry requirements:
-`solana-campaign-settlement-binding.md`.
+Campaign liability and resolution are defined by
+`../applications/campaigns/README.md`. A future Solana profile may bind those
+canonical objects without changing their meaning.
