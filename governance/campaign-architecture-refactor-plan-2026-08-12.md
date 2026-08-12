@@ -30,8 +30,10 @@ separate evidence-bearing states.
 
 ## Current slice
 
-Replace the unimplemented alpha Campaign drafts with the first canonical
-Campaign vocabulary and schema set.
+State the artifact-scoped compatibility rule precisely: the Campaign and Boost
+prototypes do not impose predecessor vocabulary on the target specification,
+while every implementation change remains subject to evidence about actual
+wire consumers, persisted state, release identity, and deployed dependencies.
 
 ## Objective
 
@@ -70,7 +72,9 @@ SpendToken
    and are not linked from the living Campaign specification.
 4. Spend Token schemas, issuer verification policy, issuer-key history,
    attestation status, canonical Spend Stream heads, and the SOFT-to-HARD
-   verification pipeline remain unchanged and compatibility-protected.
+   verification pipeline are confirmed compatibility-sensitive surfaces and
+   remain unchanged in this slice. This inventory is not an exhaustive claim
+   about every wire- or production-sensitive artifact in Crinkl.
 5. `AssignmentRecord` remains a portable object only where a relying profile
    names a cross-system, dispute, or independent-consumer need.
 6. The signed target object families share one explicit RFC 8785 + SHA-256 +
@@ -83,6 +87,16 @@ SpendToken
 8. `PROOF_OF_MATCH_VERIFICATION` is the only required validator procedure.
    Campaign admission is added only if a future design proves a distinct trust
    failure, consumer, and state transition.
+9. Compatibility standing is decided per artifact. Evidence includes an
+   external or cross-system wire consumer, persisted state, an immutable
+   released identity, a deployed runtime dependency, or another relying party.
+   `IMPLEMENTED`, `PROTOTYPE`, and other maturity labels neither establish nor
+   eliminate that evidence by themselves.
+10. Campaign and Boost prototype names, envelopes, statement identifiers, and
+    procedure semantics are not canonical predecessors merely because source
+    code or tests exist. A later implementation refactor must still inventory
+    their exact producers, consumers, stored payloads, and runtime dependencies
+    before removing or changing implementation code.
 
 ## Work sequence
 
@@ -91,11 +105,13 @@ The atomic execution board is
 
 ## Completion
 
-Complete. The living Campaign specification now has one reduced vocabulary and
-seven first canonical V1 schema families. Discarded Campaign drafts, aliases,
-adapters, deprecation scaffolding, and inherited Campaign schema versions are
-absent. Immutable release evidence is not a Campaign predecessor and remains
-unchanged. The Spend Token and SOFT-to-HARD verification surfaces are unchanged.
-Local schema, conformance, link, release-integrity, drift, and boundary gates
-pass; the repository's pre-existing identifier-inventory defect remains
+Complete. The living Campaign specification has one reduced vocabulary and
+seven first canonical V1 schema families. Campaign and Boost prototype
+artifacts impose no predecessor aliases or translation burden on that target.
+Compatibility and break risk are evaluated per artifact from exact consumer,
+persisted-state, release, and deployed-dependency evidence; prototype status
+alone is not a removal-safety conclusion. Immutable release evidence remains
+unchanged, as do the confirmed Spend Token and SOFT-to-HARD surfaces in this
+slice. Local schema, conformance, link, release-integrity, drift, and boundary
+gates pass; the repository's pre-existing identifier-inventory defect remains
 separately recorded in the evidence receipt.

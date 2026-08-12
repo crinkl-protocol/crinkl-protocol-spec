@@ -26,12 +26,19 @@ guide.
 Source, specification, adoption, release, implementation, validator-network
 adoption, and production deployment are separate evidence-bearing states.
 
-## 2. Compatibility boundary established for this alpha
+## 2. Artifact-scoped compatibility boundary
 
 The owner confirmed that the Campaign protocol object family has no production
 or deployed consumer. Similar shapes in implementation repositories are
 prototypes and experiments, not wire contracts that the public Campaign
 specification must preserve.
+
+Compatibility and break risk are evaluated per artifact, not inferred from a
+repository or maturity label. Preservation is required when evidence identifies
+an external or cross-system wire consumer, persisted state, an immutable
+released identity, a deployed runtime dependency, or another relying party.
+`IMPLEMENTED` and `PROTOTYPE` labels neither establish nor eliminate that
+evidence by themselves.
 
 Accordingly:
 
@@ -41,9 +48,17 @@ Accordingly:
 - no runtime prototype is declared conformant to these V1 schemas;
 - Spend Token formats, verification-policy resolution, issuer-key history,
   attestation status, canonical Spend Stream heads, and the SOFT-to-HARD
-  verification pipeline remain unchanged; and
+  verification pipeline are confirmed compatibility-sensitive surfaces and
+  remain unchanged in this slice; this is not an exhaustive inventory of every
+  wire- or production-sensitive Crinkl artifact; and
 - immutable Git tags and their vendored release payloads remain historical
   evidence only. They are not linked as supported Campaign predecessors.
+
+Prototype source, tests, names, envelopes, or statement identifiers do not by
+themselves impose a compatibility layer on the target protocol. A later code
+refactor must nevertheless inventory exact producers, consumers, stored
+payloads, and deployed dependencies before changing or removing implementation
+artifacts.
 
 ## 3. Canonical object and procedure inventory
 
@@ -109,8 +124,12 @@ as vocabulary.
 
 The Boost prototype is evidence that Crinkl has real Halo2 Campaign proving
 components. It is not evidence that those packages conform to the canonical V1
-schemas. FIFO, budget, concurrency, and slot consumption remain outside the ZK
-primitive while the Epoch binds their governing policy.
+schemas, and it does not make Boost package names, envelope shapes, statement
+identifiers, or mixed procedure semantics canonical predecessors. FIFO, budget,
+concurrency, and slot consumption remain outside the ZK primitive while the
+Epoch binds their governing policy. Any later removal of Boost implementation
+artifacts still requires an exact runtime producer/consumer and persisted-state
+inventory.
 
 ## 7. Current-versus-target implementation matrix
 
@@ -124,7 +143,7 @@ Status applies to the exact row, not to a similarly named broader system.
 | generalized ProofOfMatchV1 | `SPECIFIED_NOT_IMPLEMENTED` | first canonical envelope in this source candidate |
 | generalized Campaign-to-ZK compilation | `PLANNED` | no arbitrary Epoch rule compiler found |
 | Campaign-authority signing | `PROTOTYPE` | signed experiments exist; canonical CampaignEpochV1 support is not established |
-| current profile-specific Campaign admission procedure | `PROTOTYPE` | validator and Platform producer/consumer code exists, but it is not a canonical Campaign protocol procedure and has no compatibility standing |
+| current profile-specific Campaign admission procedure | `PROTOTYPE` | validator and Platform producer/consumer code exists; it is not a canonical Campaign protocol predecessor, and later code removal requires an exact runtime and stored-payload inventory |
 | Campaign admission | `PLANNED` | not specified because no distinct security purpose is currently demonstrated |
 | PROOF_OF_MATCH_VERIFICATION | `SPECIFIED_NOT_IMPLEMENTED` | specification and validator handoff only |
 | ValidatorCertificateV1 | `SPECIFIED_NOT_IMPLEMENTED` | first canonical certificate schema |

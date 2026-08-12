@@ -307,8 +307,11 @@ the prototype certificate or infer equivalence from overlapping fields.
 
 `CAMPAIGN_DIRECT_BUYER_REWARD_ADMISSION_V1` is prototype implementation
 behavior, not a Campaign protocol predecessor and not a compatibility
-requirement. The implementation refactor must determine whether its existing
-producer/consumer path prevents one distinct trust failure.
+requirement for the canonical Campaign specification. Prototype status alone
+does not prove that implementation removal is safe: the implementation refactor
+must inventory its exact producers, consumers, stored payloads, and deployed
+dependencies, and determine whether the path prevents one distinct trust
+failure.
 
 Before defining any generic Campaign procedure, identify one of these distinct
 security requirements and its authoritative consumer:
@@ -343,8 +346,9 @@ First implementation step:
 2. add canonical parsers and hashers for `ProofOfMatchV1` and
    `ValidatorCertificateV1` directly, with no predecessor translation;
 3. leave unrelated GMV procedures unchanged, and plan explicit removal of the
-   two prototype Campaign statement paths after canonical producer/consumer
-   tests pass;
+   two prototype Campaign statement paths only after an exact producer,
+   consumer, stored-payload, and runtime-dependency inventory plus canonical
+   replacement tests pass;
 4. implement schema/hash/profile/binding failures before adding native
    proof-system verifier integrations; and
 5. add negative tests proving that prototype packages and certificates are not

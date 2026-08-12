@@ -17,8 +17,11 @@ The schemas in
 are the first canonical, unreleased source candidates for this unimplemented
 Campaign family. They are not in a released conformance manifest and do not
 establish runtime support. Discarded Campaign drafts are not supported
-predecessors. Spend Token and SOFT-to-HARD verification compatibility remains
-unchanged.
+predecessors. This refactor does not change Spend Token or SOFT-to-HARD
+verification compatibility. That scoped protection is not a claim that those
+are the only wire- or production-sensitive Crinkl surfaces; each artifact is
+evaluated against its actual consumers, persisted state, release identity, and
+deployed dependencies.
 
 A compact forked flow is available in the
 [`Campaign architecture diagram`](../../../diagrams/campaign-architecture.md).
