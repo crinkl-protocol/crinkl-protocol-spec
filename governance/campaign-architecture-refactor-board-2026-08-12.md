@@ -16,7 +16,7 @@ Target: one canonical Campaign vocabulary without speculative legacy burden.
 Objective: make preservation and break-risk decisions from exact artifact
 evidence, not from maturity labels or a blanket list of protected systems.
 
-Revision: 2026-08-12T14:50:34Z
+Revision: 2026-08-12T14:53:00Z
 
 | ID | Atomic step | Owner | State | Branch/surface | Evidence to close | Evidence/next |
 |---|---|---|---|---|---|---|
@@ -33,7 +33,7 @@ Revision: 2026-08-12T14:50:34Z
 | CA-11 | Run schema, conformance, version, link, documentation, and stale-vocabulary checks | Codex /root | complete | validation | named local checks | validation receipt, including pre-existing inventory-gate failure |
 | CA-12 | Review final diff and close the slice | Codex /root | complete | repository | scoped status/diff review | final scoped review and validation receipt |
 | CA-13 | Remove unimplemented Campaign predecessor mappings, aliases, deprecation scaffolding, and inherited schema versions | Codex /root | complete | Campaign source | clean canonical scan and protected-surface diff | canonical V1 schemas and validation receipt |
-| CA-14 | Define artifact-scoped compatibility evidence and make Boost prototype non-predecessor status explicit | Codex /root | complete | governance, Campaign README, PR | no blanket protected-surface claim; implementation-removal inventory boundary explicit; checks pass | artifact-scoped rule recorded; local gates passed; review correction prepared |
+| CA-14 | Define artifact-scoped compatibility evidence and make Boost prototype non-predecessor status explicit | Codex /root | complete | governance, Campaign README, PR | no blanket protected-surface claim; implementation-removal inventory boundary explicit; checks pass | artifact-scoped rule recorded; local gates passed; PR #46 review correction recorded |
 
 At most one row is active. No row changes implementation, release, runtime,
 validator authority, escrow funds, or production state.
