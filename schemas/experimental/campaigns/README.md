@@ -1,18 +1,21 @@
-# Campaign V1 schema candidates
+# Campaign schema candidates
 
 Status: `SPECIFIED_NOT_IMPLEMENTED`.
 
-These are the first canonical schema candidates for the unimplemented Campaign
+These are reduced-spine schema candidates for the unimplemented Campaign
 object family. They are not listed in a released manifest and do not establish
-runtime support. No discarded Campaign draft is a supported predecessor, so
-these schemas require no aliases, adapters, or inherited version numbers.
+runtime support. `CampaignEpochV2` has a successor identity because its
+required fields, signed bytes, and validation meaning differ from adopted
+`CampaignEpochV1`; the V1 schema and its released profile bindings remain
+unchanged. Prototype artifacts without compatibility standing require no
+aliases or adapters.
 
 Spend Token schemas and the SOFT-to-HARD verification pipeline are outside this
 directory and unchanged.
 
 | Schema | Family decision |
 |---|---|
-| `campaign_epoch_v1.schema.json` | first immutable signed Campaign rule and economic-policy object |
+| `campaign_epoch_v2.schema.json` | reduced-spine successor to the adopted signed Campaign Epoch V1 family |
 | `proof_of_match_v1.schema.json` | first canonical serialized ProofOfMatch envelope |
 | `validator_certificate_v1.schema.json` | first certificate restricted to `PROOF_OF_MATCH_VERIFICATION` |
 | `assignment_record_v1.schema.json` | portable only for a named cross-system, dispute, or independent-consumer use |

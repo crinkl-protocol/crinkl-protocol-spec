@@ -158,7 +158,7 @@ head, and applicable portability profile under the existing Spend rules.
 ### 3.2 CampaignEpoch
 
 `CampaignEpoch` is the immutable, signed version of a Campaign's rules and
-economic terms. [`CampaignEpochV1`](../../../schemas/experimental/campaigns/campaign_epoch_v1.schema.json)
+economic terms. [`CampaignEpochV2`](../../../schemas/experimental/campaigns/campaign_epoch_v2.schema.json)
 commits:
 
 - an audience rule, when present;
@@ -459,7 +459,7 @@ Outcome producer may choose whether or how much to pay.
 ### 3.11 Canonical object references and signatures
 
 Target references MUST be computed from exact schema-valid objects. For
-`CampaignEpochV1`, `AssignmentRecordV1`, `CampaignOutcomeV1`,
+`CampaignEpochV2`, `AssignmentRecordV1`, `CampaignOutcomeV1`,
 `RewardObligationV1`, and `SettlementRecordV1`, the common signed-object
 construction is:
 

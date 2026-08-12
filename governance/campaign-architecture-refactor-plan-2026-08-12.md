@@ -62,11 +62,13 @@ SpendToken
 
 ## Alpha replacement and compatibility boundary
 
-1. The Campaign object family has no deployed or production consumer. Its
-   discarded draft names and shapes receive no aliases, adapters, deprecation
-   objects, or successor mappings in the living specification.
-2. The canonical Campaign families introduced by this refactor start at V1,
-   including `CampaignEpochV1`.
+1. Prototype Campaign and Boost names and shapes without artifact-scoped
+   compatibility evidence receive no aliases, adapters, or deprecation
+   objects in the living specification. Adopted `CampaignEpochV1` and its
+   released profile bindings remain immutable compatibility evidence.
+2. First-time reduced-spine families start at V1. The reduced-spine Campaign
+   Epoch is `CampaignEpochV2` because it changes the adopted V1 signed shape
+   and validation meaning.
 3. Published Git tags and their release payloads remain immutable historical
    evidence. They do not make discarded Campaign drafts supported predecessors
    and are not linked from the living Campaign specification.
@@ -106,8 +108,9 @@ The atomic execution board is
 ## Completion
 
 Complete. The living Campaign specification has one reduced vocabulary and
-seven first canonical V1 schema families. Campaign and Boost prototype
-artifacts impose no predecessor aliases or translation burden on that target.
+seven schema families: `CampaignEpochV2` and six first-version families.
+Campaign and Boost prototype artifacts impose no predecessor aliases or
+translation burden on that target.
 Compatibility and break risk are evaluated per artifact from exact consumer,
 persisted-state, release, and deployed-dependency evidence; prototype status
 alone is not a removal-safety conclusion. Immutable release evidence remains

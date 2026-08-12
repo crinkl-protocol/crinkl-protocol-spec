@@ -15,7 +15,7 @@ normative target requirements but are not claims of current runtime support.
 
 ### Committed terms
 
-Monster's `CampaignEpochV1` commits:
+Monster's `CampaignEpochV2` commits:
 
 - audience rule: verified Celsius or Red Bull buyer during the prior 30 days;
 - optional exclusion rule: no Monster purchase within an exact
@@ -131,7 +131,7 @@ CampaignEpoch
 
 Conformance requires:
 
-- `CampaignEpochV1.audienceRuleRef = null`;
+- `CampaignEpochV2.audienceRuleRef = null`;
 - `requiredProofProfiles.audienceProofProfileRef = null`;
 - `assignmentPolicyRef = null`;
 - `economicAdmissionPolicyRef = null`;

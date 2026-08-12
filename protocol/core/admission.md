@@ -116,7 +116,7 @@ The v1 admission of a Spend Attestation's canonical head, the verification of a
 `ProofOfMatch`, and any Campaign activation gate are different procedures.
 
 - A Campaign authority signature is the default authority for
-  `CampaignEpochV1`; this specification does not require a generic validator
+  `CampaignEpochV2`; this specification does not require a generic validator
   vote over every Epoch.
 - Target `PROOF_OF_MATCH_VERIFICATION` produces a `ValidatorCertificate` over
   one exact proof hash with `stateTransition = NONE`.
