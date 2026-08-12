@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "crinkl://protocol/schemas/campaign_proof_of_match_procedure_profile_v2",
+  "title": "CampaignProofOfMatchProcedureProfileV2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "tokenType",
+    "schemaVersion",
+    "profileId",
+    "profileVersion",
+    "procedureId",
+    "procedureVersion",
+    "subjectType",
+    "supportedSubjectSchemaIds",
+    "supportedCampaignEpochSchemaIds",
+    "certificateSchemaId",
+    "subjectHashRule",
+    "proofProfileBindingRule",
+    "proofProfileOwnershipRule",
+    "nullifierVerificationRule",
+    "certificateTimestampRule",
+    "decisionHashDomain",
+    "decisionHashRule",
+    "validatorSignatureRule",
+    "unknownProfileHandling",
+    "stateTransition",
+    "authorityBoundary"
+  ],
+  "properties": {
+    "tokenType": { "const": "CAMPAIGN_PROOF_OF_MATCH_PROCEDURE_PROFILE" },
+    "schemaVersion": { "const": 2 },
+    "profileId": { "const": "campaign.proofOfMatch.procedureProfile" },
+    "profileVersion": { "const": 2 },
+    "procedureId": { "const": "PROOF_OF_MATCH_VERIFICATION" },
+    "procedureVersion": { "const": "2" },
+    "subjectType": { "const": "PROOF_OF_MATCH" },
+    "supportedSubjectSchemaIds": {
+      "const": ["crinkl://protocol/schemas/proof_of_match_v1"]
+    },
+    "supportedCampaignEpochSchemaIds": {
+      "const": ["crinkl://protocol/schemas/campaigns/campaign_epoch_v2"]
+    },
+    "certificateSchemaId": {
+      "const": "crinkl://protocol/schemas/validator_certificate_v1"
+    },
+    "subjectHashRule": { "const": "SHA256_RFC8785_COMPLETE_OBJECT" },
+    "proofProfileBindingRule": {
+      "const": "SUBJECT_PROFILE_REF_MUST_EQUAL_EPOCH_PURPOSE_PROFILE_REF"
+    },
+    "proofProfileOwnershipRule": {
+      "const": "PROOF_PROFILE_DEFINES_CRYPTOGRAPHIC_RELATION_PROCEDURE_PROFILE_BINDS_BY_CONTENT_REF"
+    },
+    "nullifierVerificationRule": {
+      "const": "PUBLIC_DERIVATION_RECOMPUTED_PRIVATE_DERIVATION_PROVEN_EXPOSED_BINDING_REGISTRY_CHECKED"
+    },
+    "certificateTimestampRule": {
+      "const": "AUTHENTICATED_VALIDATOR_ASSIGNMENT_SIGNED_AT_UNIX_MS_RFC3339_MILLISECONDS"
+    },
+    "decisionHashDomain": {
+      "const": "crinkl.validator-certificate.decision.v1"
+    },
+    "decisionHashRule": { "const": "SHA256_RFC8785_DECISION_PREIMAGE" },
+    "validatorSignatureRule": { "const": "ED25519_RAW_DECISION_HASH" },
+    "unknownProfileHandling": { "const": "REJECT" },
+    "stateTransition": { "const": "NONE" },
+    "authorityBoundary": {
+      "const": "QUORUM_ACCEPTS_EXACT_PROOF_WITHOUT_ECONOMIC_AUTHORITY"
+    }
+  }
+}

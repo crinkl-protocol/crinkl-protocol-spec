@@ -1,0 +1,27 @@
+{
+  "tokenType": "CAMPAIGN_PROOF_OF_MATCH_PROCEDURE_PROFILE",
+  "schemaVersion": 2,
+  "profileId": "campaign.proofOfMatch.procedureProfile",
+  "profileVersion": 2,
+  "procedureId": "PROOF_OF_MATCH_VERIFICATION",
+  "procedureVersion": "2",
+  "subjectType": "PROOF_OF_MATCH",
+  "supportedSubjectSchemaIds": [
+    "crinkl://protocol/schemas/proof_of_match_v1"
+  ],
+  "supportedCampaignEpochSchemaIds": [
+    "crinkl://protocol/schemas/campaigns/campaign_epoch_v2"
+  ],
+  "certificateSchemaId": "crinkl://protocol/schemas/validator_certificate_v1",
+  "subjectHashRule": "SHA256_RFC8785_COMPLETE_OBJECT",
+  "proofProfileBindingRule": "SUBJECT_PROFILE_REF_MUST_EQUAL_EPOCH_PURPOSE_PROFILE_REF",
+  "proofProfileOwnershipRule": "PROOF_PROFILE_DEFINES_CRYPTOGRAPHIC_RELATION_PROCEDURE_PROFILE_BINDS_BY_CONTENT_REF",
+  "nullifierVerificationRule": "PUBLIC_DERIVATION_RECOMPUTED_PRIVATE_DERIVATION_PROVEN_EXPOSED_BINDING_REGISTRY_CHECKED",
+  "certificateTimestampRule": "AUTHENTICATED_VALIDATOR_ASSIGNMENT_SIGNED_AT_UNIX_MS_RFC3339_MILLISECONDS",
+  "decisionHashDomain": "crinkl.validator-certificate.decision.v1",
+  "decisionHashRule": "SHA256_RFC8785_DECISION_PREIMAGE",
+  "validatorSignatureRule": "ED25519_RAW_DECISION_HASH",
+  "unknownProfileHandling": "REJECT",
+  "stateTransition": "NONE",
+  "authorityBoundary": "QUORUM_ACCEPTS_EXACT_PROOF_WITHOUT_ECONOMIC_AUTHORITY"
+}

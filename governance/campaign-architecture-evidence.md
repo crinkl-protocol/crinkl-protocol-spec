@@ -18,7 +18,7 @@ guide.
 | Repository | Exact branch and commit | Authority used here |
 |---|---|---|
 | `crinkl-protocol-spec` | `origin/main@700be7942efecb5863acb764f004b122f9e3c5fa` | public source wording at the start of this refactor |
-| `crinkl-protocol` | `main@184133e64bae81c614cc30283ca34382b3b089de` | adopted reduced-spine schemas and exact procedure profile; historical experiments and escrow-profile evidence |
+| `crinkl-protocol` | `main@bdac6d3f9f32a312544b3adadbb379f98607198f` | adopted reduced-spine schemas and ProcedureProfile V2; historical experiments and escrow-profile evidence |
 | `crinkl-platform` | `origin/main@42d28cc06f8456cf293f9eded04c3726e1b706af` | current alpha source behavior |
 | `crinkl-proof-validator` | `origin/main@e282562da6a2f1edac5a97d7ae4591023c8453a5` | current validator procedure and certificate evidence |
 | `campaign-escrow-program` | `origin/main@8f29e539c2360b16fc2c08de20262ea5c289c324` | candidate escrow execution evidence |

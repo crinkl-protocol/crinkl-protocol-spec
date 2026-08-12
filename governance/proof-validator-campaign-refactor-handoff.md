@@ -15,21 +15,25 @@ Exact validator source examined:
 `crinkl-proof-validator origin/main@e282562da6a2f1edac5a97d7ae4591023c8453a5`.
 
 Exact adopted protocol source:
-`crinkl-protocol main@184133e64bae81c614cc30283ca34382b3b089de`.
+`crinkl-protocol main@bdac6d3f9f32a312544b3adadbb379f98607198f`.
 
 ## 1. Required procedure
 
 ```text
 procedureId: PROOF_OF_MATCH_VERIFICATION
-procedureVersion: 1
-procedureProfileRef: sha256:5472a7d975a6abbc8c8b99b85e3007bb3d57a980d203d36898d91ed746a58fb0
+procedureVersion: 2
+procedureProfileRef: sha256:6aef46ed82deb6cb197812f8b0de130915a7ecf9e926a809df996421202be915
 subjectType: PROOF_OF_MATCH
 ```
 
 The exact public profile artifact is
-[`campaign_proof_of_match_procedure_profile_v1.json`](../protocol/applications/artifacts/campaign_proof_of_match_procedure_profile_v1.json).
+[`campaign_proof_of_match_procedure_profile_v2.json`](../protocol/applications/artifacts/campaign_proof_of_match_procedure_profile_v2.json).
 The procedure ID names an unversioned family; executable behavior is selected
 only by the full triplet above.
+
+ProcedureProfile V1 remains immutable. V2 is the implementation target because
+it defines deterministic certificate time and the public/private nullifier
+verification boundary.
 
 ### Subject hash
 
@@ -68,9 +72,19 @@ profile. A display field or package summary is not an accepted substitute.
 ### Proof-profile requirements
 
 The resolved `procedureProfileRef` and `ProofOfMatchV1.proofProfile.profileRef`
-must identify immutable, content-addressed profiles. Together they define:
+must identify immutable, content-addressed profiles.
 
-- supported `ProofOfMatchV1` schema and purpose;
+The ProcedureProfile defines validator processing and certification semantics:
+
+- supported subject and Campaign Epoch schemas;
+- accepted ProofProfile binding by content reference;
+- subject and decision hash rules;
+- certificate timestamp selection and encoding;
+- validator signature behavior, unsupported-profile handling, state transition,
+  authority boundary, and stable procedure failure codes.
+
+The ProofProfile defines the cryptographic statement and proof-system relation:
+
 - proof system and exact verifier implementation contract;
 - proof-profile version, verifying key, transcript, and domain separation;
 - public-input names, order, encoding, and bounds;
@@ -81,11 +95,15 @@ must identify immutable, content-addressed profiles. Together they define:
 - temporal, currency/value, rounding, and overflow rules;
 - multi-issuer compatibility rules;
 - absence/completeness construction when supported;
-- nullifier derivation and registry scopes; and
-- stable failure-code mapping.
+- nullifier derivation and registry scopes.
 
-Changing any accepted relation, binding, verifier input, nullifier derivation,
-or failure behavior requires a new content-addressed procedure/proof profile and
+Where a ProcedureProfile accepts a ProofProfile, it binds that profile by
+content reference and does not redefine its cryptographic relation.
+
+Changing a cryptographic relation, verifier input, public-input layout, or
+nullifier derivation requires a new ProofProfile identity. Changing validator
+processing, certification, decision construction, timestamp selection, or
+procedure failure behavior requires a new ProcedureProfile reference and
 semantic version. `procedureId` alone must never select mutable behavior.
 
 ### Verification checks
@@ -110,8 +128,10 @@ Each selected validator independently:
    predicates, aggregate value arithmetic, and multi-issuer rules;
 10. resolves and verifies an observable-history boundary when the rule uses
     absence;
-11. recomputes all declared nullifiers and checks their referenced registry
-    views;
+11. verifies profile-defined nullifier derivation: directly recomputes a
+    publicly derivable nullifier, or verifies through the ZK relation a
+    private-witness-derived nullifier's exposed binding, then checks the
+    exposed value against its referenced registry view;
 12. verifies `resultCommitment` and claimed `MATCH` result;
 13. runs the declared ZK verifier over the exact proof bytes and public inputs;
 14. constructs the canonical decision preimage; and
@@ -141,7 +161,7 @@ machines online.
 
 ### Nullifier and replay checks
 
-The V1 procedure verifies derivation and reports
+The V2 procedure verifies derivation and reports
 `NO_CONFLICT_OBSERVED` against exact referenced registry views. It does not
 write a registry:
 
@@ -155,7 +175,7 @@ perform the atomic compare-and-record transition before claiming a unique
 entitlement. If a later validator procedure is intended to update canonical
 nullifier state, it needs a versioned procedure, explicit registry authority,
 atomic transition semantics, and a certificate that names that transition. It
-must not silently change this V1 procedure.
+   must not silently change this V2 procedure.
 
 ### Decision hash and signatures
 
@@ -167,8 +187,8 @@ For an accepted subject, construct this exact JCS object:
   "subjectType": "PROOF_OF_MATCH",
   "subjectHash": "sha256:<64 lowercase hex>",
   "procedureId": "PROOF_OF_MATCH_VERIFICATION",
-  "procedureVersion": "1",
-  "procedureProfileRef": "sha256:5472a7d975a6abbc8c8b99b85e3007bb3d57a980d203d36898d91ed746a58fb0",
+  "procedureVersion": "2",
+  "procedureProfileRef": "sha256:6aef46ed82deb6cb197812f8b0de130915a7ecf9e926a809df996421202be915",
   "applicableEpochRef": "sha256:<64 lowercase hex>",
   "validatorSetReference": "sha256:<64 lowercase hex>",
   "quorumPolicyReference": "sha256:<64 lowercase hex>",
@@ -179,14 +199,17 @@ For an accepted subject, construct this exact JCS object:
   },
   "decision": "ACCEPT",
   "stateTransition": "NONE",
-  "issuedAt": "<deterministic certificate-round timestamp>"
+  "issuedAt": "<UTC RFC 3339 millisecond rendering of authenticated assignment signedAtUnixMs>"
 }
 ```
 
 Arrays are sorted by unsigned UTF-8 byte order and contain no duplicates.
-The procedure profile defines how the certificate-round timestamp is selected;
-every signer signs the same value. `issuedAt` is therefore authenticated and
-cannot be rewritten by the certificate assembler.
+The selected-validator assignment resolved through `validatorSetReference`
+must be authority-authenticated and must bind the selected set used by the
+certificate. `issuedAt` is the UTC RFC 3339 millisecond rendering of that
+assignment signature's `signedAtUnixMs`. Individual validator clocks and the
+certificate assembler's clock have no standing. Every signer therefore signs
+the same authenticated value, and the assembler cannot rewrite it.
 
 ```text
 decisionHash = "sha256:" + lowercase_hex(SHA-256(RFC8785(preimage)))
@@ -252,6 +275,7 @@ No acceptance certificate is emitted on failure.
 | `RESULT_COMMITMENT_MISMATCH` | result does not bind the verified statement output |
 | `ZK_PROOF_INVALID` | cryptographic proof verification fails |
 | `VALIDATOR_SET_UNRESOLVED` | exact selected set cannot be authenticated |
+| `CERTIFICATE_TIMESTAMP_INVALID` | assignment signature time is unavailable, unauthenticated, incorrectly encoded, or differs from `issuedAt` |
 | `VALIDATOR_NOT_SELECTED` | signer is not selected for this duty |
 | `QUORUM_POLICY_UNRESOLVED` | exact quorum policy cannot be authenticated |
 | `SIGNATURE_INVALID` | validator decision signature is invalid |
