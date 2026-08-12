@@ -47,7 +47,8 @@ Policy artifacts MUST be hashed using:
 Recommended string form:
 - `policyId = "sha256:" + <64 hex>`
 
-> Note: Many legacy deployments have historically used raw 64-hex as a policy hash. That remains interoperable as a string, but new artifacts SHOULD prefer the `sha256:` prefix to reduce ambiguity across hash families.
+> Existing implementations may use raw 64-hex as a policy hash. New artifacts
+> SHOULD prefer the `sha256:` prefix to reduce ambiguity across hash families.
 
 ## 3a) Recommendation: use the hash as `policyVersion`
 
@@ -74,15 +75,13 @@ The exact reward math remains app/issuer-defined, but for interoperability the s
 
 See JSON schema: `schemas/reward_policy_snapshot_v1.schema.json`.
 
-## 4a) Campaign funding and reward rule references
+## 4a) Campaign funding and reward policy references
 
-CampaignEpochs reference reward policy by hash; they do not move reward math into Core.
-
-- `rewardRuleHash` identifies the reward rule used by one CampaignEpoch.
-- `FundingTranche` identifies a budget allocation committed to that CampaignEpoch.
-- `RuleSetHash` binds the predicate, TargetMerchantSet reference/root, reward rule, claim level, effective window, timing rule, and funding reference.
-
-Reward rules MAY change only by creating a new CampaignEpoch with a new `rewardRuleHash`. Budget increases MUST NOT mutate the original FundingTranche amount. If `ruleSetHash` is unchanged, a budget top-up MAY attach to the same CampaignEpoch through a child FundingTranche record with `parentFundingTrancheId`. If `ruleSetHash` changes, the campaign MUST append a new epoch. Unspent budget MAY roll forward only when the prior epoch funding policy permits it.
+`CampaignEpoch` commits `rewardPolicyRef`, `budgetPolicyRef`, and any applicable
+economic-admission, capacity, inventory, and allocation policies. Reward math
+does not move into Core. Changing a committed policy requires a new signed
+Epoch; an implementation must not mutate the economic terms of an existing
+Epoch.
 
 ## 5) Reserve / backing artifacts (issuer claims, not protocol truth)
 
@@ -96,7 +95,9 @@ If a deployment wants to make issuer-side economic posture auditable, it SHOULD 
 The protocol already defines an *operator attestation* event:
 - `REWARD_BATCH_BACKING_ATTESTED` (`settlement-bindings.md`)
 
-This event is signed and can be carried in Reward Commitment Tokens to claim an `economicTier` of `"COMMITTED_BACKED"` without asserting redemption availability for any specific user.
+This signed event may support an implementation-specific backing claim. It does
+not create a Campaign `RewardObligation` or prove redemption availability for
+any recipient.
 
 ### B) Reserve snapshots (policy artifact, optional)
 

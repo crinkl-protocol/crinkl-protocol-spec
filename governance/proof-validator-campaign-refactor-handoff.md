@@ -248,7 +248,7 @@ No acceptance certificate is emitted on failure.
 | `QUORUM_NOT_SATISFIED` | accepted selected signatures are insufficient |
 | `INTERNAL_ERROR` | validator could not complete deterministically; never an acceptance |
 
-## 2. Existing statementType and certificate mapping
+## 2. Existing statementType inventory
 
 Current source declares:
 
@@ -264,17 +264,17 @@ Evidence:
 
 | Current identifier | Actual subject/procedure | Target mapping |
 |---|---|---|
-| `BOOST_MATCH_BUNDLE_V0` | mixed Boost package verification with profile-specific artifacts and non-ZK bindings | legacy supporting envelope; not equivalent to `ProofOfMatchV1` |
+| `BOOST_MATCH_BUNDLE_V0` | mixed Boost package verification with profile-specific artifacts and non-ZK bindings | prototype supporting envelope; not equivalent to `ProofOfMatchV1` |
 | `QUALIFIED_GMV_BURN_EPOCH_V1` | GMV aggregation/burn procedure | no Campaign target mapping |
 | `QUALIFIED_GMV_BURN_EPOCH_V2` | different GMV procedure/version | no Campaign target mapping |
-| `CAMPAIGN_DIRECT_BUYER_REWARD_ADMISSION_V1` | exact release/Epoch/reward-policy/cutoff admission procedure | legacy profile-specific Campaign gate; not ProofOfMatch verification |
+| `CAMPAIGN_DIRECT_BUYER_REWARD_ADMISSION_V1` | exact release/Epoch/reward-policy/cutoff admission procedure | prototype profile-specific Campaign gate; not ProofOfMatch verification |
 
 The procedures are not equivalent:
 
 | Current identifier | Actual inputs and recomputation | Finalized result / consumer | Naming finding |
 |---|---|---|---|
-| `BOOST_MATCH_BUNDLE_V0` | legacy Epoch and `BoostMatchStatementV1`; recomputes Epoch/rule/statement hashes and checks condition, reward, payout, timing, actor-separation, settlement, funding, queue/proof-package bindings (`packages/campaign/src/index.ts:60-123,271-355`; engine adapter `packages/proof-validator-engine/src/profiles/campaign.ts:10-36`) | Campaign verification report inside the generic proof-result/finality lane; legacy Boost match recording and settlement-support consumers | names a mixed bundle/profile, not one proof purpose or one deterministic procedure; it combines pre-action, buyer, routing, funding, and settlement bindings |
-| `QUALIFIED_GMV_BURN_EPOCH_V1` | statement plus spend/election/claim leaf sets; recomputes three roots, counts, total, set equality, issuer/mint/policy/artifact/nullifier bindings (`packages/gmv/src/index.ts:55-98,161-226`) | GMV verification report and generic finality consumed by legacy GMV admission/accounting | “burn” overstates the procedure: validators verify an aggregate statement but do not execute a burn |
+| `BOOST_MATCH_BUNDLE_V0` | prototype Epoch and `BoostMatchStatementV1`; recomputes Epoch/rule/statement hashes and checks condition, reward, payout, timing, actor-separation, settlement, funding, queue/proof-package bindings (`packages/campaign/src/index.ts:60-123,271-355`; engine adapter `packages/proof-validator-engine/src/profiles/campaign.ts:10-36`) | Campaign verification report inside the generic proof-result lane; Boost match recording and settlement-support prototype consumers | names a mixed bundle/profile, not one proof purpose or one deterministic procedure; it combines pre-action, buyer, routing, funding, and settlement bindings |
+| `QUALIFIED_GMV_BURN_EPOCH_V1` | statement plus spend/election/claim leaf sets; recomputes three roots, counts, total, set equality, issuer/mint/policy/artifact/nullifier bindings (`packages/gmv/src/index.ts:55-98,161-226`) | GMV verification report consumed by GMV admission/accounting | “burn” overstates the procedure: validators verify an aggregate statement but do not execute a burn |
 | `QUALIFIED_GMV_BURN_EPOCH_V2` | signed daily GMV references, optional daily preimages/day witnesses/election leaves, chain context, price context, runtime policy and lifecycle facts; verifies roots/totals/signatures/maturity/price and recomputes an on-chain epoch commitment (`packages/gmv/src/burnEpochV2.ts:1-23,69-87,146-231,265-324`; engine adapter `packages/proof-validator-engine/src/profiles/qualified-gmv-v2.ts:32-185`) | V2 GMV verification/lifecycle reports and recomputed epoch commitment for the density-burn consumption path | shares the V1 economic name but is a materially different procedure, input set, output, and consumer; V2 is not merely a compatible implementation revision |
 | `CAMPAIGN_DIRECT_BUYER_REWARD_ADMISSION_V1` | exact release identity, Epoch and reward-policy artifacts, cutoff, registry/assignment, profile policy and Campaign admission nullifier; then generic strict-BFT certificate checks (`packages/campaign/src/admission.ts:30-59,193-261,264-334,337-387`) | profile-specific Campaign admission finality consumed by current Platform business-Campaign admission (`crinkl-platform@42d28cc:services/attestation-gateway/src/domain/businessCampaignAdmission.ts:199-360`) | narrow name is closer to behavior, but “admission” still needs one explicitly named durable activation/non-equivocation state and consumer before becoming target architecture |
 
@@ -294,27 +294,21 @@ behavior. It therefore does not uniquely identify the full deterministic
 procedure. The refactor must make `procedureId + procedureVersion +
 procedureProfileRef` the behavior identity and keep `subjectType` separate.
 
-`ProofFinalizationCertificateV1` cannot be renamed in place. An adapter may emit
-`ValidatorCertificateV1` only when it proves identical subject hash, procedure
-profile, validator set, quorum policy, decision digest, signers, and registry
-dependencies. The implementation artifact currently binds `proofId`,
-`proofPackageHash`, `statementType`, `resultHash`, policy, registry snapshot,
-validator assignment, public artifact, quorum, signatures, and time
-(`crinkl-proof-validator@e282562:packages/finality/src/index.ts:71-86,188-230,292-311`);
-it does not carry the target's generic `subjectType` or content-addressed
-procedure profile. Adopted `ValidatorFinalityCertificateV1` is also not
-equivalent: schema
-`crinkl://schemas/validator_finality_certificate_v1.schema.json` (SHA-256
-`9ff413f3ff33111681a4f8b94a093f098d96f5e82c953f73d32f1cd169521d4e`)
-declares authority unavailable, grants no finality authority, and contains no
-validator signatures or quorum policy
-(`crinkl-protocol@47df2a1:protocol/applications/schemas/validator_finality_certificate_v1.schema.json:1-102`).
+The current implementation certificate binds `proofId`, proof-package hash,
+`statementType`, result hash, policy, registry snapshot, validator assignment,
+public artifact, quorum, signatures, and time
+(`crinkl-proof-validator@e282562:packages/finality/src/index.ts:71-86,188-230,292-311`).
+It does not carry canonical `subjectType` or a content-addressed procedure
+profile and therefore is not `ValidatorCertificateV1`. The next implementation
+slice must implement the canonical certificate directly; it must not translate
+the prototype certificate or infer equivalence from overlapping fields.
 
 ## 3. Campaign admission disposition
 
-Do not remove or alter `CAMPAIGN_DIRECT_BUYER_REWARD_ADMISSION_V1` during the
-first validator refactor. The current alpha has producers, validators,
-transport, finality checks, and Platform consumers for that exact profile.
+`CAMPAIGN_DIRECT_BUYER_REWARD_ADMISSION_V1` is prototype implementation
+behavior, not a Campaign protocol predecessor and not a compatibility
+requirement. The implementation refactor must determine whether its existing
+producer/consumer path prevents one distinct trust failure.
 
 Before defining any generic Campaign procedure, identify one of these distinct
 security requirements and its authoritative consumer:
@@ -326,13 +320,12 @@ security requirements and its authoritative consumer:
 - another explicit state transition not created by the Campaign authority
   signature.
 
-If no relying consumer needs such quorum-created state, remove the consensus
-assumption from the target and resolve the Campaign signature/bindings during
-`PROOF_OF_MATCH_VERIFICATION`. If a consumer does need it, retain the existing
-identifier for alpha compatibility, document its exact narrow effect, and
-design a separately versioned target procedure only after subject and state
-semantics are fixed. Do not silently map it to a generic
-`CAMPAIGN_EPOCH_ADMISSION` name.
+If no relying consumer needs such quorum-created state, retire the prototype
+Campaign admission path as part of the validator/runtime refactor and resolve
+the Campaign signature and bindings during `PROOF_OF_MATCH_VERIFICATION`. If a
+consumer does need it, stop and define a separate target procedure only after
+its subject and state-transition semantics are fixed. Do not rename the
+prototype identifier into a generic Campaign procedure.
 
 ## 4. Exact implementation starting point
 
@@ -347,11 +340,12 @@ First implementation step:
 
 1. add a procedure registry entry for `PROOF_OF_MATCH_VERIFICATION` whose
    behavior is pinned by a content-addressed procedure profile;
-2. add parsers/hashers for `ProofOfMatchV1` and `ValidatorCertificateV1` behind
-   a new compatibility lane;
-3. leave every existing `statementType`, dispatcher, certificate, transport,
-   and alpha consumer unchanged;
-4. implement schema/hash/profile/binding failures before adding native proof
-   adapters; and
-5. add an explicit legacy-adapter matrix rather than inferring equivalence from
-   names.
+2. add canonical parsers and hashers for `ProofOfMatchV1` and
+   `ValidatorCertificateV1` directly, with no predecessor translation;
+3. leave unrelated GMV procedures unchanged, and plan explicit removal of the
+   two prototype Campaign statement paths after canonical producer/consumer
+   tests pass;
+4. implement schema/hash/profile/binding failures before adding native
+   proof-system verifier integrations; and
+5. add negative tests proving that prototype packages and certificates are not
+   accepted as canonical V1 objects.

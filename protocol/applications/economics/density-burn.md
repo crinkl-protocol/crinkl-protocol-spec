@@ -48,7 +48,13 @@ A = QG + λ · SR
 ```
 
 - `QG` — cumulative **Qualified GMV**: finalized spend totals that pass `QualifiedGmvRuleSetV1` (below) at the epoch's finality cutoff.
-- `SR` — cumulative **settled campaign revenue**: sponsor funds actually received and recognized via a paid-settlement/debit artifact. The campaign settlement layer currently excludes sponsor pricing, funding, and payout rails from proof scope (campaign-settlement-gcd.md); therefore `SR` MUST equal `0` in every epoch until a normative paid-settlement artifact exists in this spec. Implementations MUST NOT substitute settlement *commitments* for settled revenue.
+- `SR` — cumulative **settled campaign revenue**: sponsor funds actually
+  received and recognized via an authoritative paid-settlement or debit
+  artifact. The current Campaign specification defines recipient liability
+  resolution, not sponsor-revenue recognition; therefore `SR` MUST equal `0` in
+  every epoch until a normative sponsor-revenue artifact exists.
+  Implementations MUST NOT substitute commitment publication for settled
+  revenue.
 - `λ` (lambda) — the revenue weight, expressing how many dollars of raw spend-through one dollar of paid revenue is equivalent to. Provisional value: `33` (an implied ~3% take-rate equivalence).
 
 `A` is monotonically non-decreasing. Corrections to historical spends roll forward into later epochs (see Lifecycle); they never restate a consumed epoch.

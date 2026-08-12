@@ -41,6 +41,4 @@ evaluatedRuleCommitment = CampaignEpoch rule commitment for the declared purpose
 Multiple Spend inputs, purchase distinctness, aggregation, observable-history
 boundaries, and purchase/entitlement reuse rules are profile-defined proof
 requirements, not implied by a boolean predicate result. See the
-[`Campaign architecture`](../campaigns/README.md); the old
-[`campaign-commitment.md`](campaign-commitment.md) path is a compatibility
-redirect only.
+[`Campaign architecture`](../campaigns/README.md).

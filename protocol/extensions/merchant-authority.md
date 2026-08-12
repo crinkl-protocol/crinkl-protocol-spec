@@ -22,12 +22,8 @@ This extension composes:
 - `storeId`, `storeHash`, `storeLocationId`, and `storeLocationHash` from
   `store-registry.md`
 - system-stream envelope rules from `../core/spend-event.md`
-- target Campaign rule, Epoch, and authority bindings from
-  `../applications/campaigns/README.md`; the old
-  `../applications/conditions/campaign-commitment.md` path remains a legacy
-  compatibility redirect
-- settlement commitment bindings from
-  `../applications/economics/campaign-settlement-gcd.md`
+- target Campaign Epoch and authority bindings from
+  `../applications/campaigns/README.md`
 
 This extension does **not**:
 
@@ -182,8 +178,8 @@ If carried in the system stream, the system-stream envelope supplies `chainId`,
 
 `CampaignAuthorityV1` binds campaign creation authority to campaign rule
 material or an epoch. It is not a marketing metadata field. In the target
-campaign architecture, `CampaignEpoch` commits the applicable campaign-authority
-reference; no separate generic `CampaignCommitment` is required.
+campaign architecture, `CampaignEpoch` commits the applicable
+campaign-authority reference.
 
 ```text
 CampaignAuthorityV1 {

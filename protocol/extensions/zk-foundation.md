@@ -144,7 +144,10 @@ published verifier registry manifest.
 
 Routing/distribution predicates MAY reference `statementId` via a separate predicate definition and `predicateId` (see `offer-delivery-profile.md`); this does not alter statement verification semantics.
 
-This document does not standardize campaign types. Target campaign rule composition is defined in `../applications/campaigns/README.md`; legacy V1 statement identifiers remain unchanged until a versioned migration adopts the target proof profiles.
+This document does not standardize Campaign modes. Canonical Campaign rule
+composition is defined in `../applications/campaigns/README.md`. Prototype
+statement identifiers are implementation evidence and do not define the
+canonical proof profile.
 
 ### 4) Proof binding rules (tighten what must be bound)
 

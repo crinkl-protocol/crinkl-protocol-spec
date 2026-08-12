@@ -30,7 +30,8 @@ separate evidence-bearing states.
 
 ## Current slice
 
-Refactor public campaign language and add compatibility-safe target schemas.
+Replace the unimplemented alpha Campaign drafts with the first canonical
+Campaign vocabulary and schema set.
 
 ## Objective
 
@@ -57,31 +58,31 @@ SpendToken
 - no new object for exposure, reporting, FIFO, offer delivery, or orchestration;
 - no claim that commitments, hashes, signed evidence, or packages are ZK proofs.
 
-## Compatibility strategy
+## Alpha replacement and compatibility boundary
 
-1. Preserve every released and published V1 schema byte-for-byte.
-2. Add `CampaignEpochV2` because direct campaigns, optional audience rules,
-   optional assignment and economic admission policies, and exact proof-profile
-   commitments change the required signed shape.
-3. Add first versions of the previously unserialized `ProofOfMatch`, generic
-   `ValidatorCertificate`, `AssignmentRecord`, `CampaignOutcome`,
-   `RewardObligation`, and `SettlementRecord` families. Retain
-   `AssignmentRecord` as a portable object only where a relying profile names a
-   cross-system, dispute, or independent-consumer need.
-   The five signed object families share one explicit RFC 8785 + SHA-256 +
-   Ed25519 object-reference construction; ProofOfMatch and ValidatorCertificate
-   retain their separately defined subject/decision hash constructions.
-4. Deprecate `RewardCommitment` as the canonical liability name without
-   mutating the adopted `RewardCommitmentV1` family; map it explicitly to the
-   new `RewardObligationV1` successor family.
-5. Treat the new schemas as `SPECIFIED_NOT_IMPLEMENTED` source candidates.
-   They are outside every released manifest until separately adopted, reviewed,
-   versioned, published, and implemented.
-6. Treat `PROOF_OF_MATCH_VERIFICATION` as the only required validator
-   procedure. Retain or define Campaign admission only if the repository
-   inventory proves a distinct trust failure, consumer, or state transition.
-7. Preserve legacy documents and names as explicit compatibility mappings
-   until their inbound references are migrated.
+1. The Campaign object family has no deployed or production consumer. Its
+   discarded draft names and shapes receive no aliases, adapters, deprecation
+   objects, or successor mappings in the living specification.
+2. The canonical Campaign families introduced by this refactor start at V1,
+   including `CampaignEpochV1`.
+3. Published Git tags and their release payloads remain immutable historical
+   evidence. They do not make discarded Campaign drafts supported predecessors
+   and are not linked from the living Campaign specification.
+4. Spend Token schemas, issuer verification policy, issuer-key history,
+   attestation status, canonical Spend Stream heads, and the SOFT-to-HARD
+   verification pipeline remain unchanged and compatibility-protected.
+5. `AssignmentRecord` remains a portable object only where a relying profile
+   names a cross-system, dispute, or independent-consumer need.
+6. The signed target object families share one explicit RFC 8785 + SHA-256 +
+   Ed25519 object-reference construction. `ProofOfMatch` and
+   `ValidatorCertificate` retain their separately defined subject/decision hash
+   constructions.
+7. The new schemas remain `SPECIFIED_NOT_IMPLEMENTED` source candidates outside
+   every released manifest until separately adopted, reviewed, versioned,
+   published, and implemented.
+8. `PROOF_OF_MATCH_VERIFICATION` is the only required validator procedure.
+   Campaign admission is added only if a future design proves a distinct trust
+   failure, consumer, and state transition.
 
 ## Work sequence
 
@@ -90,9 +91,11 @@ The atomic execution board is
 
 ## Completion
 
-The specification-only slice is complete. Seven additive schema candidates,
-the normative reduced architecture, compatibility mappings, conformance
-narratives, implementation-status inventory, and validator handoff are present.
-No released manifest, published V1 bytes, implementation repository, runtime,
-validator network, escrow state, Reward Ledger, deployment, or production
-service was changed.
+Complete. The living Campaign specification now has one reduced vocabulary and
+seven first canonical V1 schema families. Discarded Campaign drafts, aliases,
+adapters, deprecation scaffolding, and inherited Campaign schema versions are
+absent. Immutable release evidence is not a Campaign predecessor and remains
+unchanged. The Spend Token and SOFT-to-HARD verification surfaces are unchanged.
+Local schema, conformance, link, release-integrity, drift, and boundary gates
+pass; the repository's pre-existing identifier-inventory defect remains
+separately recorded in the evidence receipt.

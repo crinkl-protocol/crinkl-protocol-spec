@@ -22,7 +22,6 @@
     "nullifiers",
     "measurement",
     "rewardObligation",
-    "legacyEvidenceRefs",
     "decidedAt",
     "outcomeAuthorityRef",
     "signatures"
@@ -162,12 +161,6 @@
           }
         }
       ]
-    },
-    "legacyEvidenceRefs": {
-      "type": "array",
-      "maxItems": 64,
-      "uniqueItems": true,
-      "items": { "$ref": "#/$defs/hashRef" }
     },
     "decidedAt": { "$ref": "#/$defs/timestamp" },
     "outcomeAuthorityRef": { "$ref": "#/$defs/hashRef" },

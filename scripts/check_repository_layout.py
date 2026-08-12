@@ -19,6 +19,15 @@ REQUIRED = (
     "governance",
 )
 RETIRED = ("00-purpose", "06-extensions", "07-conformance", "08-governance")
+IMMUTABLE_RELEASE_PAYLOADS = (
+    ("conformance", "profiles", "campaign-direct-buyer-reward-v1"),
+)
+# These bytes are checked by their release-specific integrity gates. Their
+# historical relative links are meaningful in the immutable release tree, not
+# as inbound references into the living Campaign specification.
+IMMUTABLE_RELEASE_DOCUMENTS = {
+    ("protocol", "applications", "economics", "settlement-bindings.md"),
+}
 LINK = re.compile(r"\[[^\]]*\]\(([^)]+)\)")
 
 
@@ -33,7 +42,15 @@ def main() -> int:
 
     for document in sorted(ROOT.rglob("*.md")):
         relative_document = document.relative_to(ROOT)
-        if ".git" in relative_document.parts or relative_document.parts[:1] == ("versions",):
+        if (
+            ".git" in relative_document.parts
+            or relative_document.parts[:1] == ("versions",)
+            or any(
+                relative_document.parts[: len(prefix)] == prefix
+                for prefix in IMMUTABLE_RELEASE_PAYLOADS
+            )
+            or relative_document.parts in IMMUTABLE_RELEASE_DOCUMENTS
+        ):
             continue
         text = document.read_text(encoding="utf-8")
         for match in LINK.finditer(text):

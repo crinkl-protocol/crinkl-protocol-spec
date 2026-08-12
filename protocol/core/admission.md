@@ -46,7 +46,7 @@ Validator membership, selection, and quorum are governed by authority-signed reg
 - The party that reads evidence MUST NOT unilaterally create network acceptance. A Verification Service signature is a proposal, never acceptance.
 - The parties that create network acceptance MUST NOT require raw evidence. Admission checks operate on signed public claims and commitments only.
 - For this v1 statement-coverage mechanism, network acceptance exists only as
-  its legacy Finality Certificate: a quorum of valid selected-validator
+  its existing Finality Certificate: a quorum of valid selected-validator
   signatures over the identical deterministic result, under a named registry
   snapshot, validator assignment, and quorum rule. This does not define the
   target Campaign `ValidatorCertificate` or give the word “finality” a global
@@ -116,7 +116,7 @@ The v1 admission of a Spend Attestation's canonical head, the verification of a
 `ProofOfMatch`, and any Campaign activation gate are different procedures.
 
 - A Campaign authority signature is the default authority for
-  `CampaignEpochV2`; this specification does not require a generic validator
+  `CampaignEpochV1`; this specification does not require a generic validator
   vote over every Epoch.
 - Target `PROOF_OF_MATCH_VERIFICATION` produces a `ValidatorCertificate` over
   one exact proof hash with `stateTransition = NONE`.
@@ -124,9 +124,10 @@ The v1 admission of a Spend Attestation's canonical head, the verification of a
   registry or ledger must name and execute any atomic replay transition.
 - The certificate does not perform assignment, economic admission, Outcome
   construction, Reward Obligation creation, reserve, or settlement.
-- Existing `CAMPAIGN_DIRECT_BUYER_REWARD_ADMISSION_V1` alpha behavior remains a
-  separate profile-specific compatibility procedure until its distinct
-  activation/non-equivocation consumer is resolved in the validator refactor.
+- Existing campaign-specific validator procedures are implementation evidence,
+  not Campaign protocol predecessors. The validator refactor must remove or
+  narrow them unless it demonstrates a distinct activation/non-equivocation
+  consumer.
 
 See [`../applications/campaigns/README.md`](../applications/campaigns/README.md)
 and the

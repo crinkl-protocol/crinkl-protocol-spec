@@ -120,9 +120,7 @@ Reward ledger events are downstream of Core spend attestation. They are listed h
 #### Commitment Layer Events
 
 Commitment-layer event semantics are defined in
-[`../applications/economics/settlement-bindings.md`](../applications/economics/settlement-bindings.md)
-and the legacy
-[`../applications/economics/campaign-settlement-gcd.md`](../applications/economics/campaign-settlement-gcd.md).
+[`../applications/economics/settlement-bindings.md`](../applications/economics/settlement-bindings.md).
 They are listed here to keep the protocol event catalog replayable.
 
 | Event | Payload |
@@ -131,7 +129,6 @@ They are listed here to keep the protocol event catalog replayable.
 | REWARD_BATCH_BACKING_ATTESTED | `{ batchId, backingAsset, backingAmount, backingVault, backingTxRef, backedAt }` |
 | REWARD_BATCH_CORRECTION | `{ correctionBatchId, targetBatchId, reason, adjustments, root, txRef, committedAt }` |
 | CUMULATIVE_SNAPSHOT_COMMITTED | `{ snapshotId, snapshotRoot, leafCount, throughBatchId, throughEventHash, txRef, committedAt }` |
-| CAMPAIGN_SETTLEMENT_COMMITTED | `{ settlementBatchId, campaignId, campaignParamsHash, root, leafCount, totalPayoutAmount, payoutAsset, schemaVersion, txRef, committedAt }` |
 | AUTHORITY_REGISTERED | `{ authorityId, publicKey, validFrom, predecessorId?, txRef, registeredAt }` |
 | AUTHORITY_REVOKED | `{ authorityId, validUntil, revokedBy, reason, txRef, revokedAt }` |
 
@@ -142,24 +139,11 @@ Schema v2 enables compact spend↔reward linkage proofs.
 
 `REWARD_BATCH_BACKING_ATTESTED` is an operator attestation about economic backing for a reward batch. It MUST NOT be interpreted as independent verification of spend attestation; it only provides a verifiable reference (`backingTxRef`) to an external asset movement intended to back reward liabilities for `batchId`.
 
-`CAMPAIGN_SETTLEMENT_COMMITTED` is the legacy public batch/root commitment for
-cleared Campaign conversions. It binds a Campaign-specific root to
-`campaignId`, `campaignParamsHash`, payout totals, authority signature, and
-`txRef`. It MUST NOT publish raw audience proof inputs, wallet identities, raw
-receipt data, or sensitive market details.
-
-The event is not a target `CampaignOutcome`, `RewardObligation`, or
-`SettlementRecord`, and does not by itself prove that one recipient liability
-was paid. See the legacy
-[`Campaign settlement GCD`](../applications/economics/campaign-settlement-gcd.md)
-and the canonical
-[`Campaign architecture`](../applications/campaigns/README.md).
-
 See
 [`../applications/economics/settlement-bindings.md`](../applications/economics/settlement-bindings.md)
-for legacy reward-commitment events and
-[`../applications/economics/campaign-settlement-gcd.md`](../applications/economics/campaign-settlement-gcd.md)
-for legacy Campaign settlement commitments.
+for reward commitment-layer events. Canonical Campaign liability and
+resolution use `RewardObligation` and `SettlementRecord` as defined by the
+[`Campaign architecture`](../applications/campaigns/README.md).
 
 ## FRAUD_FLAGGED Event
 

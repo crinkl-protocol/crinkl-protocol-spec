@@ -102,10 +102,11 @@ production-chain finality, or proof that a purchase occurred in the world.
 
 ## Finality Certificate
 
-A legacy generic term for exact historical certificate families. It MUST NOT be
-used as an alias for `ValidatorCertificateV1` without a versioned adapter that
-proves identical subject, procedure, registry, quorum, decision, and signer
-semantics.
+The existing certificate used by the implemented Spend statement-coverage
+admission pipeline. Its scope is defined by
+[`protocol/core/admission.md`](../protocol/core/admission.md). It is not a
+Campaign object and MUST NOT be used for Campaign proof acceptance;
+`ValidatorCertificate` is the only Campaign certificate term.
 
 ## Admission
 
@@ -220,12 +221,6 @@ A stable identifier for a predicate definition used by routing/distribution, com
 
 `predicateDefinition` references `statementId` and adds coordination-layer inputs (for example routing scope, exclusion rules, promoter gate, settlement parameters). It is a pointer artifact and does not change protocol truth or proof verification semantics.
 
-## Campaign Spend Proof Primitive
-
-Deprecated legacy grouping for Campaign rule features such as Spend validity,
-buyer state, frequency, category, market, and conversion. The canonical proof
-mechanism is one `ProofOfMatch` whose committed rule may compose those features.
-
 ## Campaign
 
 A mutable parent container for sponsor objective, campaign type, market scope, and CampaignEpoch history. A Campaign does not itself define final eligibility.
@@ -254,47 +249,8 @@ when present, reward policy, economic-admission/capacity/budget/allocation/reuse
 constraints, timing and observation windows, resolution and dispute policies,
 required proof profiles, Campaign authority, and applicable registries.
 
-`CampaignEpochV2` is an additive `SPECIFIED_NOT_IMPLEMENTED` target. Both
-incompatible historical `CampaignEpochV1` schemas remain preserved and must be
-resolved by exact ID and digest. A generic `CampaignCommitment` is not a second
-canonical Campaign object.
-
-## CampaignAmendment
-
-A forward-only event that closes or supersedes a prior CampaignEpoch and appends a new CampaignEpoch. A CampaignAmendment MUST NOT mutate prior epochs.
-
-## FundingTranche
-
-A budget allocation bound to a specific CampaignEpoch. A FundingTranche may fund rewards only under the rule set it was committed to.
-
-Budget increases are represented as child FundingTranche records (`parentFundingTrancheId`) bound to the same CampaignEpoch and same RuleSetHash. The original FundingTranche amount MUST NOT be mutated.
-
-## RuleSetHash
-
-The canonical hash over predicate, TargetMerchantSet reference/root, reward rule, claim level, effective window, timing rule, and funding reference.
-
-## ClaimLevel
-
-The campaign claim strength asserted by a CampaignEpoch. Allowed values are:
-
-- `OBSERVED` — verified spend occurred under the epoch rule.
-- `ATTRIBUTED` — spend matched attribution conditions defined by the epoch.
-- `INCREMENTAL` — requires a baseline, holdout, or incrementality method specified by the epoch.
-
-The `INCREMENTAL` value above belongs to the earlier experimental public candidate. It does not make an individual receipt, conversion, or Epoch a causal result. In the Campaign Experiment Profile, incrementality is a cohort- or market-level derived result under the frozen measurement method.
-
-## Campaign Experiment Policy
-
-The signed, immutable optional policy that binds one exact adopted Campaign Epoch and pre-state evaluation context to deterministic exclusive pre-exposure assignment, one intervention-policy reference per arm, an exposure-coverage policy, and a measurement-method reference. The public profile is a publication draft and is not released `v1.0.0-rc.2` conformance.
-
-## Campaign Direct Buyer Reward Policy
-
-The engineering-candidate signed policy resolved by one exact adopted-engineering `CampaignEpochV1.rewardPolicyRef`. It fixes one buyer reward leg, no promoter/referrer split, exact reward terms and outcome-evidence references, and an explicit boundary that affiliate link/coupon use and commission do not determine the buyer reward.
-
-**Publication boundary:** the public profile and byte-pinned package are released in
-`v1.0.0-rc.3` / conformance suite 2. Profile release does not establish
-product-purchase evidence, funding, escrow, settlement, validator finality,
-runtime, deployment, or production availability.
+`CampaignEpochV1` is the first canonical Campaign schema candidate and is
+`SPECIFIED_NOT_IMPLEMENTED`.
 
 ## ProofOfMatch
 
@@ -333,13 +289,6 @@ A recipient-scoped reward liability deterministically created by an eligible
 Campaign Outcome. It records what is owed under an exact resolution policy and
 does not prove payment.
 
-## RewardCommitment
-
-Legacy exact object/token-family terminology. Adopted `RewardCommitmentV1` and
-`RewardCommitmentTokenV1` retain their published meanings. The canonical target
-liability term is `RewardObligation`; do not call an obligation a cryptographic
-commitment unless its construction actually uses commitment semantics.
-
 ## SettlementRecord
 
 Evidence that one Reward Obligation was paid, reversed, expired, disputed,
@@ -358,8 +307,8 @@ The audience-side criteria a campaign uses to admit a holder into a campaign flo
 
 ## Eligibility Proof
 
-Legacy/business alias for `ProofOfMatch(purpose = AUDIENCE)`, not a distinct
-proof type.
+Business phrase for `ProofOfMatch(purpose = AUDIENCE)`, not a distinct proof
+type.
 
 ## Conversion Rule
 
@@ -367,8 +316,8 @@ The outcome-side criteria a campaign uses to determine that its required commerc
 
 ## Conversion Proof
 
-Legacy/business alias for `ProofOfMatch(purpose = CONVERSION)`, not a distinct
-proof type.
+Business phrase for `ProofOfMatch(purpose = CONVERSION)`, not a distinct proof
+type.
 
 ## Audience Qualification
 
@@ -382,24 +331,9 @@ Business term for an accepted `ProofOfMatch(CONVERSION)` over one or more Spend
 Tokens produced by the normal verification pipeline. It is not a new token,
 Campaign Outcome, or economic-admission decision.
 
-## Conversion Approval
-
-Deprecated legacy state name. It MUST NOT represent post-conversion payout
-discretion. The target composes an accepted conversion match and any required
-economic admission into `CampaignOutcome`; only an eligible admitted Outcome
-creates a Reward Obligation.
-
 ## Issuer Key History
 
 The sequence of an issuer's key registrations and revocations over time. Issuer Key History is a concept, derivable from the series of `IssuerRegistrySnapshot` artifacts plus the `AUTHORITY_REGISTERED`/`AUTHORITY_REVOKED` system-stream events; it is not a fourth representation requiring its own artifact.
-
-## Campaign Settlement Commitment
-
-Legacy public batch/root evidence represented by
-`CAMPAIGN_SETTLEMENT_COMMITTED` and `CampaignSettlementLeafV1`. It is not a
-Reward Obligation, Settlement Record, proof certificate, or evidence that one
-recipient liability was paid. Exact historical privacy and root semantics
-remain preserved by the legacy settlement profile.
 
 ## ZK Witness
 

@@ -99,7 +99,7 @@ OM4/OM4r). None of this adds fields to `SpendAttestation`,
 | `SpendAttestationToken` | Portability | Native identity-minimized form. |
 | `SpendAttestationCredential` | Portability | W3C VC 2.0 serialization. |
 | [`SpendPredicate`](protocol/applications/conditions/schemas/spend_predicate_v1.schema.json) | Rule | Reusable rule over one or more Spend Attestations. (untagged candidate, OM4r) |
-| [`CampaignEpoch`](protocol/applications/campaigns/README.md#32-campaignepoch) | Campaign | Immutable signed Campaign rules and economic terms; target V2 candidate. |
+| [`CampaignEpoch`](protocol/applications/campaigns/README.md#32-campaignepoch) | Campaign | Immutable signed Campaign rules and economic terms; first canonical V1 candidate. |
 | [`ProofOfMatch`](protocol/applications/conditions/proof-of-match.md) | Proof | Purpose-scoped ZK statement over authenticated commerce facts; target V1 candidate. |
 | [`ValidatorCertificate`](protocol/applications/campaigns/README.md#34-validatorcertificate) | Proof acceptance | Quorum acceptance of one exact proof subject under one exact procedure; target V1 candidate. |
 | [`AssignmentRecord`](protocol/applications/campaigns/README.md#35-assignmentrecord) | Experiment | Optional portable deterministic arm assignment when an independent consumer/dispute boundary requires it; target V1 candidate. |
@@ -110,12 +110,9 @@ OM4/OM4r). None of this adds fields to `SpendAttestation`,
 These fifteen are the target protocol-level families. Exposure and economic
 admission remain application/ledger state unless a named cross-system profile
 proves a need for a portable artifact; `CampaignReport` is derived output.
-Legacy `FinalityCertificate`, `RewardCommitment`,
-`CampaignSettlementCommitment`, and profile-specific escrow receipts remain
-preserved under their exact historical schemas and mappings in the
-[`migration inventory`](governance/campaign-architecture-migration.md).
-Serialization profiles and extensions may define other dependent artifacts in
-their own homes.
+Discarded Campaign drafts have no aliases or adapters in the living
+specification. Exact source and implementation evidence is recorded in the
+[`Campaign evidence inventory`](governance/campaign-architecture-evidence.md).
 
 ## Privacy Boundary
 
@@ -135,10 +132,10 @@ Downstream layers consume spend proof; they do not define it.
 
 | Layer | Documents |
 |---|---|
-| Campaign architecture and vNext schemas | [`protocol/applications/campaigns/`](protocol/applications/campaigns/) |
+| Campaign architecture and V1 schemas | [`protocol/applications/campaigns/`](protocol/applications/campaigns/) |
 | Spend Predicate rules and ProofOfMatch | [`protocol/applications/conditions/`](protocol/applications/conditions/) |
-| Reward and settlement | [`protocol/applications/economics/`](protocol/applications/economics/) including [`campaign-settlement-gcd.md`](protocol/applications/economics/campaign-settlement-gcd.md) |
-| ZK, Campaign experiments, direct buyer rewards, merchant authority, agent, REST/MCP, Solana, offer delivery | [`protocol/extensions/`](protocol/extensions/) including the public-draft [`campaign-experiment-profile.md`](protocol/extensions/campaign-experiment-profile.md), released [`campaign-direct-buyer-reward-profile.md`](protocol/extensions/campaign-direct-buyer-reward-profile.md), [`merchant-authority.md`](protocol/extensions/merchant-authority.md), [`zk-external-verifier-integration-guide.md`](protocol/extensions/zk-external-verifier-integration-guide.md), and [`solana-campaign-settlement-binding.md`](protocol/extensions/solana-campaign-settlement-binding.md) |
+| Reward and settlement | [`protocol/applications/economics/`](protocol/applications/economics/); canonical Campaign liability and resolution are defined by the Campaign architecture |
+| ZK, merchant authority, agent, REST/MCP, Solana, and offer delivery | [`protocol/extensions/`](protocol/extensions/) including [`merchant-authority.md`](protocol/extensions/merchant-authority.md) and [`zk-external-verifier-integration-guide.md`](protocol/extensions/zk-external-verifier-integration-guide.md) |
 | Conformance | [`conformance/`](conformance/) |
 | ZK beta release checklist | [`governance/zk-beta-release-checklist.md`](governance/zk-beta-release-checklist.md) |
 | ZK beta audit package | [`governance/zk-beta-audit-package.md`](governance/zk-beta-audit-package.md) |
@@ -152,9 +149,9 @@ Downstream layers consume spend proof; they do not define it.
 | [`protocol/core/`](protocol/core/) | Evidence, Spend Events, verification states, canonicalization, signatures, privacy boundaries. |
 | [`protocol/core/`](protocol/core/) | Ingestion, normalization, soft/hard verification, correction, attestation issuance. |
 | [`protocol/portability/`](protocol/portability/) | Spend Attestation Tokens, verifier requirements, identity exclusion, replay/auditability. |
-| [`protocol/applications/campaigns/`](protocol/applications/campaigns/) | Canonical Campaign architecture, authority boundaries, lifecycle, and additive vNext schemas. |
-| [`protocol/applications/conditions/`](protocol/applications/conditions/) | Spend Predicates, evaluation, ProofOfMatch, and the legacy Campaign commitment redirect. |
-| [`protocol/applications/economics/`](protocol/applications/economics/) | Legacy Reward Commitment, GMV, distribution, and settlement-binding profiles; target Campaign liability and resolution live under the Campaign architecture. |
+| [`protocol/applications/campaigns/`](protocol/applications/campaigns/) | Canonical Campaign architecture, authority boundaries, lifecycle, and first V1 schemas. |
+| [`protocol/applications/conditions/`](protocol/applications/conditions/) | Spend Predicates, evaluation, and ProofOfMatch. |
+| [`protocol/applications/economics/`](protocol/applications/economics/) | GMV, distribution, and general settlement-binding profiles; Campaign liability and resolution live under the Campaign architecture. |
 | [`protocol/extensions/`](protocol/extensions/) | Optional ZK, merchant authority, agent query, transport, Solana, offer-delivery, and registry profiles. |
 | [`conformance/`](conformance/) | Vectors, verifier test suite, compatibility notes. |
 | [`governance/`](governance/) | Versioning, change process, authority hierarchy, and shared glossary. |

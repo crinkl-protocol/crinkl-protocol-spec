@@ -1,20 +1,23 @@
-# Campaign vNext schema candidates
+# Campaign V1 schema candidates
 
 Status: `SPECIFIED_NOT_IMPLEMENTED`.
 
-These schemas are additive source candidates. They are not listed in any
-released manifest and do not mutate either published `CampaignEpochV1` byte
-set, adopted `RewardCommitmentV1`, validator certificates, escrow artifacts, or
-implementation wires.
+These are the first canonical schema candidates for the unimplemented Campaign
+object family. They are not listed in a released manifest and do not establish
+runtime support. No discarded Campaign draft is a supported predecessor, so
+these schemas require no aliases, adapters, or inherited version numbers.
+
+Spend Token schemas and the SOFT-to-HARD verification pipeline are outside this
+directory and unchanged.
 
 | Schema | Family decision |
 |---|---|
-| `campaign_epoch_v2.schema.json` | V2 successor; V1 required shape cannot express optional audience/assignment/admission composition. |
+| `campaign_epoch_v1.schema.json` | first immutable signed Campaign rule and economic-policy object |
 | `proof_of_match_v1.schema.json` | first canonical serialized ProofOfMatch envelope |
 | `validator_certificate_v1.schema.json` | first certificate restricted to `PROOF_OF_MATCH_VERIFICATION` |
 | `assignment_record_v1.schema.json` | portable only for a named cross-system, dispute, or independent-consumer use |
 | `campaign_outcome_v1.schema.json` | first narrow Outcome composition |
-| `reward_obligation_v1.schema.json` | canonical liability family; explicit successor mapping from legacy Reward Commitment terms |
+| `reward_obligation_v1.schema.json` | first recipient-scoped Campaign liability family |
 | `settlement_record_v1.schema.json` | first liability-resolution record |
 
 ## Common content references and signatures

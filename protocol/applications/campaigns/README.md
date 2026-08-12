@@ -14,9 +14,11 @@ issuer-key-history, attestation-status, or Spend Stream rules.
 
 The schemas in
 [`schemas/experimental/campaigns/`](../../../schemas/experimental/campaigns/)
-are additive, unreleased source candidates. Their presence does not alter
-published V1 bytes, add them to a released conformance manifest, or establish
-runtime support.
+are the first canonical, unreleased source candidates for this unimplemented
+Campaign family. They are not in a released conformance manifest and do not
+establish runtime support. Discarded Campaign drafts are not supported
+predecessors. Spend Token and SOFT-to-HARD verification compatibility remains
+unchanged.
 
 A compact forked flow is available in the
 [`Campaign architecture diagram`](../../../diagrams/campaign-architecture.md).
@@ -153,7 +155,7 @@ head, and applicable portability profile under the existing Spend rules.
 ### 3.2 CampaignEpoch
 
 `CampaignEpoch` is the immutable, signed version of a Campaign's rules and
-economic terms. [`CampaignEpochV2`](../../../schemas/experimental/campaigns/campaign_epoch_v2.schema.json)
+economic terms. [`CampaignEpochV1`](../../../schemas/experimental/campaigns/campaign_epoch_v1.schema.json)
 commits:
 
 - an audience rule, when present;
@@ -171,11 +173,6 @@ commits:
 The exact Campaign mode follows from those references; it is not a mutable mode
 flag. A new signed Epoch is required to change a committed rule, profile,
 economic term, authority, registry dependency, or window.
-
-`CampaignEpoch` absorbs the protocol meaning formerly assigned to a generic
-`CampaignCommitment`. The legacy term remains only where it names a historical
-schema, commitment root, or implementation account; it is not a second
-canonical Campaign-definition object.
 
 Rules may remain private, but their exact canonical bytes MUST be
 content-addressed. A predictable plaintext hash is a binding commitment, not
@@ -247,7 +244,7 @@ does not cryptographically bind the evaluated rule commitment.
 
 A hash, Merkle root, signed platform decision, commitment, receipt, validator
 signature, proof receipt, or package containing such items is not by itself a
-`ProofOfMatch`. A legacy package may carry genuine ZK proof bytes plus non-ZK
+`ProofOfMatch`. A package may carry genuine ZK proof bytes plus non-ZK
 supporting evidence; each component retains its own meaning.
 
 ### 3.4 ValidatorCertificate
@@ -296,12 +293,6 @@ Proof Validators do not:
 - create discretionary payout approvals;
 - operate the Reward Ledger; or
 - reserve, move, settle, or refund Campaign funds.
-
-The existing names `FinalityCertificate`, `ProofFinalizationCertificateV1`,
-and `ValidatorFinalityCertificateV1` remain compatibility terms for their exact
-historical schemas and procedures. They are not aliases for this target object
-unless a versioned adapter proves exact subject, procedure, decision, signer,
-registry, and quorum equivalence.
 
 ### 3.5 AssignmentRecord
 
@@ -425,14 +416,6 @@ arises only when both the match and committed economic-admission requirements
 are satisfied. The Outcome producer cannot alter committed entitlement rules or
 reward amounts.
 
-The existing `CampaignConversionEvidenceV1` is narrower conversion-to-escrow
-evidence. It can be referenced as supporting legacy evidence, and for a direct
-uncapped Campaign a deterministic adapter may map its exact fields into part of
-an Outcome. It is not silently renamed: V1 does not bind audience acceptance,
-assignment, exposure, a Validator Certificate for the conversion proof, or a
-capacity-admission decision. See the
-[`legacy mapping`](../../../governance/campaign-architecture-migration.md).
-
 ### 3.9 RewardObligation
 
 `RewardObligation` is a recipient-scoped reward liability deterministically
@@ -446,11 +429,9 @@ Outcome, Epoch reward policy, recipient binding, amount and asset, funding
 lineage, entitlement nullifier, and resolution policy. The producer MUST NOT
 alter the amount or entitlement selected by committed policy.
 
-The canonical name is not `RewardCommitment` because liability semantics do not
-require a hiding or binding cryptographic commitment beyond the object's normal
-content hash and signature. Adopted `RewardCommitmentV1`,
-`RewardCommitmentTokenV1`, reward-batch inclusion, and Reward Ledger issuance
-events remain distinct legacy or portability artifacts with explicit mappings.
+The object is named for its liability semantics. Its content hash and signature
+authenticate the record; they do not turn the liability into a separate hiding
+commitment scheme.
 
 ### 3.10 SettlementRecord
 
@@ -468,15 +449,14 @@ Settlement Record. Candidate `CampaignEscrowReceiptV1` is a Solana-specific
 action receipt that may supply supporting evidence or satisfy a profile mapping
 for this role. It is not relabeled or mutated.
 
-`ConversionApproval` is deprecated as a discretionary payout decision. A
-Campaign authority signs the Epoch before conversions occur; it does not choose
-whether or how much to pay after observing a valid conversion whose entitlement
-rules and amount were already committed.
+A Campaign authority signs the Epoch before conversions occur. Once its
+committed match and admission conditions hold, neither the authority nor the
+Outcome producer may choose whether or how much to pay.
 
 ### 3.11 Canonical object references and signatures
 
 Target references MUST be computed from exact schema-valid objects. For
-`CampaignEpochV2`, `AssignmentRecordV1`, `CampaignOutcomeV1`,
+`CampaignEpochV1`, `AssignmentRecordV1`, `CampaignOutcomeV1`,
 `RewardObligationV1`, and `SettlementRecordV1`, the common signed-object
 construction is:
 
@@ -517,9 +497,8 @@ validatorCertificateRef =
 ```
 
 The certificate reference covers the complete assembled certificate, including
-signature evidence. None of these object hashes silently adopts the different
-hash preimage or field name of a legacy schema; compatibility adapters MUST
-verify both exact constructions.
+signature evidence. Every target object uses only the construction specified
+for its canonical V1 family.
 
 ### 3.12 CampaignReport
 
@@ -607,10 +586,9 @@ campaign are specified in
   rules, arms, rewards, capacity, allocation, timing, disputes, and measurement
   methods; this specification binds and composes those choices but does not
   choose their commercial values.
-- **Protocol artifacts:** seven additive, unreleased schema families define the
-  target Epoch, match proof, quorum certificate, conditional assignment record,
-  Outcome, Obligation, and Settlement Record. Published V1 bytes and identifiers
-  remain unchanged.
+- **Protocol artifacts:** seven first-version, unreleased schema families define
+  the target Epoch, match proof, quorum certificate, conditional assignment
+  record, Outcome, Obligation, and Settlement Record.
 - **Offchain state and computation:** offer delivery, exposure, campaign
   orchestration, report calculation, and economic-admission runtime remain
   application or ledger functions governed by committed policies.
