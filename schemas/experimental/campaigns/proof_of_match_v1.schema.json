@@ -59,16 +59,22 @@
         "profileRef",
         "profileVersion",
         "proofSystem",
+        "circuitId",
         "verifyingKeyRef",
         "transcriptBindingRef",
+        "proofEncodingRef",
+        "publicInputEncodingRef",
         "publicInputEncoding"
       ],
       "properties": {
         "profileRef": { "$ref": "#/$defs/hashRef" },
         "profileVersion": { "$ref": "#/$defs/identifier" },
         "proofSystem": { "$ref": "#/$defs/identifier" },
+        "circuitId": { "$ref": "#/$defs/identifier" },
         "verifyingKeyRef": { "$ref": "#/$defs/hashRef" },
         "transcriptBindingRef": { "$ref": "#/$defs/hashRef" },
+        "proofEncodingRef": { "$ref": "#/$defs/hashRef" },
+        "publicInputEncodingRef": { "$ref": "#/$defs/hashRef" },
         "publicInputEncoding": { "const": "RFC8785_NAMED_COMMITMENTS_V1" }
       }
     },
@@ -156,9 +162,19 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["name", "valueCommitment"],
+        "required": ["name", "valueType", "value", "valueCommitment"],
         "properties": {
           "name": { "$ref": "#/$defs/identifier" },
+          "valueType": {
+            "enum": [
+              "IDENTIFIER",
+              "ENUM",
+              "SHA256_REF",
+              "POSEIDON_FP",
+              "UNIX_MS"
+            ]
+          },
+          "value": { "type": "string", "minLength": 1, "maxLength": 512 },
           "valueCommitment": { "$ref": "#/$defs/hashRef" }
         }
       }
@@ -172,6 +188,7 @@
       "items": {
         "enum": [
           "SPEND_TOKEN_AUTHENTICITY",
+          "PRODUCT_EVIDENCE_AUTHENTICITY",
           "CANONICAL_SPEND_HEAD",
           "PRIVATE_SUBJECT_LINKAGE",
           "PURCHASE_DISTINCTNESS",

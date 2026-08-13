@@ -1,0 +1,57 @@
+{
+  "kind": "productPurchaseAttestation.v1",
+  "vectorVersion": 1,
+  "valid": {
+    "tokenType": "PRODUCT_PURCHASE_ATTESTATION",
+    "schemaVersion": 1,
+    "protocol": { "protocolVersion": "1.0.0-rc.1" },
+    "attestationId": "product-attestation-001",
+    "productIssuerId": "product-issuer-001",
+    "issuerKeyRef": "sha256:1010101010101010101010101010101010101010101010101010101010101010",
+    "productVerificationPolicyRef": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+    "spendBinding": {
+      "spendId": "spend-001",
+      "spendTokenHash": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+      "canonicalHeadEventHash": "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+    },
+    "productFacts": {
+      "productRef": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+      "brandRef": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "categoryRefs": [
+        "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "sha256:7777777777777777777777777777777777777777777777777777777777777777"
+      ],
+      "purchasedAtUnixMs": "1786579200000",
+      "quantity": "1",
+      "netProductAmountMinor": "299",
+      "currency": "USD"
+    },
+    "recipientBindingCommitment": "sha256:8888888888888888888888888888888888888888888888888888888888888888",
+    "evidenceStatusEntryRef": "sha256:9999999999999999999999999999999999999999999999999999999999999999",
+    "supersedesProductPurchaseCommitment": null,
+    "productPurchaseCommitment": "poseidon:1aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "authentication": {
+      "mode": "PRODUCT_EVIDENCE_SNAPSHOT_MEMBERSHIP_V1",
+      "snapshotRef": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "leafIndex": 7
+    },
+    "issuedAt": "2026-08-13T00:00:00.000Z"
+  },
+  "reject": [
+    { "id": "unknown-field", "op": "add", "path": "/extra", "value": true },
+    { "id": "wrong-token-type", "op": "replace", "path": "/tokenType", "value": "SPEND_ATTESTATION" },
+    { "id": "bad-spend-hash", "op": "replace", "path": "/spendBinding/spendTokenHash", "value": "sha256:ABC" },
+    { "id": "unsorted-categories", "op": "reverse", "path": "/productFacts/categoryRefs" },
+    { "id": "duplicate-categories", "op": "duplicate-first", "path": "/productFacts/categoryRefs" },
+    { "id": "quantity-zero", "op": "replace", "path": "/productFacts/quantity", "value": "0" },
+    { "id": "quantity-u32-overflow", "op": "replace", "path": "/productFacts/quantity", "value": "4294967296" },
+    { "id": "amount-u64-overflow", "op": "replace", "path": "/productFacts/netProductAmountMinor", "value": "18446744073709551616" },
+    { "id": "leading-zero-time", "op": "replace", "path": "/productFacts/purchasedAtUnixMs", "value": "01786579200000" },
+    { "id": "lowercase-currency", "op": "replace", "path": "/productFacts/currency", "value": "usd" },
+    { "id": "wrong-authentication-mode", "op": "replace", "path": "/authentication/mode", "value": "DIRECT_SIGNATURE" },
+    { "id": "fractional-leaf-index", "op": "replace", "path": "/authentication/leafIndex", "value": 7.5 },
+    { "id": "non-millisecond-time", "op": "replace", "path": "/issuedAt", "value": "2026-08-13T00:00:00Z" },
+    { "id": "invalid-calendar-time", "op": "replace", "path": "/issuedAt", "value": "2026-99-99T00:00:00.000Z" },
+    { "id": "non-canonical-pasta-field", "op": "replace", "path": "/productPurchaseCommitment", "value": "poseidon:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" }
+  ]
+}

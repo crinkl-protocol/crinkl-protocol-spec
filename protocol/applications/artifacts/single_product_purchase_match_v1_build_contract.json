@@ -1,0 +1,92 @@
+{
+  "contractType": "PROOF_PROFILE_BUILD_CONTRACT",
+  "contractVersion": 1,
+  "status": "SPECIFIED_NOT_IMPLEMENTED",
+  "profileId": "SINGLE_PRODUCT_PURCHASE_MATCH_V1",
+  "purpose": "CONVERSION",
+  "proofSystem": "HALO2_IPA",
+  "curveFamily": "PASTA",
+  "circuitId": "H2_SINGLE_PRODUCT_PURCHASE_MATCH_V1",
+  "deployedProfileSchemaRef": "sha256:cabdcbfa3727f6e67cd20cc981cf7d5dc6f6033fb78c081f304a353d6a18b9e8",
+  "relationSources": [
+    {
+      "path": "protocol/applications/conditions/single-product-purchase-match-v1.md",
+      "fileSha256": "sha256:cea9003a77be426b6e4a6cd10f74b541c26708860629d00fd8fa6f51eb309d71"
+    },
+    {
+      "path": "protocol/applications/conditions/h2-single-product-purchase-match-v1.md",
+      "fileSha256": "sha256:6e3a286bcb76d2dd145cfe2b1e838a074fe38b4eb3b3c8bf84982994ed802a34"
+    },
+    {
+      "path": "protocol/applications/conditions/product-purchase-attestation-v1.md",
+      "fileSha256": "sha256:e1234097e0bca23174b865015ef3721c1004ea0ec4413b79e0a3279bb4e7e25c"
+    },
+    {
+      "path": "protocol/applications/conditions/product-evidence-snapshots-v1.md",
+      "fileSha256": "sha256:4b9a5234228e34e4449e6e823ca1aea977b901a006d3efc572181e16c82195f5"
+    }
+  ],
+  "treeProfileRef": "sha256:78bf87e5d917babe69fb0ca794d45f6fb759b6aab11ce4d5077a57958243f50d",
+  "publicInputEncoding": "RFC8785_NAMED_COMMITMENTS_V1",
+  "instanceEncoding": "SHA256_DIGEST_AS_TWO_UNSIGNED_BIG_ENDIAN_128_BIT_LIMBS",
+  "publicInputOrder": [
+    { "name": "proofProfileRef", "valueType": "SHA256_REF" },
+    { "name": "purpose", "valueType": "ENUM" },
+    { "name": "proofId", "valueType": "IDENTIFIER" },
+    { "name": "campaignId", "valueType": "IDENTIFIER" },
+    { "name": "campaignEpochRef", "valueType": "SHA256_REF" },
+    { "name": "ruleCommitment", "valueType": "SHA256_REF" },
+    { "name": "scopeRef", "valueType": "SHA256_REF" },
+    { "name": "inputSetCommitment", "valueType": "SHA256_REF" },
+    { "name": "spendTokenBinding", "valueType": "SHA256_REF" },
+    { "name": "canonicalHeadBinding", "valueType": "SHA256_REF" },
+    { "name": "spendIssuerRegistryRef", "valueType": "SHA256_REF" },
+    { "name": "spendVerificationPolicyRef", "valueType": "SHA256_REF" },
+    { "name": "spendAcceptanceSnapshotRef", "valueType": "SHA256_REF" },
+    { "name": "spendAcceptanceSnapshotRoot", "valueType": "POSEIDON_FP" },
+    { "name": "spendAcceptanceSnapshotTreeProfileRef", "valueType": "SHA256_REF" },
+    { "name": "productIssuerRegistryRef", "valueType": "SHA256_REF" },
+    { "name": "productVerificationPolicyRef", "valueType": "SHA256_REF" },
+    { "name": "productRegistrySnapshotRef", "valueType": "SHA256_REF" },
+    { "name": "productRegistryRoot", "valueType": "POSEIDON_FP" },
+    { "name": "productRegistryTreeProfileRef", "valueType": "SHA256_REF" },
+    { "name": "brandRegistrySnapshotRef", "valueType": "SHA256_REF" },
+    { "name": "brandRegistryRoot", "valueType": "POSEIDON_FP" },
+    { "name": "brandRegistryTreeProfileRef", "valueType": "SHA256_REF" },
+    { "name": "categoryRegistrySnapshotRef", "valueType": "SHA256_REF" },
+    { "name": "categoryRegistryRoot", "valueType": "POSEIDON_FP" },
+    { "name": "categoryRegistryTreeProfileRef", "valueType": "SHA256_REF" },
+    { "name": "productEvidenceSnapshotRef", "valueType": "SHA256_REF" },
+    { "name": "productEvidenceSnapshotRoot", "valueType": "POSEIDON_FP" },
+    { "name": "productEvidenceSnapshotTreeProfileRef", "valueType": "SHA256_REF" },
+    { "name": "evidenceStatusSnapshotRef", "valueType": "SHA256_REF" },
+    { "name": "evidenceStatusRoot", "valueType": "POSEIDON_FP" },
+    { "name": "evidenceStatusTreeProfileRef", "valueType": "SHA256_REF" },
+    { "name": "statusCutoffUnixMs", "valueType": "UNIX_MS" },
+    { "name": "recipientScopeCommitment", "valueType": "SHA256_REF" },
+    { "name": "proofReplayInputsCommitment", "valueType": "SHA256_REF" },
+    { "name": "proofReplayNullifier", "valueType": "SHA256_REF" },
+    { "name": "purchaseReuseNullifier", "valueType": "SHA256_REF" },
+    { "name": "entitlementNullifier", "valueType": "SHA256_REF" },
+    { "name": "resultCommitment", "valueType": "SHA256_REF" }
+  ],
+  "requiredReturnArtifacts": [
+    "relationRef",
+    "sourceCommit",
+    "dependencyLockRef",
+    "securityParameter",
+    "parameterGenerationProcedureRef",
+    "verifyingKeyRef",
+    "transcriptBindingRef",
+    "proofEncodingRef",
+    "publicInputEncodingRef",
+    "positiveProofFixtureRef",
+    "hostileProofFixturesRef",
+    "conformanceSuiteRef",
+    "crossBuildInteroperabilityEvidenceRef",
+    "benchmarkEvidenceRef",
+    "implementationManifestRef",
+    "driverContractCommand"
+  ],
+  "implementationIdentityRule": "BINARY_CONTAINER_SERVICE_AND_HARDWARE_REFS_ARE_IMPLEMENTATION_MANIFEST_FIELDS_NOT_PROOF_PROFILE_FIELDS"
+}

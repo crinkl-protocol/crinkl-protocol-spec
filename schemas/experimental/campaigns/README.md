@@ -18,6 +18,17 @@ directory and unchanged.
 |---|---|
 | `campaign_epoch_v2.schema.json` | reduced-spine successor to the adopted signed Campaign Epoch V1 family |
 | `proof_of_match_v1.schema.json` | first canonical serialized ProofOfMatch envelope |
+| `proof_profile_v1.schema.json` | immutable adopted verifier contract for the first proof relation |
+| `single_product_purchase_rule_v1.schema.json` | closed conversion-only rule for one product purchase |
+| `single_product_purchase_dependencies_v1.schema.json` | exact transitive snapshot, policy, and nullifier-registry bindings for the first profile |
+| `product_purchase_attestation_v1.schema.json` | private canonical product-purchase witness artifact |
+| `spend_acceptance_entry_v1.schema.json` | private accepted Spend leaf bound to one token, head, issuer, policy, and holder commitment |
+| `spend_acceptance_snapshot_v1.schema.json` | signed public Spend-acceptance root |
+| `product_evidence_snapshot_v1.schema.json` | signed public product-evidence root |
+| `product_evidence_status_entry_v1.schema.json` | private current-state leaf for accepted, corrected, returned, revoked, or superseded evidence |
+| `product_evidence_status_snapshot_v1.schema.json` | signed public evidence-status root and cutoff |
+| `commerce_entity_registry_entry_v1.schema.json` | product-to-brand/category relationship and brand/category entity leaf |
+| `commerce_entity_registry_snapshot_v1.schema.json` | signed public product, brand, or category registry root |
 | `validator_certificate_v1.schema.json` | first certificate restricted to `PROOF_OF_MATCH_VERIFICATION` |
 | `assignment_record_v1.schema.json` | portable only for a named cross-system, dispute, or independent-consumer use |
 | `campaign_outcome_v1.schema.json` | first narrow Outcome composition |

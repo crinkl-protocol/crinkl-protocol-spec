@@ -55,8 +55,8 @@ The envelope includes:
 - `purpose`, `campaignId`, `campaignEpochRef`, and `scopeRef`;
 - `ruleCommitment` and `evaluatedRuleCommitment`;
 - producer role and optional authority reference;
-- exact proof profile, version, proof system, verifying key, transcript, and
-  public-input encoding;
+- exact proof profile, version, proof system, circuit, verifying key,
+  transcript, proof encoding, and public-input encoding;
 - a bounded ordered set of scoped Spend Token and canonical-head bindings;
 - each input's issuer registry, verification policy, and purchase-reuse
   nullifier;
@@ -64,7 +64,7 @@ The envelope includes:
 - observable-history boundary reference when absence is claimed;
 - proof-replay, purchase-reuse, and, when the Campaign can create an economic
   claim, entitlement nullifiers plus their authoritative registry references;
-- named public-input hashes and their set hash;
+- typed named public-input values, their commitments, and their set hash;
 - private witness category labels, not witness values;
 - claimed `MATCH` result and result hash;
 - ZK proof bytes, decoded-byte hash, and verifier-input reference; and
@@ -97,21 +97,29 @@ relation MUST bind:
 - aggregation outputs required by the rule; and
 - result commitment.
 
-Public input names and hashes in the envelope are an index over the actual
-proof-verifier inputs. A validator MUST reject any disagreement among the
-profile encoding, verifier inputs, named envelope entries, or
-`publicInputsCommitment`.
+Public input names, types, values, and commitments in the envelope are an index
+over the actual proof-verifier inputs. The selected ProofProfile fixes their
+exact order and commitment preimages. A validator MUST reject any disagreement
+among resolved dependencies, profile encoding, verifier inputs, named envelope
+entries, or `publicInputsCommitment`.
 
 The ProcedureProfile defines validator execution and certification semantics.
 The ProofProfile defines the cryptographic statement, witness relation, and
 proof-system relation. A ProcedureProfile that accepts a ProofProfile MUST bind
 it by content reference and MUST NOT redefine its cryptographic relation.
 
+The first profile defined for this procedure is
+[`SINGLE_PRODUCT_PURCHASE_MATCH_V1`](./single-product-purchase-match-v1.md).
+Its official circuit identity is `H2_SINGLE_PRODUCT_PURCHASE_MATCH_V1`.
+Implementation binaries and hardware backends are admitted separately and are
+not part of the ProofProfile identity.
+
 ## Private witness categories
 
 Permitted category labels are:
 
 - Spend Token authenticity material;
+- product-evidence authenticity material;
 - canonical Spend-head material;
 - private subject linkage;
 - purchase distinctness;

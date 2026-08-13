@@ -1,0 +1,36 @@
+{
+  "profileType": "FIELD_MERKLE_TREE_PROFILE",
+  "profileVersion": 1,
+  "profileId": "H2_BINARY_POSEIDON_PASTA_FP_DEPTH32_V1",
+  "proofSystem": "HALO2_IPA",
+  "field": {
+    "name": "PASTA_FP",
+    "modulusHex": "40000000000000000000000000000000224698fc094cf91b992d30ed00000001",
+    "externalEncoding": "UNSIGNED_BIG_ENDIAN_32_BYTES"
+  },
+  "tree": {
+    "arity": 2,
+    "depth": 32,
+    "capacity": "4294967296",
+    "leafIndexBits": "UNSIGNED_LITTLE_ENDIAN_BIT_ORDER_BY_LEVEL",
+    "duplicatePayloadRule": "REJECT",
+    "unusedLeafRule": "EMPTY_LEAF"
+  },
+  "domainField": {
+    "derivation": "UNSIGNED_BIG_ENDIAN_SHA512_MOD_P",
+    "preimage": "UTF8(CRINKL:TREE-DOMAIN:V1)||00||UTF8(treeDomain)"
+  },
+  "poseidon": {
+    "parameterization": "P128Pow5T3",
+    "width": 3,
+    "rate": 2,
+    "leafHash": "Hash<PastaFp,P128Pow5T3,ConstantLength<2>,3,2>(domainField,payload)",
+    "nodeHash": "Hash<PastaFp,P128Pow5T3,ConstantLength<4>,3,2>(domainField,level,left,right)",
+    "emptyLeaf": "Hash<PastaFp,P128Pow5T3,ConstantLength<2>,3,2>(domainField,0)"
+  },
+  "membershipPath": {
+    "siblingCount": 32,
+    "siblingsOrder": "LEAF_TO_ROOT",
+    "directionSource": "leafIndex bit at matching level"
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "crinkl://protocol/schemas/spend_acceptance_snapshot_v1",
+  "title": "SpendAcceptanceSnapshotV1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "tokenType", "schemaVersion", "protocol", "snapshotSeriesId", "sequence",
+    "previousSnapshotRef", "authorityId", "authorityKeyRef", "spendIssuerRegistryRef",
+    "spendVerificationPolicyRef", "cutoffUnixMs", "entryCount", "entriesRoot",
+    "treeProfileRef", "treeDomain", "signature"
+  ],
+  "properties": {
+    "tokenType": { "const": "SPEND_ACCEPTANCE_SNAPSHOT" },
+    "schemaVersion": { "const": 1 },
+    "protocol": { "$ref": "#/$defs/protocol" },
+    "snapshotSeriesId": { "$ref": "#/$defs/identifier" },
+    "sequence": { "type": "integer", "minimum": 1, "maximum": 9007199254740991 },
+    "previousSnapshotRef": { "$ref": "#/$defs/nullableHashRef" },
+    "authorityId": { "$ref": "#/$defs/identifier" },
+    "authorityKeyRef": { "$ref": "#/$defs/hashRef" },
+    "spendIssuerRegistryRef": { "$ref": "#/$defs/hashRef" },
+    "spendVerificationPolicyRef": { "$ref": "#/$defs/hashRef" },
+    "cutoffUnixMs": { "$ref": "#/$defs/unixMs" },
+    "entryCount": { "type": "integer", "minimum": 1, "maximum": 4294967295 },
+    "entriesRoot": { "$ref": "#/$defs/poseidonRef" },
+    "treeProfileRef": { "$ref": "#/$defs/hashRef" },
+    "treeDomain": { "const": "CRINKL:MERKLE:SPEND_ACCEPTANCE:V1" },
+    "signature": { "$ref": "#/$defs/signature" }
+  },
+  "allOf": [{ "$ref": "#/$defs/sequenceChain" }],
+  "$defs": {
+    "protocol": { "type": "object", "additionalProperties": false, "required": ["protocolVersion"], "properties": { "protocolVersion": { "const": "1.0.0-rc.1" } } },
+    "identifier": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$" },
+    "hashRef": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "nullableHashRef": { "oneOf": [{ "$ref": "#/$defs/hashRef" }, { "type": "null" }] },
+    "poseidonRef": { "type": "string", "pattern": "^poseidon:[0-9a-f]{64}$" },
+    "unixMs": { "type": "string", "pattern": "^(0|[1-9][0-9]{0,12})$" },
+    "signature": {
+      "type": "object", "additionalProperties": false,
+      "required": ["algorithm", "issuedBy", "keyRef", "signedPayloadHash", "signatureBase64"],
+      "properties": {
+        "algorithm": { "const": "ED25519" }, "issuedBy": { "$ref": "#/$defs/identifier" },
+        "keyRef": { "$ref": "#/$defs/hashRef" }, "signedPayloadHash": { "$ref": "#/$defs/hashRef" },
+        "signatureBase64": { "type": "string", "pattern": "^[A-Za-z0-9+/]{86}==$" }
+      }
+    },
+    "sequenceChain": {
+      "if": { "properties": { "sequence": { "const": 1 } }, "required": ["sequence"] },
+      "then": { "properties": { "previousSnapshotRef": { "type": "null" } } },
+      "else": { "properties": { "previousSnapshotRef": { "$ref": "#/$defs/hashRef" } } }
+    }
+  }
+}

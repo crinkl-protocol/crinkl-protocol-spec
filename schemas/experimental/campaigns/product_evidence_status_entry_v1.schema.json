@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "crinkl://protocol/schemas/product_evidence_status_entry_v1",
+  "title": "ProductEvidenceStatusEntryV1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "entryType", "schemaVersion", "productPurchaseCommitment", "status",
+    "effectiveAtUnixMs", "replacementProductPurchaseCommitment"
+  ],
+  "properties": {
+    "entryType": { "const": "PRODUCT_EVIDENCE_STATUS_ENTRY" },
+    "schemaVersion": { "const": 1 },
+    "productPurchaseCommitment": { "$ref": "#/$defs/poseidonRef" },
+    "status": { "enum": ["ACCEPTED", "CORRECTED", "RETURNED", "REVOKED", "SUPERSEDED"] },
+    "effectiveAtUnixMs": { "$ref": "#/$defs/unixMs" },
+    "replacementProductPurchaseCommitment": { "$ref": "#/$defs/nullablePoseidonRef" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "status": { "enum": ["CORRECTED", "SUPERSEDED"] } }, "required": ["status"] },
+      "then": { "properties": { "replacementProductPurchaseCommitment": { "$ref": "#/$defs/poseidonRef" } } },
+      "else": { "properties": { "replacementProductPurchaseCommitment": { "type": "null" } } }
+    }
+  ],
+  "$defs": {
+    "poseidonRef": { "type": "string", "pattern": "^poseidon:[0-9a-f]{64}$" },
+    "nullablePoseidonRef": { "oneOf": [{ "$ref": "#/$defs/poseidonRef" }, { "type": "null" }] },
+    "unixMs": { "type": "string", "pattern": "^(0|[1-9][0-9]{0,12})$" }
+  }
+}
