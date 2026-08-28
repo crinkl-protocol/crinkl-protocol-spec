@@ -12,9 +12,9 @@
       "issuerKeyRef": "sha256:eebdba15e83721234389f11697d6975a9bad2efa7f7917753a8981627f085843",
       "productVerificationPolicyRef": "sha256:84f11f3ad9ddfb91e079feedc76da05f8a1112ace042bf209807f755a731da72",
       "spendBinding": {
-        "spendId": "spend-holder-vector-1",
-        "spendTokenHash": "sha256:57d90e95eb7816dfd69ec4af3c284105cbcc9c5e6fd70559f3d3830f8504c8dc",
-        "canonicalHeadEventHash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        "spendId": "861e3e1b-5fdd-47c3-aa12-7541c4510e14",
+        "spendTokenHash": "sha256:bc22d3e5fbbcbc34750c127b6e3208626bf2498f706207e96fc75037dbe29cfa",
+        "canonicalHeadEventHash": "sha256:2d0fdbfc06cc3e8cbd6d2afb77ebfebc45cce70a4d6fb4533249ef724dda47fe"
       },
       "productFacts": {
         "productRef": "sha256:5e97466cccda034e34658f3202bc2e937c05e1c14ef598ba8f6d310ff122f8a0",
@@ -26,9 +26,9 @@
         "currency": "USD"
       },
       "recipientBindingCommitment": "sha256:4f84bc06f2618747d6ed249db8f398c0a2586ba20b065b89bf1e5a4c83f640fd",
-      "evidenceStatusEntryRef": "sha256:1b8b8bdbb7491e8a5bd783802760c6d477ec7021d6a9bd7cb55b2f95f92ef62e",
+      "evidenceStatusEntryRef": "sha256:43bb3f1ab06d468dc84f3e08cba82217a796f8ade93129a068ae1a93471498ed",
       "supersedesProductPurchaseCommitment": null,
-      "productPurchaseCommitment": "poseidon:164150b9c5e5dcf33d1521dd6be79cd692886385805f79ca7c46298f8a3a4c75",
+      "productPurchaseCommitment": "poseidon:2a323197135b9b8f81b951656255354dfca1684a1de5bf73f00ade73667373d0",
       "authentication": {
         "mode": "PRODUCT_EVIDENCE_SNAPSHOT_MEMBERSHIP_V1",
         "snapshotRef": "sha256:34c015600f04d0ee023a8443f9201aedb82831476180a86c16f6974a64b8e8e6",
@@ -36,14 +36,14 @@
       },
       "issuedAt": "2026-08-28T00:00:00.000Z"
     },
-    "attestationRef": "sha256:1257bdb47339bb4478e7679b92c3e9950d3ecb9b1a13d92bb661f3aeab224e66",
-    "payload": "poseidon:164150b9c5e5dcf33d1521dd6be79cd692886385805f79ca7c46298f8a3a4c75",
-    "expectedLeaf": "poseidon:3d963b25a6e921f768977919cca5e316a30b4ce853d5b744d0ad90dd291f24fa",
+    "attestationRef": "sha256:eb9218a679271b52e910befe65ee5a4ea35c650d327342600d82ff9c469c9029",
+    "payload": "poseidon:2a323197135b9b8f81b951656255354dfca1684a1de5bf73f00ade73667373d0",
+    "expectedLeaf": "poseidon:14876c23644dfc2d9f0d3f85764a2416755983281221bff34803ef06c1c774c8",
     "path": {
       "treeProfileRef": "sha256:c207c15ee1d264b042afc9a04cd252eec3d7120fcf424b359406047c0a95da42",
       "treeDomain": "CRINKL:MERKLE:PRODUCT_EVIDENCE:V1",
       "leafIndex": 0,
-      "payload": "poseidon:164150b9c5e5dcf33d1521dd6be79cd692886385805f79ca7c46298f8a3a4c75",
+      "payload": "poseidon:2a323197135b9b8f81b951656255354dfca1684a1de5bf73f00ade73667373d0",
       "siblings": [
         "poseidon:0000000000000000000000000000000000000000000000000000000000000001",
         "poseidon:0000000000000000000000000000000000000000000000000000000000000002",
@@ -78,21 +78,21 @@
         "poseidon:000000000000000000000000000000000000000000000000000000000000001f",
         "poseidon:0000000000000000000000000000000000000000000000000000000000000020"
       ],
-      "expectedRoot": "poseidon:2b999140884a6c7d030edb6953affd2ee4fb79218f31e88093a9939d23ab8c3e"
+      "expectedRoot": "poseidon:3a457bb905fbf5ea84e33b21ba5b0d173d6759601596fce0fe8d04fcf8ffe65d"
     }
   },
   "status": {
     "entry": {
       "entryType": "PRODUCT_EVIDENCE_STATUS_ENTRY",
       "schemaVersion": 1,
-      "productPurchaseCommitment": "poseidon:164150b9c5e5dcf33d1521dd6be79cd692886385805f79ca7c46298f8a3a4c75",
+      "productPurchaseCommitment": "poseidon:2a323197135b9b8f81b951656255354dfca1684a1de5bf73f00ade73667373d0",
       "status": "ACCEPTED",
       "effectiveAtUnixMs": "1787875200000",
       "replacementProductPurchaseCommitment": null
     },
-    "entryRef": "sha256:1b8b8bdbb7491e8a5bd783802760c6d477ec7021d6a9bd7cb55b2f95f92ef62e",
-    "payload": "poseidon:1ae5c150f8708b5489b228c3a62eb4b2c4ce47df43d5fae0424b477288267f54",
-    "expectedLeaf": "poseidon:33eff416faa08cc53e8f3743f025e12ebd083670f5a12922b9a54869788d5f34",
+    "entryRef": "sha256:43bb3f1ab06d468dc84f3e08cba82217a796f8ade93129a068ae1a93471498ed",
+    "payload": "poseidon:0322a6d3aa01079a3fcc4ea7f230df1e5c442061a5958e33d83154c57501b995",
+    "expectedLeaf": "poseidon:08aee1e7b7c97f9246a2a6e746399437d4af4cb93a65c79fd70117ee7d258eeb",
     "cutoff": {
       "snapshotCutoffUnixMs": "1787875200000",
       "dependencyCutoffUnixMs": "1787875200000",
@@ -102,7 +102,7 @@
       "treeProfileRef": "sha256:c207c15ee1d264b042afc9a04cd252eec3d7120fcf424b359406047c0a95da42",
       "treeDomain": "CRINKL:MERKLE:PRODUCT_EVIDENCE_STATUS:V1",
       "leafIndex": 11,
-      "payload": "poseidon:1ae5c150f8708b5489b228c3a62eb4b2c4ce47df43d5fae0424b477288267f54",
+      "payload": "poseidon:0322a6d3aa01079a3fcc4ea7f230df1e5c442061a5958e33d83154c57501b995",
       "siblings": [
         "poseidon:0000000000000000000000000000000000000000000000000000000000000065",
         "poseidon:0000000000000000000000000000000000000000000000000000000000000066",
@@ -137,7 +137,7 @@
         "poseidon:0000000000000000000000000000000000000000000000000000000000000083",
         "poseidon:0000000000000000000000000000000000000000000000000000000000000084"
       ],
-      "expectedRoot": "poseidon:38e512e4f476e7684afd897f73d1d13737adc4aac164b7cf819d2e6efd2ac591"
+      "expectedRoot": "poseidon:37fcb852b8eb37710a8a654bb1b1962f53db7efd3927af75693b6fcce88dd73b"
     }
   },
   "hostileCases": [
