@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "crinkl://protocol/schemas/single_product_purchase_dependencies_v1",
+  "title": "SingleProductPurchaseDependenciesV1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "dependencyType", "schemaVersion", "protocol", "spendIssuerRegistryRef",
+    "spendVerificationPolicyRef", "spendAcceptanceSnapshotRef",
+    "productSourceSignerAuthorityBindingRef", "productVerificationPolicyRef",
+    "productRegistrySnapshotRef", "brandRegistrySnapshotRef",
+    "categoryRegistrySnapshotRef", "productEvidenceSnapshotRef",
+    "evidenceStatusSnapshotRef", "statusCutoffUnixMs", "proofReplayRegistryRef",
+    "purchaseReuseRegistryRef", "entitlementRegistryRef"
+  ],
+  "properties": {
+    "dependencyType": { "const": "SINGLE_PRODUCT_PURCHASE_DEPENDENCIES" },
+    "schemaVersion": { "const": 1 },
+    "protocol": { "$ref": "#/$defs/protocol" },
+    "spendIssuerRegistryRef": { "$ref": "#/$defs/hashRef" },
+    "spendVerificationPolicyRef": { "$ref": "#/$defs/hashRef" },
+    "spendAcceptanceSnapshotRef": { "$ref": "#/$defs/hashRef" },
+    "productSourceSignerAuthorityBindingRef": { "$ref": "#/$defs/hashRef" },
+    "productVerificationPolicyRef": { "$ref": "#/$defs/hashRef" },
+    "productRegistrySnapshotRef": { "$ref": "#/$defs/hashRef" },
+    "brandRegistrySnapshotRef": { "$ref": "#/$defs/hashRef" },
+    "categoryRegistrySnapshotRef": { "$ref": "#/$defs/hashRef" },
+    "productEvidenceSnapshotRef": { "$ref": "#/$defs/hashRef" },
+    "evidenceStatusSnapshotRef": { "$ref": "#/$defs/hashRef" },
+    "statusCutoffUnixMs": { "$ref": "#/$defs/unixMs" },
+    "proofReplayRegistryRef": { "$ref": "#/$defs/hashRef" },
+    "purchaseReuseRegistryRef": { "$ref": "#/$defs/hashRef" },
+    "entitlementRegistryRef": { "$ref": "#/$defs/hashRef" }
+  },
+  "$defs": {
+    "protocol": { "type": "object", "additionalProperties": false, "required": ["protocolVersion"], "properties": { "protocolVersion": { "const": "1.0.0-rc.1" } } },
+    "hashRef": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "unixMs": { "type": "string", "pattern": "^(0|[1-9][0-9]{0,12})$" }
+  }
+}

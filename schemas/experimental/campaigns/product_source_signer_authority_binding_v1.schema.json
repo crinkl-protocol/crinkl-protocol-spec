@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "crinkl://protocol/schemas/product_source_signer_authority_binding_v1",
+  "title": "ProductSourceSignerAuthorityBindingV1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["bindingType", "schemaVersion", "protocol", "bindingProfile", "operatorId", "campaignScope", "productEvidenceSigner", "productStatusSigner", "selection"],
+  "properties": {
+    "bindingType": { "const": "PRODUCT_SOURCE_SIGNER_AUTHORITY_BINDING" },
+    "schemaVersion": { "const": 1 },
+    "protocol": { "$ref": "#/$defs/protocol" },
+    "bindingProfile": { "const": "PINNED_CRINKL_PLATFORM_PRODUCT_SOURCE_SIGNERS_V1" },
+    "operatorId": { "const": "crinkl-platform" },
+    "campaignScope": { "$ref": "#/$defs/campaignScope" },
+    "productEvidenceSigner": { "$ref": "#/$defs/productEvidenceSigner" },
+    "productStatusSigner": { "$ref": "#/$defs/productStatusSigner" },
+    "selection": { "$ref": "#/$defs/selection" }
+  },
+  "$defs": {
+    "protocol": { "type": "object", "additionalProperties": false, "required": ["protocolVersion"], "properties": { "protocolVersion": { "const": "1.0.0-rc.1" } } },
+    "identifier": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$" },
+    "hashRef": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "unixMs": { "type": "string", "pattern": "^(0|[1-9][0-9]{0,12})$" },
+    "publicKey": { "type": "string", "pattern": "^[A-Za-z0-9+/]{43}=$" },
+    "campaignScope": {
+      "type": "object", "additionalProperties": false,
+      "required": ["campaignNamespaceRef", "campaignId", "epochSeriesId", "epochVersion", "conditionId", "evaluationContextHash"],
+      "properties": {
+        "campaignNamespaceRef": { "$ref": "#/$defs/hashRef" }, "campaignId": { "$ref": "#/$defs/identifier" },
+        "epochSeriesId": { "$ref": "#/$defs/identifier" }, "epochVersion": { "type": "integer", "minimum": 1, "maximum": 9007199254740991 },
+        "conditionId": { "$ref": "#/$defs/hashRef" }, "evaluationContextHash": { "$ref": "#/$defs/hashRef" }
+      }
+    },
+    "commonSigner": {
+      "type": "object",
+      "required": ["authorityId", "keyRef", "publicKey", "snapshotSeriesId", "snapshotRef", "validFromUnixMs", "validUntilUnixMs", "authorityState", "revokedAtUnixMs", "revocationRef"],
+      "properties": {
+        "authorityId": { "$ref": "#/$defs/identifier" }, "keyRef": { "$ref": "#/$defs/hashRef" }, "publicKey": { "$ref": "#/$defs/publicKey" },
+        "snapshotSeriesId": { "$ref": "#/$defs/identifier" }, "snapshotRef": { "$ref": "#/$defs/hashRef" },
+        "validFromUnixMs": { "$ref": "#/$defs/unixMs" }, "validUntilUnixMs": { "oneOf": [{ "$ref": "#/$defs/unixMs" }, { "type": "null" }] },
+        "authorityState": { "enum": ["ACTIVE", "REVOKED"] }, "revokedAtUnixMs": { "oneOf": [{ "$ref": "#/$defs/unixMs" }, { "type": "null" }] },
+        "revocationRef": { "oneOf": [{ "$ref": "#/$defs/hashRef" }, { "type": "null" }] }
+      },
+      "allOf": [{
+        "if": { "properties": { "authorityState": { "const": "ACTIVE" } }, "required": ["authorityState"] },
+        "then": { "properties": { "revokedAtUnixMs": { "type": "null" }, "revocationRef": { "type": "null" } } },
+        "else": { "properties": { "validUntilUnixMs": { "$ref": "#/$defs/unixMs" }, "revokedAtUnixMs": { "$ref": "#/$defs/unixMs" }, "revocationRef": { "$ref": "#/$defs/hashRef" } } }
+      }]
+    },
+    "productEvidenceSigner": {
+      "allOf": [
+        { "$ref": "#/$defs/commonSigner" },
+        { "type": "object", "required": ["role", "authorizedSnapshotType", "authorizedProjectionSignatureSlot", "productVerificationPolicyRef"], "properties": {
+          "role": { "const": "PRODUCT_EVIDENCE" }, "authorizedSnapshotType": { "const": "PRODUCT_EVIDENCE_SNAPSHOT" },
+          "authorizedProjectionSignatureSlot": { "const": "productEvidenceIssuer" }, "productVerificationPolicyRef": { "$ref": "#/$defs/hashRef" }
+        } }
+      ], "unevaluatedProperties": false
+    },
+    "productStatusSigner": {
+      "allOf": [
+        { "$ref": "#/$defs/commonSigner" },
+        { "type": "object", "required": ["role", "authorizedSnapshotType", "authorizedProjectionSignatureSlot", "statusPolicyRef"], "properties": {
+          "role": { "const": "PRODUCT_STATUS" }, "authorizedSnapshotType": { "const": "PRODUCT_EVIDENCE_STATUS_SNAPSHOT" },
+          "authorizedProjectionSignatureSlot": { "const": "statusAuthority" }, "statusPolicyRef": { "$ref": "#/$defs/hashRef" }
+        } }
+      ], "unevaluatedProperties": false
+    },
+    "selection": {
+      "type": "object", "additionalProperties": false,
+      "required": ["authority", "selfAuthorization", "unresolvedAuthorityTreatment", "unauthorizedSignerTreatment"],
+      "properties": {
+        "authority": { "const": "CAMPAIGN_EPOCH_PINNED" }, "selfAuthorization": { "const": "PROHIBITED" },
+        "unresolvedAuthorityTreatment": { "const": "INDETERMINATE" }, "unauthorizedSignerTreatment": { "const": "REJECT_SOURCE" }
+      }
+    }
+  }
+}

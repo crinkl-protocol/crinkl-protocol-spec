@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "crinkl://protocol/schemas/commerce_entity_registry_entry_v1",
+  "title": "CommerceEntityRegistryEntryV1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["entryType", "schemaVersion", "registryKind", "entityRef", "brandRef", "categoryRefs"],
+  "properties": {
+    "entryType": { "const": "COMMERCE_ENTITY_REGISTRY_ENTRY" },
+    "schemaVersion": { "const": 1 },
+    "registryKind": { "enum": ["PRODUCT", "BRAND", "CATEGORY"] },
+    "entityRef": { "$ref": "#/$defs/hashRef" },
+    "brandRef": { "$ref": "#/$defs/nullableHashRef" },
+    "categoryRefs": {
+      "type": "array", "minItems": 0, "maxItems": 8, "uniqueItems": true,
+      "items": { "$ref": "#/$defs/hashRef" }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "registryKind": { "const": "PRODUCT" } }, "required": ["registryKind"] },
+      "then": {
+        "properties": {
+          "brandRef": { "$ref": "#/$defs/hashRef" },
+          "categoryRefs": { "minItems": 1 }
+        }
+      },
+      "else": {
+        "properties": {
+          "brandRef": { "type": "null" },
+          "categoryRefs": { "maxItems": 0 }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "hashRef": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "nullableHashRef": { "oneOf": [{ "$ref": "#/$defs/hashRef" }, { "type": "null" }] }
+  }
+}

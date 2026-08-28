@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "crinkl://protocol/schemas/commerce_entity_registry_snapshot_v1",
+  "title": "CommerceEntityRegistrySnapshotV1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "tokenType", "schemaVersion", "protocol", "registryKind", "registryId",
+    "snapshotSeriesId", "sequence", "previousSnapshotRef", "authorityId",
+    "authorityKeyRef", "registryPolicyRef", "asOfUnixMs", "entryCount",
+    "entriesRoot", "treeProfileRef", "treeDomain", "signature"
+  ],
+  "properties": {
+    "tokenType": { "const": "COMMERCE_ENTITY_REGISTRY_SNAPSHOT" },
+    "schemaVersion": { "const": 1 },
+    "protocol": { "$ref": "#/$defs/protocol" },
+    "registryKind": { "enum": ["PRODUCT", "BRAND", "CATEGORY"] },
+    "registryId": { "$ref": "#/$defs/identifier" },
+    "snapshotSeriesId": { "$ref": "#/$defs/identifier" },
+    "sequence": { "type": "integer", "minimum": 1, "maximum": 9007199254740991 },
+    "previousSnapshotRef": { "$ref": "#/$defs/nullableHashRef" },
+    "authorityId": { "$ref": "#/$defs/identifier" },
+    "authorityKeyRef": { "$ref": "#/$defs/hashRef" },
+    "registryPolicyRef": { "$ref": "#/$defs/hashRef" },
+    "asOfUnixMs": { "$ref": "#/$defs/unixMs" },
+    "entryCount": { "type": "integer", "minimum": 1, "maximum": 4294967295 },
+    "entriesRoot": { "$ref": "#/$defs/poseidonRef" },
+    "treeProfileRef": { "$ref": "#/$defs/hashRef" },
+    "treeDomain": {
+      "enum": [
+        "CRINKL:MERKLE:PRODUCT_REGISTRY:V1",
+        "CRINKL:MERKLE:BRAND_REGISTRY:V1",
+        "CRINKL:MERKLE:CATEGORY_REGISTRY:V1"
+      ]
+    },
+    "signature": { "$ref": "#/$defs/signature" }
+  },
+  "allOf": [
+    { "$ref": "#/$defs/sequenceChain" },
+    {
+      "if": { "properties": { "registryKind": { "const": "PRODUCT" } }, "required": ["registryKind"] },
+      "then": { "properties": { "treeDomain": { "const": "CRINKL:MERKLE:PRODUCT_REGISTRY:V1" } } }
+    },
+    {
+      "if": { "properties": { "registryKind": { "const": "BRAND" } }, "required": ["registryKind"] },
+      "then": { "properties": { "treeDomain": { "const": "CRINKL:MERKLE:BRAND_REGISTRY:V1" } } }
+    },
+    {
+      "if": { "properties": { "registryKind": { "const": "CATEGORY" } }, "required": ["registryKind"] },
+      "then": { "properties": { "treeDomain": { "const": "CRINKL:MERKLE:CATEGORY_REGISTRY:V1" } } }
+    }
+  ],
+  "$defs": {
+    "protocol": { "type": "object", "additionalProperties": false, "required": ["protocolVersion"], "properties": { "protocolVersion": { "const": "1.0.0-rc.1" } } },
+    "identifier": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$" },
+    "hashRef": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "nullableHashRef": { "oneOf": [{ "$ref": "#/$defs/hashRef" }, { "type": "null" }] },
+    "poseidonRef": { "type": "string", "pattern": "^poseidon:[0-9a-f]{64}$" },
+    "unixMs": { "type": "string", "pattern": "^(0|[1-9][0-9]{0,12})$" },
+    "signature": {
+      "type": "object", "additionalProperties": false,
+      "required": ["algorithm", "issuedBy", "keyRef", "signedPayloadHash", "signatureBase64"],
+      "properties": {
+        "algorithm": { "const": "ED25519" }, "issuedBy": { "$ref": "#/$defs/identifier" },
+        "keyRef": { "$ref": "#/$defs/hashRef" }, "signedPayloadHash": { "$ref": "#/$defs/hashRef" },
+        "signatureBase64": { "type": "string", "pattern": "^[A-Za-z0-9+/]{86}==$" }
+      }
+    },
+    "sequenceChain": {
+      "if": { "properties": { "sequence": { "const": 1 } }, "required": ["sequence"] },
+      "then": { "properties": { "previousSnapshotRef": { "type": "null" } } },
+      "else": { "properties": { "previousSnapshotRef": { "$ref": "#/$defs/hashRef" } } }
+    }
+  }
+}
