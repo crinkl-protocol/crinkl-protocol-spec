@@ -185,8 +185,9 @@
     { "path": "/productStatusSigner/snapshotRef", "value": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" },
     { "path": "/productEvidenceSigner/productVerificationPolicyRef", "value": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" },
     { "path": "/productStatusSigner/statusPolicyRef", "value": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" },
-    { "path": "/productEvidenceSigner/validFromUnixMs", "value": "1786579150001" },
+    { "path": "/productEvidenceSigner/validFromUnixMs", "value": "1786579200001" },
     { "path": "/productEvidenceSigner/validUntilUnixMs", "value": "1786579150000" },
+    { "path": "/productEvidenceSigner/validUntilUnixMs", "value": "1786579175000" },
     { "path": "/productStatusSigner/authorityState", "value": "REVOKED" }
   ]
 }

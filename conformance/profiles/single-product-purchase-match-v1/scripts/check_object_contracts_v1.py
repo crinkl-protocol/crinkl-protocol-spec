@@ -112,20 +112,19 @@ def signer_is_admitted(signer: Any, cutoff: datetime) -> bool:
     return valid_until is None or cutoff_unix_ms < int(valid_until)
 
 
-def binding_errors(binding: Any, evidence_snapshot: Any, status_snapshot: Any) -> list[str]:
+def binding_errors(binding: Any, evidence_snapshot: Any, status_snapshot: Any, dependency: Any) -> list[str]:
     errors: list[str] = []
-    evidence_cutoff = datetime.fromtimestamp(int(evidence_snapshot["asOfUnixMs"]) / 1000, tz=timezone.utc)
-    status_cutoff = datetime.fromtimestamp(int(status_snapshot["cutoffUnixMs"]) / 1000, tz=timezone.utc)
+    campaign_cutoff = datetime.fromtimestamp(int(dependency["statusCutoffUnixMs"]) / 1000, tz=timezone.utc)
     evidence = binding["productEvidenceSigner"]
     status = binding["productStatusSigner"]
     if evidence["role"] != "PRODUCT_EVIDENCE":
         errors.append("product evidence signer has the wrong role")
     if status["role"] != "PRODUCT_STATUS":
         errors.append("product status signer has the wrong role")
-    if not signer_is_admitted(evidence, evidence_cutoff):
-        errors.append("product evidence signer is not admitted at snapshot cutoff")
-    if not signer_is_admitted(status, status_cutoff):
-        errors.append("product status signer is not admitted at snapshot cutoff")
+    if not signer_is_admitted(evidence, campaign_cutoff):
+        errors.append("product evidence signer is not admitted at Campaign cutoff")
+    if not signer_is_admitted(status, campaign_cutoff):
+        errors.append("product status signer is not admitted at Campaign cutoff")
     if evidence["authorityId"] != evidence_snapshot["issuerId"] or evidence["keyRef"] != evidence_snapshot["issuerKeyRef"]:
         errors.append("product evidence snapshot does not match trusted signer")
     if evidence["snapshotSeriesId"] != evidence_snapshot["snapshotSeriesId"] or evidence["snapshotRef"] != content_ref(evidence_snapshot):
@@ -185,12 +184,12 @@ def main() -> None:
     binding = vectors["valid"]["product_source_signer_authority_binding_v1.schema.json"]
     evidence_snapshot = vectors["valid"]["product_evidence_snapshot_v1.schema.json"]
     status_snapshot = vectors["valid"]["product_evidence_status_snapshot_v1.schema.json"]
-    if binding_errors(binding, evidence_snapshot, status_snapshot):
+    dependency = vectors["valid"]["single_product_purchase_dependencies_v1.schema.json"]
+    if binding_errors(binding, evidence_snapshot, status_snapshot, dependency):
         raise SystemExit("valid trusted Platform signer binding rejected")
     if vectors["valid"]["single_product_purchase_dependencies_v1.schema.json"]["productSourceSignerAuthorityBindingRef"] != content_ref(binding):
         raise SystemExit("dependency did not pin the signer binding")
     epoch = vectors["campaignEpoch"]
-    dependency = vectors["valid"]["single_product_purchase_dependencies_v1.schema.json"]
     evaluation_context = vectors["evaluationContext"]
     if epoch_errors(epoch, evaluation_context, binding, dependency):
         raise SystemExit("valid Campaign Epoch relation rejected")
@@ -213,7 +212,7 @@ def main() -> None:
                 validators["product_source_signer_authority_binding_v1.schema.json"],
                 changed,
             )
-            + binding_errors(changed, evidence_snapshot, status_snapshot)
+            + binding_errors(changed, evidence_snapshot, status_snapshot, dependency)
         ):
             raise SystemExit(f"hostile signer binding accepted: {case}")
 
