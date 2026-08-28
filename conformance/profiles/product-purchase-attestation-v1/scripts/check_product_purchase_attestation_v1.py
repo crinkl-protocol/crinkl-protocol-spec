@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import copy
+import hashlib
 import json
 import re
 from datetime import datetime
@@ -85,7 +86,15 @@ def errors_for(validator: Draft202012Validator, value: dict[str, Any]) -> list[s
     return [error.message for error in validator.iter_errors(value)] + semantic_errors(value)
 
 
-def source_membership_vector_errors(vector: Any) -> list[str]:
+def content_ref(value: Any) -> str:
+    return "sha256:" + hashlib.sha256(
+        json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+    ).hexdigest()
+
+
+def source_membership_vector_errors(
+    vector: Any, validator: Draft202012Validator
+) -> list[str]:
     errors: list[str] = []
     if not isinstance(vector, dict):
         return ["source membership vector must be an object"]
@@ -109,6 +118,23 @@ def source_membership_vector_errors(vector: Any) -> list[str]:
         errors.append("source membership tree domain drift")
     if product.get("payload") != product_path.get("payload"):
         errors.append("product payload/path mismatch")
+    attestation = product.get("attestation")
+    if not isinstance(attestation, dict):
+        errors.append("product attestation missing")
+    else:
+        if errors_for(validator, attestation):
+            errors.append("product attestation schema/semantic drift")
+        if product.get("attestationRef") != content_ref(attestation):
+            errors.append("product attestation content reference drift")
+        if attestation.get("productPurchaseCommitment") != product.get("payload"):
+            errors.append("product attestation/commitment payload mismatch")
+        authentication = attestation.get("authentication")
+        if not isinstance(authentication, dict) or authentication.get("leafIndex") != product_path.get("leafIndex"):
+            errors.append("product attestation/path leaf index mismatch")
+        if attestation.get("evidenceStatusEntryRef") != status.get("entryRef"):
+            errors.append("product attestation/status entry reference mismatch")
+    if status.get("entryRef") != content_ref(status_entry):
+        errors.append("status entry content reference drift")
     if status_entry.get("productPurchaseCommitment") != product.get("payload") or status.get("payload") != status_path.get("payload"):
         errors.append("status commitment/payload/path mismatch")
     for path_name, path in (("product", product_path), ("status", status_path)):
@@ -156,7 +182,7 @@ def main() -> None:
             raise SystemExit(f"hostile vector accepted: {case['id']}")
         rejected += 1
 
-    membership_errors = source_membership_vector_errors(load(SOURCE_MEMBERSHIP_VECTORS))
+    membership_errors = source_membership_vector_errors(load(SOURCE_MEMBERSHIP_VECTORS), validator)
     if membership_errors:
         raise SystemExit(f"source membership vector rejected: {membership_errors}")
 
