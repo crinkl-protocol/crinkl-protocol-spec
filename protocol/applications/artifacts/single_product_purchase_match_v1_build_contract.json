@@ -11,19 +11,19 @@
   "relationSources": [
     {
       "path": "protocol/applications/conditions/single-product-purchase-match-v1.md",
-      "fileSha256": "sha256:cea9003a77be426b6e4a6cd10f74b541c26708860629d00fd8fa6f51eb309d71"
+      "fileSha256": "sha256:5823398a36305191240e8c9377a43c02411966561a62dbd61d515fa8c94929bf"
     },
     {
       "path": "protocol/applications/conditions/h2-single-product-purchase-match-v1.md",
-      "fileSha256": "sha256:6e3a286bcb76d2dd145cfe2b1e838a074fe38b4eb3b3c8bf84982994ed802a34"
+      "fileSha256": "sha256:cd12c1826a1ce81339324ec4cd5e28137d25b55941b9ef2694b06efb2b2380cd"
     },
     {
       "path": "protocol/applications/conditions/product-purchase-attestation-v1.md",
-      "fileSha256": "sha256:e1234097e0bca23174b865015ef3721c1004ea0ec4413b79e0a3279bb4e7e25c"
+      "fileSha256": "sha256:ca0c6fc1e2c2dc918a495605187aea7e2b1af8470680679b73a77ea43a065390"
     },
     {
       "path": "protocol/applications/conditions/product-evidence-snapshots-v1.md",
-      "fileSha256": "sha256:4b9a5234228e34e4449e6e823ca1aea977b901a006d3efc572181e16c82195f5"
+      "fileSha256": "sha256:6b3bf3b588e6ea264e1008c93f57bd434dba8e0841d09aa6869b90b19bbba7bb"
     }
   ],
   "treeProfileRef": "sha256:78bf87e5d917babe69fb0ca794d45f6fb759b6aab11ce4d5077a57958243f50d",
@@ -45,7 +45,7 @@
     { "name": "spendAcceptanceSnapshotRef", "valueType": "SHA256_REF" },
     { "name": "spendAcceptanceSnapshotRoot", "valueType": "POSEIDON_FP" },
     { "name": "spendAcceptanceSnapshotTreeProfileRef", "valueType": "SHA256_REF" },
-    { "name": "productIssuerRegistryRef", "valueType": "SHA256_REF" },
+    { "name": "productSourceSignerAuthorityBindingRef", "valueType": "SHA256_REF" },
     { "name": "productVerificationPolicyRef", "valueType": "SHA256_REF" },
     { "name": "productRegistrySnapshotRef", "valueType": "SHA256_REF" },
     { "name": "productRegistryRoot", "valueType": "POSEIDON_FP" },

@@ -43,10 +43,12 @@ snapshotRef       = "sha256:" + hex(SHA-256(UTF8(RFC8785(complete snapshot))))
 ```
 
 `signature.issuedBy` and `signature.keyRef` must equal the authority and key
-fields of the snapshot. Validators resolve the key through the Epoch-bound
-authority registry, verify its validity at the snapshot cutoff, and reject a
-rollback, missing predecessor, sequence fork, or two different accepted
-snapshots at the same series and sequence.
+fields of the snapshot. Validators resolve the key through the exact
+Epoch-bound `ProductSourceSignerAuthorityBindingV1`, verify its role, policy,
+active/revoked state and validity at the snapshot cutoff, and reject a
+self-selected signer, rollback, missing predecessor, sequence fork, or two
+different accepted snapshots at the same series and sequence. The binding
+contract is [`Trusted Platform Product Signers V1`](./trusted-platform-product-signers-v1.md).
 
 Every `poseidon:` value must decode to an integer smaller than the Pasta Fp
 modulus recorded by the tree profile.
@@ -78,8 +80,8 @@ Hash<PastaFp, P128Pow5T3, ConstantLength<16>, 3, 2>(
 )
 ```
 
-The validator verifies the public snapshot authority and exact issuer-registry
-and verification-policy bindings. The circuit recomputes this private payload,
+The validator verifies the public snapshot authority and exact Platform signer
+binding and verification-policy bindings. The circuit recomputes this private payload,
 proves membership, and constrains the same Spend ID, token hash, head hash, and
 holder binding throughout the product relation. This is the profile's Spend
 Token authenticity mechanism; possession of three unverified strings is not

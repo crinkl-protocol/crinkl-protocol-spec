@@ -7,7 +7,7 @@
   "required": [
     "dependencyType", "schemaVersion", "protocol", "spendIssuerRegistryRef",
     "spendVerificationPolicyRef", "spendAcceptanceSnapshotRef",
-    "productIssuerRegistryRef", "productVerificationPolicyRef",
+    "productSourceSignerAuthorityBindingRef", "productVerificationPolicyRef",
     "productRegistrySnapshotRef", "brandRegistrySnapshotRef",
     "categoryRegistrySnapshotRef", "productEvidenceSnapshotRef",
     "evidenceStatusSnapshotRef", "statusCutoffUnixMs", "proofReplayRegistryRef",
@@ -20,7 +20,7 @@
     "spendIssuerRegistryRef": { "$ref": "#/$defs/hashRef" },
     "spendVerificationPolicyRef": { "$ref": "#/$defs/hashRef" },
     "spendAcceptanceSnapshotRef": { "$ref": "#/$defs/hashRef" },
-    "productIssuerRegistryRef": { "$ref": "#/$defs/hashRef" },
+    "productSourceSignerAuthorityBindingRef": { "$ref": "#/$defs/hashRef" },
     "productVerificationPolicyRef": { "$ref": "#/$defs/hashRef" },
     "productRegistrySnapshotRef": { "$ref": "#/$defs/hashRef" },
     "brandRegistrySnapshotRef": { "$ref": "#/$defs/hashRef" },

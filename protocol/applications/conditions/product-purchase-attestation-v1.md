@@ -134,14 +134,15 @@ signature
 ```
 
 The snapshot signature is verified outside the circuit against the exact
-product issuer registry bound by the Epoch. The circuit proves that the private
+Trusted Platform Product Signers binding bound by the Epoch. The circuit proves that the private
 `productPurchaseCommitment` occupies `leafIndex` under `entriesRoot` using the
 exact `treeProfileRef`.
 
-The product issuer cannot be selected by the prover. The attestation issuer,
-snapshot issuer, issuer-registry entry, key validity window, and
-product-verification policy must all agree. A missing, rolled-back, equivocal,
-expired, or unauthorized snapshot fails before cryptographic proof acceptance.
+The product signer cannot be selected by the prover. The attestation issuer,
+snapshot issuer, exact `ProductSourceSignerAuthorityBindingV1` evidence-signer
+entry, key validity window, and product-verification policy must all agree. A
+missing, rolled-back, equivocal, expired, revoked, wrong-role or unauthorized
+snapshot fails before cryptographic proof acceptance.
 
 ## Field-native product purchase commitment
 

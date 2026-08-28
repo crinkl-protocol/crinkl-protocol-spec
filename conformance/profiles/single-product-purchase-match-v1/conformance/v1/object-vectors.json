@@ -56,6 +56,33 @@
       "treeDomain": "CRINKL:MERKLE:PRODUCT_EVIDENCE_STATUS:V1",
       "signature": { "algorithm": "ED25519", "issuedBy": "product-status-authority", "keyRef": "sha256:1212121212121212121212121212121212121212121212121212121212121212", "signedPayloadHash": "sha256:1414141414141414141414141414141414141414141414141414141414141414", "signatureBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==" }
     },
+    "product_source_signer_authority_binding_v1.schema.json": {
+      "bindingType": "PRODUCT_SOURCE_SIGNER_AUTHORITY_BINDING", "schemaVersion": 1,
+      "protocol": { "protocolVersion": "1.0.0-rc.1" },
+      "bindingProfile": "PINNED_CRINKL_PLATFORM_PRODUCT_SOURCE_SIGNERS_V1", "operatorId": "crinkl-platform",
+      "campaignScope": { "campaignNamespaceRef": "sha256:1515151515151515151515151515151515151515151515151515151515151515", "campaignId": "campaign-monster-001", "epochSeriesId": "campaign-monster-series", "epochVersion": 1, "conditionId": "sha256:1616161616161616161616161616161616161616161616161616161616161616", "evaluationContextHash": "sha256:1717171717171717171717171717171717171717171717171717171717171717" },
+      "productEvidenceSigner": {
+        "authorityId": "product-issuer-001",
+        "keyRef": "sha256:0909090909090909090909090909090909090909090909090909090909090909",
+        "publicKey": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+        "role": "PRODUCT_EVIDENCE", "authorizedSnapshotType": "PRODUCT_EVIDENCE_SNAPSHOT", "authorizedProjectionSignatureSlot": "productEvidenceIssuer",
+        "productVerificationPolicyRef": "sha256:1010101010101010101010101010101010101010101010101010101010101010",
+        "snapshotSeriesId": "product-evidence-main", "snapshotRef": "sha256:fdc1d1bed52009670359950c01c59c7e42319fc7485e1a8e7c48e25fbf363480",
+        "validFromUnixMs": "1767225600000", "validUntilUnixMs": null,
+        "authorityState": "ACTIVE", "revokedAtUnixMs": null, "revocationRef": null
+      },
+      "productStatusSigner": {
+        "authorityId": "product-status-authority",
+        "keyRef": "sha256:1212121212121212121212121212121212121212121212121212121212121212",
+        "publicKey": "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=",
+        "role": "PRODUCT_STATUS", "authorizedSnapshotType": "PRODUCT_EVIDENCE_STATUS_SNAPSHOT", "authorizedProjectionSignatureSlot": "statusAuthority",
+        "statusPolicyRef": "sha256:1313131313131313131313131313131313131313131313131313131313131313",
+        "snapshotSeriesId": "product-evidence-status-main", "snapshotRef": "sha256:b6127d6a26bd9f38922de6e5362cd459aa4a4d99b3fd462830aba2348160207e",
+        "validFromUnixMs": "1767225600000", "validUntilUnixMs": null,
+        "authorityState": "ACTIVE", "revokedAtUnixMs": null, "revocationRef": null
+      },
+      "selection": { "authority": "CAMPAIGN_EPOCH_PINNED", "selfAuthorization": "PROHIBITED", "unresolvedAuthorityTreatment": "INDETERMINATE", "unauthorizedSignerTreatment": "REJECT_SOURCE" }
+    },
     "commerce_entity_registry_entry_v1.schema.json": {
       "entryType": "COMMERCE_ENTITY_REGISTRY_ENTRY", "schemaVersion": 1, "registryKind": "PRODUCT",
       "entityRef": "sha256:1515151515151515151515151515151515151515151515151515151515151515",
@@ -84,7 +111,7 @@
       "spendIssuerRegistryRef": "sha256:2121212121212121212121212121212121212121212121212121212121212121",
       "spendVerificationPolicyRef": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
       "spendAcceptanceSnapshotRef": "sha256:2323232323232323232323232323232323232323232323232323232323232323",
-      "productIssuerRegistryRef": "sha256:2424242424242424242424242424242424242424242424242424242424242424",
+      "productSourceSignerAuthorityBindingRef": "sha256:8193bab6ff9e877e8226190c76cc03208d2af22504e3b472661ad75fac79e31a",
       "productVerificationPolicyRef": "sha256:2525252525252525252525252525252525252525252525252525252525252525",
       "productRegistrySnapshotRef": "sha256:2626262626262626262626262626262626262626262626262626262626262626",
       "brandRegistrySnapshotRef": "sha256:2727272727272727272727272727272727272727272727272727272727272727",
@@ -115,7 +142,51 @@
     { "schema": "single_product_purchase_rule_v1.schema.json", "path": "/brandRef", "value": null },
     { "schema": "spend_acceptance_snapshot_v1.schema.json", "path": "/entriesRoot", "value": "poseidon:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" },
     { "schema": "product_evidence_snapshot_v1.schema.json", "path": "/signature/issuedBy", "value": "different-issuer" },
+    { "schema": "product_source_signer_authority_binding_v1.schema.json", "path": "/productEvidenceSigner/role", "value": "PRODUCT_STATUS" },
+    { "schema": "product_source_signer_authority_binding_v1.schema.json", "path": "/productStatusSigner/authorityState", "value": "REVOKED" },
     { "schema": "single_product_purchase_rule_v1.schema.json", "path": "/purchaseTimeInclusive/minimumUnixMs", "value": "1786579200001" },
     { "schema": "commerce_entity_registry_entry_v1.schema.json", "path": "/categoryRefs", "op": "reverse" }
+  ],
+  "campaignEpoch": {
+    "campaignNamespaceRef": "sha256:1515151515151515151515151515151515151515151515151515151515151515",
+    "campaignId": "campaign-monster-001",
+    "epochSeriesId": "campaign-monster-series",
+    "epochVersion": 1,
+    "conversionRuleRef": "sha256:1616161616161616161616161616161616161616161616161616161616161616",
+    "registryRefs": [
+      "sha256:fb4e61db7cebe15cd80683ab0e5aa4c14df31f2784e909d013156d4240fa9026",
+      "sha256:8193bab6ff9e877e8226190c76cc03208d2af22504e3b472661ad75fac79e31a"
+    ]
+  },
+  "evaluationContext": {
+    "evaluationContextHash": "sha256:1717171717171717171717171717171717171717171717171717171717171717"
+  },
+  "epochReject": [
+    { "path": "/campaignNamespaceRef", "value": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" },
+    { "path": "/campaignId", "value": "wrong-campaign" },
+    { "path": "/epochSeriesId", "value": "wrong-series" },
+    { "path": "/epochVersion", "value": 2 },
+    { "path": "/conversionRuleRef", "value": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" },
+    { "path": "/registryRefs/0", "value": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" },
+    { "path": "/registryRefs/1", "value": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" }
+  ],
+  "evaluationContextReject": [
+    { "path": "/evaluationContextHash", "value": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" }
+  ],
+  "bindingReject": [
+    { "path": "/productEvidenceSigner/authorityId", "value": "self-selected-evidence-signer" },
+    { "path": "/productStatusSigner/authorityId", "value": "product-issuer-001" },
+    { "path": "/productStatusSigner/keyRef", "value": "sha256:0909090909090909090909090909090909090909090909090909090909090909" },
+    { "path": "/productStatusSigner/publicKey", "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" },
+    { "path": "/productStatusSigner/role", "value": "PRODUCT_EVIDENCE" },
+    { "path": "/productEvidenceSigner/snapshotSeriesId", "value": "wrong-evidence-series" },
+    { "path": "/productStatusSigner/snapshotSeriesId", "value": "wrong-status-series" },
+    { "path": "/productEvidenceSigner/snapshotRef", "value": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" },
+    { "path": "/productStatusSigner/snapshotRef", "value": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" },
+    { "path": "/productEvidenceSigner/productVerificationPolicyRef", "value": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" },
+    { "path": "/productStatusSigner/statusPolicyRef", "value": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" },
+    { "path": "/productEvidenceSigner/validFromUnixMs", "value": "1786579150001" },
+    { "path": "/productEvidenceSigner/validUntilUnixMs", "value": "1786579150000" },
+    { "path": "/productStatusSigner/authorityState", "value": "REVOKED" }
   ]
 }

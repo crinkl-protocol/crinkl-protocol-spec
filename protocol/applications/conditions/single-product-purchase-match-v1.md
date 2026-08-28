@@ -78,7 +78,7 @@ The verifier resolves authenticated, content-addressed evidence for:
 - the exact `CampaignEpochV2` and its conversion rule and ProofProfile refs;
 - the Spend issuer registry and Spend verification policy;
 - the Spend-acceptance snapshot and its root plus tree profile;
-- the product issuer registry and product-verification policy;
+- the Trusted Platform Product Signers binding and product-verification policy;
 - product, brand, and category registry snapshots;
 - the product-evidence snapshot and its `entriesRoot` plus tree profile;
 - the evidence-status snapshot and its cutoff policy;
@@ -96,7 +96,7 @@ The prover supplies only inside the authorized proving boundary:
 - the complete Spend Token and its admission evidence;
 - `ProductPurchaseAttestationV1`;
 - the canonical conversion rule and its opening;
-- Spend and product issuer membership paths;
+- Spend issuer membership and exact trusted Platform product signer binding;
 - product, brand, and category membership paths;
 - evidence-status membership and non-terminal-status evidence at the cutoff;
 - the recipient-binding proof and recipient-scope opening;
@@ -191,7 +191,7 @@ The envelope encoding is `RFC8785_NAMED_COMMITMENTS_V1`. Every entry contains
 13. `spendAcceptanceSnapshotRef` — `SHA256_REF`
 14. `spendAcceptanceSnapshotRoot` — `POSEIDON_FP`
 15. `spendAcceptanceSnapshotTreeProfileRef` — `SHA256_REF`
-16. `productIssuerRegistryRef` — `SHA256_REF`
+16. `productSourceSignerAuthorityBindingRef` — `SHA256_REF`
 17. `productVerificationPolicyRef` — `SHA256_REF`
 18. `productRegistrySnapshotRef` — `SHA256_REF`
 19. `productRegistryRoot` — `POSEIDON_FP`

@@ -132,7 +132,7 @@ leaf binds the recomputed product-purchase commitment, its status, cutoff, and
 replacement commitment.
 
 The validator verifies the issuer-signed product-evidence snapshot against the
-Epoch-bound product issuer registry and policy before proof verification. The
+Epoch-bound Trusted Platform Product Signers binding and policy before proof verification. The
 `productEvidenceSnapshotRoot` and
 `productEvidenceSnapshotTreeProfileRef` are resolved publicly and must agree
 with the relation. The circuit recomputes the private commitment and proves its

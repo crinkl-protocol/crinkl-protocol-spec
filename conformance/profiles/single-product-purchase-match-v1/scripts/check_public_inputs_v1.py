@@ -31,7 +31,7 @@ ORDER = [
     ("spendAcceptanceSnapshotRef", "SHA256_REF"),
     ("spendAcceptanceSnapshotRoot", "POSEIDON_FP"),
     ("spendAcceptanceSnapshotTreeProfileRef", "SHA256_REF"),
-    ("productIssuerRegistryRef", "SHA256_REF"),
+    ("productSourceSignerAuthorityBindingRef", "SHA256_REF"),
     ("productVerificationPolicyRef", "SHA256_REF"),
     ("productRegistrySnapshotRef", "SHA256_REF"),
     ("productRegistryRoot", "POSEIDON_FP"),
