@@ -11,7 +11,10 @@ Run from the repository root:
 python3 conformance/profiles/product-purchase-attestation-v1/scripts/check_product_purchase_attestation_v1.py
 ```
 
-The Poseidon commitment, product-evidence snapshot membership, status
-membership, and ZK relation require the separately generated official circuit
-vectors. Passing this source check does not establish circuit implementation,
-runtime availability, validator adoption, or production deployment.
+The source-membership vector pins the two depth-32 source paths, their exact
+domains, canonical Pasta encodings, and status-at-cutoff semantics. Its
+cryptographic execution is performed only by the canonical Platform
+verifier/harness; this checker does not implement Poseidon. Recomputing the
+47-field product-purchase commitment is also outside this vector. Passing this
+source check does not establish circuit implementation, runtime availability,
+validator adoption, or production deployment.

@@ -16,13 +16,23 @@ The common tree profile is
 [`H2_BINARY_POSEIDON_PASTA_FP_DEPTH32_V1`](../artifacts/h2_binary_poseidon_pasta_fp_depth32_v1.json):
 
 ```text
-treeProfileRef = sha256:78bf87e5d917babe69fb0ca794d45f6fb759b6aab11ce4d5077a57958243f50d
+treeProfileRef = sha256:c207c15ee1d264b042afc9a04cd252eec3d7120fcf424b359406047c0a95da42
 ```
 
 That reference is the SHA-256 of the RFC 8785 bytes of the linked artifact.
 Every snapshot in this profile must carry that exact reference. A different
 depth, field, domain derivation, Poseidon parameterization, path order, or
 empty-leaf rule requires a different tree profile reference.
+
+`P128Pow5T3` is pinned to `halo2_gadgets` 0.3.1
+(`73a5e510d58a07d8ed238a5a8a436fe6c2c79e1bb2611f62688bc65007b4e6e7`),
+`halo2_poseidon` 0.1.0
+(`0fa3da60b81f02f9b33ebc6252d766f843291fb4d2247a07ae73d20b791fc56f`),
+and `pasta_curves` 0.5.1
+(`d3e57598f73cc7e1b2ac63c79c517b31a0877cd7c402cdcaa311b5208de7a095`).
+For a membership path, sibling zero is the leaf-level sibling and sibling 31
+is the root-level sibling. The node `level` input is the Pasta Fp encoding of
+the corresponding unsigned u64 zero-based level, from 0 through 31.
 
 ## Snapshot identity and signatures
 
@@ -56,9 +66,15 @@ modulus recorded by the tree profile.
 ## Leaf payload commitments
 
 All references use `ref128x2` and text values use `text128x2` exactly as
-defined by `ProductPurchaseAttestationV1`. A `domainField(text)` is the unsigned
-big-endian SHA-512 digest of
+defined by `ProductPurchaseAttestationV1`. The entry-payload `domainField(text)`
+in the formulas below is the unsigned big-endian SHA-512 digest of
 `UTF8("CRINKL:LEAF-DOMAIN:V1") || 0x00 || UTF8(text)`, reduced modulo Pasta Fp.
+
+This payload-domain field is intentionally distinct from the profile's
+tree-domain field: the latter is derived from
+`UTF8("CRINKL:TREE-DOMAIN:V1") || 0x00 || UTF8(treeDomain)` and is used only by
+the profile's tree leaf, node, and empty-leaf hashes. The local names clarify
+the two layers; no payload or tree-domain wire value is renamed.
 
 ### Spend acceptance
 

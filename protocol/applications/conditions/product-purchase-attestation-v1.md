@@ -199,8 +199,9 @@ supersedesPresent                 // 0 when null; 1 when present
 supersedesCommitment             // 0 when null; decoded Pasta Fp otherwise
 ```
 
-`P128Pow5T3` means the exact constants supplied by the pinned Halo2 dependency
-identified by the implementation return packet. Constant-length Poseidon
+`P128Pow5T3` means the exact constants supplied by `halo2_gadgets` 0.3.1,
+`halo2_poseidon` 0.1.0, and `pasta_curves` 0.5.1, with the crate checksums
+pinned by the H2 binary Pasta Fp depth-32 profile. Constant-length Poseidon
 padding and finalization are part of the profile and cannot be replaced by a
 variable-length sponge. Category padding uses sixteen zero field elements
 across the remaining slots. A category reference whose two limbs are both zero

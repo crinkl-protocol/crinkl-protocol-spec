@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[4]
 SCHEMAS = ROOT / "schemas/experimental/campaigns"
 VECTORS = ROOT / "conformance/profiles/single-product-purchase-match-v1/conformance/v1/object-vectors.json"
 PASTA_FP_MODULUS = int("40000000000000000000000000000000224698fc094cf91b992d30ed00000001", 16)
-TREE_PROFILE_REF = "sha256:78bf87e5d917babe69fb0ca794d45f6fb759b6aab11ce4d5077a57958243f50d"
+TREE_PROFILE_REF = "sha256:c207c15ee1d264b042afc9a04cd252eec3d7120fcf424b359406047c0a95da42"
 
 
 def replace_pointer(value: Any, pointer: str, replacement: Any) -> None:

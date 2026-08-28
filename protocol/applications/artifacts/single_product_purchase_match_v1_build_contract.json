@@ -19,14 +19,14 @@
     },
     {
       "path": "protocol/applications/conditions/product-purchase-attestation-v1.md",
-      "fileSha256": "sha256:ca0c6fc1e2c2dc918a495605187aea7e2b1af8470680679b73a77ea43a065390"
+      "fileSha256": "sha256:1577bbe93effd26ff87265be2e030106cd6f34db8e5af394653731f641640214"
     },
     {
       "path": "protocol/applications/conditions/product-evidence-snapshots-v1.md",
-      "fileSha256": "sha256:6b3bf3b588e6ea264e1008c93f57bd434dba8e0841d09aa6869b90b19bbba7bb"
+      "fileSha256": "sha256:54bac76b852948f2f12c25096e2de888e5ba892fe42970f237ba38f8ccabb2e8"
     }
   ],
-  "treeProfileRef": "sha256:78bf87e5d917babe69fb0ca794d45f6fb759b6aab11ce4d5077a57958243f50d",
+  "treeProfileRef": "sha256:c207c15ee1d264b042afc9a04cd252eec3d7120fcf424b359406047c0a95da42",
   "publicInputEncoding": "RFC8785_NAMED_COMMITMENTS_V1",
   "instanceEncoding": "SHA256_DIGEST_AS_TWO_UNSIGNED_BIG_ENDIAN_128_BIT_LIMBS",
   "publicInputOrder": [

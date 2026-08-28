@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import copy
 import json
+import re
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -12,6 +13,8 @@ from jsonschema import Draft202012Validator, FormatChecker
 ROOT = Path(__file__).resolve().parents[4]
 SCHEMA = ROOT / "schemas/experimental/campaigns/product_purchase_attestation_v1.schema.json"
 VECTORS = ROOT / "conformance/profiles/product-purchase-attestation-v1/conformance/v1/vectors.json"
+SOURCE_MEMBERSHIP_VECTORS = ROOT / "conformance/profiles/product-purchase-attestation-v1/conformance/v1/source-membership-vectors.json"
+SOURCE_TREE_PROFILE_REF = "sha256:c207c15ee1d264b042afc9a04cd252eec3d7120fcf424b359406047c0a95da42"
 PASTA_FP_MODULUS = int(
     "40000000000000000000000000000000224698fc094cf91b992d30ed00000001", 16
 )
@@ -82,6 +85,60 @@ def errors_for(validator: Draft202012Validator, value: dict[str, Any]) -> list[s
     return [error.message for error in validator.iter_errors(value)] + semantic_errors(value)
 
 
+def source_membership_vector_errors(vector: Any) -> list[str]:
+    errors: list[str] = []
+    if not isinstance(vector, dict):
+        return ["source membership vector must be an object"]
+    if vector.get("kind") != "productSourceMembership.v1" or vector.get("vectorVersion") != 1:
+        errors.append("source membership vector kind/version drift")
+    if vector.get("treeProfileRef") != SOURCE_TREE_PROFILE_REF:
+        errors.append("source membership vector tree profile drift")
+    product = vector.get("product")
+    status = vector.get("status")
+    if not isinstance(product, dict) or not isinstance(status, dict):
+        return [*errors, "source membership product/status missing"]
+    product_path = product.get("path")
+    status_path = status.get("path")
+    status_entry = status.get("entry")
+    cutoff = status.get("cutoff")
+    if not all(isinstance(value, dict) for value in (product_path, status_path, status_entry, cutoff)):
+        return [*errors, "source membership path/status structure missing"]
+    if product_path.get("treeProfileRef") != SOURCE_TREE_PROFILE_REF or status_path.get("treeProfileRef") != SOURCE_TREE_PROFILE_REF:
+        errors.append("source membership path profile drift")
+    if product_path.get("treeDomain") != "CRINKL:MERKLE:PRODUCT_EVIDENCE:V1" or status_path.get("treeDomain") != "CRINKL:MERKLE:PRODUCT_EVIDENCE_STATUS:V1":
+        errors.append("source membership tree domain drift")
+    if product.get("payload") != product_path.get("payload"):
+        errors.append("product payload/path mismatch")
+    if status_entry.get("productPurchaseCommitment") != product.get("payload") or status.get("payload") != status_path.get("payload"):
+        errors.append("status commitment/payload/path mismatch")
+    for path_name, path in (("product", product_path), ("status", status_path)):
+        siblings = path.get("siblings")
+        leaf_index = path.get("leafIndex")
+        if not isinstance(siblings, list) or len(siblings) != 32:
+            errors.append(f"{path_name} path sibling count drift")
+        if not isinstance(leaf_index, int) or not 0 <= leaf_index < 2**32:
+            errors.append(f"{path_name} path leaf index drift")
+    cutoff_values = [cutoff.get(name) for name in ("snapshotCutoffUnixMs", "dependencyCutoffUnixMs", "evaluationContextCutoffUnixMs")]
+    if not all(isinstance(value, str) and value.isdigit() for value in cutoff_values) or len(set(cutoff_values)) != 1:
+        errors.append("status cutoff equality drift")
+    elif status_entry.get("status") != "ACCEPTED" or not isinstance(status_entry.get("effectiveAtUnixMs"), str) or not status_entry["effectiveAtUnixMs"].isdigit() or int(status_entry["effectiveAtUnixMs"]) > int(cutoff_values[0]):
+        errors.append("status acceptance/effective cutoff drift")
+    fields = [
+        product.get("payload"), product.get("expectedLeaf"), product_path.get("payload"), product_path.get("expectedRoot"),
+        status_entry.get("productPurchaseCommitment"), status.get("payload"), status.get("expectedLeaf"), status_path.get("payload"), status_path.get("expectedRoot"),
+        *product_path.get("siblings", []), *status_path.get("siblings", []),
+    ]
+    if any(not isinstance(value, str) or re.fullmatch(r"poseidon:[0-9a-f]{64}", value) is None or int(value[9:], 16) >= PASTA_FP_MODULUS for value in fields):
+        errors.append("source membership noncanonical Pasta field")
+    hostile_cases = vector.get("hostileCases")
+    expected_hostile_ids = {
+        "wrong-profile-ref", "swapped-product-status-domain", "wrong-root", "wrong-payload", "wrong-leaf-index", "wrong-sibling", "reordered-siblings", "short-path", "noncanonical-field", "status-commitment-mismatch", "status-not-accepted", "status-after-cutoff", "status-cutoff-mismatch",
+    }
+    if not isinstance(hostile_cases, list) or len(hostile_cases) != len(expected_hostile_ids) or {case.get("id") for case in hostile_cases if isinstance(case, dict)} != expected_hostile_ids or any(not isinstance(case, dict) or case.get("expected") != "REJECTED" for case in hostile_cases):
+        errors.append("source membership hostile cases drift")
+    return errors
+
+
 def main() -> None:
     schema = load(SCHEMA)
     vectors = load(VECTORS)
@@ -99,7 +156,11 @@ def main() -> None:
             raise SystemExit(f"hostile vector accepted: {case['id']}")
         rejected += 1
 
-    print(json.dumps({"accepted": 1, "rejected": rejected, "schema": schema["$id"]}, sort_keys=True))
+    membership_errors = source_membership_vector_errors(load(SOURCE_MEMBERSHIP_VECTORS))
+    if membership_errors:
+        raise SystemExit(f"source membership vector rejected: {membership_errors}")
+
+    print(json.dumps({"accepted": 1, "rejected": rejected, "sourceMembershipHostilesRejected": 13, "schema": schema["$id"]}, sort_keys=True))
 
 
 if __name__ == "__main__":
