@@ -16,7 +16,7 @@ schema fields, enum values, circuit identities or public inputs.
 This page restores the marketing-alias table that the earlier public
 `CAMPAIGN_SPEND_PROOF_PRIMITIVES.md` carried (last full text at public-spec
 commit `bb8f021`, removed 2026-08-12), re-expressed over the current grammar in
-[`condition-v1.md`](../conditions/condition-v1.md). The internal mirror is
+`../conditions/condition-v1.md` (grammar page, in review as a separate pull request). The internal mirror is
 `crinkl-protocol` `protocol/applications/campaigns/CAMPAIGN_TEMPLATE_CATALOG.md`;
 the two pages are kept identical in substance, and the internal page is
 authority when they differ.
