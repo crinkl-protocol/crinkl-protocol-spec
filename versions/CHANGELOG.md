@@ -14,6 +14,18 @@ unpublished SemVer prerelease. Repository release maturity is separate from
 each document's frontmatter maturity. The immutable `v1.0.0-rc.4` tag remains
 the prior released package; no stable successor release is declared.
 
+## Unreleased — Campaign template catalog (2026-09-02)
+
+Documentation only.
+
+- Adds `protocol/applications/campaigns/campaign-template-catalog.md`: every
+  Campaign template as a composition of `ConditionV1` primitives with its
+  parameters, purpose slot, executing proof family and maturity. Restores the
+  marketing-alias table removed with `CAMPAIGN_SPEND_PROOF_PRIMITIVES.md` on
+  2026-08-12, over the current grammar. Absence-bearing templates are
+  `BLOCKED — COVERAGE`. Mirrored to `crinkl-protocol`
+  `CAMPAIGN_TEMPLATE_CATALOG.md`, which is authority.
+
 ## v1.0.0-rc.5 release candidate (not published)
 
 It does not classify any later tree; any later tree remains unassigned unless a
