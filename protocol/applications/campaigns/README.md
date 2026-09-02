@@ -3,7 +3,7 @@ status: draft
 layer: applications
 version: vnext
 normative: true
-implementationStatus: SPECIFIED_NOT_IMPLEMENTED
+implementationStatus: PARTIAL_NON_PRODUCTION_ENGINEERING
 ---
 
 # Campaign protocol architecture
@@ -16,11 +16,15 @@ The schemas and procedure profile in
 [`schemas/experimental/campaigns/`](../../../schemas/experimental/campaigns/)
 and
 [`protocol/applications/artifacts/`](../artifacts/)
-mirror the adopted engineering source at
-`crinkl-protocol@bdac6d3f9f32a312544b3adadbb379f98607198f`. They remain
-unreleased public source candidates for this unimplemented Campaign family.
-They are not in a released public manifest and do not establish runtime
-support. Discarded Campaign drafts are not supported
+describe an earlier public Campaign candidate anchored at
+`crinkl-protocol@bdac6d3f9f32a312544b3adadbb379f98607198f`. They do not mirror
+the current non-production substrate byte-for-byte. Current reviewed
+engineering is anchored at `crinkl-protocol@156d63c37d4d4b9a31287e86d7623afdbe642997`
+and `crinkl-platform@2a3a7d6eaf1f7ef9a609ca997951bf3960b17975`.
+
+Neither the older public candidate nor the current engineering families are in
+a released public manifest, runtime-enabled, deployed to production, or an
+economic authorization. Discarded Campaign drafts are not supported
 predecessors. This refactor does not change Spend Token or SOFT-to-HARD
 verification compatibility. That scoped protection is not a claim that those
 are the only wire- or production-sensitive Crinkl surfaces; each artifact is
@@ -29,6 +33,57 @@ deployed dependencies.
 
 A compact forked flow is available in the
 [`Campaign architecture diagram`](../../../diagrams/campaign-architecture.md).
+
+## 0. Current reviewed substrate boundary
+
+The current non-production compiler uses the existing Condition content
+address as the purpose-free Campaign definition identity:
+
+```text
+definitionRef = conditionId(ConditionV1)
+              = "sha256:" + SHA-256(RFC8785(ConditionV1))
+```
+
+Purpose is supplied only by the signed `CampaignEpochV2` slot:
+`audienceRuleRef` or `conversionRuleRef`. The compiler validates the complete
+Condition graph and routes only an exact admitted relation. A parameter change
+creates a new definition reference while retaining a proof family only when
+that family already admits the parameter. A different private witness shape
+requires another reviewed proof family; it does not require another Campaign
+model or Platform pipeline.
+
+Two engineering families are currently routed through the same compiler and
+signed Epoch path:
+
+| Purpose | Exact admitted relation | Proof profile | Current maturity |
+|---|---|---|---|
+| `CONVERSION` | one exact product, brand and category purchase; quantity, amount, store set and time bounds are committed | `sha256:720fcfb3af3490ba98d151aa7c334aeb10b23dfc7abf088195cf11430f463c68` | non-production atomic Groth16 family; compiler replayed with the retained Monster 14-day definition |
+| `AUDIENCE` | exactly four distinct qualifying purchases in the inclusive `-44..0` calendar-day interval under the admitted positive-provenance source contract | `sha256:95f70a5f920be518cfa8a1d56a6dbccc792eeba8258492014bab1f2afddd7319` | non-production count Groth16 family; compiler replayed with a non-sentinel Epoch reuse policy |
+
+The atomic compiler pins the Campaign-scoped
+`ProductSourceSignerAuthorityBindingV1`; evidence and status signers must be
+distinct, active at the evaluation cutoff, and bound to the exact policies and
+snapshots in the dependency set. The signed Epoch's `registryRefs` contains
+both the dependency-set reference and signer-binding reference.
+
+Unsupported count/window changes, category sets, product or brand wildcards,
+ambiguous graphs and unregistered profiles fail closed. Conquest, lapsed and
+new-to-brand rules additionally require an authorized Coverage relation before
+an absence claim can be compiled. Missing Coverage is `INDETERMINATE`, not a
+negative buyer fact.
+
+The compiler creates no proof, network transaction, Outcome, entitlement,
+reward, settlement or escrow authority. Current local compiler evidence does
+not establish an authenticated Platform runtime or production proving path.
+For the current substrate, the no-discretion acceptance path is
+`ProofOfMatch -> finalized Solana ACCEPT -> separately authorized Platform Outcome`;
+neither a discretionary `ConversionApproval` nor a `ValidatorCertificate` is
+required between proof acceptance and Outcome authority. The
+`ValidatorCertificate` flow later in this document belongs to the earlier
+public candidate and is not current substrate authority.
+The public `single-product-purchase-match-v1` conformance package remains a
+separate earlier candidate with a different relation and public-input ABI; it
+must not be used as an alias for either current engineering profile.
 
 ## 1. Canonical dependency order
 
