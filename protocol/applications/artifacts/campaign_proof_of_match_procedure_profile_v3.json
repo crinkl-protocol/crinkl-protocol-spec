@@ -1,0 +1,36 @@
+{
+  "tokenType": "CAMPAIGN_PROOF_OF_MATCH_PROCEDURE_PROFILE",
+  "schemaVersion": 3,
+  "profileId": "campaign.proofOfMatch.procedureProfile",
+  "profileVersion": 3,
+  "procedureId": "PROOF_OF_MATCH_VERIFICATION",
+  "procedureVersion": "3",
+  "subjectType": "PROOF_OF_MATCH",
+  "supportedSubjectSchemaIds": [
+    "crinkl://protocol/schemas/proof_of_match_v1"
+  ],
+  "supportedCampaignEpochSchemaIds": [
+    "crinkl://protocol/schemas/campaigns/campaign_epoch_v2"
+  ],
+  "verificationEvidenceSchemaId": "crinkl://protocol/schemas/solana_proof_evidence_v1",
+  "campaignOutcomeSchemaId": "crinkl://protocol/schemas/campaign_outcome_v2",
+  "subjectHashRule": "SHA256_RFC8785_COMPLETE_OBJECT",
+  "proofProfileBindingRule": "SUBJECT_PROFILE_REF_MUST_EQUAL_EPOCH_PURPOSE_PROFILE_REF",
+  "proofProfileOwnershipRule": "PROOF_PROFILE_DEFINES_CRYPTOGRAPHIC_RELATION_PROCEDURE_PROFILE_BINDS_BY_CONTENT_REF",
+  "supportedProofSystems": [
+    "GROTH16_BN254"
+  ],
+  "supportedPurposes": [
+    "AUDIENCE",
+    "CONVERSION"
+  ],
+  "publicInputBindingRule": "SELECTED_PROOF_PROFILE_DEFINES_EXACT_ORDER_ENCODING_AND_COMMITMENT_MAPPING",
+  "proofBytesBindingRule": "SUBJECT_PROOF_HASH_EQUALS_INSTRUCTION_PROOF_HASH",
+  "nullifierVerificationRule": "PUBLIC_DERIVATION_RECOMPUTED_PRIVATE_DERIVATION_PROVEN_EXPOSED_BINDING_REGISTRY_CHECKED",
+  "finalizedObservationRule": "TRUSTED_RPC_RECONSTRUCTS_FINALIZED_TRANSACTION_INSTRUCTION_PROGRAMDATA_VK_AND_ACCEPT_RECORD",
+  "programIdentityRule": "CHAIN_GENESIS_PROGRAM_PROGRAMDATA_ADDRESS_EXECUTABLE_HASH_AND_INSTRUCTION_BYTES_BOUND",
+  "replayRule": "SUBJECT_NULLIFIER_REGISTRIES_AND_ONCHAIN_RECORD_IDENTITIES_CHECKED_BEFORE_OUTCOME",
+  "unknownProfileHandling": "REJECT",
+  "stateTransition": "NONE",
+  "authorityBoundary": "FINALIZED_PROOF_VERIFICATION_ONLY_WITHOUT_CAMPAIGN_OR_ECONOMIC_AUTHORITY"
+}

@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "crinkl://protocol/schemas/campaign_proof_of_match_procedure_profile_v3",
+  "title": "CampaignProofOfMatchProcedureProfileV3",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "tokenType",
+    "schemaVersion",
+    "profileId",
+    "profileVersion",
+    "procedureId",
+    "procedureVersion",
+    "subjectType",
+    "supportedSubjectSchemaIds",
+    "supportedCampaignEpochSchemaIds",
+    "verificationEvidenceSchemaId",
+    "campaignOutcomeSchemaId",
+    "subjectHashRule",
+    "proofProfileBindingRule",
+    "proofProfileOwnershipRule",
+    "supportedProofSystems",
+    "supportedPurposes",
+    "publicInputBindingRule",
+    "proofBytesBindingRule",
+    "nullifierVerificationRule",
+    "finalizedObservationRule",
+    "programIdentityRule",
+    "replayRule",
+    "unknownProfileHandling",
+    "stateTransition",
+    "authorityBoundary"
+  ],
+  "properties": {
+    "tokenType": { "const": "CAMPAIGN_PROOF_OF_MATCH_PROCEDURE_PROFILE" },
+    "schemaVersion": { "const": 3 },
+    "profileId": { "const": "campaign.proofOfMatch.procedureProfile" },
+    "profileVersion": { "const": 3 },
+    "procedureId": { "const": "PROOF_OF_MATCH_VERIFICATION" },
+    "procedureVersion": { "const": "3" },
+    "subjectType": { "const": "PROOF_OF_MATCH" },
+    "supportedSubjectSchemaIds": {
+      "const": ["crinkl://protocol/schemas/proof_of_match_v1"]
+    },
+    "supportedCampaignEpochSchemaIds": {
+      "const": ["crinkl://protocol/schemas/campaigns/campaign_epoch_v2"]
+    },
+    "verificationEvidenceSchemaId": {
+      "const": "crinkl://protocol/schemas/solana_proof_evidence_v1"
+    },
+    "campaignOutcomeSchemaId": {
+      "const": "crinkl://protocol/schemas/campaign_outcome_v2"
+    },
+    "subjectHashRule": { "const": "SHA256_RFC8785_COMPLETE_OBJECT" },
+    "proofProfileBindingRule": {
+      "const": "SUBJECT_PROFILE_REF_MUST_EQUAL_EPOCH_PURPOSE_PROFILE_REF"
+    },
+    "proofProfileOwnershipRule": {
+      "const": "PROOF_PROFILE_DEFINES_CRYPTOGRAPHIC_RELATION_PROCEDURE_PROFILE_BINDS_BY_CONTENT_REF"
+    },
+    "supportedProofSystems": { "const": ["GROTH16_BN254"] },
+    "supportedPurposes": { "const": ["AUDIENCE", "CONVERSION"] },
+    "publicInputBindingRule": {
+      "const": "SELECTED_PROOF_PROFILE_DEFINES_EXACT_ORDER_ENCODING_AND_COMMITMENT_MAPPING"
+    },
+    "proofBytesBindingRule": {
+      "const": "SUBJECT_PROOF_HASH_EQUALS_INSTRUCTION_PROOF_HASH"
+    },
+    "nullifierVerificationRule": {
+      "const": "PUBLIC_DERIVATION_RECOMPUTED_PRIVATE_DERIVATION_PROVEN_EXPOSED_BINDING_REGISTRY_CHECKED"
+    },
+    "finalizedObservationRule": {
+      "const": "TRUSTED_RPC_RECONSTRUCTS_FINALIZED_TRANSACTION_INSTRUCTION_PROGRAMDATA_VK_AND_ACCEPT_RECORD"
+    },
+    "programIdentityRule": {
+      "const": "CHAIN_GENESIS_PROGRAM_PROGRAMDATA_ADDRESS_EXECUTABLE_HASH_AND_INSTRUCTION_BYTES_BOUND"
+    },
+    "replayRule": {
+      "const": "SUBJECT_NULLIFIER_REGISTRIES_AND_ONCHAIN_RECORD_IDENTITIES_CHECKED_BEFORE_OUTCOME"
+    },
+    "unknownProfileHandling": { "const": "REJECT" },
+    "stateTransition": { "const": "NONE" },
+    "authorityBoundary": {
+      "const": "FINALIZED_PROOF_VERIFICATION_ONLY_WITHOUT_CAMPAIGN_OR_ECONOMIC_AUTHORITY"
+    }
+  }
+}

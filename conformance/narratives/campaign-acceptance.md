@@ -42,13 +42,13 @@ The user holds a Celsius Spend Token.
 Celsius SpendToken
 + Monster CampaignEpoch
 -> ProofOfMatch(AUDIENCE)
--> ValidatorCertificate
+-> finalized Solana ACCEPT (SolanaProofEvidence)
 -> deterministic AssignmentRecordV1
 -> treatment user sees offer; holdout user does not
 -> user buys Monster
 -> Verification Issuer creates Monster SpendToken
 -> ProofOfMatch(CONVERSION)
--> ValidatorCertificate
+-> finalized Solana ACCEPT (SolanaProofEvidence)
 -> CampaignOutcome
     |-- treatment conversion: measurement -> RewardObligation(1,000 points)
     |                           -> SettlementRecord
@@ -123,7 +123,7 @@ and registry references.
 CampaignEpoch
 -> Monster SpendToken
 -> ProofOfMatch(CONVERSION)
--> ValidatorCertificate
+-> finalized Solana ACCEPT (SolanaProofEvidence)
 -> CampaignOutcome
 -> RewardObligation
 -> SettlementRecord
@@ -135,16 +135,16 @@ Conformance requires:
 - `requiredProofProfiles.audienceProofProfileRef = null`;
 - `assignmentPolicyRef = null`;
 - `economicAdmissionPolicyRef = null`;
-- `CampaignOutcomeV1.audienceMatch = null`;
-- `CampaignOutcomeV1.assignment = null`;
-- `CampaignOutcomeV1.exposureRef = null`;
-- `CampaignOutcomeV1.economicAdmission.required = false` and
+- `CampaignOutcomeV2.audienceMatch = null`;
+- `CampaignOutcomeV2.assignment = null`;
+- `CampaignOutcomeV2.exposureRef = null`;
+- `CampaignOutcomeV2.economicAdmission.required = false` and
   `decision = NOT_REQUIRED`; and
 - a valid Outcome deterministically creates the exact 1,000-point obligation.
 
 A verifier that requires an audience proof, experiment assignment, or Campaign
-quorum-admission certificate for this mode is non-conforming unless a separate
-profile names the distinct dependency.
+quorum-admission certificate or validator certificate for this mode is
+non-conforming unless a separate profile names the distinct dependency.
 
 ## 3. Capacity-limited Liquid Death promotion
 
@@ -188,7 +188,7 @@ independently auditable ordering source and tie-break rule.
 three or more SpendTokens
 + Liquid Death CampaignEpoch
 -> ProofOfMatch(CONVERSION)
--> ValidatorCertificate
+-> finalized Solana ACCEPT (SolanaProofEvidence)
 ```
 
 The proof relation must establish:
@@ -209,7 +209,7 @@ Multi-issuer inputs are accepted only if the proof profile resolves and composes
 every issuer and policy. Three token references without a valid aggregate proof
 do not satisfy the rule.
 
-The Validator Certificate establishes quorum acceptance of this proof only. It
+The finalized Solana `ACCEPT` establishes acceptance of this proof only. It
 does not reserve one of 10,000 positions.
 
 ### Deterministic economic admission
@@ -220,7 +220,7 @@ under one named authority. One atomic transaction must:
 
 1. reject or idempotently return an existing row for the same entitlement
    nullifier;
-2. verify the proof and certificate references match the attempt;
+2. verify the proof and Solana evidence references match the attempt;
 3. assign the next monotonic admission sequence under the committed ordering
    rule;
 4. test that admitted count is below 10,000;
