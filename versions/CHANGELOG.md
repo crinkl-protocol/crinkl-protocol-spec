@@ -14,25 +14,6 @@ unpublished SemVer prerelease. Repository release maturity is separate from
 each document's frontmatter maturity. The immutable `v1.0.0-rc.4` tag remains
 the prior released package; no stable successor release is declared.
 
-## Unreleased — Campaign acceptance path successor (2026-09-02)
-
-Documentation and experimental-schema change only; no released package,
-manifest, tag, runtime, validator-network, deployment or production behavior
-changes.
-
-- Publishes Procedure Profile V3 (`campaign_proof_of_match_procedure_profile_v3`
-  schema and artifact, content reference `sha256:73306e3b…7aee3ec`),
-  `SolanaProofEvidenceV1` and `CampaignOutcomeV2` as unreleased experimental
-  mirrors of `crinkl-protocol@156d63c37d4d4b9a31287e86d7623afdbe642997`.
-- Rewrites the Campaign architecture so every Campaign flow ends at
-  `ProofOfMatch -> finalized Solana ACCEPT (SolanaProofEvidence) -> CampaignOutcome`.
-  Validator quorum certification (`ValidatorCertificateV1`, Procedure Profiles
-  V1 and V2) is retained as a historical acceptance candidate in Appendix A and
-  is not used for Campaign proof acceptance.
-- Updates `proof-of-match.md`, the Campaign acceptance narratives, the
-  architecture diagram, the glossary and the experimental schema index to the
-  same acceptance path.
-
 ## v1.0.0-rc.5 release candidate (not published)
 
 It does not classify any later tree; any later tree remains unassigned unless a
