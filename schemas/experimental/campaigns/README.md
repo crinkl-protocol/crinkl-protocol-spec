@@ -36,6 +36,31 @@ directory and unchanged.
 | `settlement_record_v1.schema.json` | first liability-resolution record |
 | `campaign_proof_of_match_procedure_profile_v1.schema.json` | preserved first adopted content-addressed procedure profile |
 | `campaign_proof_of_match_procedure_profile_v2.schema.json` | current adopted procedure profile with proof-profile ownership, private-nullifier verification, and deterministic assignment-time rules |
+| `condition_v1.schema.json` | ConditionV1 rule grammar mirrored from adopted engineering source; SPECIFIED_NOT_IMPLEMENTED |
+| `buyer_state_merchant_match_statement_v1.schema.json` | ConditionV1 rule grammar mirrored from adopted engineering source; SPECIFIED_NOT_IMPLEMENTED |
+| `spend_total_cents_gte_statement_v1.schema.json` | ConditionV1 rule grammar mirrored from adopted engineering source; SPECIFIED_NOT_IMPLEMENTED |
+| `buyer_state_purchase_in_window_statement_v1.schema.json` | ConditionV1 rule grammar mirrored from adopted engineering source; SPECIFIED_NOT_IMPLEMENTED |
+| `buyer_state_purchase_in_market_statement_v1.schema.json` | ConditionV1 rule grammar mirrored from adopted engineering source; SPECIFIED_NOT_IMPLEMENTED |
+| `buyer_state_distinct_purchase_count_gte_statement_v1.schema.json` | ConditionV1 rule grammar mirrored from adopted engineering source; SPECIFIED_NOT_IMPLEMENTED |
+| `buyer_state_single_product_purchase_statement_v1.schema.json` | ConditionV1 rule grammar mirrored from adopted engineering source; SPECIFIED_NOT_IMPLEMENTED |
+| `buyer_state_evaluation_context_v1.schema.json` | ConditionV1 rule grammar mirrored from adopted engineering source; SPECIFIED_NOT_IMPLEMENTED |
+| `buyer_state_evaluation_context_v2.schema.json` | ConditionV1 rule grammar mirrored from adopted engineering source; SPECIFIED_NOT_IMPLEMENTED |
+| `buyer_state_evaluation_policy_artifact_v1.schema.json` | ConditionV1 rule grammar mirrored from adopted engineering source; SPECIFIED_NOT_IMPLEMENTED |
+
+The ConditionV1 rule-grammar rows are byte-identical mirrors of the
+`protocol/applications/schemas/` files at
+`crinkl-protocol@156d63c37d4d4b9a31287e86d7623afdbe642997`. Their
+normative text is
+[`condition-v1.md`](../../../protocol/applications/conditions/condition-v1.md),
+[`buyer-state-statements-v1.md`](../../../protocol/applications/conditions/buyer-state-statements-v1.md),
+and
+[`buyer-state-evaluation-policies-v1.md`](../../../protocol/applications/conditions/buyer-state-evaluation-policies-v1.md).
+`spend_total_cents_gte_statement_v1.schema.json` keeps its adopted filename;
+its `title` is `BuyerStateSpendTotalCentsGteStatementV1`. `EvidenceCompletenessPolicyV1`
+and the other typed policy artifacts are variants inside
+`buyer_state_evaluation_policy_artifact_v1.schema.json`. Publishing these
+mirrors is an unreleased experimental candidate and establishes no runtime,
+evaluator, or deployment support.
 
 The matching artifact is
 [`campaign_proof_of_match_procedure_profile_v2.json`](../../../protocol/applications/artifacts/campaign_proof_of_match_procedure_profile_v2.json).

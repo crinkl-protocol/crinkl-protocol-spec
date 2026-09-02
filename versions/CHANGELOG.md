@@ -14,6 +14,28 @@ unpublished SemVer prerelease. Repository release maturity is separate from
 each document's frontmatter maturity. The immutable `v1.0.0-rc.4` tag remains
 the prior released package; no stable successor release is declared.
 
+## Unreleased ConditionV1 grammar publication (not published)
+
+- Publishes the `ConditionV1` rule grammar
+  (`protocol/applications/conditions/condition-v1.md`), the six concrete
+  buyer-state statement types
+  (`protocol/applications/conditions/buyer-state-statements-v1.md`), and the
+  typed evaluation policy artifacts
+  (`protocol/applications/conditions/buyer-state-evaluation-policies-v1.md`)
+  as unreleased experimental mirrors of
+  `crinkl-protocol@156d63c37d4d4b9a31287e86d7623afdbe642997`; the internal
+  pages remain authority.
+- Adds byte-identical mirrors of `condition_v1`, the six statement schemas,
+  `buyer_state_evaluation_context_v1`/`v2`, and
+  `buyer_state_evaluation_policy_artifact_v1` under
+  `schemas/experimental/campaigns/` at `SPECIFIED_NOT_IMPLEMENTED`.
+- Replaces the Spend Predicate placeholder with a pointer to `ConditionV1` and
+  states that `CampaignEpochV2.audienceRuleRef` / `conversionRuleRef` are
+  `conditionId(ConditionV1)`, not the earlier `SpendPredicateV1` envelope; fixes
+  the offer-delivery profile's stale primitive list.
+- Changes no released bytes, schema identifiers, `protocolVersion`, conformance
+  suite, or runtime, evaluator, validator, or deployment claim.
+
 ## v1.0.0-rc.5 release candidate (not published)
 
 It does not classify any later tree; any later tree remains unassigned unless a
