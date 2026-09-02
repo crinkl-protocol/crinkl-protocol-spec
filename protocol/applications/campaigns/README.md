@@ -83,10 +83,9 @@ required between proof acceptance and Outcome authority. The
 candidate and is not current substrate authority.
 Related pages for the current substrate boundary:
 [`solana-proof-verification.md`](./solana-proof-verification.md) (acceptance
-path), [`campaign-compiler-procedure.md`](./campaign-compiler-procedure.md)
-(definition to signed Epoch), [`campaign-template-catalog.md`](./campaign-template-catalog.md)
-(templates over primitives) and the rule grammar in
-[`../conditions/condition-v1.md`](../conditions/condition-v1.md).
+path); in review as separate pull requests: `campaign-compiler-procedure.md`
+(definition to signed Epoch), `campaign-template-catalog.md` (templates over
+primitives) and the rule grammar `../conditions/condition-v1.md`.
 
 The public `single-product-purchase-match-v1` conformance package remains a
 separate earlier candidate with a different relation and public-input ABI; it
