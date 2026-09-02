@@ -14,18 +14,6 @@ unpublished SemVer prerelease. Repository release maturity is separate from
 each document's frontmatter maturity. The immutable `v1.0.0-rc.4` tag remains
 the prior released package; no stable successor release is declared.
 
-## Unreleased — Campaign compiler procedure (2026-09-02)
-
-Documentation only.
-
-- Adds `protocol/applications/campaigns/campaign-compiler-procedure.md`: the
-  public contract for compiling a Campaign definition into a signed
-  `CampaignEpochV2` — definition identity `conditionId(ConditionV1)`,
-  purpose from the Epoch slot, exact family selection over registered
-  profiles, parameter-versus-family rule, and fail-closed cases. Mirrors the
-  merged engineering contract at `crinkl-platform@2a3a7d6e`; compile-only,
-  non-production.
-
 ## v1.0.0-rc.5 release candidate (not published)
 
 It does not classify any later tree; any later tree remains unassigned unless a
