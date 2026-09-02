@@ -107,9 +107,9 @@ OM4/OM4r). None of this adds fields to `SpendAttestation`,
 | [`SpendPredicate`](protocol/applications/conditions/schemas/spend_predicate_v1.schema.json) | Rule | Reusable rule over one or more Spend Attestations. (untagged candidate, OM4r) |
 | [`CampaignEpoch`](protocol/applications/campaigns/README.md#32-campaignepoch) | Campaign | Immutable signed Campaign rules and economic terms; reduced-spine V2 candidate. |
 | [`ProofOfMatch`](protocol/applications/conditions/proof-of-match.md) | Proof | Purpose-scoped ZK statement over authenticated commerce facts; target V1 candidate. |
-| [`ValidatorCertificate`](protocol/applications/campaigns/README.md#34-validatorcertificate) | Proof acceptance | Quorum acceptance of one exact proof subject under one exact procedure; target V1 candidate. |
+| [`SolanaProofEvidence`](protocol/applications/campaigns/README.md#34-solanaproofevidence) | Proof acceptance | Finalized Solana `ACCEPT` of one exact proof subject under Procedure Profile V3; unreleased engineering candidate. `ValidatorCertificate` is the historical acceptance candidate. |
 | [`AssignmentRecord`](protocol/applications/campaigns/README.md#35-assignmentrecord) | Experiment | Optional portable deterministic arm assignment when an independent consumer/dispute boundary requires it; target V1 candidate. |
-| [`CampaignOutcome`](protocol/applications/campaigns/README.md#38-campaignoutcome) | Campaign | Narrow composition of accepted matches, optional assignment/exposure/admission, and deterministic reward decision; target V1 candidate. |
+| [`CampaignOutcome`](protocol/applications/campaigns/README.md#38-campaignoutcome) | Campaign | Narrow composition of accepted matches, optional assignment/exposure/admission, and deterministic reward decision; V2 candidate binding Solana evidence. |
 | [`RewardObligation`](protocol/applications/campaigns/README.md#39-rewardobligation) | Economics | Recipient-scoped liability created by an eligible admitted Outcome; target V1 candidate. |
 | [`SettlementRecord`](protocol/applications/campaigns/README.md#310-settlementrecord) | Economics | Evidence that an Obligation was paid, reversed, expired, disputed, cancelled, or otherwise resolved; target V1 candidate. |
 
