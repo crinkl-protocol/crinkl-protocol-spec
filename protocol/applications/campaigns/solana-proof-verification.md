@@ -19,7 +19,6 @@ Maturity: non-production engineering. Two engineering families have reached
 finalized Solana Devnet `ACCEPT` with replay rejection and one isolated
 exactly-once Platform Outcome each. No runtime, production deployment, key
 ceremony or economic authority is established.
-
 ## 1. Purpose and bounded change
 
 This profile changes only the proof-acceptance edge of the adopted Campaign
@@ -107,7 +106,7 @@ identity or make its instance parameters universal:
 |---|---|
 | `SINGLE_PRODUCT_PURCHASE_MATCH_GROTH16_BN254_V2` and its eight ordered inputs | First executed Groth16 conversion lineage and reference implementation. The exact count, names and order belong to its future reviewed proof profile; they are not Procedure Profile V3 defaults. |
 | Alpha `SolanaGroth16ProofVerificationEvidenceV2` | Map the authenticated fields into `SolanaProofEvidenceV1`. Preserve the finalized transaction, program, ProgramData, VK, instruction, proof, ordered-input, record and replay bindings; do not preserve the branch-local schema identity. |
-| Alpha `CampaignOutcomeV2` | Do not copy its recipient-mode narrowing. The adopted internal `CampaignOutcomeV2` preserves V1 Outcome semantics and substitutes only `solanaProofEvidenceRef`. A selected proof profile may require recipient-commitment mode without narrowing the shared Outcome schema. |
+| Alpha `CampaignOutcomeV2` | Do not copy its recipient-mode narrowing. The adopted internal `CampaignOutcomeV2` preserves V1 conversion and economic semantics, substitutes `solanaProofEvidenceRef`, and admits a separately authorized non-economic audience-only branch. A selected proof profile may require recipient-commitment mode without narrowing the shared Outcome schema. |
 | Product/status snapshots, purchase attestation, BN254 projection, dependencies, closed rule and Campaign authority view | The exact V1 source schema bytes are preserved, and V2 dependencies plus a Condition-derived evaluated rule replace the alpha's missing Condition/context bindings. The canonical source and proof profiles remain runtime-unavailable pending review; the alpha closed-rule and authority-view identities are not adopted. |
 | Entitlement transition, Reward Obligation and Settlement successors used by the alpha | Required field-dependency audit only. Proof acceptance does not grant any of those authorities, and no alpha economic value becomes a protocol default. |
 | Frozen program, VK account, ACCEPT record and sealed Devnet receipts | Conformance and reproducibility evidence for the exact alpha identity. They do not establish a reusable production deployment or make future circuit/VK/program identities equivalent. |
@@ -252,14 +251,28 @@ program address is unchanged.
 ## 7. Campaign Outcome successor
 
 [`CampaignOutcomeV2`](../../../schemas/experimental/campaigns/campaign_outcome_v2.schema.json) preserves the
-complete `CampaignOutcomeV1` field set, conditional rules, assignment,
-exposure, economic-admission, measurement, reward, recipient, nullifier,
-authority and signature semantics. Its only deliberate semantic replacement is:
+complete `CampaignOutcomeV1` field set and its conversion, assignment,
+exposure, economic-admission, measurement, reward, recipient, authority and
+signature semantics. Its deliberate accepted-match reference replacement is:
 
 ```text
 validatorCertificateRef
 -> solanaProofEvidenceRef
 ```
+
+It also admits one closed audience-only result shape for an independently
+authorized Outcome authority: `audienceMatch` must resolve the accepted proof
+and evidence, `conversionMatch` is null, `conversionVerified` is false, the
+entitlement nullifier is null, and exactly four Campaign-Epoch-scoped
+purchase-reuse guards are retained. This branch records audience
+qualification only. It creates no conversion, entitlement, reward, redemption,
+escrow, settlement or economic authority.
+
+This additive Outcome branch does not change any registered proof-family
+identity, circuit, verifying key or public-input ABI. In particular, the
+single-product proof-profile artifact retains its original historical
+`outcomeSchemaRef`; Procedure Profile V3 resolves the current canonical
+`CampaignOutcomeV2` by schema ID at the later Outcome-authority boundary.
 
 The Outcome authority must resolve both `proofOfMatchRef` and the complete
 Solana evidence reference and must verify that they bind the same Campaign
