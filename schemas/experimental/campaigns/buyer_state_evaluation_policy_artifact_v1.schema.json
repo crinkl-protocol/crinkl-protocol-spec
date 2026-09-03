@@ -1,0 +1,396 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "crinkl://protocol/schemas/buyer_state_evaluation_policy_artifact_v1",
+  "title": "BuyerStateEvaluationPolicyArtifactV1",
+  "oneOf": [
+    { "$ref": "#/$defs/acceptedIssuerPolicy" },
+    { "$ref": "#/$defs/acceptedSpendStatusPolicy" },
+    { "$ref": "#/$defs/latestHeadCorrectionPolicy" },
+    { "$ref": "#/$defs/evidenceProvenancePolicy" },
+    { "$ref": "#/$defs/subjectDeduplicationPolicy" },
+    { "$ref": "#/$defs/distinctPurchaseIntegrityPolicy" },
+    { "$ref": "#/$defs/evidenceCompletenessPolicy" }
+  ],
+  "$defs": {
+    "hashId": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "identifier": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+    },
+    "timestamp": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$"
+    },
+    "base": {
+      "type": "object",
+      "required": ["domain", "schemaVersion", "protocolVersion"],
+      "properties": {
+        "domain": { "type": "string" },
+        "schemaVersion": { "const": 1 },
+        "protocolVersion": { "const": "1.0.0-rc.1" }
+      }
+    },
+    "acceptedIssuerPolicy": {
+      "allOf": [
+        { "$ref": "#/$defs/base" },
+        {
+          "type": "object",
+          "required": [
+            "authoritySource",
+            "acceptedIssuerIds",
+            "authorizationTimeBasis",
+            "keyMatchRule",
+            "unresolvedAuthorityTreatment",
+            "unauthorizedIssuerTreatment"
+          ],
+          "properties": {
+            "domain": { "const": "crinkl:buyer-state:accepted-issuer-policy:v1" },
+            "authoritySource": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["type", "sourceRef"],
+              "properties": {
+                "type": {
+                  "enum": [
+                    "AUTHORITY_REGISTRY_HISTORY",
+                    "SIGNED_ISSUER_SET_SNAPSHOT"
+                  ]
+                },
+                "sourceRef": { "$ref": "#/$defs/hashId" }
+              }
+            },
+            "acceptedIssuerIds": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": { "$ref": "#/$defs/identifier" }
+            },
+            "authorizationTimeBasis": { "const": "EVALUATION_CUTOFF" },
+            "keyMatchRule": {
+              "const": "ISSUER_ID_AND_PUBLIC_KEY_MUST_MATCH_SOURCE"
+            },
+            "unresolvedAuthorityTreatment": { "const": "REJECT_CONTEXT" },
+            "unauthorizedIssuerTreatment": { "const": "REJECT_INPUT" }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "acceptedSpendStatusPolicy": {
+      "allOf": [
+        { "$ref": "#/$defs/base" },
+        {
+          "type": "object",
+          "required": [
+            "acceptedStatuses",
+            "requireFinalized",
+            "unacceptedStatusTreatment",
+            "missingStatusTreatment"
+          ],
+          "properties": {
+            "domain": { "const": "crinkl:buyer-state:accepted-spend-status-policy:v1" },
+            "acceptedStatuses": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": { "enum": ["CORRECTED", "HARD_VERIFIED"] }
+            },
+            "requireFinalized": { "const": true },
+            "unacceptedStatusTreatment": { "const": "REJECT_INPUT" },
+            "missingStatusTreatment": { "const": "REJECT_INPUT" }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "latestHeadCorrectionPolicy": {
+      "allOf": [
+        { "$ref": "#/$defs/base" },
+        {
+          "type": "object",
+          "required": [
+            "selectionMode",
+            "freshnessEvidenceMode",
+            "freshnessSourceRef",
+            "sourceAsOf",
+            "headOrderingRule",
+            "equalCountConflictTreatment",
+            "invalidatedHeadTreatment",
+            "laterCorrectionTreatment",
+            "missingFreshnessEvidenceTreatment"
+          ],
+          "properties": {
+            "domain": { "const": "crinkl:buyer-state:latest-head-correction-policy:v1" },
+            "selectionMode": { "const": "CANONICAL_HEAD_AS_OF_CUTOFF" },
+            "freshnessEvidenceMode": {
+              "enum": [
+                "CONTIGUOUS_SPEND_STREAM_TO_CUTOFF",
+                "SIGNED_HEAD_SET_SNAPSHOT"
+              ]
+            },
+            "freshnessSourceRef": { "$ref": "#/$defs/hashId" },
+            "sourceAsOf": { "$ref": "#/$defs/timestamp" },
+            "headOrderingRule": { "const": "GREATEST_EVENT_COUNT_PER_SPEND" },
+            "equalCountConflictTreatment": { "const": "REJECT_CONTEXT" },
+            "invalidatedHeadTreatment": { "const": "EXCLUDE_INPUT" },
+            "laterCorrectionTreatment": {
+              "const": "NEW_CONTEXT_DO_NOT_REWRITE_HISTORY"
+            },
+            "missingFreshnessEvidenceTreatment": { "const": "INDETERMINATE" }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "evidenceProvenancePolicy": {
+      "allOf": [
+        { "$ref": "#/$defs/base" },
+        {
+          "type": "object",
+          "required": [
+            "sourceType",
+            "sourceRef",
+            "coverageManifestRef",
+            "campaignNamespaceRef",
+            "coverageStart",
+            "sourceAsOf",
+            "organicRule",
+            "influencedRule",
+            "controlRule",
+            "legacyRule",
+            "unknownEvidenceTreatment",
+            "selfBaselineRule"
+          ],
+          "properties": {
+            "domain": { "const": "crinkl:buyer-state:evidence-provenance-policy:v1" },
+            "sourceType": {
+              "enum": [
+                "COMMITTED_INFLUENCE_LEDGER",
+                "SIGNED_PROVENANCE_SNAPSHOT"
+              ]
+            },
+            "sourceRef": { "$ref": "#/$defs/hashId" },
+            "coverageManifestRef": { "$ref": "#/$defs/hashId" },
+            "campaignNamespaceRef": { "$ref": "#/$defs/hashId" },
+            "coverageStart": { "$ref": "#/$defs/timestamp" },
+            "sourceAsOf": { "$ref": "#/$defs/timestamp" },
+            "organicRule": { "const": "COMPLETE_COVERAGE_NO_INFLUENCE_LINK" },
+            "influencedRule": { "const": "POSITIVE_CAMPAIGN_INFLUENCE_LINK" },
+            "controlRule": {
+              "const": "SIGNED_CONTROL_ASSIGNMENT_NO_QUALIFYING_EXPOSURE"
+            },
+            "legacyRule": {
+              "const": "OUTSIDE_COVERAGE_OR_EXPLICITLY_UNCLASSIFIED"
+            },
+            "unknownEvidenceTreatment": { "const": "INDETERMINATE" },
+            "selfBaselineRule": {
+              "const": "PRE_STATE_CUTOFF_PRECEDES_CAMPAIGN_START"
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "subjectDeduplicationPolicy": {
+      "allOf": [
+        { "$ref": "#/$defs/base" },
+        {
+          "type": "object",
+          "required": [
+            "subjectBindingMode",
+            "derivationProfileRef",
+            "scopeRule",
+            "crossScopeLinkability",
+            "missingBindingTreatment",
+            "collisionTreatment",
+            "correctionDedupRule",
+            "multipleSpendRule",
+            "buyerCountRule"
+          ],
+          "properties": {
+            "domain": { "const": "crinkl:buyer-state:subject-deduplication-policy:v1" },
+            "subjectBindingMode": {
+              "enum": [
+                "SCOPED_NULLIFIER",
+                "SCOPED_HOLDER_COMMITMENT",
+                "ISSUER_BLINDED_SUBJECT"
+              ]
+            },
+            "derivationProfileRef": { "$ref": "#/$defs/hashId" },
+            "scopeRule": {
+              "enum": [
+                "CONDITION_CUTOFF_AND_MARKET_IF_PRESENT",
+                "CONDITION_CONTEXT_CUTOFF_MARKET_RELYING_SCOPE_AND_PURPOSE"
+              ]
+            },
+            "crossScopeLinkability": { "const": "PROHIBITED" },
+            "missingBindingTreatment": { "const": "INDETERMINATE" },
+            "collisionTreatment": { "const": "REJECT_CONTEXT" },
+            "correctionDedupRule": { "const": "ONE_SPEND_ID_ONE_CANONICAL_HEAD" },
+            "multipleSpendRule": {
+              "const": "DISTINCT_SPEND_IDS_MAY_LINK_WITHIN_SCOPE"
+            },
+            "buyerCountRule": {
+              "enum": [
+                "ONE_SCOPED_SUBJECT_ONE_BUYER",
+                "ONE_SCOPED_SUBJECT_ONE_COUNTING_UNIT"
+              ]
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "distinctPurchaseIntegrityPolicy": {
+      "allOf": [
+        { "$ref": "#/$defs/base" },
+        {
+          "type": "object",
+          "required": [
+            "integrityMode",
+            "sourceProfileRef",
+            "scopeRule",
+            "purchaseUnit",
+            "countingRule",
+            "canonicalStreamRule",
+            "sameTagRule",
+            "differentTagRule",
+            "missingBindingTreatment",
+            "ambiguousEvidenceTreatment",
+            "correctionRule",
+            "absentDuplicateSignalTreatment",
+            "selectedInputClosureRule",
+            "omittedConnectedCandidateTreatment",
+            "statementFieldResolutionRule",
+            "purchaseSubjectAssignmentRule",
+            "sourceSelectionRule",
+            "missingSourceCheckpointTreatment",
+            "staleSourceTreatment",
+            "returnVoidTreatment",
+            "splitTenderTreatment",
+            "crossIssuerSemantics",
+            "claimLevel"
+          ],
+          "properties": {
+            "domain": {
+              "const": "crinkl:buyer-state:distinct-purchase-integrity-policy:v1"
+            },
+            "integrityMode": { "const": "PRIVATE_PURCHASE_GROUPING" },
+            "sourceProfileRef": { "$ref": "#/$defs/hashId" },
+            "scopeRule": { "const": "EXACT_BUYER_STATE_SUBJECT_SCOPE" },
+            "purchaseUnit": { "const": "STANDARD_MERCHANT_CHECKOUT" },
+            "countingRule": {
+              "const": "ONE_SCOPED_PURCHASE_TAG_ONE_COUNTING_UNIT"
+            },
+            "canonicalStreamRule": {
+              "const": "ONE_COMPOSITE_STREAM_ONE_CANONICAL_HEAD"
+            },
+            "sameTagRule": { "const": "COLLAPSE_AS_ONE_PURCHASE_UNIT" },
+            "differentTagRule": {
+              "const": "PUBLISHER_ATTESTED_DISTINCT_WITHIN_SOURCE"
+            },
+            "missingBindingTreatment": { "const": "INDETERMINATE" },
+            "ambiguousEvidenceTreatment": { "const": "INDETERMINATE" },
+            "correctionRule": {
+              "const": "EXACT_CANONICAL_HEAD_REBIND_REQUIRED"
+            },
+            "absentDuplicateSignalTreatment": {
+              "const": "NOT_EVIDENCE_OF_DISTINCTNESS"
+            },
+            "selectedInputClosureRule": {
+              "const": "ALL_KNOWN_CANDIDATE_RELATIONSHIPS_TOUCHING_SELECTED_INPUTS_RESOLVED"
+            },
+            "omittedConnectedCandidateTreatment": {
+              "const": "INDETERMINATE"
+            },
+            "statementFieldResolutionRule": {
+              "const": "ALL_STATEMENT_RELEVANT_FIELDS_AGREE_OR_RESOLVE_DETERMINISTICALLY"
+            },
+            "purchaseSubjectAssignmentRule": {
+              "const": "ONE_SCOPED_PURCHASE_TAG_ONE_SCOPED_SUBJECT_TAG"
+            },
+            "sourceSelectionRule": {
+              "const": "EXACT_CHECKPOINT_GREATEST_SEQUENCE_AT_REQUEST_BOUND_SELECTION_TIME"
+            },
+            "missingSourceCheckpointTreatment": {
+              "const": "INDETERMINATE"
+            },
+            "staleSourceTreatment": {
+              "const": "INDETERMINATE"
+            },
+            "returnVoidTreatment": { "const": "INDETERMINATE" },
+            "splitTenderTreatment": {
+              "const": "INDETERMINATE_UNLESS_ONE_PRIVATE_ANCHOR"
+            },
+            "crossIssuerSemantics": { "const": "UNSUPPORTED" },
+            "claimLevel": {
+              "const": "PUBLISHER_ATTESTED_PRIVATE_PURCHASE_GROUPING"
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "evidenceCompletenessPolicy": {
+      "allOf": [
+        { "$ref": "#/$defs/base" },
+        {
+          "type": "object",
+          "required": [
+            "conditionId",
+            "absenceStatementIds",
+            "coveredIssuerPolicyRef",
+            "coveredSpendStatusPolicyRef",
+            "coveredCorrectionPolicyRef",
+            "coveredProvenancePolicyRef",
+            "coverageScopeRef",
+            "coverageEvidenceRef",
+            "coverageStart",
+            "coverageAsOf",
+            "proofMode",
+            "statementBindingRule",
+            "claimLimit",
+            "globalAbsenceClaim",
+            "missingOrUnverifiableTreatment"
+          ],
+          "properties": {
+            "domain": { "const": "crinkl:buyer-state:evidence-completeness-policy:v1" },
+            "conditionId": { "$ref": "#/$defs/hashId" },
+            "absenceStatementIds": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": { "$ref": "#/$defs/hashId" }
+            },
+            "coveredIssuerPolicyRef": { "$ref": "#/$defs/hashId" },
+            "coveredSpendStatusPolicyRef": { "$ref": "#/$defs/hashId" },
+            "coveredCorrectionPolicyRef": { "$ref": "#/$defs/hashId" },
+            "coveredProvenancePolicyRef": { "$ref": "#/$defs/hashId" },
+            "coverageScopeRef": { "$ref": "#/$defs/hashId" },
+            "coverageEvidenceRef": { "$ref": "#/$defs/hashId" },
+            "coverageStart": { "$ref": "#/$defs/timestamp" },
+            "coverageAsOf": { "$ref": "#/$defs/timestamp" },
+            "proofMode": {
+              "enum": [
+                "COMMITTED_UNIVERSE_NON_MEMBERSHIP",
+                "SIGNED_COVERAGE_ATTESTATION"
+              ]
+            },
+            "statementBindingRule": {
+              "const": "STATEMENT_AND_WINDOW_MUST_BE_BOUND"
+            },
+            "claimLimit": {
+              "const": "NO_OBSERVED_MATCH_WITHIN_DECLARED_SCOPE"
+            },
+            "globalAbsenceClaim": { "const": "PROHIBITED" },
+            "missingOrUnverifiableTreatment": { "const": "INDETERMINATE" }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    }
+  }
+}

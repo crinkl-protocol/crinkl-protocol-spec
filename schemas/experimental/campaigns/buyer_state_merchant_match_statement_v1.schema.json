@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "crinkl://protocol/schemas/buyer_state_merchant_match_statement_v1",
+  "title": "BuyerStateMerchantMatchStatementV1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "domain",
+    "schemaVersion",
+    "protocolVersion",
+    "type",
+    "merchantEntityId",
+    "identityResolutionRule"
+  ],
+  "properties": {
+    "domain": { "const": "crinkl:statement:v1" },
+    "schemaVersion": { "const": 1 },
+    "protocolVersion": { "const": "1.0.0-rc.1" },
+    "type": { "const": "BUYER_STATE_MERCHANT_MATCH_V1" },
+    "merchantEntityId": { "$ref": "#/$defs/identifier" },
+    "identityResolutionRule": {
+      "const": "EXACT_ACCEPTED_SPEND_STORE_HASH_TO_ACTIVE_MERCHANT_IN_CONTEXT_SNAPSHOT"
+    }
+  },
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    }
+  }
+}
