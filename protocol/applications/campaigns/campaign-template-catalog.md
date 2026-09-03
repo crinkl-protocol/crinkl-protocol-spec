@@ -50,7 +50,7 @@ authority when they differ.
 |---|---|---|---|---|
 | Atomic product purchase | one purchase of one exact product, brand and category, at a store in a committed set of up to sixteen, inside committed day and time bounds, with minimum quantity, minimum net amount and currency | `campaign.atomicProductPurchase.solanaGroth16.v1`, ref `sha256:720fcfb3af3490ba98d151aa7c334aeb10b23dfc7abf088195cf11430f463c68`, circuit `ATOMIC_PRODUCT_PURCHASE_MATCH_GROTH16_BN254_V1` | `CAMPAIGN_FIELD, CAMPAIGN_EPOCH_FIELD, PURPOSE_FIELD, CLOSED_RULE_COMMITMENT, APPROVED_PURCHASE_ROOT, ENTITLEMENT_NULLIFIER, RESULT_COMMITMENT, RECIPIENT_COMMITMENT` | non-production; one finalized Devnet `ACCEPT` |
 | Distinct purchase count, audience | exactly four distinct qualifying purchases inside the inclusive `-44..0` day interval, `CAMPAIGN_INFLUENCED` provenance, one issuer and namespace, positive lower bound only | `campaign.distinctPurchaseCount.audience.groth16.v1`, ref `sha256:95f70a5f920be518cfa8a1d56a6dbccc792eeba8258492014bab1f2afddd7319`, circuit `BUYER_STATE_DISTINCT_PURCHASE_COUNT_GTE_AUDIENCE_GROTH16_BN254_V1` | `CAMPAIGN_FIELD, CAMPAIGN_EPOCH_FIELD, PURPOSE_FIELD, CLOSED_RULE_COMMITMENT, HISTORY_INPUT_COMMITMENT, DISTINCTNESS_COMMITMENT, TEMPORAL_AGGREGATE_COMMITMENT, RESULT_COMMITMENT` | non-production; one finalized Devnet `ACCEPT`; `AUDIENCE` only |
-| Set-membership product purchase | as atomic, with product, brand and category each checked by membership in separately committed set roots | candidate `campaign.atomicProductSetPurchase.solanaGroth16.v1`; proposed relation `ATOMIC_PRODUCT_SET_PURCHASE_MATCH_GROTH16_BN254_V1` | candidate eight-input ABI matching the atomic input order; no machine proof-profile artifact | Protocol candidate contract adopted; Platform port, circuit, setup, proof, Solana and runtime are unavailable |
+| Set-membership product purchase | as atomic, with product, brand and category each checked by membership in separately committed set roots | candidate `campaign.atomicProductSetPurchase.solanaGroth16.v1`; proposed relation `ATOMIC_PRODUCT_SET_PURCHASE_MATCH_GROTH16_BN254_V1` | candidate eight-input ABI matching the atomic input order; no machine proof-profile artifact | Protocol and Platform contract ports merged; circuit, setup, proof, Solana and runtime are unavailable |
 | Parameterized purchase count (planned) | at least `N` distinct qualifying purchases inside `-W..0` over a committed set, for `AUDIENCE` or `CONVERSION` | unassigned | unassigned | design identity only |
 
 The earlier public `single-product-purchase-match-v1` conformance package is a
@@ -62,13 +62,14 @@ registered family.
 `CampaignPurchaseReusePolicyV1` is an adopted internal Protocol policy identity
 for the CP6 `AUDIENCE` duplicate-qualification guard. The atomic `CONVERSION`
 relation retains a distinct purchase-reuse-nullifier derivation. Neither is a
-proof family, registry, proof, or Solana acceptance record. Their Platform
-port, regenerated local-proof evidence, and validator validation remain
-pending; this statement creates no runtime, Outcome, or economic authority.
+proof family, registry, proof, or Solana acceptance record. The S0 Platform
+contract port is merged; its regenerated local-proof evidence and
+validator-on-main evidence remain pending. This statement creates no runtime,
+Outcome, or economic authority.
 
 The product-set candidate intentionally has no machine proof-profile artifact
-or content reference. Platform may port its byte-identical Protocol objects,
-but cannot select it through the existing `CONVERSION` compiler/package until
+or content reference. Its byte-identical Platform contract port is merged, but
+it cannot be selected through the existing `CONVERSION` compiler/package until
 the separately governed circuit/setup work assigns that reference.
 
 ## Templates
@@ -116,6 +117,11 @@ template that needs it is design only until a composition profile is adopted.
   `protocol/applications/campaigns/CAMPAIGN_ATOMIC_PRODUCT_SET_PURCHASE_GROTH16_PROFILE.md`,
   `protocol/applications/campaigns/CAMPAIGN_DISTINCT_PURCHASE_COUNT_AUDIENCE_GROTH16_PROFILE.md`,
   `protocol/applications/artifacts/distinct_purchase_count_audience_groth16_proof_profile_v1.json`.
+- `crinkl-platform@3a2a3d8637d5b3c0ee49f8578469902c460558ca`:
+  Platform PR #688 (`f5675df2`) S0 contract port and Platform PR #689 S1
+  contract-only port; neither supplies a new circuit artifact, proof-profile
+  content reference, setup, proof, Solana action, runtime, Outcome, or
+  economics.
 - `crinkl-protocol-spec@660dd846`, `protocol/CAMPAIGN_SPEND_PROOF_PRIMITIVES.md`
   and `bb8f021`, `protocol/applications/conditions/campaign-commitment.md`:
   historical six-family grammar and marketing-alias table.
