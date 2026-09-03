@@ -11,7 +11,7 @@ flowchart TD
   CE --> AR{Audience rule present?}
   ST --> AR
   AR -- yes --> PA[ProofOfMatch AUDIENCE]
-  PA --> VAC[ValidatorCertificate]
+  PA --> VAC[finalized Solana ACCEPT: SolanaProofEvidence]
   AR -- no --> EXP{Multiple experimental arms?}
   VAC --> EXP
 
@@ -22,7 +22,7 @@ flowchart TD
 
   CT --> PC[ProofOfMatch CONVERSION]
   CE --> PC
-  PC --> VCC[ValidatorCertificate]
+  PC --> VCC[finalized Solana ACCEPT: SolanaProofEvidence]
   VCC --> EA{Economic admission required?}
 
   CE --> EA
@@ -41,8 +41,10 @@ flowchart TD
   ENT -- no --> STOP[Measurement-only or capacity-rejected outcome]
 ```
 
-Proof Validators certify exact proof subjects. They do not produce assignment,
-economic admission, Outcomes, obligations, or settlement. The Validator
-Certificate has `stateTransition = NONE`; any replay, capacity, Reward Ledger,
-or settlement state change names its own authoritative registry, ledger, or
-chain.
+The frozen Solana verifier program accepts exact proof subjects under
+Procedure Profile V3, and the relying Consumer reconstructs the finalized
+`ACCEPT` as `SolanaProofEvidenceV1`. Neither produces assignment, economic
+admission, Outcomes, obligations, or settlement. The procedure has
+`stateTransition = NONE`; the program's `ACCEPT` record blocks exact proof
+replay only, and any capacity, Reward Ledger, or settlement state change names
+its own authoritative registry, ledger, or chain.

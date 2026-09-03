@@ -33,13 +33,16 @@ architecture.
 
 ## Producer and verifier
 
-The holder or an Epoch-authorized prover produces the proof. Proof Validators
-verify the public statement under `PROOF_OF_MATCH_VERIFICATION`. A relying
-application verifies the resulting `ValidatorCertificate` before treating the
-proof as quorum-accepted.
+The holder or an Epoch-authorized prover produces the proof. Under
+[Procedure Profile V3](../campaigns/solana-proof-verification.md) the exact
+proof bytes and ordered public inputs are verified by a frozen Solana program
+(`PROOF_OF_MATCH_VERIFICATION`, version 3). A relying application reconstructs
+the finalized `ACCEPT` as `SolanaProofEvidenceV1` before treating the proof as
+accepted. Validator quorum certification is a historical acceptance candidate
+(see the Campaign architecture appendix) and is not used by this path.
 
-Neither the envelope nor certificate gives the prover, validator, Campaign
-authority, or relying application a power assigned to another role.
+Neither the envelope nor the evidence gives the prover, verifier program,
+Campaign authority, or relying application a power assigned to another role.
 
 ## Canonical envelope
 
@@ -209,18 +212,22 @@ The Epoch and proof profile define derivation and registry scope for each
 nullifier. `proofReplayNullifier` and `proofReplayRegistryRef` are always
 present. Entitlement nullifier and registry references are both present or both
 null; they are required when the committed Campaign policy can create or reserve
-an economic entitlement. When derivation uses only public data, a validator
-recomputes it directly. When derivation uses private witness data, the verified
-proof relation establishes correct derivation; the validator verifies the
-exposed nullifier binding and checks that value against the required registry
-view. The validator does not fetch the private witness. Issuing a
-`ValidatorCertificate` does not update that registry. The relying runtime or
-ledger must perform the named atomic write before it claims replay finality or
-economic admission.
+an economic entitlement. When derivation uses only public data, the relying
+Consumer recomputes it directly. When derivation uses private witness data, the
+verified proof relation establishes correct derivation; the Consumer verifies
+the exposed nullifier binding and checks that value against the required
+registry view. Neither the verifier program nor the Consumer fetches the private
+witness. A finalized `ACCEPT` record does not update that registry; it blocks
+exact proof-byte replay only. The relying runtime or ledger must perform the
+named atomic write before it claims replay finality or economic admission.
 
-## Deterministic validator procedure
+## Deterministic verification procedure
 
-For `PROOF_OF_MATCH_VERIFICATION`, each validator independently:
+For `PROOF_OF_MATCH_VERIFICATION` under Procedure Profile V3, the frozen
+verifier program executes step 10 over the exact proof bytes, verifying key
+and ordered public inputs and writes one exact-replay `ACCEPT` record. The
+relying Consumer independently performs every other step against its own
+finalized observation before it may rely on the result:
 
 1. parses the exact schema and recomputes `subjectHash`;
 2. resolves and verifies the Campaign authority signature on the exact Epoch;
@@ -236,30 +243,32 @@ For `PROOF_OF_MATCH_VERIFICATION`, each validator independently:
 8. enforces profile-specific input count, distinctness, temporal, value,
    multi-issuer, and arithmetic rules;
 9. checks declared replay/nullifier registries without claiming to update them;
-10. executes the proof-system verifier; and
-11. signs the canonical acceptance decision hash or returns one failure code.
+10. executes the proof-system verifier (on-chain, by the frozen program); and
+11. reconstructs `SolanaProofEvidenceV1` from the finalized transaction, exact
+    instruction bytes, ProgramData hash, verifying-key account and `ACCEPT`
+    record, or returns one failure code.
 
-Only a quorum satisfying the declared validator-set and quorum-policy
-references can assemble a `ValidatorCertificateV1` for the exact proof hash.
+No quorum, validator set or certificate is involved. The complete procedure is
+in the [finalized observation procedure](../campaigns/solana-proof-verification.md#6-finalized-observation-procedure).
 
 ## Verification result
 
-The successful result is a `ValidatorCertificate` with:
+The successful result is a `SolanaProofEvidenceV1` whose Solana section
+records `verificationResult = ACCEPT` at `commitment = FINALIZED`, with
+`procedureId = PROOF_OF_MATCH_VERIFICATION`, `procedureVersion = 3` and
+`stateTransition = NONE`. Its reference is:
 
 ```text
-subjectType = PROOF_OF_MATCH
-subjectHash = proofOfMatchRef
-procedureId = PROOF_OF_MATCH_VERIFICATION
-decision = ACCEPT
-stateTransition = NONE
+solanaProofEvidenceRef =
+  "sha256:" + lowercase_hex(SHA-256(RFC8785(solanaProofEvidenceV1)))
 ```
 
-A rejection does not produce an acceptance certificate. The validator handoff
-defines stable failure codes and the exact decision-hash preimage.
+A rejection produces no evidence object; an exact replay of an accepted proof
+is rejected by the program and leaves the record unchanged.
 
 ## Non-ZK components
 
-Commitments, hashes, signed evidence, Merkle proofs, validator certificates,
+Commitments, hashes, signed evidence, Merkle proofs, Solana evidence objects,
 economic-admission records, and proof packages remain distinct from the ZK
 proof. A package can contain both genuine ZK and non-ZK components; describing
 the package as a whole as “the proof” MUST NOT erase those distinctions.
