@@ -50,12 +50,26 @@ authority when they differ.
 |---|---|---|---|---|
 | Atomic product purchase | one purchase of one exact product, brand and category, at a store in a committed set of up to sixteen, inside committed day and time bounds, with minimum quantity, minimum net amount and currency | `campaign.atomicProductPurchase.solanaGroth16.v1`, ref `sha256:720fcfb3af3490ba98d151aa7c334aeb10b23dfc7abf088195cf11430f463c68`, circuit `ATOMIC_PRODUCT_PURCHASE_MATCH_GROTH16_BN254_V1` | `CAMPAIGN_FIELD, CAMPAIGN_EPOCH_FIELD, PURPOSE_FIELD, CLOSED_RULE_COMMITMENT, APPROVED_PURCHASE_ROOT, ENTITLEMENT_NULLIFIER, RESULT_COMMITMENT, RECIPIENT_COMMITMENT` | non-production; one finalized Devnet `ACCEPT` |
 | Distinct purchase count, audience | exactly four distinct qualifying purchases inside the inclusive `-44..0` day interval, `CAMPAIGN_INFLUENCED` provenance, one issuer and namespace, positive lower bound only | `campaign.distinctPurchaseCount.audience.groth16.v1`, ref `sha256:95f70a5f920be518cfa8a1d56a6dbccc792eeba8258492014bab1f2afddd7319`, circuit `BUYER_STATE_DISTINCT_PURCHASE_COUNT_GTE_AUDIENCE_GROTH16_BN254_V1` | `CAMPAIGN_FIELD, CAMPAIGN_EPOCH_FIELD, PURPOSE_FIELD, CLOSED_RULE_COMMITMENT, HISTORY_INPUT_COMMITMENT, DISTINCTNESS_COMMITMENT, TEMPORAL_AGGREGATE_COMMITMENT, RESULT_COMMITMENT` | non-production; one finalized Devnet `ACCEPT`; `AUDIENCE` only |
-| Set-membership product purchase (planned) | as atomic, with product, brand and category each checked by membership in a committed set root | unassigned | unassigned | design identity only |
+| Set-membership product purchase | as atomic, with product, brand and category each checked by membership in separately committed set roots | candidate `campaign.atomicProductSetPurchase.solanaGroth16.v1`; proposed relation `ATOMIC_PRODUCT_SET_PURCHASE_MATCH_GROTH16_BN254_V1` | candidate eight-input ABI matching the atomic input order; no machine proof-profile artifact | Protocol candidate contract adopted; Platform port, circuit, setup, proof, Solana and runtime are unavailable |
 | Parameterized purchase count (planned) | at least `N` distinct qualifying purchases inside `-W..0` over a committed set, for `AUDIENCE` or `CONVERSION` | unassigned | unassigned | design identity only |
 
 The earlier public `single-product-purchase-match-v1` conformance package is a
 separate draft relation with a different ABI and is not an alias for either
 registered family.
+
+### Supporting policy maturity
+
+`CampaignPurchaseReusePolicyV1` is an adopted internal Protocol policy identity
+for the CP6 `AUDIENCE` duplicate-qualification guard. The atomic `CONVERSION`
+relation retains a distinct purchase-reuse-nullifier derivation. Neither is a
+proof family, registry, proof, or Solana acceptance record. Their Platform
+port, regenerated local-proof evidence, and validator validation remain
+pending; this statement creates no runtime, Outcome, or economic authority.
+
+The product-set candidate intentionally has no machine proof-profile artifact
+or content reference. Platform may port its byte-identical Protocol objects,
+but cannot select it through the existing `CONVERSION` compiler/package until
+the separately governed circuit/setup work assigns that reference.
 
 ## Templates
 
@@ -63,9 +77,9 @@ registered family.
 |---|---|---|---|---|---|
 | Verified purchase | `SPEND_VALIDITY` | issuer set, accepted statuses, window | either | any family (guard) | runnable inside every family; never standalone |
 | Exact product purchase | `SPEND_VALIDITY` + `MERCHANT_PRODUCT_CATEGORY_RELATIONSHIP` (`BUYER_STATE_SINGLE_PRODUCT_PURCHASE_V1`) | product, brand, category refs; store set; day and time bounds; minimum quantity; minimum net amount; currency | `CONVERSION` | atomic product purchase | non-production |
-| Product-set purchase | as above with product in a committed set | product set root; brand set root; category set root; same bounds | `CONVERSION` | set-membership (planned) | design only; fails closed today |
-| Brand purchase | as above with any product of one brand | brand set of one; product set = all of brand | `CONVERSION` | set-membership (planned) | design only; fails closed today |
-| Category purchase | as above with any product in a category | category set; product set = all in category | `CONVERSION` or `AUDIENCE` | set-membership (planned) | design only; fails closed today |
+| Product-set purchase | as above with product in a committed set | product set root; brand set root; category set root; same bounds | `CONVERSION` | set-membership candidate | Protocol contract only; fails closed today |
+| Brand purchase | as above with any product of one brand | brand set of one; product set = all of brand | `CONVERSION` | set-membership candidate | Protocol contract only; fails closed today |
+| Category purchase | as above with any product in a category | category set; product set = all in category | `CONVERSION` | set-membership candidate | Protocol contract only; fails closed today |
 | In-window buyer | `SPEND_VALIDITY` + `RECENCY_LIFECYCLE` (`BUYER_STATE_PURCHASE_IN_WINDOW_V1`) | relative window | `AUDIENCE` | atomic or set-membership family via committed time bounds | positive only; compiles onto an existing family's bounds |
 | Frequent buyer, four in 45 days | `SPEND_VALIDITY` + `FREQUENCY_INTENSITY` (`BUYER_STATE_DISTINCT_PURCHASE_COUNT_GTE_V1`, `minimumDistinctPurchaseCount = 4`, window `-44..0`) | none beyond the frozen values; issuer and namespace | `AUDIENCE` | distinct purchase count, audience | non-production |
 | Repeat buyer at brand, N of W | `SPEND_VALIDITY` + `FREQUENCY_INTENSITY` over a brand set | `N`, `W`, brand set | `AUDIENCE` or `CONVERSION` | parameterized count (planned) | design only; fails closed today. A Platform tally over accepted Outcomes is an application computation, not this template |
@@ -94,10 +108,12 @@ template that needs it is design only until a composition profile is adopted.
 
 ## Sources
 
-- `crinkl-protocol@156d63c37d4d4b9a31287e86d7623afdbe642997`:
+- `crinkl-protocol@023c2cd65a9ec0647e944b46eb23fc9b25d0eafd`:
   `protocol/applications/schemas/condition_v1.schema.json`,
   `protocol/applications/conditions/BUYER_STATE_CONCRETE_STATEMENTS.md`,
   `protocol/applications/campaigns/CAMPAIGN_ATOMIC_PRODUCT_PURCHASE_GROTH16_PROFILE.md`,
+  `protocol/applications/campaigns/CAMPAIGN_PURCHASE_REUSE_POLICY.md`,
+  `protocol/applications/campaigns/CAMPAIGN_ATOMIC_PRODUCT_SET_PURCHASE_GROTH16_PROFILE.md`,
   `protocol/applications/campaigns/CAMPAIGN_DISTINCT_PURCHASE_COUNT_AUDIENCE_GROTH16_PROFILE.md`,
   `protocol/applications/artifacts/distinct_purchase_count_audience_groth16_proof_profile_v1.json`.
 - `crinkl-protocol-spec@660dd846`, `protocol/CAMPAIGN_SPEND_PROOF_PRIMITIVES.md`
