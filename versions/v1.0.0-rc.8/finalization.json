@@ -57,7 +57,7 @@
     },
     {
       "path": "versions/CHANGELOG.md",
-      "sha256": "sha256:b085f4e65f782a1ec58c83f4c75a68b3a95af7440bd7b420b5290810cba2ff04"
+      "sha256": "sha256:5913c8bed6d29b140b7fe783acf3483a5ff3acd9e52ce8413cf72f1a98104e41"
     }
   ],
   "preconditions": [
