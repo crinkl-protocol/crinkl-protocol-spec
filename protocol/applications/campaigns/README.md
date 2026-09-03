@@ -19,7 +19,7 @@ and
 describe an earlier public Campaign candidate anchored at
 `crinkl-protocol@bdac6d3f9f32a312544b3adadbb379f98607198f`. They do not mirror
 the current non-production substrate byte-for-byte. Current reviewed
-engineering is anchored at `crinkl-protocol@156d63c37d4d4b9a31287e86d7623afdbe642997`
+engineering is anchored at `crinkl-protocol@47d0e358bb10e261dd8ab41c096cf3deaa8e333c`
 and `crinkl-platform@2a3a7d6eaf1f7ef9a609ca997951bf3960b17975`.
 
 Neither the older public candidate nor the current engineering families are in
@@ -65,6 +65,17 @@ The atomic compiler pins the Campaign-scoped
 distinct, active at the evaluation cutoff, and bound to the exact policies and
 snapshots in the dependency set. The signed Epoch's `registryRefs` contains
 both the dependency-set reference and signer-binding reference.
+
+The parameterized Family B V2 proof-family candidate now has adopted internal
+source contracts, not an executable evaluator. Its purpose-aware dependency
+object binds the exact context, manifest, positive provenance Epoch, product
+and status sources, set selections, cutoff and replay roles. Its BN254 store
+selection binds a complete ordered set of authenticated `(entryRef,
+storeHash)` mappings to the depth-four root. The candidate profile records the
+future strict evaluator requirements, but no strict evaluator-profile artifact
+or evaluator-linked V2 rule is accepted yet. Platform evaluation, circuit,
+setup, key, proof, Solana and runtime availability therefore remain
+unavailable.
 
 Unsupported count/window changes, category sets, product or brand wildcards,
 ambiguous graphs and unregistered profiles fail closed. Conquest, lapsed and
@@ -754,4 +765,3 @@ Proof Validators do not:
 - create discretionary payout approvals;
 - operate the Reward Ledger; or
 - reserve, move, settle, or refund Campaign funds.
-
