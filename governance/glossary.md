@@ -94,7 +94,9 @@ quorum-policy reference. Target `ValidatorCertificateV1` is restricted to
 `PROOF_OF_MATCH_VERIFICATION` and declares `stateTransition = NONE`.
 
 **ValidatorCertificate is:** quorum acceptance of the exact subject under the
-declared procedure.
+declared procedure. For Campaign proof acceptance it is a historical candidate
+(Procedure Profiles V1 and V2); the current Campaign path is Procedure Profile
+V3, whose acceptance record is `SolanaProofEvidence`.
 
 **ValidatorCertificate is not:** global immutability, a canonical nullifier
 write, Campaign assignment, an Outcome, a Reward Obligation, payout authority,
@@ -106,7 +108,8 @@ The existing certificate used by the implemented Spend statement-coverage
 admission pipeline. Its scope is defined by
 [`protocol/core/admission.md`](../protocol/core/admission.md). It is not a
 Campaign object and MUST NOT be used for Campaign proof acceptance;
-`ValidatorCertificate` is the only Campaign certificate term.
+`SolanaProofEvidence` is the current Campaign acceptance record and
+`ValidatorCertificate` the historical certificate term.
 
 ## Admission
 
@@ -275,6 +278,24 @@ under the Epoch's budget, inventory, FIFO/allocation, or recipient-limit policy.
 It is runtime or ledger state by default, not a ZK proof and not automatically a
 standalone object. Proof validity alone does not establish entitlement when the
 Epoch makes admission capacity-dependent.
+
+## SolanaProofEvidence
+
+The authenticated record that one exact `ProofOfMatch` was accepted by the
+frozen Solana verifier program under `PROOF_OF_MATCH_VERIFICATION` version 3.
+`SolanaProofEvidenceV1` binds the procedure profile, the complete proof
+reference, Epoch, purpose, rule commitments, proof profile, circuit and
+verifying-key identity, ordered public inputs, nullifiers and registries, and
+the finalized Solana transaction, program, ProgramData hash, `ACCEPT` record
+and slot. The relying Consumer reconstructs it from a locally trusted
+observation; a transaction signature or log line is not evidence.
+
+**SolanaProofEvidence is:** proof acceptance under the current Campaign
+procedure; `stateTransition = NONE`.
+
+**SolanaProofEvidence is not:** a Campaign Outcome, a nullifier registry write
+beyond the program's exact-replay record, a Reward Obligation, or payment
+authority.
 
 ## CampaignOutcome
 

@@ -79,8 +79,14 @@ For the current substrate, the no-discretion acceptance path is
 `ProofOfMatch -> finalized Solana ACCEPT -> separately authorized Platform Outcome`;
 neither a discretionary `ConversionApproval` nor a `ValidatorCertificate` is
 required between proof acceptance and Outcome authority. The
-`ValidatorCertificate` flow later in this document belongs to the earlier
-public candidate and is not current substrate authority.
+`ValidatorCertificate` flow is retained in Appendix A as the earlier public
+candidate and is not current substrate authority.
+Related pages for the current substrate boundary:
+[`solana-proof-verification.md`](./solana-proof-verification.md) (acceptance
+path); in review as separate pull requests: `campaign-compiler-procedure.md`
+(definition to signed Epoch), `campaign-template-catalog.md` (templates over
+primitives) and the rule grammar `../conditions/condition-v1.md`.
+
 The public `single-product-purchase-match-v1` conformance package remains a
 separate earlier candidate with a different relation and public-input ABI; it
 must not be used as an alias for either current engineering profile.
@@ -100,12 +106,12 @@ Evidence and match
   issuer-authenticated SpendToken(s)
   + resolved CampaignEpoch
   -> optional ProofOfMatch(AUDIENCE)
-  -> ValidatorCertificate, when the audience proof is present
+  -> finalized Solana ACCEPT (SolanaProofEvidence), when the audience proof is present
   -> optional AssignmentRecord
   -> exposure state, if applicable
   -> new SpendToken(s)
   -> ProofOfMatch(CONVERSION)
-  -> ValidatorCertificate
+  -> finalized Solana ACCEPT (SolanaProofEvidence)
 
 Application and economics
   CampaignEpoch
@@ -118,12 +124,14 @@ Application and economics
           -> optional SettlementRecord
 ```
 
-No generic Proof Validator approval of a Campaign Epoch is required by this
-target. A Campaign authority signature may be sufficient. A profile may add a
-Campaign-verification procedure only when it names the distinct trust failure,
-consumer, and state transition that cannot be satisfied by resolving the
-authority signature and rechecking the Epoch bindings during
-`PROOF_OF_MATCH_VERIFICATION`.
+No validator approval of a Campaign Epoch is required. A Campaign authority
+signature is sufficient; every relying party resolves it and rechecks the Epoch
+bindings. Proof acceptance is `PROOF_OF_MATCH_VERIFICATION` under
+[Procedure Profile V3](./solana-proof-verification.md): the exact proof bytes
+and ordered public inputs are verified by a frozen Solana program, and a
+finalized `ACCEPT` record is reconstructed by the relying Consumer as
+`SolanaProofEvidenceV1`. No quorum, validator set, vote or certificate sits
+between the proof and the Outcome authority.
 
 A Settlement Record exists only when a Reward Obligation or other named
 economic liability requires resolution. A measurement-only holdout outcome
@@ -137,7 +145,7 @@ can stop at `CampaignOutcome`.
 CampaignEpoch
 -> SpendToken
 -> ProofOfMatch(CONVERSION)
--> ValidatorCertificate
+-> finalized Solana ACCEPT (SolanaProofEvidence)
 -> CampaignOutcome
 -> RewardObligation
 -> SettlementRecord
@@ -153,11 +161,11 @@ accepted conversion.
 CampaignEpoch
 -> historical SpendToken(s)
 -> ProofOfMatch(AUDIENCE)
--> ValidatorCertificate
+-> finalized Solana ACCEPT (SolanaProofEvidence)
 -> offer
 -> new SpendToken(s)
 -> ProofOfMatch(CONVERSION)
--> ValidatorCertificate
+-> finalized Solana ACCEPT (SolanaProofEvidence)
 -> CampaignOutcome
 -> RewardObligation
 -> SettlementRecord
@@ -171,12 +179,12 @@ The offer is application behavior, not a core proof object.
 CampaignEpoch
 -> historical SpendToken(s)
 -> ProofOfMatch(AUDIENCE), only if prior private commerce is required
--> ValidatorCertificate
+-> finalized Solana ACCEPT (SolanaProofEvidence)
 -> AssignmentRecord
 -> exposure, if treatment is delivered
 -> new SpendToken(s)
 -> ProofOfMatch(CONVERSION)
--> ValidatorCertificate
+-> finalized Solana ACCEPT (SolanaProofEvidence)
 -> CampaignOutcome
     |-- treatment: measurement + deterministic reward obligation
     `-- holdout: measurement only
@@ -192,7 +200,7 @@ experimental arms.
 CampaignEpoch
 -> SpendToken(s)
 -> ProofOfMatch(CONVERSION)
--> ValidatorCertificate
+-> finalized Solana ACCEPT (SolanaProofEvidence)
 -> deterministic economic admission
 -> CampaignOutcome
 -> RewardObligation, only if admitted
@@ -284,14 +292,13 @@ proof-replay nullifier scopes duplicate proof submission. A purchase-reuse
 nullifier prevents the same commerce fact from satisfying a prohibited second
 use in its committed scope. An entitlement nullifier prevents a second reward
 admission or obligation for the same economic claim and is required when a
-Campaign can create or reserve one. A Validator Certificate does not itself
-update any registry; the relying profile MUST name the
+Campaign can create or reserve one. A finalized Solana `ACCEPT` record blocks exact proof-byte replay only; it does not update any Campaign registry; the relying profile MUST name the
 authoritative registry or ledger and its atomic state transition.
 
 The envelope lists private witness *categories*, never private witness values.
-A validator verifies declared public inputs and proof bytes. It does not receive
-raw Spend Tokens or witness data unless the proof profile explicitly makes
-those values public.
+The verifier program verifies declared public inputs and proof bytes. Neither
+it nor the relying Consumer receives raw Spend Tokens or witness data unless the
+proof profile explicitly makes those values public.
 
 The normative rule-binding invariant is:
 
@@ -309,50 +316,53 @@ signature, proof receipt, or package containing such items is not by itself a
 `ProofOfMatch`. A package may carry genuine ZK proof bytes plus non-ZK
 supporting evidence; each component retains its own meaning.
 
-### 3.4 ValidatorCertificate
+### 3.4 SolanaProofEvidence
 
-`ValidatorCertificate` is a Proof Validator quorum certificate over one exact
-subject under one exact procedure. The required procedure is:
+`SolanaProofEvidence` is the authenticated record that one exact `ProofOfMatch`
+was accepted by the frozen verifier program under one exact procedure:
 
 ```text
-PROOF_OF_MATCH_VERIFICATION
+PROOF_OF_MATCH_VERIFICATION, procedureVersion 3
 ```
 
-[`ValidatorCertificateV1`](../../../schemas/experimental/campaigns/validator_certificate_v1.schema.json) binds
-the subject type and hash, procedure identifier and version,
-content-addressed procedure profile, validator-set reference, quorum-policy
-reference, signatures or aggregate signature, issue time, applicable Epoch,
-registry dependencies, and the accepted decision.
+[`SolanaProofEvidenceV1`](../../../schemas/experimental/campaigns/solana_proof_evidence_v1.schema.json)
+binds the procedure profile reference, the complete `ProofOfMatchV1` content
+reference, Campaign Epoch, purpose, rule and evaluated-rule commitments, scope,
+selected proof profile, result commitment, circuit and verifying-key identity,
+proof-bytes hash, the exact ordered BN254 public inputs, the replay, reuse and
+entitlement nullifiers with their registries, and the Solana finality facts:
+chain and genesis, program, ProgramData address and executable hash,
+instruction-data hash, `ACCEPT` record PDA and hash, transaction, slot,
+blockhash and instruction index.
 
-Proof Validators verify a `ProofOfMatch` against its declared proof profile,
-public inputs, `CampaignEpoch` bindings, registry dependencies, and
-replay/nullifier rules. If the required quorum accepts the proof, they issue a
-`ValidatorCertificate` identifying the exact proof hash and procedure.
+The relying Consumer does not trust a transaction signature, a log line or a
+caller-supplied status. It reconstructs the object through a locally trusted
+observation boundary at `FINALIZED` commitment, following the
+[finalized observation procedure](./solana-proof-verification.md#6-finalized-observation-procedure),
+and recomputes:
 
-The current
-[`ProcedureProfile V2`](../artifacts/campaign_proof_of_match_procedure_profile_v2.json)
-defines validator processing and certification, including the authenticated
-assignment timestamp used for `issuedAt`. The accepted ProofProfile defines the
-cryptographic statement and proof-system relation. The ProcedureProfile binds
-that ProofProfile by content reference and does not redefine its relation.
+```text
+solanaProofEvidenceRef =
+  "sha256:" + lowercase_hex(SHA-256(RFC8785(completeEvidenceObject)))
+```
 
-The certificate establishes quorum acceptance of that subject under the
-declared procedure. It does not, by itself:
+The verifier program is frozen: its ProgramData has no upgrade authority, and
+evidence binds the exact executable hash. An upgrade is a new executable
+identity and a new admission decision.
 
-- make the subject globally immutable;
-- update a canonical nullifier registry;
+The evidence establishes that the registered relation accepted those proof
+bytes over those inputs. It does not, by itself:
+
+- update a Campaign nullifier registry beyond the program's own exact-replay
+  record;
 - perform assignment;
 - construct a Campaign Outcome;
 - create a Reward Obligation; or
 - authorize or execute payment.
 
-Any state transition or replay finality MUST identify the canonical registry,
-ledger, or chain that records it. A certificate for one proof hash cannot be
-reused for another proof, Epoch, procedure, or economic-claim scope.
+The verifier program and the observing Consumer do not:
 
-Proof Validators do not:
-
-- inspect private witness data unless the proof profile makes it public;
+- inspect private witness data;
 - choose targeted buyers;
 - perform treatment/holdout assignment;
 - present offers or record exposure;
@@ -441,9 +451,9 @@ For a constrained Campaign, the resolved economic-admission policy MUST name:
 
 The default target does not introduce a standalone universal admission object.
 The authoritative runtime or ledger records admission atomically, and
-`CampaignOutcomeV1.economicAdmission` carries the smallest cross-system
+`CampaignOutcomeV2.economicAdmission` carries the smallest cross-system
 projection: policy reference, requirement flag, decision, state reference,
-evidence reference, and recorded time; `CampaignOutcomeV1.nullifiers` separately
+evidence reference, and recorded time; `CampaignOutcomeV2.nullifiers` separately
 binds the applicable entitlement nullifier. A profile MAY
 define a separate versioned admission artifact only when a named independent
 consumer cannot verify that projection against the authoritative state.
@@ -458,10 +468,10 @@ that apply to one Campaign result:
 
 ```text
 CampaignEpoch
-+ optional accepted ProofOfMatch(AUDIENCE)
++ optional accepted ProofOfMatch(AUDIENCE) with its SolanaProofEvidence
 + optional assignment
 + optional exposure
-+ accepted ProofOfMatch(CONVERSION)
++ accepted ProofOfMatch(CONVERSION) with its SolanaProofEvidence
 + optional economic admission
 + applicable nullifiers
 -> CampaignOutcome
@@ -469,8 +479,11 @@ CampaignEpoch
 
 It is not another ZK primitive and MUST NOT become a generic proof package,
 report, escrow action, or orchestration envelope. The Campaign runtime produces
-[`CampaignOutcomeV1`](../../../schemas/experimental/campaigns/campaign_outcome_v1.schema.json) by applying the
-policy committed by the Epoch. It states:
+[`CampaignOutcomeV2`](../../../schemas/experimental/campaigns/campaign_outcome_v2.schema.json) by applying the
+policy committed by the Epoch. `CampaignOutcomeV2` preserves every
+`CampaignOutcomeV1` field and rule and substitutes `solanaProofEvidenceRef` for
+`validatorCertificateRef`; an audience-only Outcome carries `audienceMatch`
+with `conversionMatch = null` and creates no entitlement. It states:
 
 - whether an accepted verified conversion occurred;
 - the experimental arm, when applicable;
@@ -525,7 +538,7 @@ Outcome producer may choose whether or how much to pay.
 ### 3.11 Canonical object references and signatures
 
 Target references MUST be computed from exact schema-valid objects. For
-`CampaignEpochV2`, `AssignmentRecordV1`, `CampaignOutcomeV1`,
+`CampaignEpochV2`, `AssignmentRecordV1`, `CampaignOutcomeV2`,
 `RewardObligationV1`, and `SettlementRecordV1`, the common signed-object
 construction is:
 
@@ -547,27 +560,25 @@ as `campaignEpochRef`, `assignmentRef`, `campaignOutcomeRef`,
 business identifier or display digest.
 
 `ProofOfMatchV1` is not signed by this envelope. Its `proofOfMatchRef` and
-validator subject hash are the SHA-256 reference over RFC 8785 canonical bytes
+verification subject hash are the SHA-256 reference over RFC 8785 canonical bytes
 of the complete schema-valid object, including proof bytes:
 
 ```text
 proofOfMatchRef = "sha256:" + lowercase_hex(SHA-256(RFC8785(proofOfMatchV1)))
 ```
 
-`ValidatorCertificateV1` signers authenticate its exact `decisionHash` as
-defined by the
-[`validator refactor handoff`](../../../governance/proof-validator-campaign-refactor-handoff.md).
-When another target object references the assembled certificate, the reference
-is:
+`SolanaProofEvidenceV1` is not signed by this envelope. Its reference is the
+SHA-256 over RFC 8785 canonical bytes of the complete schema-valid object, and
+the relying Consumer recomputes it from its own finalized observation:
 
 ```text
-validatorCertificateRef =
-  "sha256:" + lowercase_hex(SHA-256(RFC8785(validatorCertificateV1)))
+solanaProofEvidenceRef =
+  "sha256:" + lowercase_hex(SHA-256(RFC8785(solanaProofEvidenceV1)))
 ```
 
-The certificate reference covers the complete assembled certificate, including
-signature evidence. Every target object uses only the construction specified
-for its canonical V1 family.
+Every target object uses only the construction specified for its canonical
+family. The historical `validatorCertificateRef` construction is preserved in
+Appendix A.
 
 ### 3.12 CampaignReport
 
@@ -584,8 +595,9 @@ core proof vocabulary.
 | Campaign authority | signed Epoch and committed policies | post-conversion payout discretion |
 | Verification Issuer | Spend Token and status/lineage evidence | Campaign qualification, assignment, or reward |
 | holder / authorized prover | ProofOfMatch under the declared profile | Campaign rule selection |
-| Proof Validators | exact-subject quorum certificate | targeting, assignment, economic admission, Outcome, reward, escrow, or payment |
-| Campaign runtime / Platform | committed-policy application, deterministic assignment, exposure state, economic admission, CampaignOutcome | issuer truth, validator signatures, rule selection, or discretionary economics |
+| Solana verifier program | deterministic `ACCEPT` or `REJECT` over exact proof bytes, verifying key and ordered public inputs; exact-replay record | targeting, assignment, economic admission, Outcome, reward, escrow, or payment |
+| Platform finalized observer | authenticated `SolanaProofEvidence` reconstructed from a locally trusted RPC | proof validity beyond what the program accepted; Outcome authority |
+| Campaign runtime / Platform | committed-policy application, deterministic assignment, exposure state, economic admission, CampaignOutcome | issuer truth, verifier program identity, rule selection, or discretionary economics |
 | capacity/budget ledger | authoritative atomic admission state | proof validity or Campaign rule selection |
 | Reward Ledger | recipient-scoped RewardObligation and ledger events | Campaign qualification or escrow movement |
 | settlement / escrow authority | policy-constrained reserve and SettlementRecord | proof verification or reward amount selection |
@@ -596,13 +608,13 @@ core proof vocabulary.
 | Artifact or state | Producer | Required inputs | Downstream consumer |
 |---|---|---|---|
 | SpendToken | Verification Issuer | canonical Spend head, evidence, verification policy, issuer authority | prover, Campaign runtime, verifier |
-| CampaignEpoch | Campaign authority | exact rules, economics, policies, registries, windows | prover, validators, runtime, Reward Ledger, settlement |
-| ProofOfMatch | holder or authorized prover | Epoch, rule, Spend commitments, proof profile, private witness | Proof Validators |
-| ValidatorCertificate | selected Proof Validators | exact ProofOfMatch, procedure, validator set, quorum policy, registries, replay inputs | runtime and Outcome verifier |
+| CampaignEpoch | Campaign authority | exact rules, economics, policies, registries, windows | prover, verifier program (via bound public inputs), runtime, Reward Ledger, settlement |
+| ProofOfMatch | holder or authorized prover | Epoch, rule, Spend commitments, proof profile, private witness | Solana verifier program, then the finalized observer |
+| SolanaProofEvidence | Platform finalized observer | exact ProofOfMatch, Procedure Profile V3, frozen program, ProgramData hash, VK account, finalized transaction and `ACCEPT` record | Outcome authority, dispute verifier |
 | assignment state / AssignmentRecord | Campaign runtime | Epoch assignment policy, scoped input/nullifier, seed commitment | offer/exposure runtime, measurement, dispute verifier |
 | exposure state | delivery application | assignment and delivered intervention | Outcome builder and measurement |
 | economic-admission state | authorized runtime or capacity ledger | accepted match, allocation policy, authoritative state, entitlement nullifier | Outcome builder, Reward Ledger, dispute verifier |
-| CampaignOutcome | Campaign runtime | Epoch, required certificates, optional assignment/exposure/admission | Reward Ledger, measurement, dispute handling |
+| CampaignOutcome | Outcome authority | Epoch, required SolanaProofEvidence, optional assignment/exposure/admission | Reward Ledger, measurement, dispute handling |
 | RewardObligation | Reward Ledger | eligible Outcome and exact Epoch reward terms | settlement and recipient presentation |
 | SettlementRecord | settlement/escrow authority | obligation, resolution policy, resolution evidence | recipient, reconciliation, dispute handling |
 | CampaignReport | measurement application | assignments, exposure coverage, admissions, outcomes, frozen method | sponsor/business reporting |
@@ -614,10 +626,11 @@ core proof vocabulary.
    registries, and window. A profile-specific Campaign quorum procedure is not
    presumed.
 3. A prover constructs only the match purposes required by the Epoch.
-4. Validators run `PROOF_OF_MATCH_VERIFICATION` independently for each exact
-   ProofOfMatch subject. A certificate never covers a different proof hash.
-5. The Campaign runtime verifies required certificates, assignment, exposure,
-   and economic admission, then constructs the Outcome.
+4. The frozen verifier program runs `PROOF_OF_MATCH_VERIFICATION` for each
+   exact proof submission and writes one exact-replay `ACCEPT` record. The
+   relying Consumer reconstructs `SolanaProofEvidenceV1` at `FINALIZED`.
+5. The Outcome authority verifies the required Solana evidence, assignment,
+   exposure, and economic admission, then constructs the Outcome exactly once.
 6. An eligible admitted Outcome deterministically creates a Reward Obligation.
 7. Settlement authorities apply the precommitted resolution policy and issue a
    Settlement Record.
@@ -626,7 +639,7 @@ core proof vocabulary.
 
 A component MUST fail closed or return `INDETERMINATE` when a required content
 reference, authority, registry, proof profile, rule, canonical Spend head,
-certificate, assignment input, exposure boundary, admission state, nullifier
+Solana evidence, assignment input, exposure boundary, admission state, nullifier
 state, or policy is unavailable or mismatched. Business intent and
 implementation defaults cannot fill missing cryptographic or authority
 bindings.
@@ -655,17 +668,20 @@ campaign are specified in
   rules, arms, rewards, capacity, allocation, timing, disputes, and measurement
   methods; this specification binds and composes those choices but does not
   choose their commercial values.
-- **Protocol artifacts:** seven first-version, unreleased schema families define
-  the target Epoch, match proof, quorum certificate, conditional assignment
-  record, Outcome, Obligation, and Settlement Record.
+- **Protocol artifacts:** unreleased schema families define the target Epoch,
+  match proof, Solana proof evidence, Procedure Profile V3, conditional
+  assignment record, Outcome V2, Obligation, and Settlement Record. The
+  quorum-certificate family is historical (Appendix A).
 - **Offchain state and computation:** offer delivery, exposure, campaign
   orchestration, report calculation, and economic-admission runtime remain
   application or ledger functions governed by committed policies.
-- **Onchain commitment or execution:** no chain is required by the generic
-  architecture. An adopted profile may bind authoritative capacity, escrow, or
-  settlement evidence to a chain without changing proof meaning.
+- **Onchain commitment or execution:** proof acceptance under Procedure
+  Profile V3 executes on Solana; the current engineering families are frozen
+  on Devnet only. Capacity, escrow, and settlement evidence may be bound to a
+  chain by an adopted profile without changing proof meaning.
 - **Verification and disputes:** exact hashes, signatures, proof profiles,
-  registry dependencies, nullifiers, admission state, Outcome composition, and
+  program and verifying-key identity, registry dependencies, nullifiers,
+  admission state, Outcome composition, and
   liability resolution are independently checkable at their named authority
   boundaries; missing required evidence fails closed.
 - **Maturity and adoption:** the architecture, schemas, and exact procedure
@@ -674,3 +690,67 @@ campaign are specified in
   `SPECIFIED_NOT_IMPLEMENTED`. This public source is not a released package,
   validator-network behavior, runtime support, deployment, or production
   state.
+
+## Appendix A. Historical acceptance candidate: ValidatorCertificate
+
+The text below was the target acceptance edge before the Solana successor was
+adopted. It is retained so earlier public candidates remain interpretable. It
+is not the current Campaign acceptance path and MUST NOT be used for Campaign
+proof acceptance under Procedure Profile V3. `ValidatorCertificateV1` and
+Procedure Profiles V1 and V2 remain valid only under their exact prior
+profiles.
+
+### A.1 ValidatorCertificate (historical)
+
+`ValidatorCertificate` is a Proof Validator quorum certificate over one exact
+subject under one exact procedure. The required procedure is:
+
+```text
+PROOF_OF_MATCH_VERIFICATION
+```
+
+[`ValidatorCertificateV1`](../../../schemas/experimental/campaigns/validator_certificate_v1.schema.json) binds
+the subject type and hash, procedure identifier and version,
+content-addressed procedure profile, validator-set reference, quorum-policy
+reference, signatures or aggregate signature, issue time, applicable Epoch,
+registry dependencies, and the accepted decision.
+
+Proof Validators verify a `ProofOfMatch` against its declared proof profile,
+public inputs, `CampaignEpoch` bindings, registry dependencies, and
+replay/nullifier rules. If the required quorum accepts the proof, they issue a
+`ValidatorCertificate` identifying the exact proof hash and procedure.
+
+The current
+[`ProcedureProfile V2`](../artifacts/campaign_proof_of_match_procedure_profile_v2.json)
+defines validator processing and certification, including the authenticated
+assignment timestamp used for `issuedAt`. The accepted ProofProfile defines the
+cryptographic statement and proof-system relation. The ProcedureProfile binds
+that ProofProfile by content reference and does not redefine its relation.
+
+The certificate establishes quorum acceptance of that subject under the
+declared procedure. It does not, by itself:
+
+- make the subject globally immutable;
+- update a canonical nullifier registry;
+- perform assignment;
+- construct a Campaign Outcome;
+- create a Reward Obligation; or
+- authorize or execute payment.
+
+Any state transition or replay finality MUST identify the canonical registry,
+ledger, or chain that records it. A certificate for one proof hash cannot be
+reused for another proof, Epoch, procedure, or economic-claim scope.
+
+Proof Validators do not:
+
+- inspect private witness data unless the proof profile makes it public;
+- choose targeted buyers;
+- perform treatment/holdout assignment;
+- present offers or record exposure;
+- execute FIFO selection or slot consumption;
+- choose Campaign or conversion rules;
+- choose reward amounts;
+- create discretionary payout approvals;
+- operate the Reward Ledger; or
+- reserve, move, settle, or refund Campaign funds.
+

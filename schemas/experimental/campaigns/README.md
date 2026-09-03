@@ -29,13 +29,16 @@ directory and unchanged.
 | `product_evidence_status_snapshot_v1.schema.json` | signed public evidence-status root and cutoff |
 | `commerce_entity_registry_entry_v1.schema.json` | product-to-brand/category relationship and brand/category entity leaf |
 | `commerce_entity_registry_snapshot_v1.schema.json` | signed public product, brand, or category registry root |
-| `validator_certificate_v1.schema.json` | first certificate restricted to `PROOF_OF_MATCH_VERIFICATION` |
+| `validator_certificate_v1.schema.json` | first certificate restricted to `PROOF_OF_MATCH_VERIFICATION`; historical for Campaign acceptance |
 | `assignment_record_v1.schema.json` | portable only for a named cross-system, dispute, or independent-consumer use |
-| `campaign_outcome_v1.schema.json` | first narrow Outcome composition |
+| `campaign_outcome_v1.schema.json` | first narrow Outcome composition; superseded by V2 for the Solana path |
 | `reward_obligation_v1.schema.json` | first recipient-scoped Campaign liability family |
 | `settlement_record_v1.schema.json` | first liability-resolution record |
 | `campaign_proof_of_match_procedure_profile_v1.schema.json` | preserved first adopted content-addressed procedure profile |
-| `campaign_proof_of_match_procedure_profile_v2.schema.json` | current adopted procedure profile with proof-profile ownership, private-nullifier verification, and deterministic assignment-time rules |
+| `campaign_proof_of_match_procedure_profile_v2.schema.json` | preserved second adopted procedure profile (validator quorum); historical for Campaign acceptance |
+| `campaign_proof_of_match_procedure_profile_v3.schema.json` | current adopted procedure profile: finalized Solana verification, no validator quorum |
+| `solana_proof_evidence_v1.schema.json` | authenticated finalized Solana `ACCEPT` evidence for one exact ProofOfMatch |
+| `campaign_outcome_v2.schema.json` | Outcome successor substituting `solanaProofEvidenceRef` for `validatorCertificateRef`; audience-only Outcomes permitted |
 | `condition_v1.schema.json` | ConditionV1 rule grammar mirrored from adopted engineering source; SPECIFIED_NOT_IMPLEMENTED |
 | `buyer_state_merchant_match_statement_v1.schema.json` | ConditionV1 rule grammar mirrored from adopted engineering source; SPECIFIED_NOT_IMPLEMENTED |
 | `spend_total_cents_gte_statement_v1.schema.json` | ConditionV1 rule grammar mirrored from adopted engineering source; SPECIFIED_NOT_IMPLEMENTED |
@@ -62,12 +65,16 @@ and the other typed policy artifacts are variants inside
 mirrors is an unreleased experimental candidate and establishes no runtime,
 evaluator, or deployment support.
 
-The matching artifact is
-[`campaign_proof_of_match_procedure_profile_v2.json`](../../../protocol/applications/artifacts/campaign_proof_of_match_procedure_profile_v2.json).
-Its canonical JSON content reference is
-`sha256:6aef46ed82deb6cb197812f8b0de130915a7ecf9e926a809df996421202be915`.
-ProcedureProfile V1 remains available at
-`sha256:5472a7d975a6abbc8c8b99b85e3007bb3d57a980d203d36898d91ed746a58fb0`.
+The current artifact is
+[`campaign_proof_of_match_procedure_profile_v3.json`](../../../protocol/applications/artifacts/campaign_proof_of_match_procedure_profile_v3.json),
+canonical content reference
+`sha256:73306e3b904dd05fda008da1ca6c2858d545f3dd9503366836d6833da7aee3ec`,
+mirrored from `crinkl-protocol@156d63c37d4d4b9a31287e86d7623afdbe642997`.
+ProcedureProfile V2 remains available at
+`sha256:6aef46ed82deb6cb197812f8b0de130915a7ecf9e926a809df996421202be915`
+and V1 at
+`sha256:5472a7d975a6abbc8c8b99b85e3007bb3d57a980d203d36898d91ed746a58fb0`;
+both are historical for Campaign proof acceptance.
 
 ## Common content references and signatures
 
@@ -86,9 +93,10 @@ The external reference is `sha256:` plus `objectHash`.
 artifact reference over the complete envelope. Its `proof.proofBytesHash`
 separately authenticates the decoded ZK proof bytes.
 
-`ValidatorCertificateV1` signatures sign the raw 32 bytes identified by
-`decisionHash`. The decision-hash preimage and semantic checks are fixed by the
-validator handoff in
+`SolanaProofEvidenceV1` has no object signature: its reference is the artifact
+reference over the complete object, recomputed by the relying Consumer from its
+own finalized observation. Historical `ValidatorCertificateV1` signatures sign
+the raw 32 bytes identified by `decisionHash` as fixed by
 [`../../../governance/proof-validator-campaign-refactor-handoff.md`](../../../governance/proof-validator-campaign-refactor-handoff.md).
 
 JSON Schema cannot enforce reference resolution, hash equality across fields,
