@@ -21,10 +21,15 @@ normative: true
 
 This document is an offer-delivery profile. It is not the campaign primitive.
 
-Use `../applications/campaigns/README.md` and
-`../applications/conditions/proof-of-match.md` for:
+Use `../applications/campaigns/README.md`,
+[`../applications/conditions/condition-v1.md`](../applications/conditions/condition-v1.md),
+and `../applications/conditions/proof-of-match.md` for:
 
-- composing campaign rules from Spend Validity, Buyer State, Frequency / Intensity, Category / Competitive Relationship, Market / Context, and Outcome / Conversion
+- composing campaign rules from the `ConditionV1` / `BUYER_STATE_V1`
+  primitives `SPEND_VALIDITY`, `MERCHANT_PRODUCT_CATEGORY_RELATIONSHIP`,
+  `FREQUENCY_INTENSITY`, `RECENCY_LIFECYCLE`, `MARKET_CONTEXT`, and
+  `ABSENCE_NON_MEMBERSHIP` (`OUTCOME_CONVERSION` is deliberately not a
+  buyer-state primitive; it lives in `CampaignEpochV2.conversionRuleRef`)
 - audience and conversion `ProofOfMatch` terminology
 - exact `CampaignEpoch` and rule-commitment bindings
 - `ValidatorCertificate`, `CampaignOutcome`, `RewardObligation`, and
