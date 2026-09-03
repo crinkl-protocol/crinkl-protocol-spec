@@ -703,6 +703,38 @@ campaign are specified in
   validator-network behavior, runtime support, deployment, or production
   state.
 
+### 9.1 Maturity-record backfill for public-spec #58–#60
+
+This single follow-up record classifies the campaign-maturity prose merged by
+public-spec #58 (`8db147f`), #59 (`ba6fcd8`), and #60 (`167b36f`). It records
+that historical documentation boundary without rewriting those merge commits.
+
+- **Business policy:** No campaign authority choice changed. Audiences,
+  conversion rules, capacity, rewards, timing, measurement, and disputes
+  remain deployment-specific selections.
+- **Protocol artifacts:** The merged prose recorded already-adopted internal
+  source contracts and candidate proof-family identities for the product-set
+  and parameterized-count families. It changed no released schema, manifest,
+  binding, verifier rule, canonical bytes, or protocol object.
+- **Offchain state and computation:** Platform contract ports, evaluator
+  selection, proof generation, runtime evaluation, Outcome construction, and
+  economics remain separately governed implementation work. The unavailable
+  evaluator and proof machinery cannot be supplied by documentation.
+- **Onchain commitment or execution:** No program, account, transaction,
+  finalized acceptance, escrow, settlement, or other chain state was added.
+  The candidate families remain unavailable where the required circuit, setup,
+  key, proof, program, or acceptance evidence is absent.
+- **Verification and disputes:** A relying verifier continues to require the
+  named profile content reference, evaluator-linked rule, proof, and acceptance
+  evidence; missing evidence fails closed. The source-contract and Platform
+  port statements are independently auditable against the commits cited in the
+  campaign catalog, but do not establish proof acceptance or dispute outcome.
+- **Maturity and adoption:** #58 recorded the product-set candidate and reuse
+  policy source maturity, #59 recorded merged Platform contract ports, and #60
+  recorded Family B V2 source-contract maturity. All remain unreleased,
+  non-runtime, and non-production; no package or protocol-version change
+  occurred.
+
 ## Appendix A. Historical acceptance candidate: ValidatorCertificate
 
 The text below was the target acceptance edge before the Solana successor was
