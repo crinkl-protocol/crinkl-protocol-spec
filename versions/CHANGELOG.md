@@ -14,6 +14,31 @@ unpublished SemVer prerelease. Repository release maturity is separate from
 each document's frontmatter maturity. The immutable `v1.0.0-rc.4` tag remains
 the prior released package; no stable successor release is declared.
 
+## Unreleased — Campaign layer alignment with adopted engineering (2026-09-02)
+
+Documentation and experimental-schema changes only (public-spec #52, #53, #54,
+#55); no released package, manifest, tag, runtime, validator-network,
+deployment or production behavior changes.
+
+- Adopts finalized Solana acceptance as the Campaign proof path: publishes
+  Procedure Profile V3 (`campaign_proof_of_match_procedure_profile_v3`, content
+  reference `sha256:73306e3b904dd05fda008da1ca6c2858d545f3dd9503366836d6833da7aee3ec`),
+  `SolanaProofEvidenceV1` and `CampaignOutcomeV2` as unreleased experimental
+  mirrors of `crinkl-protocol@156d63c37d4d4b9a31287e86d7623afdbe642997`; every
+  Campaign flow now ends at `ProofOfMatch -> finalized Solana ACCEPT ->
+  CampaignOutcome`. Validator quorum certification (`ValidatorCertificateV1`,
+  Procedure Profiles V1 and V2) is retained as a historical acceptance
+  candidate and is not used for Campaign proof acceptance.
+- Publishes the `ConditionV1` rule grammar, six buyer-state statements,
+  evaluation contexts and evaluation policies as unreleased experimental
+  mirrors of the same engineering commit; replaces the Spend Predicate
+  placeholder and repairs the offer-delivery primitive pointer.
+- Adds the Campaign template catalog (every template as primitives,
+  parameters, purpose slot, executing family and maturity; absence templates
+  `BLOCKED — COVERAGE`) and the Campaign compiler procedure (definition
+  identity `conditionId(ConditionV1)`, exact family selection, parameter
+  versus family, fail-closed cases).
+
 ## v1.0.0-rc.5 release candidate (not published)
 
 It does not classify any later tree; any later tree remains unassigned unless a
