@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "crinkl://protocol/schemas/buyer_state_distinct_purchase_count_gte_statement_v1",
+  "title": "BuyerStateDistinctPurchaseCountGteStatementV1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "domain",
+    "schemaVersion",
+    "protocolVersion",
+    "type",
+    "minimumDistinctPurchaseCount",
+    "windowSource",
+    "countingRule",
+    "claimSemantics"
+  ],
+  "properties": {
+    "domain": { "const": "crinkl:statement:v1" },
+    "schemaVersion": { "const": 1 },
+    "protocolVersion": { "const": "1.0.0-rc.1" },
+    "type": { "const": "BUYER_STATE_DISTINCT_PURCHASE_COUNT_GTE_V1" },
+    "minimumDistinctPurchaseCount": {
+      "type": "integer",
+      "minimum": 2,
+      "maximum": 2147483647
+    },
+    "windowSource": { "const": "CONDITION_REQUIREMENT_RELATIVE_WINDOW" },
+    "countingRule": { "const": "CONTEXT_V2_PRIVATE_PURCHASE_GROUPING_V1" },
+    "claimSemantics": { "const": "PUBLISHER_ATTESTED_POSITIVE_LOWER_BOUND_ONLY" }
+  }
+}

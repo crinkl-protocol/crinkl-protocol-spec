@@ -1,0 +1,211 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "crinkl://protocol/schemas/condition_v1",
+  "title": "ConditionV1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "domain",
+    "schemaVersion",
+    "protocolVersion",
+    "profile",
+    "requirements",
+    "composition",
+    "timeSemantics",
+    "provenanceRequirement",
+    "absencePolicyRequirement"
+  ],
+  "properties": {
+    "domain": { "const": "crinkl:condition:v1" },
+    "schemaVersion": { "const": 1 },
+    "protocolVersion": { "const": "1.0.0-rc.1" },
+    "profile": { "const": "BUYER_STATE_V1" },
+    "requirements": {
+      "type": "array",
+      "minItems": 2,
+      "items": { "$ref": "#/$defs/requirement" },
+      "contains": {
+        "type": "object",
+        "required": ["primitive"],
+        "properties": {
+          "primitive": { "const": "SPEND_VALIDITY" }
+        }
+      },
+      "minContains": 1,
+      "maxContains": 1
+    },
+    "composition": { "$ref": "#/$defs/composition" },
+    "timeSemantics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourceField", "anchor"],
+      "properties": {
+        "sourceField": { "const": "SPEND_TIMESTAMP" },
+        "anchor": { "const": "EVALUATION_CUTOFF" }
+      }
+    },
+    "provenanceRequirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["acceptedEvidenceClasses", "unknownEvidenceTreatment"],
+      "properties": {
+        "acceptedEvidenceClasses": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "INDEPENDENT_ORGANIC",
+              "CAMPAIGN_INFLUENCED",
+              "EXPERIMENTAL_CONTROL",
+              "UNKNOWN_LEGACY"
+            ]
+          }
+        },
+        "unknownEvidenceTreatment": { "const": "INDETERMINATE" }
+      }
+    },
+    "absencePolicyRequirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode"],
+      "properties": {
+        "mode": {
+          "enum": [
+            "NOT_REQUIRED",
+            "COMPLETENESS_OR_NON_MEMBERSHIP_REQUIRED"
+          ]
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "requirements": {
+            "contains": {
+              "type": "object",
+              "required": ["primitive"],
+              "properties": {
+                "primitive": { "const": "ABSENCE_NON_MEMBERSHIP" }
+              }
+            }
+          }
+        },
+        "required": ["requirements"]
+      },
+      "then": {
+        "properties": {
+          "absencePolicyRequirement": {
+            "type": "object",
+            "required": ["mode"],
+            "properties": {
+              "mode": { "const": "COMPLETENESS_OR_NON_MEMBERSHIP_REQUIRED" }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "absencePolicyRequirement": {
+            "type": "object",
+            "required": ["mode"],
+            "properties": {
+              "mode": { "const": "NOT_REQUIRED" }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "hashId": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "requirementId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9._-]{0,63}$"
+    },
+    "relativeWindow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["startOffsetDays", "endOffsetDays"],
+      "properties": {
+        "startOffsetDays": { "type": "integer", "maximum": 0 },
+        "endOffsetDays": { "type": "integer", "maximum": 0 }
+      }
+    },
+    "requirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requirementId", "primitive"],
+      "properties": {
+        "requirementId": { "$ref": "#/$defs/requirementId" },
+        "primitive": {
+          "enum": [
+            "SPEND_VALIDITY",
+            "MERCHANT_PRODUCT_CATEGORY_RELATIONSHIP",
+            "FREQUENCY_INTENSITY",
+            "RECENCY_LIFECYCLE",
+            "MARKET_CONTEXT",
+            "ABSENCE_NON_MEMBERSHIP"
+          ]
+        },
+        "statementId": { "$ref": "#/$defs/hashId" },
+        "relativeWindow": { "$ref": "#/$defs/relativeWindow" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "primitive": { "const": "SPEND_VALIDITY" } },
+            "required": ["primitive"]
+          },
+          "then": { "not": { "required": ["statementId"] } },
+          "else": { "required": ["statementId"] }
+        },
+        {
+          "if": {
+            "properties": {
+              "primitive": {
+                "enum": [
+                  "FREQUENCY_INTENSITY",
+                  "RECENCY_LIFECYCLE",
+                  "ABSENCE_NON_MEMBERSHIP"
+                ]
+              }
+            },
+            "required": ["primitive"]
+          },
+          "then": { "required": ["relativeWindow"] }
+        }
+      ]
+    },
+    "composition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["operator", "requirementIds"],
+      "properties": {
+        "operator": { "enum": ["ALL", "ANY", "AT_LEAST"] },
+        "requirementIds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/requirementId" }
+        },
+        "minimumSatisfied": { "type": "integer", "minimum": 1 }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "operator": { "const": "AT_LEAST" } },
+            "required": ["operator"]
+          },
+          "then": { "required": ["minimumSatisfied"] },
+          "else": { "not": { "required": ["minimumSatisfied"] } }
+        }
+      ]
+    }
+  }
+}

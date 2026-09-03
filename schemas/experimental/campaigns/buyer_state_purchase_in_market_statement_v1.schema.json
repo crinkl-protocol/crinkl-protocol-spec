@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "crinkl://protocol/schemas/buyer_state_purchase_in_market_statement_v1",
+  "title": "BuyerStatePurchaseInMarketStatementV1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "domain",
+    "schemaVersion",
+    "protocolVersion",
+    "type",
+    "marketEntityId",
+    "locationField",
+    "locationClaim"
+  ],
+  "properties": {
+    "domain": { "const": "crinkl:statement:v1" },
+    "schemaVersion": { "const": 1 },
+    "protocolVersion": { "const": "1.0.0-rc.1" },
+    "type": { "const": "BUYER_STATE_PURCHASE_IN_MARKET_V1" },
+    "marketEntityId": { "$ref": "#/$defs/identifier" },
+    "locationField": { "const": "canonical.cbsaCode" },
+    "locationClaim": { "const": "PURCHASE_OR_STORE_LOCATION_GEOGRAPHY_NOT_BUYER_RESIDENCE" }
+  },
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    }
+  }
+}

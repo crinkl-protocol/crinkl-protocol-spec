@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "crinkl://protocol/schemas/buyer_state_evaluation_context_v1",
+  "title": "BuyerStateEvaluationContextV1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "domain",
+    "schemaVersion",
+    "protocolVersion",
+    "conditionId",
+    "asOf",
+    "acceptedIssuerPolicyRef",
+    "acceptedSpendStatusPolicyRef",
+    "latestHeadAndCorrectionPolicyRef",
+    "provenancePolicyRef",
+    "subjectDeduplicationPolicyRef"
+  ],
+  "properties": {
+    "domain": { "const": "crinkl:buyer-state-evaluation-context:v1" },
+    "schemaVersion": { "const": 1 },
+    "protocolVersion": { "const": "1.0.0-rc.1" },
+    "conditionId": { "$ref": "#/$defs/hashId" },
+    "asOf": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$"
+    },
+    "acceptedIssuerPolicyRef": { "$ref": "#/$defs/hashId" },
+    "acceptedSpendStatusPolicyRef": { "$ref": "#/$defs/hashId" },
+    "latestHeadAndCorrectionPolicyRef": { "$ref": "#/$defs/hashId" },
+    "provenancePolicyRef": { "$ref": "#/$defs/hashId" },
+    "subjectDeduplicationPolicyRef": { "$ref": "#/$defs/hashId" },
+    "storeRegistrySnapshotRef": { "$ref": "#/$defs/hashId" },
+    "productCatalogSnapshotRef": { "$ref": "#/$defs/hashId" },
+    "categorySnapshotRef": { "$ref": "#/$defs/hashId" },
+    "marketSnapshotRef": { "$ref": "#/$defs/hashId" },
+    "completenessPolicyRef": { "$ref": "#/$defs/hashId" }
+  },
+  "$defs": {
+    "hashId": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    }
+  }
+}
