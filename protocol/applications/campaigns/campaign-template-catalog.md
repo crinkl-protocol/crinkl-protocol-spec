@@ -51,7 +51,7 @@ authority when they differ.
 | Atomic product purchase | one purchase of one exact product, brand and category, at a store in a committed set of up to sixteen, inside committed day and time bounds, with minimum quantity, minimum net amount and currency | `campaign.atomicProductPurchase.solanaGroth16.v1`, ref `sha256:720fcfb3af3490ba98d151aa7c334aeb10b23dfc7abf088195cf11430f463c68`, circuit `ATOMIC_PRODUCT_PURCHASE_MATCH_GROTH16_BN254_V1` | `CAMPAIGN_FIELD, CAMPAIGN_EPOCH_FIELD, PURPOSE_FIELD, CLOSED_RULE_COMMITMENT, APPROVED_PURCHASE_ROOT, ENTITLEMENT_NULLIFIER, RESULT_COMMITMENT, RECIPIENT_COMMITMENT` | non-production; one finalized Devnet `ACCEPT` |
 | Distinct purchase count, audience | exactly four distinct qualifying purchases inside the inclusive `-44..0` day interval, `CAMPAIGN_INFLUENCED` provenance, one issuer and namespace, positive lower bound only | `campaign.distinctPurchaseCount.audience.groth16.v1`, ref `sha256:95f70a5f920be518cfa8a1d56a6dbccc792eeba8258492014bab1f2afddd7319`, circuit `BUYER_STATE_DISTINCT_PURCHASE_COUNT_GTE_AUDIENCE_GROTH16_BN254_V1` | `CAMPAIGN_FIELD, CAMPAIGN_EPOCH_FIELD, PURPOSE_FIELD, CLOSED_RULE_COMMITMENT, HISTORY_INPUT_COMMITMENT, DISTINCTNESS_COMMITMENT, TEMPORAL_AGGREGATE_COMMITMENT, RESULT_COMMITMENT` | non-production; one finalized Devnet `ACCEPT`; `AUDIENCE` only |
 | Set-membership product purchase | as atomic, with product, brand and category each checked by membership in separately committed set roots | candidate `campaign.atomicProductSetPurchase.solanaGroth16.v1`; proposed relation `ATOMIC_PRODUCT_SET_PURCHASE_MATCH_GROTH16_BN254_V1` | candidate eight-input ABI matching the atomic input order; no machine proof-profile artifact | Protocol and Platform contract ports merged; circuit, setup, proof, Solana and runtime are unavailable |
-| Parameterized purchase count (planned) | at least `N` distinct qualifying purchases inside `-W..0` over a committed set, for `AUDIENCE` or `CONVERSION` | unassigned | unassigned | design identity only |
+| Parameterized purchase count | at least `N` distinct qualifying purchases inside `-W..0` over committed product, brand, category and store sets, for `AUDIENCE` or `CONVERSION` | candidate `campaign.distinctPurchaseCount.solanaGroth16.v2`, ref `sha256:15dacc7707b3a4db38a1fd48bdae6abfa889489abdcd22e098d743334f5c9787`, proposed circuit `BUYER_STATE_DISTINCT_PURCHASE_COUNT_GTE_GROTH16_BN254_V2` | `CAMPAIGN_FIELD, CAMPAIGN_EPOCH_FIELD, PURPOSE_FIELD, CLOSED_RULE_COMMITMENT, HISTORY_INPUT_COMMITMENT, ENTITLEMENT_NULLIFIER, RESULT_COMMITMENT, RECIPIENT_COMMITMENT` | Protocol source/dependency and BN254 store-selection contracts adopted; strict evaluator profile, accepted evaluator-linked rule, circuit, setup, key, proof, Solana and runtime unavailable |
 
 The earlier public `single-product-purchase-match-v1` conformance package is a
 separate draft relation with a different ABI and is not an alias for either
@@ -83,10 +83,10 @@ the separately governed circuit/setup work assigns that reference.
 | Category purchase | as above with any product in a category | category set; product set = all in category | `CONVERSION` | set-membership candidate | Protocol contract only; fails closed today |
 | In-window buyer | `SPEND_VALIDITY` + `RECENCY_LIFECYCLE` (`BUYER_STATE_PURCHASE_IN_WINDOW_V1`) | relative window | `AUDIENCE` | atomic or set-membership family via committed time bounds | positive only; compiles onto an existing family's bounds |
 | Frequent buyer, four in 45 days | `SPEND_VALIDITY` + `FREQUENCY_INTENSITY` (`BUYER_STATE_DISTINCT_PURCHASE_COUNT_GTE_V1`, `minimumDistinctPurchaseCount = 4`, window `-44..0`) | none beyond the frozen values; issuer and namespace | `AUDIENCE` | distinct purchase count, audience | non-production |
-| Repeat buyer at brand, N of W | `SPEND_VALIDITY` + `FREQUENCY_INTENSITY` over a brand set | `N`, `W`, brand set | `AUDIENCE` or `CONVERSION` | parameterized count (planned) | design only; fails closed today. A Platform tally over accepted Outcomes is an application computation, not this template |
+| Repeat buyer at brand, N of W | `SPEND_VALIDITY` + `FREQUENCY_INTENSITY` over a brand set | `N`, `W`, brand set | `AUDIENCE` or `CONVERSION` | parameterized count candidate | Protocol source contracts only; evaluator and proof machinery unavailable, so it fails closed today. A Platform tally over accepted Outcomes is an application computation, not this template |
 | Spend intensity | `SPEND_VALIDITY` + `FREQUENCY_INTENSITY` (`BUYER_STATE_SPEND_TOTAL_CENTS_GTE_V1`) | threshold, currency, window | `AUDIENCE` | none | statement adopted; no family |
 | Market buyer | `SPEND_VALIDITY` + `MARKET_CONTEXT` (`BUYER_STATE_PURCHASE_IN_MARKET_V1`) | market entity; window | `AUDIENCE` | none | statement adopted; no family; store geography, not residence |
-| Competitor-category buyer, positive | `SPEND_VALIDITY` + `FREQUENCY_INTENSITY` over a competitor category set | `N`, `W`, category set | `AUDIENCE` | parameterized count (planned) | design only |
+| Competitor-category buyer, positive | `SPEND_VALIDITY` + `FREQUENCY_INTENSITY` over a competitor category set | `N`, `W`, category set | `AUDIENCE` | parameterized count candidate | Protocol source contracts only; evaluator and proof machinery unavailable |
 | Conquest, new-to-brand | competitor-category buyer + `ABSENCE_NON_MEMBERSHIP` on the sponsor brand | as above + coverage window | `AUDIENCE` | none | `BLOCKED — COVERAGE` |
 | New-to-brand | `ABSENCE_NON_MEMBERSHIP` on one brand within a coverage window | brand set; coverage window | `AUDIENCE` | none | `BLOCKED — COVERAGE` |
 | Lapsed buyer | prior brand purchase + `ABSENCE_NON_MEMBERSHIP` since a cutoff | brand set; lapse window; coverage window | `AUDIENCE` | none | `BLOCKED — COVERAGE` |
@@ -109,13 +109,17 @@ template that needs it is design only until a composition profile is adopted.
 
 ## Sources
 
-- `crinkl-protocol@023c2cd65a9ec0647e944b46eb23fc9b25d0eafd`:
+- `crinkl-protocol@47d0e358bb10e261dd8ab41c096cf3deaa8e333c`:
   `protocol/applications/schemas/condition_v1.schema.json`,
   `protocol/applications/conditions/BUYER_STATE_CONCRETE_STATEMENTS.md`,
   `protocol/applications/campaigns/CAMPAIGN_ATOMIC_PRODUCT_PURCHASE_GROTH16_PROFILE.md`,
   `protocol/applications/campaigns/CAMPAIGN_PURCHASE_REUSE_POLICY.md`,
   `protocol/applications/campaigns/CAMPAIGN_ATOMIC_PRODUCT_SET_PURCHASE_GROTH16_PROFILE.md`,
   `protocol/applications/campaigns/CAMPAIGN_DISTINCT_PURCHASE_COUNT_AUDIENCE_GROTH16_PROFILE.md`,
+  `protocol/applications/campaigns/CAMPAIGN_DISTINCT_PURCHASE_COUNT_GROTH16_V2_PROFILE.md`,
+  `protocol/applications/schemas/distinct_purchase_count_dependencies_v1.schema.json`,
+  `protocol/applications/schemas/campaign_bn254_store_set_selection_v1.schema.json`,
+  `protocol/applications/artifacts/distinct_purchase_count_groth16_candidate_profile_v2.json`,
   `protocol/applications/artifacts/distinct_purchase_count_audience_groth16_proof_profile_v1.json`.
 - `crinkl-platform@3a2a3d8637d5b3c0ee49f8578469902c460558ca`:
   Platform PR #688 (`f5675df2`) S0 contract port and Platform PR #689 S1
