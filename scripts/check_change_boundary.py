@@ -15,6 +15,7 @@ RELEVANT_PREFIXES = (
     "protocol/core/",
     "protocol/portability/",
     "protocol/applications/conditions/",
+    "protocol/applications/campaigns/",
     "protocol/applications/economics/",
     "protocol/extensions/",
     "conformance/",
