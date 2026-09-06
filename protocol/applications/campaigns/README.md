@@ -58,7 +58,7 @@ signed Epoch path:
 | Purpose | Exact admitted relation | Proof profile | Current maturity |
 |---|---|---|---|
 | `CONVERSION` | one exact product, brand and category purchase; quantity, amount, store set and time bounds are committed | `sha256:720fcfb3af3490ba98d151aa7c334aeb10b23dfc7abf088195cf11430f463c68` | non-production atomic Groth16 family; compiler replayed with the retained Monster 14-day definition |
-| `AUDIENCE` | exactly four distinct qualifying purchases in the inclusive `-44..0` calendar-day interval under the admitted positive-provenance source contract | `sha256:95f70a5f920be518cfa8a1d56a6dbccc792eeba8258492014bab1f2afddd7319` | non-production count Groth16 family; compiler replayed with a non-sentinel Epoch reuse policy |
+| `AUDIENCE` | exactly four distinct qualifying purchases in the inclusive `-44..0` calendar-day interval under the admitted positive-provenance source contract | `sha256:95f70a5f920be518cfa8a1d56a6dbccc792eeba8258492014bab1f2afddd7319` | non-production count Groth16 family; compiler replayed with a non-sentinel Epoch reuse policy; parameterized V2 profile `sha256:883c900809637233393db6b7ba198dda25f83b754ceccb5c3fb6f6030f1c18f8` is registered internally; compiler dispatch, local proof, program and runtime remain unavailable |
 
 The atomic compiler pins the Campaign-scoped
 `ProductSourceSignerAuthorityBindingV1`; evidence and status signers must be
