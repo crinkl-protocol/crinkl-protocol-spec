@@ -58,6 +58,10 @@
       "file": "vectors/recipient.blinded.schemaV1b.json"
     },
     {
+      "kind": "economics.dataDensityReserve.depletionCurve.v1",
+      "file": "vectors/economics.dataDensityReserve.depletionCurve.v1.json"
+    },
+    {
       "kind": "zk.h2PromoOpenMin.v1",
       "file": "vectors/zk.h2PromoOpenMin.v1.json"
     },

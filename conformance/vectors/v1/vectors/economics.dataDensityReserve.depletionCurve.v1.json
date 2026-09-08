@@ -1,0 +1,38 @@
+{
+  "kind": "economics.dataDensityReserve.depletionCurve.v1",
+  "description": "Reference points for the Data-Density Reserve depletion curve D(G) = min(cap_tokens, c * ln(1 + G / K_usd)), checked against protocol/applications/economics/parameters.json. Values are floored to six-decimal base units (never rounded up past the enforced cap), matching the paper's stated integer fixed-point execution model. This vector is data-only in scripts/verify_conformance.mjs (no executable verifier is wired into that shared harness); it is evaluated by the standalone scripts/check_data_density_reserve_curve.mjs.",
+  "parametersFile": "../../../../protocol/applications/economics/parameters.json",
+  "cases": [
+    {
+      "id": "economics.dataDensityReserve.depletionCurve.v1.g2p4m",
+      "cumulative_qualified_gmv_usd": "2400000",
+      "expected_depletion_entitlement_base_units": "4429632284903"
+    },
+    {
+      "id": "economics.dataDensityReserve.depletionCurve.v1.g100m",
+      "cumulative_qualified_gmv_usd": "100000000",
+      "expected_depletion_entitlement_base_units": "22128615635083"
+    },
+    {
+      "id": "economics.dataDensityReserve.depletionCurve.v1.g1b",
+      "cumulative_qualified_gmv_usd": "1000000000",
+      "expected_depletion_entitlement_base_units": "34999999995838"
+    },
+    {
+      "id": "economics.dataDensityReserve.depletionCurve.v1.g10b",
+      "cumulative_qualified_gmv_usd": "10000000000",
+      "expected_depletion_entitlement_base_units": "47961918676193"
+    },
+    {
+      "id": "economics.dataDensityReserve.depletionCurve.v1.g100b",
+      "cumulative_qualified_gmv_usd": "100000000000",
+      "expected_depletion_entitlement_base_units": "60932989497369"
+    },
+    {
+      "id": "economics.dataDensityReserve.depletionCurve.v1.g500b",
+      "cumulative_qualified_gmv_usd": "500000000000",
+      "expected_depletion_entitlement_base_units": "69999999995828",
+      "note": "Exact integer fixed-point result at the paper's reference ceiling point; slightly below the 70,000,000,000,000 base-unit cap by design."
+    }
+  ]
+}
