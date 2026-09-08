@@ -14,6 +14,47 @@ unpublished SemVer prerelease. Repository release maturity is separate from
 each document's frontmatter maturity. The immutable `v1.0.0-rc.4` tag remains
 the prior released package; no stable successor release is declared.
 
+## Unreleased (1.0.0-rc.8) — Economics section added (2026-09-08)
+
+Documentation, parameter-data, schema, and conformance-vector changes only; no
+released package, manifest, tag, runtime, validator-network, deployment or
+production behavior changes.
+
+- Adds an economics section under [`protocol/applications/economics/`](../protocol/applications/economics/):
+  [`data-density-reserve.md`](../protocol/applications/economics/data-density-reserve.md)
+  (non-normative economic-design narrative for the Density Burn mechanism),
+  its machine-readable [`parameters.json`](../protocol/applications/economics/parameters.json),
+  and [`schemas/data_density_reserve_parameters_v1.schema.json`](../protocol/applications/economics/schemas/data_density_reserve_parameters_v1.schema.json).
+  Source: Crinkl Brain `tokenomics/data-density-reserve.md` v8.2 revision 3
+  (base_commit `e5ad392c8501cef9e41ed636d3b28deb56a599da`), per operator decision
+  2026-09-08 to retire the paper's own v8.x tokenomics versioning line and
+  version it with this specification instead. This document's frontmatter
+  `status` is `draft` and `spec_version` is `1.0.0-rc.8 (pending)` until an
+  operator-cut release finalizes it; adding it does not itself promote,
+  publish, or activate any economic mechanism.
+- Adds a conformance vector,
+  [`economics.dataDensityReserve.depletionCurve.v1`](../conformance/vectors/v1/vectors/economics.dataDensityReserve.depletionCurve.v1.json),
+  checking the depletion curve `D(G) = min(cap, c*ln(1+G/K))` at the paper's
+  six reference points, including the exact integer-fixed-point value at
+  $500B GMV, plus a standalone evaluator,
+  [`scripts/check_data_density_reserve_curve.mjs`](../scripts/check_data_density_reserve_curve.mjs).
+  The vector is registered in `conformance/vectors/v1/manifest.json` as a
+  data-only kind (no executable verifier is wired into the shared
+  `scripts/verify_conformance.mjs` harness); it is evaluated by the standalone
+  script.
+- Corrects a stale released-version reference in
+  [`governance/versioning.md`](../governance/versioning.md) and records that
+  economics content is versioned with the specification rather than as a
+  separately numbered tokenomics paper.
+- **Not reconciled by this entry:** [`versions/v1.0.0-rc.8/finalization.json`](v1.0.0-rc.8/finalization.json)
+  already describes a distinct, unrelated `1.0.0-rc.8` source candidate (the
+  reward-commitment rc.7 publication-defect correction), pinned by content
+  hash including this file. This entry changes this file's bytes and therefore
+  its hash, which that candidate's controlling-artifact pin will no longer
+  match. The two efforts both claim the `1.0.0-rc.8` identity; reconciling
+  them into one candidate manifest (or renumbering one) is an operator
+  decision this entry does not make.
+
 ## Unreleased — Campaign layer alignment with adopted engineering (2026-09-02)
 
 Documentation and experimental-schema changes only (public-spec #52, #53, #54,
