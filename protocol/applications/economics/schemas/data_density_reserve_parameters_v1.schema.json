@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "crinkl://protocol/schemas/data_density_reserve_parameters_v1",
+  "title": "DataDensityReserveParametersV1",
+  "description": "Machine-readable tokenomics parameters for the Data-Density Reserve (protocol/applications/economics/data-density-reserve.md). Non-normative reference data: it documents the economic-design constants the prose cites, and is not itself a signed or verifier-consumed protocol object.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "total_supply",
+    "decimals",
+    "allocation",
+    "depletion_curve",
+    "calibration_milestones",
+    "vcd_definition",
+    "receipt_reward",
+    "campaign_escrow_currency",
+    "campaign_fee_burn",
+    "revenue_equivalent_illustrative",
+    "launch_price_reference_usd",
+    "provenance"
+  ],
+  "properties": {
+    "$schema": { "type": "string" },
+    "kind": { "type": "string", "const": "crinkl.economics.dataDensityReserveParametersV1" },
+    "total_supply": { "type": "integer", "const": 100000000 },
+    "decimals": { "type": "integer", "const": 6 },
+    "base_unit_note": { "type": "string" },
+    "allocation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "shared_pool_tokens",
+        "proof_validator_network_tokens",
+        "pricechain_treasury_tokens",
+        "market_maker_liquidity_tokens"
+      ],
+      "properties": {
+        "shared_pool_tokens": { "type": "integer", "const": 70000000 },
+        "proof_validator_network_tokens": { "type": "integer", "const": 10000000 },
+        "pricechain_treasury_tokens": { "type": "integer", "const": 10000000 },
+        "market_maker_liquidity_tokens": { "type": "integer", "const": 10000000 }
+      }
+    },
+    "depletion_curve": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["formula", "cap_tokens", "c", "K_usd"],
+      "properties": {
+        "formula": { "type": "string", "const": "min(cap, c*ln(1+G/K))" },
+        "description": { "type": "string" },
+        "cap_tokens": { "type": "integer", "const": 70000000 },
+        "c": { "type": "string", "pattern": "^[0-9]+\\.[0-9]{6}$" },
+        "K_usd": { "type": "string", "pattern": "^[0-9]+\\.[0-9]{2}$" }
+      }
+    },
+    "calibration_milestones": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["cumulative_qualified_gmv_usd", "depletion_entitlement_crinkl"],
+        "properties": {
+          "cumulative_qualified_gmv_usd": { "type": "string", "pattern": "^[0-9]+$" },
+          "depletion_entitlement_crinkl": { "type": "string", "pattern": "^[0-9]+\\.[0-9]{6}$" }
+        }
+      }
+    },
+    "calibration_milestones_note": { "type": "string" },
+    "vcd_definition": { "type": "string", "const": "cumulative qualified GMV" },
+    "vcd_note": { "type": "string" },
+    "revenue_multiplier": { "type": "null" },
+    "revenue_multiplier_note": { "type": "string" },
+    "receipt_reward": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["usd_reference_rate", "set_by", "election", "ordering"],
+      "properties": {
+        "usd_reference_rate": { "type": "string", "pattern": "^[0-9]+\\.[0-9]{2}$" },
+        "set_by": { "type": "string" },
+        "election": {
+          "type": "array",
+          "items": { "type": "string", "enum": ["CRINKL", "BTC"] },
+          "minItems": 2,
+          "uniqueItems": true
+        },
+        "ordering": { "type": "string" }
+      }
+    },
+    "campaign_escrow_currency": { "type": "string", "const": "USDC" },
+    "campaign_fee_burn": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fee_fraction", "basis", "status"],
+      "properties": {
+        "fee_fraction": { "type": "null" },
+        "basis": { "type": "null" },
+        "status": { "type": "string" }
+      }
+    },
+    "revenue_equivalent_illustrative": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+$" },
+    "launch_price_reference_usd": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+$" },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["supersedes", "source_commit", "spec_version"],
+      "properties": {
+        "supersedes": { "type": "string" },
+        "source_commit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "spec_version": { "type": "string" }
+      }
+    }
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "$schema": "./schemas/data_density_reserve_parameters_v1.schema.json",
+  "kind": "crinkl.economics.dataDensityReserveParametersV1",
+  "total_supply": 100000000,
+  "decimals": 6,
+  "base_unit_note": "1 CRINKL = 1,000,000 base units. Execution uses integer fixed-point arithmetic over six-decimal base units; the depletion curve is evaluated in floating point and floored to base units, never rounded up past the enforced cap.",
+  "allocation": {
+    "shared_pool_tokens": 70000000,
+    "proof_validator_network_tokens": 10000000,
+    "pricechain_treasury_tokens": 10000000,
+    "market_maker_liquidity_tokens": 10000000
+  },
+  "depletion_curve": {
+    "formula": "min(cap, c*ln(1+G/K))",
+    "description": "D(G) = min(cap_tokens, c * ln(1 + G / K_usd)), where G is cumulative qualified GMV in USD. The min() enforces the ceiling explicitly; the logarithm itself is unbounded and does not asymptotically approach the cap on its own.",
+    "cap_tokens": 70000000,
+    "c": "5633706.605660",
+    "K_usd": "2008032.13"
+  },
+  "calibration_milestones": [
+    { "cumulative_qualified_gmv_usd": "2400000", "depletion_entitlement_crinkl": "4429632.284903" },
+    { "cumulative_qualified_gmv_usd": "100000000", "depletion_entitlement_crinkl": "22128615.635083" },
+    { "cumulative_qualified_gmv_usd": "1000000000", "depletion_entitlement_crinkl": "34999999.995838" },
+    { "cumulative_qualified_gmv_usd": "10000000000", "depletion_entitlement_crinkl": "47961918.676193" },
+    { "cumulative_qualified_gmv_usd": "100000000000", "depletion_entitlement_crinkl": "60932989.497369" },
+    { "cumulative_qualified_gmv_usd": "500000000000", "depletion_entitlement_crinkl": "69999999.995828" }
+  ],
+  "calibration_milestones_note": "Reference points are analytical calculations using the retained calibration, not measurements of executed burns. Values are floored to six-decimal base units; the $500B row is the exact integer-fixed-point result and is slightly below the 70,000,000 cap by design (the exact ceiling is 70,000,000,000,000 base units). The other rows match the paper's approximate two-decimal (nearest 0.01M) presentation.",
+  "vcd_definition": "cumulative qualified GMV",
+  "vcd_note": "Verified Commerce Density (VCD), for the reserve schedule, is cumulative qualified GMV alone. Qualified GMV is the dollar value of admitted purchase evidence accepted under the network's verification and uniqueness rules; the same purchase does not add GMV again merely because it participates in multiple campaigns.",
+  "revenue_multiplier": null,
+  "revenue_multiplier_note": "Removed from the reserve model in v8.2 revision 3. The prior model applied a 33x (lambda=33) weight to settled revenue alongside qualified GMV; settled revenue no longer enters VCD under this revision. The retained curve constants (c, K_usd) are unchanged, but are now applied to qualified GMV alone, so prior revenue-weighted projections are not reproduced by this schedule.",
+  "receipt_reward": {
+    "usd_reference_rate": "0.10",
+    "set_by": "verification service",
+    "election": ["CRINKL", "BTC"],
+    "ordering": "emission first, reserve burn residual"
+  },
+  "campaign_escrow_currency": "USDC",
+  "campaign_fee_burn": {
+    "fee_fraction": null,
+    "basis": null,
+    "status": "unspecified, not deployed"
+  },
+  "revenue_equivalent_illustrative": "0.01",
+  "launch_price_reference_usd": "0.10",
+  "provenance": {
+    "supersedes": "The Data-Density Reserve v8.2 revision 3 — Crinkl Brain tokenomics/data-density-reserve.md, 2026-09-08",
+    "source_commit": "e5ad392c8501cef9e41ed636d3b28deb56a599da",
+    "spec_version": "1.0.0-rc.8 (pending)"
+  }
+}
