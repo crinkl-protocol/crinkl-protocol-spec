@@ -66,6 +66,15 @@ distinct, active at the evaluation cutoff, and bound to the exact policies and
 snapshots in the dependency set. The signed Epoch's `registryRefs` contains
 both the dependency-set reference and signer-binding reference.
 
+Family A-prime's positive one-purchase set-membership profile
+`sha256:264957c61830a91f85c226925df1dd6273df883a34446c19a95540d68a939df0`
+is registered internally at `crinkl-protocol@1725ceeeb3bb993d94b2754b947c106a0fd3db5d`.
+It binds the approved circuit, constraint identity and one retained
+non-production setup/PK/VK. This is internal engineering registration, not a
+new public-spec release or proof of a qualifying Campaign. Platform profile
+port, compiler dispatch, local proof, verifier program, Devnet acceptance and
+runtime remain unavailable; no Outcome or economic authority follows.
+
 The parameterized Family B V2 proof-family candidate now has adopted internal
 source contracts, not an executable evaluator. Its purpose-aware dependency
 object binds the exact context, manifest, positive provenance Epoch, product
