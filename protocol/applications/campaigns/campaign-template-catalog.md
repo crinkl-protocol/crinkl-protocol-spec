@@ -49,28 +49,13 @@ authority when they differ.
 | Family | Relation | Proof profile | Public inputs | Maturity |
 |---|---|---|---|---|
 | Atomic product purchase | one purchase of one exact product, brand and category, at a store in a committed set of up to sixteen, inside committed day and time bounds, with minimum quantity, minimum net amount and currency | `campaign.atomicProductPurchase.solanaGroth16.v1`, ref `sha256:720fcfb3af3490ba98d151aa7c334aeb10b23dfc7abf088195cf11430f463c68`, circuit `ATOMIC_PRODUCT_PURCHASE_MATCH_GROTH16_BN254_V1` | `CAMPAIGN_FIELD, CAMPAIGN_EPOCH_FIELD, PURPOSE_FIELD, CLOSED_RULE_COMMITMENT, APPROVED_PURCHASE_ROOT, ENTITLEMENT_NULLIFIER, RESULT_COMMITMENT, RECIPIENT_COMMITMENT` | non-production; one finalized Devnet `ACCEPT` |
-| Distinct purchase count, audience | exactly four distinct qualifying purchases inside the inclusive `-44..0` day interval, `CAMPAIGN_INFLUENCED` provenance, one issuer and namespace, positive lower bound only | `campaign.distinctPurchaseCount.audience.groth16.v1`, ref `sha256:95f70a5f920be518cfa8a1d56a6dbccc792eeba8258492014bab1f2afddd7319`, circuit `BUYER_STATE_DISTINCT_PURCHASE_COUNT_GTE_AUDIENCE_GROTH16_BN254_V1` | `CAMPAIGN_FIELD, CAMPAIGN_EPOCH_FIELD, PURPOSE_FIELD, CLOSED_RULE_COMMITMENT, HISTORY_INPUT_COMMITMENT, DISTINCTNESS_COMMITMENT, TEMPORAL_AGGREGATE_COMMITMENT, RESULT_COMMITMENT` | non-production; one finalized Devnet `ACCEPT`; `AUDIENCE` only |
-| Set-membership product purchase | as atomic, with product, brand and category each checked by membership in separately committed set roots | candidate `campaign.atomicProductSetPurchase.solanaGroth16.v1`; proposed relation `ATOMIC_PRODUCT_SET_PURCHASE_MATCH_GROTH16_BN254_V1` | candidate eight-input ABI matching the atomic input order; no machine proof-profile artifact | Protocol and Platform contract ports merged; circuit, setup, proof, Solana and runtime are unavailable |
-| Parameterized purchase count | at least `N` distinct qualifying purchases inside `-W..0` over committed product, brand, category and store sets, for `AUDIENCE` or `CONVERSION` | candidate `campaign.distinctPurchaseCount.solanaGroth16.v2`, ref `sha256:15dacc7707b3a4db38a1fd48bdae6abfa889489abdcd22e098d743334f5c9787`, proposed circuit `BUYER_STATE_DISTINCT_PURCHASE_COUNT_GTE_GROTH16_BN254_V2` | `CAMPAIGN_FIELD, CAMPAIGN_EPOCH_FIELD, PURPOSE_FIELD, CLOSED_RULE_COMMITMENT, HISTORY_INPUT_COMMITMENT, ENTITLEMENT_NULLIFIER, RESULT_COMMITMENT, RECIPIENT_COMMITMENT` | Protocol source/dependency and BN254 store-selection contracts adopted; strict evaluator profile, accepted evaluator-linked rule, circuit, setup, key, proof, Solana and runtime unavailable |
+| Distinct purchase count, audience | four distinct witnessed qualifying purchases inside the inclusive `-44..0` day interval, `CAMPAIGN_INFLUENCED` provenance, one issuer and namespace; a positive lower bound, not complete-history equality | `campaign.distinctPurchaseCount.audience.groth16.v1`, ref `sha256:95f70a5f920be518cfa8a1d56a6dbccc792eeba8258492014bab1f2afddd7319`, circuit `BUYER_STATE_DISTINCT_PURCHASE_COUNT_GTE_AUDIENCE_GROTH16_BN254_V1` | `CAMPAIGN_FIELD, CAMPAIGN_EPOCH_FIELD, PURPOSE_FIELD, CLOSED_RULE_COMMITMENT, HISTORY_INPUT_COMMITMENT, DISTINCTNESS_COMMITMENT, TEMPORAL_AGGREGATE_COMMITMENT, RESULT_COMMITMENT` | non-production; one finalized Devnet `ACCEPT`; `AUDIENCE` only |
+| Set-membership product purchase | one purchase with merchant, product-set and spend-total requirements plus the mandatory `SPEND_VALIDITY` guard | `campaign.atomicProductSetPurchase.solanaGroth16.v1`, ref `sha256:264957c61830a91f85c226925df1dd6273df883a34446c19a95540d68a939df0`, circuit `ATOMIC_PRODUCT_SET_PURCHASE_MATCH_GROTH16_BN254_V1` | registered eight-input ABI matching the atomic input order | registered setup is retained and the Platform compiler port is merged; a non-production source materializer is implemented; proof, Devnet acceptance and runtime remain unavailable |
+| Parameterized purchase count | at least `N` distinct qualifying purchases inside a committed window over committed product, brand, category and store sets | `campaign.distinctPurchaseCount.solanaGroth16.v2`, ref `sha256:343f5b26c54f9db9edd2c597792964dd3a3580c25ce94a9aa962272be54bec2c`, proposed relation `BUYER_STATE_DISTINCT_PURCHASE_COUNT_GTE_GROTH16_BN254_V2` | `CAMPAIGN_FIELD, CAMPAIGN_EPOCH_FIELD, PURPOSE_FIELD, CLOSED_RULE_COMMITMENT, HISTORY_INPUT_COMMITMENT, ENTITLEMENT_NULLIFIER, RESULT_COMMITMENT, RECIPIENT_COMMITMENT` | `AUDIENCE` only; structural compiler dispatch is merged, while a current-profile proof/program is pending and historical offline proof evidence is retained |
 
 The earlier public `single-product-purchase-match-v1` conformance package is a
 separate draft relation with a different ABI and is not an alias for either
 registered family.
-
-### Supporting policy maturity
-
-`CampaignPurchaseReusePolicyV1` is an adopted internal Protocol policy identity
-for the CP6 `AUDIENCE` duplicate-qualification guard. The atomic `CONVERSION`
-relation retains a distinct purchase-reuse-nullifier derivation. Neither is a
-proof family, registry, proof, or Solana acceptance record. The S0 Platform
-contract port is merged; its regenerated local-proof evidence and
-validator-on-main evidence remain pending. This statement creates no runtime,
-Outcome, or economic authority.
-
-The product-set candidate intentionally has no machine proof-profile artifact
-or content reference. Its byte-identical Platform contract port is merged, but
-it cannot be selected through the existing `CONVERSION` compiler/package until
-the separately governed circuit/setup work assigns that reference.
 
 ## Templates
 
@@ -78,20 +63,20 @@ the separately governed circuit/setup work assigns that reference.
 |---|---|---|---|---|---|
 | Verified purchase | `SPEND_VALIDITY` | issuer set, accepted statuses, window | either | any family (guard) | runnable inside every family; never standalone |
 | Exact product purchase | `SPEND_VALIDITY` + `MERCHANT_PRODUCT_CATEGORY_RELATIONSHIP` (`BUYER_STATE_SINGLE_PRODUCT_PURCHASE_V1`) | product, brand, category refs; store set; day and time bounds; minimum quantity; minimum net amount; currency | `CONVERSION` | atomic product purchase | non-production |
-| Product-set purchase | as above with product in a committed set | product set root; brand set root; category set root; same bounds | `CONVERSION` | set-membership candidate | Protocol contract only; fails closed today |
-| Brand purchase | as above with any product of one brand | brand set of one; product set = all of brand | `CONVERSION` | set-membership candidate | Protocol contract only; fails closed today |
-| Category purchase | as above with any product in a category | category set; product set = all in category | `CONVERSION` | set-membership candidate | Protocol contract only; fails closed today |
-| In-window buyer | `SPEND_VALIDITY` + `RECENCY_LIFECYCLE` (`BUYER_STATE_PURCHASE_IN_WINDOW_V1`) | relative window | `AUDIENCE` | atomic or set-membership family via committed time bounds | positive only; compiles onto an existing family's bounds |
+| Product-set purchase | `SPEND_VALIDITY` + merchant + product-set + spend-total requirements in the S1 `ALL` composition | product, brand, category and store selections; day and time bounds; minimum quantity; minimum net product amount; product currency; minimum receipt total; receipt currency | `CONVERSION` | set-membership product purchase | compiler accepts this exact canonical S1 statement/profile shape; no immutable selections are supplied by this catalog, so a real definition fails closed without them |
+| Brand purchase | as above with any product of one brand | brand set of one; product set = all of brand | `CONVERSION` | set-membership product purchase | requires the same immutable source selections; no all-products-of-brand catalog artifact is supplied here |
+| Category purchase | as above with any product in a category | category set; product set = all in category | `CONVERSION` | set-membership product purchase | `AUDIENCE` is not admitted by the S1 profile; immutable source selections remain required |
+| In-window buyer | `SPEND_VALIDITY` + `RECENCY_LIFECYCLE` (`BUYER_STATE_PURCHASE_IN_WINDOW_V1`) | relative window | `AUDIENCE` | none | no standalone recency proof family is registered; a relative window inside the S1 `CONVERSION` relation does not admit or compile this standalone audience statement |
 | Frequent buyer, four in 45 days | `SPEND_VALIDITY` + `FREQUENCY_INTENSITY` (`BUYER_STATE_DISTINCT_PURCHASE_COUNT_GTE_V1`, `minimumDistinctPurchaseCount = 4`, window `-44..0`) | none beyond the frozen values; issuer and namespace | `AUDIENCE` | distinct purchase count, audience | non-production |
-| Repeat buyer at brand, N of W | `SPEND_VALIDITY` + `FREQUENCY_INTENSITY` over a brand set | `N`, `W`, brand set | `AUDIENCE` or `CONVERSION` | parameterized count candidate | Protocol source contracts only; evaluator and proof machinery unavailable, so it fails closed today. A Platform tally over accepted Outcomes is an application computation, not this template |
+| Repeat buyer at brand, N of W | `SPEND_VALIDITY` + `FREQUENCY_INTENSITY` over a brand set | `N` = 2 through 8; window start = `-365..0`, end = `0`; brand set | `AUDIENCE` | parameterized purchase count | S2 is `AUDIENCE` only; structural compiler dispatch is merged, while a current-identity proof is pending (historical offline evidence is retained). A Platform tally over accepted Outcomes is an application computation, not this template |
 | Spend intensity | `SPEND_VALIDITY` + `FREQUENCY_INTENSITY` (`BUYER_STATE_SPEND_TOTAL_CENTS_GTE_V1`) | threshold, currency, window | `AUDIENCE` | none | statement adopted; no family |
 | Market buyer | `SPEND_VALIDITY` + `MARKET_CONTEXT` (`BUYER_STATE_PURCHASE_IN_MARKET_V1`) | market entity; window | `AUDIENCE` | none | statement adopted; no family; store geography, not residence |
-| Competitor-category buyer, positive | `SPEND_VALIDITY` + `FREQUENCY_INTENSITY` over a competitor category set | `N`, `W`, category set | `AUDIENCE` | parameterized count candidate | Protocol source contracts only; evaluator and proof machinery unavailable |
+| Competitor-category buyer, positive | `SPEND_VALIDITY` + `FREQUENCY_INTENSITY` over a competitor category set | `N` = 2 through 8; window start = `-365..0`, end = `0`; category set | `AUDIENCE` | parameterized purchase count | S2 is `AUDIENCE` only; exact immutable committed sets are required, structural compiler dispatch is merged, and a current-identity proof is pending (historical offline evidence is retained) |
 | Conquest, new-to-brand | competitor-category buyer + `ABSENCE_NON_MEMBERSHIP` on the sponsor brand | as above + coverage window | `AUDIENCE` | none | `BLOCKED — COVERAGE` |
 | New-to-brand | `ABSENCE_NON_MEMBERSHIP` on one brand within a coverage window | brand set; coverage window | `AUDIENCE` | none | `BLOCKED — COVERAGE` |
 | Lapsed buyer | prior brand purchase + `ABSENCE_NON_MEMBERSHIP` since a cutoff | brand set; lapse window; coverage window | `AUDIENCE` | none | `BLOCKED — COVERAGE` |
-| Treated buyer | any positive template + `provenanceRequirement.acceptedEvidenceClasses = [CAMPAIGN_INFLUENCED]` with an authenticated exposure link | exposure policy | `AUDIENCE` | distinct purchase count, audience (only registered provenance-bound family) | non-production |
-| Verified conversion after qualification | any `AUDIENCE` template + an exact-product or product-set `CONVERSION` template in one signed Epoch | both sets of parameters | both slots | atomic (conversion leg) + distinct count (audience leg) | compile-only; two-leg Epoch demonstrated in engineering |
+| Treated buyer | any positive template + `provenanceRequirement.acceptedEvidenceClasses = [CAMPAIGN_INFLUENCED]` with an authenticated exposure link | exposure policy | `AUDIENCE` | distinct purchase count, audience (registered V1 and V2 profiles) | non-production |
+| Verified conversion after qualification | an admitted count `AUDIENCE` template + an exact-product or product-set `CONVERSION` template in one signed Epoch | both sets of parameters | both slots | separately compiled audience and conversion legs | an Epoch can bind and compile both rule references, but no registered profile binds them into one composed proof or execution capability |
 
 Composition of two positive requirements over different purchases in one proof
 (`ALL` over several witnesses, `ANY`, `AT_LEAST`) has no registered family. A
@@ -101,8 +86,11 @@ template that needs it is design only until a composition profile is adopted.
 
 - It is not a reward policy. Reward, budget, capacity and settlement terms are
   separate content-addressed policies on the Epoch.
-- It is not a runtime capability. Every family above is non-production
-  engineering with Devnet evidence only.
+- It is not a source catalog. A Campaign product-set selection requires its
+  exact immutable product-catalog, brand-registry, category-snapshot and store
+  selection references; planning or taxonomy snapshots do not supply them.
+- It is not a runtime capability. Family maturity differs: atomic exact-product
+  and the fixed V1 audience count have Devnet evidence; S1 and S2 do not.
 - It is not a business claim. A runnable template proves that qualifying
   purchases exist; it does not prove complete history, absence, neutrality,
   causal lift or market supply.
@@ -110,6 +98,8 @@ template that needs it is design only until a composition profile is adopted.
 ## Sources
 
 - `crinkl-protocol@47d0e358bb10e261dd8ab41c096cf3deaa8e333c`:
+- `crinkl-protocol@52144c93`: current catalog/profile authority, including
+  the registered S1 and S2 machine-profile artifacts.
   `protocol/applications/schemas/condition_v1.schema.json`,
   `protocol/applications/conditions/BUYER_STATE_CONCRETE_STATEMENTS.md`,
   `protocol/applications/campaigns/CAMPAIGN_ATOMIC_PRODUCT_PURCHASE_GROTH16_PROFILE.md`,
