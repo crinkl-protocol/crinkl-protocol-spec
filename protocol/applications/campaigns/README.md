@@ -71,9 +71,14 @@ Family A-prime's positive one-purchase set-membership profile
 is registered internally at `crinkl-protocol@1725ceeeb3bb993d94b2754b947c106a0fd3db5d`.
 It binds the approved circuit, constraint identity and one retained
 non-production setup/PK/VK. This is internal engineering registration, not a
-new public-spec release or proof of a qualifying Campaign. Platform profile
-port, compiler dispatch, local proof, verifier program, Devnet acceptance and
-runtime remain unavailable; no Outcome or economic authority follows.
+new public-spec release or proof of a qualifying Campaign. The Platform
+profile port and one compiler case for a supplied A-prime rule are implemented
+at `crinkl-platform@cb1250d6e028a4225814abd08cad7f81e9f67361`, with 25 focused
+tests including synthetic compilation. Its source roots and composite
+statement references remain structurally supplied rather than authenticated by
+a source materializer; the proof-ready source handoff is pending. Local proof,
+verifier program, Devnet acceptance and runtime remain unavailable; no Outcome
+or economic authority follows.
 
 The parameterized Family B V2 proof-family candidate now has adopted internal
 source contracts, not an executable evaluator. Its purpose-aware dependency
