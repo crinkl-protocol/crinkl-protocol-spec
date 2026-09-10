@@ -80,6 +80,17 @@ a source materializer; the proof-ready source handoff is pending. Local proof,
 verifier program, Devnet acceptance and runtime remain unavailable; no Outcome
 or economic authority follows.
 
+Protocol adopted the S1 composite-binding artifact
+`sha256:21ab0b005c8f272bc13214e6381aec34a078c9ee302c18a4949077e13bcbd9bb`.
+The adopted Protocol change is
+`crinkl-protocol@52144c93be3a22b5a167d4956ca7cc8187a394eb`; this public
+specification records its maturity boundary. The binding relates the existing
+A-prime condition, context, dependencies, component statements, complete set
+selections and same-purchase scalars while leaving the registered machine profile
+`sha256:264957c61830a91f85c226925df1dd6273df883a34446c19a95540d68a939df0`
+unchanged. It is not ported to Platform and adds no source handoff, evaluator,
+proof runtime, Solana program, or economic authority.
+
 The parameterized Family B V2 proof-family candidate now has adopted internal
 source contracts, not an executable evaluator. Its purpose-aware dependency
 object binds the exact context, manifest, positive provenance Epoch, product
