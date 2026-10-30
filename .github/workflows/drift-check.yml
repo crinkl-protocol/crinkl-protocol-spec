@@ -53,7 +53,7 @@ jobs:
         with:
           python-version: "3.11"
       - name: Install Python deps
-        run: python3 -m pip install --upgrade pip pyyaml jsonschema cryptography
+        run: "python3 -m pip install --require-hashes --only-binary=:all: -r requirements-ci.lock"
       - name: Boundary classification
         if: github.event_name == 'pull_request'
         env:
