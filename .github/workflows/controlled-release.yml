@@ -59,7 +59,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Install existing checker dependencies
-        run: python3 -m pip install --upgrade pip pyyaml jsonschema cryptography
+        run: "python3 -m pip install --require-hashes --only-binary=:all: -r requirements-ci.lock"
       - name: Candidate identity, declared digests, and full pre-tag gate
         env:
           CRINKL_PROTOCOL_ADOPTED_REPO: ${{ github.workspace }}/adopted-protocol
